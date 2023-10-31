@@ -1,14 +1,15 @@
 import { BoardsService } from './boards.service';
-import { Get, Controller, Post } from '@nestjs/common';
-import { CreateBoardDto } from './dtos/create-board.dto';
+import { CreateBoardDto } from './dtos/createBoard.dto';
+import { Body, Headers, Get, Controller, Post } from '@nestjs/common';
 
 @Controller('boards')
 export class BoardsController {
     constructor(private readonly boardsService: BoardsService) {}
 
     @Post()
-    async createBoard(body: CreateBoardDto) {
-        //return this.boardsService.create(body);
+    async createBoard(@Headers() headers, @Body() body: CreateBoardDto) {
+        const authorizationToken = headers.authorization;
+        return this.boardsService.create({ ...body, authorizationToken });
     }
 
     @Get()

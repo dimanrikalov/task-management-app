@@ -1,7 +1,7 @@
 import { UsersService } from './users.service';
-import { FindUserDto } from './dtos/find-user.dto';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { DeleteUserDto } from './dtos/delete-user.dto';
+import { FindUserDto } from './dtos/findUser.dto';
+import { CreateUserDto } from './dtos/createUser.dto';
+import { DeleteUserDto } from './dtos/deleteUser.dto';
 import { Get, Post, Body, Controller } from '@nestjs/common';
 
 @Controller('users')

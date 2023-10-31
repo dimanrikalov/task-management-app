@@ -1,5 +1,5 @@
 import { WorkspacesService } from './workspaces.service';
-import { CreateWorkspaceDto } from './dtos/create-workspace.dto';
+import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { Body, Get, Post, Controller, Headers } from '@nestjs/common';
 import { IWorkspace } from 'src/interfaces/workspace.interface';
 
@@ -14,13 +14,10 @@ export class WorkspacesController {
 
     @Post()
     async createWorkspace(
-        @Body() body: CreateWorkspaceDto,
         @Headers() headers,
+        @Body() body: CreateWorkspaceDto,
     ) {
-        // You can now access the headers in the 'headers' variable
-        const authorization_token = headers.authorization; // Example: Access the 'Authorization' header
-  
-        // Your logic to create a workspace goes here
-        this.workspacesService.create({ ...body, authorization_token });
+        const authorizationToken = headers.authorization;
+        this.workspacesService.create({ ...body, authorizationToken });
     }
 }

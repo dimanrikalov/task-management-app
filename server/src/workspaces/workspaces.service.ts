@@ -1,7 +1,8 @@
-import * as jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
 import { WorkspacesGateway } from './workspaces.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { extractJWTData } from 'src/utils/extractJWTData';
+import { isValidJWTToken } from 'src/utils/isValidJWTToken';
 import { IWorkspace } from 'src/interfaces/workspace.interface';
 import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
 import { ICreateWorkspace } from 'src/interfaces/createWorkspace.interface';
@@ -20,11 +21,14 @@ export class WorkspacesService {
     async create(body: ICreateWorkspace) {
         try {
             // Verify the JWT token is valid
-            jwt.verify(body.authorization_token, process.env.JWT_SECRET);
+            if (!isValidJWTToken(body.authorizationToken)) {
+                throw new Error('Invalid JWT token.');
+            }
+
             // Decode the JWT token
-            const decodedToken: IJWTPayload = jwt.decode(
-                body.authorization_token,
-            ) as IJWTPayload;
+            const decodedToken: IJWTPayload = extractJWTData(
+                body.authorizationToken,
+            );
 
             const isWorkspaceNameTaken =
                 await this.prismaService.workspace.findFirst({
@@ -58,11 +62,12 @@ export class WorkspacesService {
             );
 
             await Promise.all(colleagueCreationPromises);
+            
             console.log('Emitting an event...');
             //trigger a socket event that will inform every added colleague about the existence of new workspace
             this.workspacesGateway.handleWorkspaceCreated({
                 colleagues: body.colleagues,
-                event: 'a new workspace created',
+                message: 'a new workspace was created',
             });
         } catch (err) {
             // Handle errors, such as invalid tokens or database issues

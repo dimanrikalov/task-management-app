@@ -1,10 +1,10 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
-import { FindUserDto } from './dtos/find-user.dto';
+import { FindUserDto } from './dtos/findUser.dto';
 import { IUser } from 'src/interfaces/user.interface';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { DeleteUserDto } from './dtos/delete-user.dto';
+import { CreateUserDto } from './dtos/createUser.dto';
+import { DeleteUserDto } from './dtos/deleteUser.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
 

@@ -3,16 +3,25 @@ import io from 'socket.io-client';
 import { useEffect, useState } from 'react'
 
 function App() {
-  const [notification, setNotification] = useState('');
+  const [notifications, setNotifications] = useState<string[]>([]);
 
   useEffect(() => {
-    const socket = io('http://localhost:3002'); // Replace with your server URL
+    const socket = io('http://localhost:3002');
 
     socket.on('workspaceCreated', (payload) => {
-      console.log("Received workspace created event: ");
-      console.log(payload);
-      setNotification(`A new workspace has been created. You have access to it.`);
-      // Handle the notification as needed
+      setNotifications(prev => [...prev, payload.message]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const socket = io('http://localhost:3003');
+
+    socket.on('boardCreated', (payload) => {
+      setNotifications(prev => [...prev, payload.message]);
     });
 
     return () => {
@@ -22,7 +31,9 @@ function App() {
 
   return (
     <div>
-      <p>{notification}</p>
+      {
+        notifications.map((x, i) => <p key={i}>{x}</p>)
+      }
     </div>
   );
 }
