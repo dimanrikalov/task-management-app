@@ -1,32 +1,27 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { User } from '../models/user.model';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { FindUserDto } from './dtos/find-user.dto';
+import { IUser } from 'src/interfaces/user.interface';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { DeleteUserDto } from './dtos/delete-user.dto';
-import { IJWTPayload } from 'src/interfaces/IJWTPayload.interface';
-
+import { PrismaService } from 'src/prisma/prisma.service';
+import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User) private userModel: typeof User) {}
+    constructor(private readonly prismaService: PrismaService) {}
 
-    async findUserByEmail(email: string): Promise<User> {
-        return await this.userModel.findOne({
+    async findUserByEmail(email: string): Promise<IUser> {
+        return await this.prismaService.user.findFirst({
             where: {
                 email,
             },
         });
     }
 
-    async findAll(): Promise<User[]> {
-        return this.userModel.findAll({
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
-        });
+    async findAll(): Promise<IUser[]> {
+        return this.prismaService.user.findMany();
     }
 
     async signUp(body: CreateUserDto): Promise<string> {
@@ -40,15 +35,17 @@ export class UsersService {
             const hashedPassword = await bcrypt.hash(body.password, 10); // You can adjust the saltRounds
 
             const payload = {
-                first_name: body.first_name,
-                last_name: body.last_name,
+                firstName: body.first_name,
+                lastName: body.last_name,
                 email: body.email,
                 password: hashedPassword, // Save the hashed password
-                profile_image_path: 'default_image_path',
+                profileImagePath: 'default_image_path',
             };
 
             // You can use the createUser method to create a new user in the database
-            const user = await this.userModel.create(payload);
+            const user = await this.prismaService.user.create({
+                data: payload,
+            });
 
             const tokenData: IJWTPayload = {
                 id: user.id,
@@ -66,11 +63,7 @@ export class UsersService {
 
     async signIn(body: FindUserDto): Promise<string> {
         try {
-            const user = await this.userModel.findOne({
-                where: {
-                    email: body.email,
-                },
-            });
+            const user = await this.findUserByEmail(body.email);
 
             if (!user) {
                 throw new Error('Wrong email or password!');
@@ -87,8 +80,8 @@ export class UsersService {
             const tokenData: IJWTPayload = {
                 id: user.id,
                 email: user.email,
-                first_name: user.first_name,
-                last_name: user.last_name,
+                first_name: user.firstName,
+                last_name: user.lastName,
             };
 
             return jwt.sign(tokenData, process.env.JWT_SECRET);

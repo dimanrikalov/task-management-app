@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { Workspace } from '../models/workspace.model';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { WorkspacesGateway } from './workspaces.gateway';
 import { WorkspacesService } from './workspaces.service';
-import { User_Workspace } from 'src/models/user_workspace';
 import { WorkspacesController } from './workspaces.controller';
 
 @Module({
-    imports: [SequelizeModule.forFeature([Workspace, User_Workspace])],
+    imports: [PrismaModule],
     controllers: [WorkspacesController],
     providers: [WorkspacesService, WorkspacesGateway],
 })

@@ -1,23 +1,20 @@
 import * as jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Workspace } from '../models/workspace.model';
 import { WorkspacesGateway } from './workspaces.gateway';
-import { User_Workspace } from 'src/models/user_workspace';
-import { IJWTPayload } from 'src/interfaces/IJWTPayload.interface';
-import { ICreateWorkspace } from 'src/interfaces/ICreateWorkspace.interface';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { IWorkspace } from 'src/interfaces/workspace.interface';
+import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
+import { ICreateWorkspace } from 'src/interfaces/createWorkspace.interface';
 
 @Injectable()
 export class WorkspacesService {
     constructor(
-        @InjectModel(Workspace) private workspaceModel: typeof Workspace,
-        @InjectModel(User_Workspace)
-        private userWorkspaceModel: typeof User_Workspace,
+        private readonly prismaService: PrismaService,
         private readonly workspacesGateway: WorkspacesGateway,
     ) {}
 
-    async getAll(): Promise<Workspace[]> {
-        return await this.workspaceModel.findAll();
+    async getAll(): Promise<IWorkspace[]> {
+        return await this.prismaService.workspace.findMany();
     }
 
     async create(body: ICreateWorkspace) {
@@ -29,35 +26,40 @@ export class WorkspacesService {
                 body.authorization_token,
             ) as IJWTPayload;
 
-            const isWorkspaceNameTaken = await this.workspaceModel.findOne({
-                where: {
-                    name: body.name,
-                },
-            });
+            const isWorkspaceNameTaken =
+                await this.prismaService.workspace.findFirst({
+                    where: {
+                        name: body.name,
+                    },
+                });
 
             if (isWorkspaceNameTaken) {
                 throw new Error('Workspace name is taken!');
             }
 
             // Create a new workspace with the owner's ID from the token
-            const workspace = await this.workspaceModel.create({
-                name: body.name,
-                owner_id: decodedToken.id,
+            const workspace = await this.prismaService.workspace.create({
+                data: {
+                    name: body.name,
+                    ownerId: decodedToken.id,
+                },
             });
 
             //add all users different from the workspace creator to the User_Workspace relation table
             const colleagueCreationPromises = body.colleagues.map(
                 async (colleagueId) => {
-                    await this.userWorkspaceModel.create({
-                        user_id: colleagueId,
-                        workspace_id: workspace.id,
+                    await this.prismaService.user_Workspace.create({
+                        data: {
+                            userId: colleagueId,
+                            workspaceId: workspace.id,
+                        },
                     });
                 },
             );
 
             await Promise.all(colleagueCreationPromises);
             console.log('Emitting an event...');
-            //trigger a socket event that will inform every user about the existance of new workspace they are added to
+            //trigger a socket event that will inform every added colleague about the existence of new workspace
             this.workspacesGateway.handleWorkspaceCreated({
                 colleagues: body.colleagues,
                 event: 'a new workspace created',

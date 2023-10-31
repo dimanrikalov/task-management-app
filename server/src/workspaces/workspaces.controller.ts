@@ -1,14 +1,14 @@
-import { Workspace } from '../models/workspace.model';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dtos/create-workspace.dto';
 import { Body, Get, Post, Controller, Headers } from '@nestjs/common';
+import { IWorkspace } from 'src/interfaces/workspace.interface';
 
 @Controller('workspaces')
 export class WorkspacesController {
     constructor(private readonly workspacesService: WorkspacesService) {}
 
     @Get()
-    async getAllWorkspaces(): Promise<Workspace[]> {
+    async getAllWorkspaces(): Promise<IWorkspace[]> {
         return this.workspacesService.getAll();
     }
 
