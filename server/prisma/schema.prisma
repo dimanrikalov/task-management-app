@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Board {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(128)
+  ownerId     Int          @map("owner_id")
+  workspaceId Int?         @map("workspace_id")
+  User        User         @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Workspace   Workspace?   @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Column      Column[]
+  Message     Message[]
+  User_Board  User_Board[]
+}
+
+model Column {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(128)
+  position  Int
+  boardId   Int    @map("board_id")
+  creatorId Int    @map("creator_id")
+  Board     Board  @relation(fields: [boardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User      User   @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Message {
+  id        Int       @id @default(autoincrement())
+  content   String    @db.VarChar(512)
+  writtenBy Int       @map("written_by")
+  boardId   Int       @map("board_id")
+  timestamp DateTime? @default(now()) @db.Timestamptz(6)
+  Board     Board     @relation(fields: [boardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User      User      @relation(fields: [writtenBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Step {
+  id          Int    @id @default(autoincrement())
+  taskId      Int    @map("task_id")
+  description String @db.VarChar(128)
+  Task        Task   @relation(fields: [taskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Task {
+  id                Int     @id @default(autoincrement())
+  title             String  @db.VarChar(128)
+  description       String? @db.VarChar(256)
+  attachmentImgPath String? @map("attachment_img_path")
+  estimatedHours    Float?  @map("estimated_hours") @db.Real
+  estimatedMinutes  Int?    @map("estimated_minutes")
+  hoursSpent        Float?  @map("hours_spent") @db.Real
+  minutesSpent      Int?    @map("minutes_spent")
+  effort            Int?
+  priority          Int?
+  progress          Int?
+  creatorId         Int     @map("creator_id")
+  Step              Step[]
+  User              User    @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model User {
+  id               Int              @id @default(autoincrement())
+  firstName        String           @map("first_name") @db.VarChar(128)
+  lastName         String           @map("last_name") @db.VarChar(128)
+  email            String           @db.VarChar(128)
+  password         String           @db.VarChar(60)
+  profileImagePath String           @map("profile_image_path")
+  Board            Board[]
+  Column           Column[]
+  Message          Message[]
+  Task             Task[]
+  User_Board       User_Board[]
+  User_Workspace   User_Workspace[]
+  Workspace        Workspace[]
+}
+
+model User_Board {
+  userId  Int   @map("user_id")
+  boardId Int   @map("board_id")
+  Board   Board @relation(fields: [boardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User    User  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([userId, boardId])
+}
+
+model User_Workspace {
+  userId      Int       @map("user_id")
+  workspaceId Int       @map("workspace_id")
+  User        User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([userId, workspaceId])
+}
+
+model Workspace {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(128)
+  ownerId        Int              @map("owner_id")
+  Board          Board[]
+  User_Workspace User_Workspace[]
+  User           User             @relation(fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
