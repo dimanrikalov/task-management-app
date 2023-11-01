@@ -12,6 +12,10 @@ function App() {
       setNotifications(prev => [...prev, payload.message]);
     });
 
+    socket.on('userAddedToWorkspace', (payload) => {
+      setNotifications(prev => [...prev, payload.message]);
+    });
+
     return () => {
       socket.disconnect();
     };

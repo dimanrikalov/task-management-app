@@ -17,4 +17,11 @@ export class WorkspacesGateway {
         // You can broadcast the event to all connected clients or specific users
         this.server.emit('workspaceCreated', payload);
     }
+
+    @SubscribeMessage('userAddedToWorkspace')
+    handleUserAddedToWorkspace(@MessageBody() payload: any) {
+        // Handle the 'userAddedToWorkspace' event
+        // You can broadcast the event to all connected clients or specific users
+        this.server.emit('userAddedToWorkspace', payload);
+    }
 }
