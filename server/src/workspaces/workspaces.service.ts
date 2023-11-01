@@ -65,10 +65,10 @@ export class WorkspacesService {
             await Promise.all(colleagueCreationPromises);
 
             console.log('Emitting an event...');
-            //trigger a socket event that will inform every added colleague about the existence of new workspace
+            //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
             this.workspacesGateway.handleWorkspaceCreated({
-                colleagues: body.colleagues,
-                message: 'a new workspace was created',
+                affectedUserIds: body.colleagues,
+                message: 'New workspace created.',
             });
         } catch (err) {
             // Handle errors, such as invalid tokens or database issues
@@ -113,7 +113,7 @@ export class WorkspacesService {
             }
 
             //check the array of added users if any user is already added
-            const filteredColleagues = await Promise.all(
+            const filteredColleagueIds = await Promise.all(
                 body.colleagues.map(async (colleagueId) => {
                     const isUserAlreadyInWorkspace =
                         await this.prismaService.user_Workspace.findFirst({
@@ -130,7 +130,7 @@ export class WorkspacesService {
             );
 
             await Promise.all(
-                filteredColleagues.map(async (colleagueId) => {
+                filteredColleagueIds.map(async (colleagueId) => {
                     await this.prismaService.user_Workspace.create({
                         data: {
                             userId: colleagueId,
@@ -140,9 +140,10 @@ export class WorkspacesService {
                 }),
             );
 
-            //emit event to all added users to refresh their workspaces list
+            //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
             this.workspacesGateway.handleUserAddedToWorkspace({
-                //payload
+                affectedUserIds: 'You were added to a workspace.',
+                userIds: filteredColleagueIds,
             });
         } catch (err: any) {
             console.log(err.message);
