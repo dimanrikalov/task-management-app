@@ -27,6 +27,7 @@ model Column {
   creatorId Int    @map("creator_id")
   Board     Board  @relation(fields: [boardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   User      User   @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Task      Task[]
 }
 
 model Message {
@@ -60,7 +61,9 @@ model Task {
   priority          Int?
   progress          Int?
   creatorId         Int     @map("creator_id")
+  columnId         Int     @map("column_id")
   Step              Step[]
+  Column            Column  @relation(fields: [columnId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   User              User    @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
