@@ -2,7 +2,7 @@ import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { IWorkspace } from 'src/interfaces/workspace.interface';
 import { Body, Get, Post, Controller, Headers } from '@nestjs/common';
-import { AddWorkspaceColleaguesDto } from './dtos/addWorkspaceColleagues.dto';
+import { AddWorkspaceColleaguesDto } from './dtos/addWorkspaceColleague.dto';
 
 @Controller('workspaces')
 export class WorkspacesController {

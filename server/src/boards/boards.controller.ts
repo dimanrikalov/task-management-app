@@ -1,6 +1,6 @@
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dtos/createBoard.dto';
-import { AddBoardColleaguesDto } from './dtos/addBoardColleagues.dto';
+import { AddBoardColleaguesDto } from './dtos/addBoardColleague.dto';
 import { Body, Headers, Get, Controller, Post } from '@nestjs/common';
 
 @Controller('boards')

@@ -6,7 +6,7 @@ import { extractJWTData } from 'src/utils/extractJWTData';
 import { isValidJWTToken } from 'src/utils/isValidJWTToken';
 import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
 import { ICreateBoard } from 'src/interfaces/createBoard.interface';
-import { IAddBoardColleagues } from 'src/interfaces/addBoardColleagues.interface';
+import { IAddBoardColleague } from 'src/interfaces/addBoardColleague.interface';
 
 @Injectable()
 export class BoardsService {
@@ -146,7 +146,7 @@ export class BoardsService {
         }
     }
 
-    async addColleagues(body: IAddBoardColleagues) {
+    async addColleague(body: IAddBoardColleague) {
         try {
             // Verify the JWT token is valid
             if (!isValidJWTToken(body.authorizationToken)) {
@@ -232,38 +232,23 @@ export class BoardsService {
                 }
             }
 
-            // Check if any of the users to be added are already part of the board and filter them out
-            const filteredColleagueIds = await Promise.all(
-                body.colleagues.map(async (colleagueId) => {
-                    const isUserAlreadyInBoard =
-                        await this.prismaService.user_Board.findFirst({
-                            where: {
-                                userId: colleagueId,
-                                boardId: board.id,
-                            },
-                        });
+            // Check if the user to be added is already part of the board
+            const userIsAlreadyAdded =
+                await this.prismaService.user_Board.findFirst({
+                    where: {
+                        userId: body.colleagueId,
+                        boardId: board.id,
+                    },
+                });
 
-                    if (!isUserAlreadyInBoard) {
-                        return colleagueId;
-                    }
-                }),
-            );
-
-            await Promise.all(
-                filteredColleagueIds.map(async (colleagueId) => {
-                    await this.prismaService.user_Board.create({
-                        data: {
-                            userId: colleagueId,
-                            boardId: board.id,
-                        },
-                    });
-                }),
-            );
+            if (userIsAlreadyAdded) {
+                throw new Error('User is already added to the board.');
+            }
 
             //trigger a socket event
             this.boardsGateway.handleUserAddedToBoard({
                 message: 'You have been added to a board.',
-                affectedUserIds: filteredColleagueIds,
+                affectedUserId: body.colleagueId,
             });
         } catch (err: any) {
             console.log(err.message);

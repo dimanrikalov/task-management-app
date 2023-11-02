@@ -6,7 +6,7 @@ import { isValidJWTToken } from 'src/utils/isValidJWTToken';
 import { IWorkspace } from 'src/interfaces/workspace.interface';
 import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
 import { ICreateWorkspace } from 'src/interfaces/createWorkspace.interface';
-import { IAddWorkspaceColleagues } from 'src/interfaces/addWorkspaceColleagues.interface';
+import { IAddWorkspaceColleague } from 'src/interfaces/addWorkspaceColleague.interface';
 
 @Injectable()
 export class WorkspacesService {
@@ -77,7 +77,7 @@ export class WorkspacesService {
         }
     }
 
-    async addColleagues(body: IAddWorkspaceColleagues) {
+    async addColleague(body: IAddWorkspaceColleague) {
         try {
             //Verify the JWT token is valid
             if (!isValidJWTToken(body.authorizationToken)) {
@@ -117,38 +117,29 @@ export class WorkspacesService {
                 throw new Error('You do not have access to this workspace!');
             }
 
-            //check the array of added users if any user is already added
-            const filteredColleagueIds = await Promise.all(
-                body.colleagues.map(async (colleagueId) => {
-                    const isUserAlreadyInWorkspace =
-                        await this.prismaService.user_Workspace.findFirst({
-                            where: {
-                                userId: colleagueId,
-                                workspaceId: body.workspaceId,
-                            },
-                        });
+            const userIsAlreadyAdded =
+                await this.prismaService.user_Workspace.findFirst({
+                    where: {
+                        userId: body.colleagueId,
+                        workspaceId: body.workspaceId,
+                    },
+                });
 
-                    if (!isUserAlreadyInWorkspace) {
-                        return colleagueId;
-                    }
-                }),
-            );
+            if (userIsAlreadyAdded) {
+                throw new Error('User is already added to workspace!');
+            }
 
-            await Promise.all(
-                filteredColleagueIds.map(async (colleagueId) => {
-                    await this.prismaService.user_Workspace.create({
-                        data: {
-                            userId: colleagueId,
-                            workspaceId: body.workspaceId,
-                        },
-                    });
-                }),
-            );
+            await this.prismaService.user_Workspace.create({
+                data: {
+                    userId: body.colleagueId,
+                    workspaceId: body.workspaceId,
+                },
+            });
 
             //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
             this.workspacesGateway.handleUserAddedToWorkspace({
                 message: 'You were added to a workspace.',
-                affectedUserIds: filteredColleagueIds,
+                affectedUserId: body.colleagueId,
             });
         } catch (err: any) {
             console.log(err.message);
