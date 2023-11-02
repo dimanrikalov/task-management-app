@@ -41,10 +41,10 @@ export class BoardsService {
                 const isBoardNameTaken =
                     await this.prismaService.board.findFirst({
                         where: {
-                            AND: {
-                                name: body.name,
-                                workspaceId: workspace.id,
-                            },
+                            AND: [
+                                { name: body.name },
+                                { workspaceId: workspace.id },
+                            ],
                         },
                     });
 
@@ -70,6 +70,30 @@ export class BoardsService {
                     },
                 });
             }
+
+            //create the default board tables
+            await this.prismaService.column.createMany({
+                data: [
+                    {
+                        name: 'To Do',
+                        position: 0,
+                        boardId: board.id,
+                        creatorId: userData.id,
+                    },
+                    {
+                        name: 'Doing',
+                        position: 1,
+                        boardId: board.id,
+                        creatorId: userData.id,
+                    },
+                    {
+                        name: 'Done',
+                        position: 2,
+                        boardId: board.id,
+                        creatorId: userData.id,
+                    },
+                ],
+            });
 
             //add collageues to board
             if (body.colleagues.length > 0) {
