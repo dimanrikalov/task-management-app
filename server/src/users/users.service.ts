@@ -86,6 +86,7 @@ export class UsersService {
 
             return jwt.sign(tokenData, process.env.JWT_SECRET);
         } catch (err: any) {
+            console.log(err.message);
             return err.message;
         }
     }

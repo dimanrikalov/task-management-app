@@ -5,8 +5,8 @@ import { extractJWTData } from 'src/utils/extractJWTData';
 import { isValidJWTToken } from 'src/utils/isValidJWTToken';
 import { IWorkspace } from 'src/interfaces/workspace.interface';
 import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
-import { IAddColleagues } from 'src/interfaces/addColleagues.interface';
 import { ICreateWorkspace } from 'src/interfaces/createWorkspace.interface';
+import { IAddWorkspaceColleagues } from 'src/interfaces/addWorkspaceColleagues.interface';
 
 @Injectable()
 export class WorkspacesService {
@@ -73,10 +73,11 @@ export class WorkspacesService {
         } catch (err) {
             // Handle errors, such as invalid tokens or database issues
             console.error(err.message);
+            return err.message;
         }
     }
 
-    async addColleagues(body: IAddColleagues) {
+    async addColleagues(body: IAddWorkspaceColleagues) {
         try {
             //Verify the JWT token is valid
             if (!isValidJWTToken(body.authorizationToken)) {
@@ -108,7 +109,11 @@ export class WorkspacesService {
                     },
                 });
 
-            if (!userHasAccessToWorkspace) {
+            //if user is neither the creator, nor does he have access to the board
+            if (
+                !userHasAccessToWorkspace &&
+                workspace.ownerId !== decodedToken.id
+            ) {
                 throw new Error('You do not have access to this workspace!');
             }
 
@@ -142,11 +147,12 @@ export class WorkspacesService {
 
             //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
             this.workspacesGateway.handleUserAddedToWorkspace({
-                affectedUserIds: 'You were added to a workspace.',
-                userIds: filteredColleagueIds,
+                message: 'You were added to a workspace.',
+                affectedUserIds: filteredColleagueIds,
             });
         } catch (err: any) {
             console.log(err.message);
+            return err.message;
         }
     }
 }

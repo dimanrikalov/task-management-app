@@ -83,6 +83,7 @@ export class ColumnsService {
             });
         } catch (err: any) {
             console.log(err.message);
+            return err.message;
         }
     }
 }

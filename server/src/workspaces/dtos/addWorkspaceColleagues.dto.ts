@@ -1,11 +1,11 @@
-import { IsNumber, MinLength } from 'class-validator';
+import { ArrayNotEmpty, IsNumber } from 'class-validator';
 import { IsArrayOfNumbers } from 'src/validators/IsArrayOfNumbers';
 
-export class addColleaguesDto {
+export class AddWorkspaceColleaguesDto {
     @IsNumber()
     workspaceId: number;
 
-    @MinLength(1)
+    @ArrayNotEmpty()
     @IsArrayOfNumbers()
     colleagues: number[];
 }

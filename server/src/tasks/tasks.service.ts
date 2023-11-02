@@ -95,6 +95,7 @@ export class TasksService {
             });
         } catch (err: any) {
             console.log(err.message);
+            return err.message;
         }
     }
 }
