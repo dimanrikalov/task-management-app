@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { BoardsModule } from './boards/boards.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { ColumnsModule } from './columns/columns.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
     imports: [
@@ -14,6 +16,8 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
         PrismaModule,
         WorkspacesModule,
         ConfigModule.forRoot(),
+        ColumnsModule,
+        TasksModule,
     ],
     controllers: [AppController],
     providers: [AppService],
