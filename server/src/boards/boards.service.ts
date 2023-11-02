@@ -88,8 +88,8 @@ export class BoardsService {
 
             //emit an event for created board
             this.boardsGateway.handleBoardCreated({
-                colleagues: body.colleagues,
-                message: 'a new board was created.',
+                affectedUserIds: body.colleagues,
+                message: 'New board was created.',
             });
         } catch (err: any) {
             console.error(err.message);
