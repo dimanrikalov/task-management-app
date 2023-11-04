@@ -9,6 +9,6 @@ export class TasksController {
     @Post()
     async create(@Headers() headers, @Body() body: CreateTaskDto) {
         const authorizationToken = headers.authorization;
-        return this.tasksService.create({ ...body, authorizationToken });
+        // return this.tasksService.create({ ...body, authorizationToken });
     }
 }

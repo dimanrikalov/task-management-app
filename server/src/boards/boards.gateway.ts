@@ -17,4 +17,11 @@ export class BoardsGateway {
         // You can broadcast the event to all connected clients or specific users
         this.server.emit('boardCreated', payload);
     }
+
+    @SubscribeMessage('userAddedToBoard')
+    handleUserAddedToBoard(@MessageBody() payload: any) {
+        // Handle the 'userAddedToBoard' event
+        // You can broadcast the event to all connected clients or specific users
+        this.server.emit('userAddedToBoard', payload);
+    }
 }

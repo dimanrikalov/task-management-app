@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { WorkspacesGateway } from './workspaces.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
+import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
-import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 
 @Injectable()
 export class WorkspacesService {
@@ -18,8 +18,8 @@ export class WorkspacesService {
     }
 
     async create(body: CreateWorkspaceDto): Promise<void> {
-        // A user can have only one My Workspace
-        if (body.name === 'My Workspace') {
+        // A user can have only one Personal Workspace
+        if (body.name === 'Personal Workspace') {
             throw new Error('There can only be one workspace with this name!');
         }
 
@@ -34,7 +34,7 @@ export class WorkspacesService {
         // Handle the case where no colleagues array is passed
         body.colleagues = body.colleagues || [];
 
-        //if the creator somehow decides to add themselves as colleague we need to remove them from the array
+        //if the creator somehow decides to add themself as colleague we need to remove them from the array
         if (body.colleagues.includes(body.userData.id)) {
             body.colleagues.filter(
                 (colleagueId) => colleagueId !== body.userData.id,
@@ -64,7 +64,7 @@ export class WorkspacesService {
     }
 
     async delete(body: DeleteWorkspaceDto) {
-        //check if the workspace exists
+        //check if the workspace exists and is not 'Personal Workspace'
         const workspace = await this.prismaService.workspace.findFirst({
             where: {
                 id: body.workspaceId,
@@ -72,6 +72,10 @@ export class WorkspacesService {
         });
         if (!workspace) {
             throw new Error('Invalid workspace ID!');
+        }
+
+        if (workspace.name === 'Personal Workspace') {
+            throw new Error('You cannot delete this workspace!');
         }
 
         //check if user is the workspace owner
@@ -84,7 +88,7 @@ export class WorkspacesService {
     }
 
     async addColleague(body: EditWorkspaceColleagueDto) {
-        //check if the workspace exists
+        //check if the workspace exists and is not 'Personal Workspace'
         const workspace = await this.prismaService.workspace.findFirst({
             where: {
                 id: body.workspaceId,
@@ -92,6 +96,11 @@ export class WorkspacesService {
         });
         if (!workspace) {
             throw new Error('Invalid workspace ID!');
+        }
+        if (workspace.name === 'Personal Workspace') {
+            throw new Error(
+                'This workspace is not meant to have colleagues inside!',
+            );
         }
 
         //check if the id of the user belongs to the workspace they are adding user to
@@ -175,7 +184,7 @@ export class WorkspacesService {
             throw new Error('You do not have access to this workspace!');
         }
 
-        // check if the colleague to remove is the workspace owner themselves
+        // check if the colleague to remove is the workspace owner themself
         const colleagueIsWorkspaceOwner =
             body.colleagueId === workspace.ownerId;
         if (colleagueIsWorkspaceOwner) {

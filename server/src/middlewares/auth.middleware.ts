@@ -1,8 +1,8 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
 import { IJWTPayload } from 'src/jwt/jwt.interfaces';
 import { extractJWTData } from 'src/jwt/extractJWTData';
-import { isValidJWTToken } from 'src/jwt/isValidJWTToken';
+import { Request, Response, NextFunction } from 'express';
+import { validateJWTToken } from 'src/jwt/validateJWTToken';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -18,7 +18,7 @@ export class AuthMiddleware implements NestMiddleware {
         try {
             // Verify the JWT token is valid
             //if invalid use refresh token to get a new access token
-            if (!isValidJWTToken(authorizationToken)) {
+            if (!validateJWTToken(authorizationToken)) {
                 throw new Error('Invalid JWT token.');
             }
 
@@ -28,7 +28,7 @@ export class AuthMiddleware implements NestMiddleware {
 
             console.log('decodedToken: ', decodedToken);
             console.log('req.body:', req.body);
-            
+
             //add the decodedUserData to the body
             req.body.userData = decodedToken;
             next();

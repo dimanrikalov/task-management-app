@@ -1,10 +1,10 @@
 import { Response } from 'express';
 import { WorkspacesService } from './workspaces.service';
+import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
-import { Body, Get, Post, Put, Delete, Controller, Res } from '@nestjs/common';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
-import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
+import { Body, Get, Post, Put, Delete, Controller, Res } from '@nestjs/common';
 
 @Controller('workspaces')
 export class WorkspacesController {

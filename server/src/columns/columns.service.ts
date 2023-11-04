@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ColumnsGateway } from './columns.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { extractJWTData } from 'src/jwt/extractJWTData';
-import { isValidJWTToken } from 'src/jwt/isValidJWTToken';
+import { validateJWTToken } from 'src/jwt/validateJWTToken';
 import { IJWTPayload } from 'src/jwt/jwt.interfaces';
 import { ICreateColumn } from 'src/columns/columns.interfaces';
 
@@ -16,7 +16,7 @@ export class ColumnsService {
     async create(body: ICreateColumn) {
         try {
             // Verify the JWT token is valid
-            if (!isValidJWTToken(body.authorizationToken)) {
+            if (!validateJWTToken(body.authorizationToken)) {
                 throw new Error('Invalid JWT token.');
             }
 
@@ -69,7 +69,6 @@ export class ColumnsService {
             await this.prismaService.column.create({
                 data: {
                     name: body.name,
-                    creatorId: 1,
                     boardId: body.boardId,
                     position: allColumns[0].position + 1,
                 },
@@ -83,6 +82,7 @@ export class ColumnsService {
             });
         } catch (err: any) {
             console.log(err.message);
+            return err.message;
         }
     }
 }

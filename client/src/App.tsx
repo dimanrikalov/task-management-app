@@ -3,8 +3,8 @@ import io from 'socket.io-client';
 import { useEffect, useState } from 'react'
 
 interface IPayload {
-  affectedUserIds: number[];
   message: string;
+  affectedUserId: number;
 }
 
 function App() {
@@ -18,14 +18,14 @@ function App() {
     socket.on('workspaceCreated', (payload: IPayload) => {
       console.log(payload);
       //if jwtToken.id from the localStorage == any of the users inside the payload trigger a getWorkspaces request
-      if(payload.affectedUserIds.includes(userId)) {
+      if(payload.affectedUserId === userId) {
         setNotifications(prev => [...prev, payload.message]);
       }
     });
 
     socket.on('userAddedToWorkspace', (payload: IPayload) => {
       //if jwtToken.id from the localStorage === any of the users inside the payload trigger a getWorkspaces request
-      if(payload.affectedUserIds.includes(userId)) {
+      if(payload.affectedUserId === userId) {
         setNotifications(prev => [...prev, payload.message]);
       }
     });
@@ -40,7 +40,7 @@ function App() {
 
     socket.on('boardCreated', (payload: IPayload) => {
       //if jwtToken.id from the localStorage === any of the users inside the payload trigger a getBoards request
-      if(payload.affectedUserIds.includes(userId)) {
+      if(payload.affectedUserId === userId) {
         setNotifications(prev => [...prev, payload.message]);
       }
     });

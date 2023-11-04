@@ -49,10 +49,10 @@ export class UsersService {
             data: userData,
         });
 
-        // Create default "My Workspace"
+        // Create default 'Personal Workspace'
         await this.prismaService.workspace.create({
             data: {
-                name: 'My Workspace',
+                name: 'Personal Workspace',
                 ownerId: user.id,
             },
         });

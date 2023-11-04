@@ -1,30 +1,59 @@
+import { Response } from 'express';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dtos/createBoard.dto';
-import { IAddColleagues } from './dtos/addBoardColleague.dto';
-import { Body, Headers, Get, Controller, Post } from '@nestjs/common';
+import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
+import { Body, Put, Controller, Post, Res, Delete } from '@nestjs/common';
 
 @Controller('boards')
 export class BoardsController {
     constructor(private readonly boardsService: BoardsService) {}
 
+    //apply the workspaceAuth.middleware to this endpoint
     @Post()
-    async createBoard(@Headers() headers, @Body() body: CreateBoardDto) {
-        const authorizationToken = headers.authorization;
-        return this.boardsService.create({ ...body, authorizationToken });
+    async createBoard(@Res() res: Response, @Body() body: CreateBoardDto) {
+        try {
+            return this.boardsService.create(body);
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
     }
 
-    @Post('/colleagues')
-    async addColleagues(
-        @Headers() headers,
-        @Body() body: IAddColleagues,
+    //do NOT apply the workspaceAuth.middleware to this endpoint, but apply boardAuth.middleware
+    @Put('colleagues/add')
+    async addColleague(
+        @Res() res: Response,
+        @Body() body: EditBoardColleagueDto,
     ) {
-        const authorizationToken = headers.authorization;
-        // return this.boardsService.addColleague({
-        //     ...body,
-        //     authorizationToken,
-        // });
+        try {
+            return this.boardsService.addColleague(body);
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
     }
 
-    @Get()
-    async getAllBoards() {}
+    @Put('colleagues/remove')
+    async removeColleague(
+        @Res() res: Response,
+        @Body() body: EditBoardColleagueDto,
+    ) {
+        try {
+            return this.boardsService.removeColleague(body);
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
+    @Delete()
+    async deleteBoard(@Res() res: Response, @Body() body) {
+        //To Do
+    }
 }
