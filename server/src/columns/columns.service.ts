@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ColumnsGateway } from './columns.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { extractJWTData } from 'src/utils/extractJWTData';
-import { isValidJWTToken } from 'src/utils/isValidJWTToken';
-import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
-import { ICreateColumn } from 'src/interfaces/createColumn.interface';
+import { extractJWTData } from 'src/jwt/extractJWTData';
+import { isValidJWTToken } from 'src/jwt/isValidJWTToken';
+import { IJWTPayload } from 'src/jwt/jwt.interfaces';
+import { ICreateColumn } from 'src/columns/columns.interfaces';
 
 @Injectable()
 export class ColumnsService {

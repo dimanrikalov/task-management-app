@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { TasksGateway } from './tasks.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { extractJWTData } from 'src/utils/extractJWTData';
-import { isValidJWTToken } from 'src/utils/isValidJWTToken';
-import { IJWTPayload } from 'src/interfaces/JWTPayload.interface';
-import { ICreateTask } from 'src/interfaces/createTask.interface';
+import { extractJWTData } from 'src/jwt/extractJWTData';
+import { isValidJWTToken } from 'src/jwt/isValidJWTToken';
+import { IJWTPayload } from 'src/jwt/jwt.interfaces';
+import { ICreateTask } from 'src/tasks/tasks.interfaces';
 
 @Injectable()
 export class TasksService {
