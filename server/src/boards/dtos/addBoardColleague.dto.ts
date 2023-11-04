@@ -1,9 +1,5 @@
-import { IsNumber } from 'class-validator';
+import { EditWorkspaceColleagueDto } from "src/workspaces/dtos/editWorkspaceColleague.dto";
 
-export class AddBoardColleagueDto {
-    @IsNumber()
-    boardId: number;
-
-    @IsNumber()
-    colleagueId: number;
+export interface IAddColleagues extends EditWorkspaceColleagueDto {
+    authorizationToken: string;
 }
