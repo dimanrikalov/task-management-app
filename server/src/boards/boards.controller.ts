@@ -8,7 +8,7 @@ import { Body, Put, Controller, Post, Res, Delete } from '@nestjs/common';
 export class BoardsController {
     constructor(private readonly boardsService: BoardsService) {}
 
-    //apply the workspaceAuth.middleware to this endpoint
+    //apply ONLY the workspaceAuth.middleware to this endpoint
     @Post()
     async createBoard(@Res() res: Response, @Body() body: CreateBoardDto) {
         try {
@@ -21,7 +21,7 @@ export class BoardsController {
         }
     }
 
-    //do NOT apply the workspaceAuth.middleware to this endpoint, but apply boardAuth.middleware
+    //apply ONLY the boardAuth.middleware to this endpoint
     @Put('colleagues/add')
     async addColleague(
         @Res() res: Response,

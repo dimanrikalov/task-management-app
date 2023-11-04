@@ -4,7 +4,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 
 //need to somehow extend Request and add userData to the body
 @Injectable()
-export class WorkspaceAuth implements NestMiddleware {
+export class WorkspaceAuthMiddleware implements NestMiddleware {
     constructor(private readonly prismaService: PrismaService) {}
 
     async use(req: Request, res: Response, next: NextFunction) {

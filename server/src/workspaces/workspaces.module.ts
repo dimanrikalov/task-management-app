@@ -12,6 +12,6 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 })
 export class WorkspacesModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('workspaces');
+        consumer.apply(AuthMiddleware).forRoutes('workspaces/*');
     }
 }
