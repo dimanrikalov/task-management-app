@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { IUser } from './users.interfaces';
 import { Injectable } from '@nestjs/common';
+import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { DeleteUserDto } from './dtos/deleteUser.dto';
@@ -84,11 +85,30 @@ export class UsersService {
         return generateJWTTokens(payload);
     }
 
-    refreshToken(refreshToken: string): { accessToken: string } {
+    async update(body: EditUserDto): Promise<void> {
+        const hashedPassword = body.password
+            ? await bcrypt.hash(body.password, process.env.SALT_ROUNDS)
+            : undefined;
+
+        const data = {
+            ...(body.firstName && { firstName: body.firstName }),
+            ...(body.lastName && { lastName: body.lastName }),
+            ...(hashedPassword && { password: hashedPassword }),
+        };
+
+        await this.prismaService.user.update({
+            where: {
+                id: body.userData.id,
+            },
+            data,
+        });
+    }
+
+    refreshToken(refreshToken: string): string {
         return refreshJWTToken(refreshToken);
     }
 
     async delete(tokenBody: DeleteUserDto) {
-        // to do
+        // To Do
     }
 }

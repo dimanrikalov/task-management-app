@@ -11,5 +11,5 @@ export const refreshJWTToken = (refreshToken: string) => {
         Number(process.env.ACCESS_TOKEN_EXPIRES_IN);
     const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
 
-    return { accessToken };
+    return accessToken;
 };

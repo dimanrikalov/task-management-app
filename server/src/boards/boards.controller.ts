@@ -1,8 +1,8 @@
 import { Response } from 'express';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dtos/createBoard.dto';
+import { Body, Controller, Post, Res, Delete } from '@nestjs/common';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
-import { Body, Put, Controller, Post, Res, Delete } from '@nestjs/common';
 
 @Controller('boards')
 export class BoardsController {
@@ -21,8 +21,13 @@ export class BoardsController {
         }
     }
 
+    @Delete()
+    async deleteBoard(@Res() res: Response, @Body() body) {
+        //To Do
+    }
+
     //apply ONLY the boardAuth.middleware to this endpoint
-    @Put('colleagues/add')
+    @Post('/colleagues')
     async addColleague(
         @Res() res: Response,
         @Body() body: EditBoardColleagueDto,
@@ -37,7 +42,7 @@ export class BoardsController {
         }
     }
 
-    @Put('colleagues/remove')
+    @Delete('/colleagues')
     async removeColleague(
         @Res() res: Response,
         @Body() body: EditBoardColleagueDto,
@@ -50,10 +55,5 @@ export class BoardsController {
                 errorMessage: err.message,
             });
         }
-    }
-
-    @Delete()
-    async deleteBoard(@Res() res: Response, @Body() body) {
-        //To Do
     }
 }

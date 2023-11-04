@@ -1,9 +1,19 @@
+import {
+    Get,
+    Put,
+    Req,
+    Res,
+    Post,
+    Body,
+    Delete,
+    Controller,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UsersService } from './users.service';
+import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { DeleteUserDto } from './dtos/deleteUser.dto';
-import { Get, Post, Body, Controller, Res, Req } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
@@ -47,12 +57,26 @@ export class UsersController {
         }
     }
 
+    @Put('/edit')
+    async updateUser(@Res() res: Response, @Body() userBody: EditUserDto) {
+        try {
+            await this.usersService.update(userBody);
+            return res.json({
+                message: 'User credentials updated successfully!',
+            });
+        } catch (err: any) {
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
     @Post('/refresh')
     async refreshUserToken(@Req() req: Request, @Res() res: Response) {
         try {
             const refreshToken = req.cookies['refreshToken'];
-            const response = this.usersService.refreshToken(refreshToken);
-            return res.status(200).json(response);
+            const accessToken = this.usersService.refreshToken(refreshToken);
+            return res.status(200).json({ accessToken });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -61,7 +85,7 @@ export class UsersController {
         }
     }
 
-    @Post('/delete')
+    @Delete('/delete')
     async deleteUser(@Body() tokenBody: DeleteUserDto): Promise<void> {
         return await this.usersService.delete(tokenBody);
     }

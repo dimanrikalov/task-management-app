@@ -3,70 +3,76 @@ import {
     Max,
     IsNumber,
     IsString,
-    MinLength,
     MaxLength,
+    MinLength,
     IsOptional,
 } from 'class-validator';
+import { Task } from '@prisma/client';
 import { BaseTasksDto } from './base.dto';
 import { IsArrayofType } from 'src/validators/IsArrayOfType';
 
-export class CreateTaskDto extends BaseTasksDto {
-    @IsNumber()
-    columnId: number;
+export class EditTaskDto extends BaseTasksDto {
+    taskData: Task;
 
+    @IsOptional()
     @IsNumber()
-    assigneeId: number;
+    columnId?: number;
 
+    @IsOptional()
+    @IsNumber()
+    assigneeId?: number;
+
+    @IsOptional()
     @IsString()
     @MinLength(2)
     @MaxLength(128)
-    title: string;
+    title?: string;
 
     @IsOptional()
     @IsString()
     @MaxLength(1024) // not sure what is the maximum length of a string that can be saved in a text
-    description: string;
+    description?: string;
 
     @IsOptional()
     @IsString()
     @MaxLength(1024)
-    attachmentImgPath: string;
+    attachmentImgPath?: string;
 
     @IsOptional()
     @IsNumber()
     @Min(0)
-    estimatedHours: number;
-
-    @IsOptional()
-    @IsNumber()
-    @Min(0)
-    @Max(59)
-    estimatedMinutes: number;
-
-    @IsOptional()
-    @IsNumber()
-    @Min(0)
-    hoursSpent: number;
+    estimatedHours?: number;
 
     @IsOptional()
     @IsNumber()
     @Min(0)
     @Max(59)
-    minutesSpent: number;
+    estimatedMinutes?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    hoursSpent?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    @Max(59)
+    minutesSpent?: number;
 
     @IsOptional()
     @IsNumber()
     @Min(1) // low medium high
     @Max(3)
-    priority: number;
+    priority?: number;
 
     @IsOptional()
     @IsNumber()
     @Min(1)
     @Max(5)
-    effort: number;
+    effort?: number;
 
     @IsOptional()
     @IsArrayofType(String)
-    steps: string[];
+    steps?: string[];
 }

@@ -33,7 +33,7 @@ export class AuthMiddleware implements NestMiddleware {
             req.body.userData = decodedToken;
             next();
         } catch (err: any) {
-            return res.status(401).json({ message: 'Invalid JWT token!' });
+            return res.status(401).json({ errorMessage: err.message });
         }
     }
 }
