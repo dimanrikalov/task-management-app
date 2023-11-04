@@ -18,6 +18,40 @@ export class TaskCheckMiddleware implements NestMiddleware {
                 throw new Error('Invalid task ID');
             }
 
+            if (req.body.assigneeId) {
+                //check if user to assign has access to the board
+                const userIsWorkspaceOwner =
+                    req.body.assigneeId === req.body.workspaceData.ownerId;
+
+                const userHasAccessToWorkspace =
+                    !!(await this.prismaService.user_Workspace.findFirst({
+                        where: {
+                            AND: [
+                                { userId: req.body.assigneeId },
+                                { workspaceId: req.body.boardData.workspaceId },
+                            ],
+                        },
+                    }));
+
+                const userHasAccessToBoard =
+                    !!(await this.prismaService.user_Board.findFirst({
+                        where: {
+                            AND: [
+                                { userId: req.body.assigneeId },
+                                { boardId: req.body.boardData.id },
+                            ],
+                        },
+                    }));
+
+                if (
+                    !userIsWorkspaceOwner &&
+                    !userHasAccessToBoard &&
+                    !userHasAccessToWorkspace
+                ) {
+                    throw new Error('Invalid assigneed id!');
+                }
+            }
+
             req.body.taskData = task;
             next();
         } catch (err: any) {

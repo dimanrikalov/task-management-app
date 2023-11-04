@@ -25,6 +25,7 @@ export class TasksService {
                 throw new Error('Task name is taken!');
             }
 
+          
             // Create task
             await this.prismaService.task.create({
                 data: {
@@ -56,6 +57,8 @@ export class TasksService {
                 throw new Error('Task name is taken!');
             }
         }
+
+        //check if asignee has access to the board
 
         const data = {
             ...(body.title && { firstName: body.title }),
