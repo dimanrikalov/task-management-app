@@ -11,10 +11,10 @@ import {
 
 export class CreateTaskDto {
     @IsNumber()
-    boardId: number;
+    columnId: number;
 
     @IsNumber()
-    columnId: number;
+    assigneeId: number;
 
     @IsString()
     @MinLength(2)

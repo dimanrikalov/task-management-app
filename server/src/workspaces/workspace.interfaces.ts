@@ -3,8 +3,3 @@ export interface IWorkspace {
     name: string;
     ownerId: number;
 }
-
-
-export interface IAddColleagueBody {
-    
-}

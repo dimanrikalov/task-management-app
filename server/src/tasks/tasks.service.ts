@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TasksGateway } from './tasks.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { extractJWTData } from 'src/jwt/extractJWTData';
-import { isValidJWTToken } from 'src/jwt/isValidJWTToken';
+import { validateJWTToken } from 'src/jwt/validateJWTToken';
 import { IJWTPayload } from 'src/jwt/jwt.interfaces';
 import { ICreateTask } from 'src/tasks/tasks.interfaces';
 
@@ -13,89 +13,89 @@ export class TasksService {
         private readonly prismaService: PrismaService,
     ) {}
 
-    async create(body: ICreateTask) {
-        try {
-            // Verify the JWT token is valid
-            if (!isValidJWTToken(body.authorizationToken)) {
-                throw new Error('Invalid JWT token.');
-            }
+    // async create(body: ICreateTask) {
+    //     try {
+    //         // Verify the JWT token is valid
+    //         if (!validateJWTToken(body.authorizationToken)) {
+    //             throw new Error('Invalid JWT token.');
+    //         }
 
-            // Decode the JWT token
-            const decodedToken: IJWTPayload = extractJWTData(
-                body.authorizationToken,
-            );
+    //         // Decode the JWT token
+    //         const decodedToken: IJWTPayload = extractJWTData(
+    //             body.authorizationToken,
+    //         );
 
-            //check if board exists
-            const board = await this.prismaService.board.findFirst({
-                where: {
-                    id: body.boardId,
-                },
-            });
+    //         //check if board exists
+    //         const board = await this.prismaService.board.findFirst({
+    //             where: {
+    //                 id: body.boardId,
+    //             },
+    //         });
 
-            if (!board) {
-                throw new Error('Board does not exist!');
-            }
+    //         if (!board) {
+    //             throw new Error('Board does not exist!');
+    //         }
 
-            //check if user has access to board
-            const userHasAccess = await this.prismaService.user_Board.findFirst(
-                {
-                    where: {
-                        AND: [
-                            { userId: decodedToken.id },
-                            { boardId: board.id },
-                        ],
-                    },
-                },
-            );
+    //         //check if user has access to board
+    //         const userHasAccess = await this.prismaService.user_Board.findFirst(
+    //             {
+    //                 where: {
+    //                     AND: [
+    //                         { userId: decodedToken.id },
+    //                         { boardId: board.id },
+    //                     ],
+    //                 },
+    //             },
+    //         );
 
-            if (!userHasAccess) {
-                throw new Error('You do not have access to this board!');
-            }
+    //         if (!userHasAccess) {
+    //             throw new Error('You do not have access to this board!');
+    //         }
 
-            // Check if column exists
-            const column = await this.prismaService.column.findFirst({
-                where: {
-                    id: body.columnId,
-                },
-            });
+    //         // Check if column exists
+    //         const column = await this.prismaService.column.findFirst({
+    //             where: {
+    //                 id: body.columnId,
+    //             },
+    //         });
 
-            if (!column) {
-                throw new Error('Invalid column id!');
-            }
+    //         if (!column) {
+    //             throw new Error('Invalid column id!');
+    //         }
 
-            // Check if task name is unique in the scope of the board
-            const taskNameIsTaken = await this.prismaService.task.findMany({
-                where: {
-                    Column: {
-                        Board: {
-                            id: body.boardId,
-                        },
-                    },
-                    title: body.title,
-                },
-            });
+    //         // Check if task name is unique in the scope of the board
+    //         const taskNameIsTaken = await this.prismaService.task.findMany({
+    //             where: {
+    //                 Column: {
+    //                     Board: {
+    //                         id: body.boardId,
+    //                     },
+    //                 },
+    //                 title: body.title,
+    //             },
+    //         });
 
-            if (taskNameIsTaken) {
-                throw new Error('Task name is taken!');
-            }
+    //         if (taskNameIsTaken) {
+    //             throw new Error('Task name is taken!');
+    //         }
 
-            // Create task
-            await this.prismaService.task.create({
-                data: {
-                    ...body,
-                    columnId: column.id,
-                    creatorId: decodedToken.id,
-                },
-            });
+    //         // Create task
+    //         await this.prismaService.task.create({
+    //             data: {
+    //                 ...body,
+    //                 columnId: column.id,
+    //                 assigneeId: body.assigneeId
+    //             },
+    //         });
 
-            // Emit event with boardId to cause everyone on the board to refetch
-            this.tasksGateway.handleTaskCreated({
-                message: 'New task created.',
-                affectedBoardId: body.boardId,
-            });
-        } catch (err: any) {
-            console.log(err.message);
-            return err.message;
-        }
-    }
+    //         // Emit event with boardId to cause everyone on the board to refetch
+    //         this.tasksGateway.handleTaskCreated({
+    //             message: 'New task created.',
+    //             affectedBoardId: body.boardId,
+    //         });
+    //     } catch (err: any) {
+    //         console.log(err.message);
+    //         return err.message;
+    //     }
+    // }
 }
