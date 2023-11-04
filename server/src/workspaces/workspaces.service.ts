@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { WorkspacesGateway } from './workspaces.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
+import { IWorkspace } from 'src/workspaces/workspace.interfaces';
+import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
+import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 
 @Injectable()
 export class WorkspacesService {
@@ -15,111 +17,195 @@ export class WorkspacesService {
         return await this.prismaService.workspace.findMany();
     }
 
-    async create(body: CreateWorkspaceDto) {
-        // try {
-        //     const isWorkspaceNameTaken =
-        //         await this.prismaService.workspace.findFirst({
-        //             where: {
-        //                 name: body.name,
-        //             },
-        //         });
+    async create(body: CreateWorkspaceDto): Promise<void> {
+        // A user can have only one My Workspace
+        if (body.name === 'My Workspace') {
+            throw new Error('There can only be one workspace with this name!');
+        }
 
-        //     if (isWorkspaceNameTaken) {
-        //         throw new Error('Workspace name is taken!');
-        //     }
+        // Create a new workspace with the owner's ID from the token
+        const workspace = await this.prismaService.workspace.create({
+            data: {
+                name: body.name,
+                ownerId: body.userData.id,
+            },
+        });
 
-        //     // Create a new workspace with the owner's ID from the token
-        //     const workspace = await this.prismaService.workspace.create({
-        //         data: {
-        //             name: body.name,
-        //             ownerId: decodedToken.id,
-        //         },
-        //     });
+        // Handle the case where no colleagues array is passed
+        body.colleagues = body.colleagues || [];
 
-        //     //add all users different from the workspace creator to the User_Workspace relation table
-        //     const colleagueCreationPromises = body.colleagues.map(
-        //         async (colleagueId) => {
-        //             await this.prismaService.user_Workspace.create({
-        //                 data: {
-        //                     userId: colleagueId,
-        //                     workspaceId: workspace.id,
-        //                 },
-        //             });
-        //         },
-        //     );
+        //if the creator somehow decides to add themselves as colleague we need to remove them from the array
+        if (body.colleagues.includes(body.userData.id)) {
+            body.colleagues.filter(
+                (colleagueId) => colleagueId !== body.userData.id,
+            );
+        }
 
-        //     await Promise.all(colleagueCreationPromises);
+        //add all listed colleagues different from the workspace creator to the User_Workspace relation table
+        const colleagueCreationPromises = body.colleagues.map(
+            async (colleagueId) => {
+                await this.prismaService.user_Workspace.create({
+                    data: {
+                        userId: colleagueId,
+                        workspaceId: workspace.id,
+                    },
+                });
+            },
+        );
 
-        //     console.log('Emitting an event...');
-        //     //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
-        //     this.workspacesGateway.handleWorkspaceCreated({
-        //         affectedUserIds: body.colleagues,
-        //         message: 'New workspace created.',
-        //     });
-        // } catch (err) {
-        //     // Handle errors, such as invalid tokens or database issues
-        //     console.error(err.message);
-        //     return err.message;
-        // }
+        await Promise.all(colleagueCreationPromises);
+
+        console.log('Emitting an event...');
+        //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
+        this.workspacesGateway.handleWorkspaceCreated({
+            affectedUserIds: body.colleagues,
+            message: 'New workspace created.',
+        });
     }
 
-    async addColleague(body) {
-        // try {
-        //     //check if the workspace exists
-        //     const workspace = await this.prismaService.workspace.findFirst({
-        //         where: {
-        //             id: body.workspaceId,
-        //         },
-        //     });
+    async delete(body: DeleteWorkspaceDto) {
+        //check if the workspace exists
+        const workspace = await this.prismaService.workspace.findFirst({
+            where: {
+                id: body.workspaceId,
+            },
+        });
+        if (!workspace) {
+            throw new Error('Invalid workspace ID!');
+        }
 
-        //     if (!workspace) {
-        //         throw new Error('Invalid workspace id!');
-        //     }
+        //check if user is the workspace owner
+        const isWorkspaceOwner = body.userData.id === workspace.ownerId;
+        if (!isWorkspaceOwner) {
+            throw new Error('Unauthorized access!');
+        }
 
-        //     //check if the id of the user belongs to the workspace they are adding user to
-        //     const userHasAccessToWorkspace =
-        //         await this.prismaService.user_Workspace.findFirst({
-        //             where: {
-        //                 userId: decodedToken.id,
-        //                 workspaceId: body.workspaceId,
-        //             },
-        //         });
+        //delete cascadingly (cannot implement before having entities from all other tables inside the workspace)
+    }
 
-        //     //if user is neither the creator, nor does he have access to the board
-        //     if (
-        //         !userHasAccessToWorkspace &&
-        //         workspace.ownerId !== decodedToken.id
-        //     ) {
-        //         throw new Error('You do not have access to this workspace!');
-        //     }
+    async addColleague(body: EditWorkspaceColleagueDto) {
+        //check if the workspace exists
+        const workspace = await this.prismaService.workspace.findFirst({
+            where: {
+                id: body.workspaceId,
+            },
+        });
+        if (!workspace) {
+            throw new Error('Invalid workspace ID!');
+        }
 
-        //     const userIsAlreadyAdded =
-        //         await this.prismaService.user_Workspace.findFirst({
-        //             where: {
-        //                 userId: body.colleagueId,
-        //                 workspaceId: body.workspaceId,
-        //             },
-        //         });
+        //check if the id of the user belongs to the workspace they are adding user to
+        const userHasAccessToWorkspace =
+            await this.prismaService.user_Workspace.findFirst({
+                where: {
+                    AND: [
+                        { userId: body.userData.id },
+                        { workspaceId: body.workspaceId },
+                    ],
+                },
+            });
+        //if user is neither the creator, nor does he have access to the board
+        if (
+            !userHasAccessToWorkspace &&
+            workspace.ownerId !== body.userData.id
+        ) {
+            throw new Error('You do not have access to this workspace!');
+        }
 
-        //     if (userIsAlreadyAdded) {
-        //         throw new Error('User is already added to workspace!');
-        //     }
+        // check if the added colleague is already added to the workspace or is the creator himself
+        const colleagueIsAlreadyAdded =
+            await this.prismaService.user_Workspace.findFirst({
+                where: {
+                    userId: body.colleagueId,
+                    workspaceId: body.workspaceId,
+                },
+            });
+        const colleagueIsWorkspaceOwner =
+            body.colleagueId === workspace.ownerId;
 
-        //     await this.prismaService.user_Workspace.create({
-        //         data: {
-        //             userId: body.colleagueId,
-        //             workspaceId: body.workspaceId,
-        //         },
-        //     });
+        if (colleagueIsAlreadyAdded) {
+            throw new Error('User is already added to workspace!');
+        }
+        if (colleagueIsWorkspaceOwner) {
+            throw new Error(
+                'You cannot add the creator of the workspace to the workspace itself!',
+            );
+        }
 
-        //     //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
-        //     this.workspacesGateway.handleUserAddedToWorkspace({
-        //         message: 'You were added to a workspace.',
-        //         affectedUserId: body.colleagueId,
-        //     });
-        // } catch (err: any) {
-        //     console.log(err.message);
-        //     return err.message;
-        // }
+        await this.prismaService.user_Workspace.create({
+            data: {
+                userId: body.colleagueId,
+                workspaceId: body.workspaceId,
+            },
+        });
+
+        //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
+        this.workspacesGateway.handleUserAddedToWorkspace({
+            message: 'You were added to a workspace.',
+            affectedUserId: body.colleagueId,
+        });
+    }
+
+    async removeColleague(body: EditWorkspaceColleagueDto) {
+        //check if the workspace exists
+        const workspace = await this.prismaService.workspace.findFirst({
+            where: {
+                id: body.workspaceId,
+            },
+        });
+        if (!workspace) {
+            throw new Error('Invalid workspace ID!');
+        }
+
+        //check if the id of the user belongs to the workspace they are adding user to
+        const userHasAccessToWorkspace =
+            await this.prismaService.user_Workspace.findFirst({
+                where: {
+                    AND: [
+                        { userId: body.userData.id },
+                        { workspaceId: body.workspaceId },
+                    ],
+                },
+            });
+        //if user is neither the creator, nor does he have access to the board
+        if (
+            !userHasAccessToWorkspace &&
+            workspace.ownerId !== body.userData.id
+        ) {
+            throw new Error('You do not have access to this workspace!');
+        }
+
+        // check if the colleague to remove is the workspace owner themselves
+        const colleagueIsWorkspaceOwner =
+            body.colleagueId === workspace.ownerId;
+        if (colleagueIsWorkspaceOwner) {
+            throw new Error(
+                'You cannot remove the workspace owner from their workspace!',
+            );
+        }
+
+        // check if the colleague to remove even has access to the workspace
+        const colleagueIsAlreadyAdded =
+            await this.prismaService.user_Workspace.findFirst({
+                where: {
+                    userId: body.colleagueId,
+                    workspaceId: body.workspaceId,
+                },
+            });
+        if (!colleagueIsAlreadyAdded) {
+            throw new Error('Colleague ID is not part of the workspace!');
+        }
+
+        await this.prismaService.user_Workspace.deleteMany({
+            //only 'deleteMany' supports 'AND'
+            where: {
+                AND: [
+                    { userId: body.colleagueId },
+                    { workspaceId: body.workspaceId },
+                ],
+            },
+        });
+
+        //emit an event to the deleted user and in case they are viewing the workspace
     }
 }

@@ -1,5 +1,5 @@
-import { addColleaguesDto } from "src/workspaces/dtos/addColleagues.dto";
+import { EditWorkspaceColleagueDto } from "src/workspaces/dtos/editWorkspaceColleague.dto";
 
-export interface IAddColleagues extends addColleaguesDto {
+export interface IAddColleagues extends EditWorkspaceColleagueDto {
     authorizationToken: string;
 }

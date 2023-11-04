@@ -17,6 +17,7 @@ export class AuthMiddleware implements NestMiddleware {
 
         try {
             // Verify the JWT token is valid
+            //if invalid use refresh token to get a new access token
             if (!isValidJWTToken(authorizationToken)) {
                 throw new Error('Invalid JWT token.');
             }
@@ -27,6 +28,9 @@ export class AuthMiddleware implements NestMiddleware {
 
             console.log('decodedToken: ', decodedToken);
             console.log('req.body:', req.body);
+            
+            //add the decodedUserData to the body
+            req.body.userData = decodedToken;
             next();
         } catch (err: any) {
             return res.status(401).json({ message: 'Invalid JWT token!' });
