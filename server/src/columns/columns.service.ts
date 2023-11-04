@@ -15,16 +15,15 @@ export class ColumnsService {
     async create(body: CreateColumnDto) {
         try {
             //check if the column name is not taken in the scope of the board
-            const isColumnNameTaken = await this.prismaService.column.findFirst(
-                {
+            const isColumnNameTaken =
+                !!(await this.prismaService.column.findFirst({
                     where: {
                         AND: {
                             name: body.name,
                             boardId: body.boardData.id,
                         },
                     },
-                },
-            );
+                }));
 
             if (isColumnNameTaken) {
                 throw new Error('Column name is taken!');

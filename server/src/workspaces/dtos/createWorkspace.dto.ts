@@ -1,6 +1,6 @@
 import { BaseWorkspaceDto } from './base.dto';
+import { IsArrayofType } from 'src/validators/IsArrayOfType';
 import { IsNotEmpty, IsOptional, Length } from 'class-validator';
-import { IsArrayOfNumbers } from 'src/validators/IsArrayOfNumbers';
 
 export class CreateWorkspaceDto extends BaseWorkspaceDto {
     @IsNotEmpty()
@@ -8,6 +8,6 @@ export class CreateWorkspaceDto extends BaseWorkspaceDto {
     name: string;
 
     @IsOptional()
-    @IsArrayOfNumbers()
+    @IsArrayofType(Number)
     colleagues: number[];
 }

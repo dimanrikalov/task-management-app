@@ -2,8 +2,8 @@ import { Response } from 'express';
 import { ColumnsService } from './columns.service';
 import { MoveColumnDto } from './dtos/moveColumn.dto';
 import { CreateColumnDto } from './dtos/createColumn.dto';
-import { Body, Controller, Delete, Res, Post, Put } from '@nestjs/common';
 import { RenameColumnDto } from './dtos/renameColumn.dto';
+import { Body, Controller, Delete, Res, Post, Put } from '@nestjs/common';
 
 @Controller('columns')
 export class ColumnsController {
@@ -24,7 +24,12 @@ export class ColumnsController {
         }
     }
 
-    @Put()
+    @Delete()
+    async delete() {
+        //To Do
+    }
+
+    @Put('/move')
     async move(@Res() res: Response, @Body() body: MoveColumnDto) {
         try {
             await this.columnsService.move(body);
@@ -39,7 +44,7 @@ export class ColumnsController {
         }
     }
 
-    @Put()
+    @Put('/rename')
     async rename(@Res() res: Response, @Body() body: RenameColumnDto) {
         try {
             await this.columnsService.rename(body);
@@ -49,10 +54,5 @@ export class ColumnsController {
                 errorMessage: err.message,
             });
         }
-    }
-
-    @Delete()
-    async delete() {
-        //To Do
     }
 }

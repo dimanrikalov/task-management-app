@@ -7,30 +7,33 @@ import {
 } from 'class-validator';
 
 @ValidatorConstraint({ async: false })
-class IsArrayOfNumbersConstraint
-    implements ValidatorConstraintInterface
-{
+class IsArrayOfTypeConstraint implements ValidatorConstraintInterface {
+    constructor(private itemType: new () => any) {}
+
     validate(value: any, _args: ValidationArguments) {
         if (!Array.isArray(value)) {
             return false;
         }
 
-        return value.every((item) => !isNaN(Number(item)));
+        return value.every((item) => item instanceof this.itemType);
     }
 
     defaultMessage(_args: ValidationArguments) {
-        return 'Each item in the array must be a number.';
+        return `Each item in the array must be of type ${this.itemType.name}.`;
     }
 }
 
-export function IsArrayOfNumbers(validationOptions?: ValidationOptions) {
+export function IsArrayofType(
+    itemType: new () => any,
+    validationOptions?: ValidationOptions,
+) {
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
             propertyName: propertyName,
             options: validationOptions,
-            constraints: [],
-            validator: IsArrayOfNumbersConstraint,
+            constraints: [itemType],
+            validator: IsArrayOfTypeConstraint,
         });
     };
 }

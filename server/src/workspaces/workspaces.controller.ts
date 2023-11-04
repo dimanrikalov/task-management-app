@@ -51,7 +51,7 @@ export class WorkspacesController {
         }
     }
 
-    @Put('/colleagues/add')
+    @Post('/colleagues/add')
     async addColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,
@@ -66,7 +66,7 @@ export class WorkspacesController {
         }
     }
 
-    @Put('/colleagues/remove')
+    @Delete('/colleagues/remove')
     async removeColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,
