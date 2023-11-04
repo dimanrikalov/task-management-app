@@ -1,8 +1,7 @@
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
+import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { Body, Get, Post, Controller, Headers } from '@nestjs/common';
-import { IWorkspace } from 'src/interfaces/workspace.interface';
-import { addColleaguesDto } from './dtos/addColleagues.dto';
 
 @Controller('workspaces')
 export class WorkspacesController {
@@ -13,21 +12,15 @@ export class WorkspacesController {
         return this.workspacesService.getAll();
     }
 
-    @Post()
-    async createWorkspace(
-        @Headers() headers,
-        @Body() body: CreateWorkspaceDto,
-    ) {
-        const authorizationToken = headers.authorization;
-        this.workspacesService.create({ ...body, authorizationToken });
+    @Post('')
+    async createWorkspace(@Body() body: CreateWorkspaceDto) {
+        this.workspacesService.create(body);
     }
 
-    @Post()
-    async addColleague(@Headers() headers, @Body() body: addColleaguesDto) {
-        const authorizationToken = headers.authorization;
-        this.workspacesService.addColleagues({
-            authorizationToken,
-            colleagues: body.colleagues,
+    @Post('/colleagues')
+    async addColleague(@Body() body) {
+        this.workspacesService.addColleague({
+            colleagueId: body.colleagueId,
             workspaceId: body.workspaceId,
         });
     }
