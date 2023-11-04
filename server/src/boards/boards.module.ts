@@ -3,9 +3,9 @@ import { BoardsGateway } from './boards.gateway';
 import { BoardsController } from './boards.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
-import { BoardAuth } from 'src/middlewares/boardAuth.middleware';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { WorkspaceAuth } from 'src/middlewares/workspaceAuth.middleware';
+import { BoardAuthMiddleware } from 'src/middlewares/boardAuth.middleware';
+import { WorkspaceAuthMiddleware } from 'src/middlewares/workspaceAuth.middleware';
 
 @Module({
     imports: [PrismaModule],
@@ -15,7 +15,7 @@ import { WorkspaceAuth } from 'src/middlewares/workspaceAuth.middleware';
 export class BoardsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(AuthMiddleware).forRoutes('/boards');
-        consumer.apply(WorkspaceAuth).forRoutes('/boards');
-        consumer.apply(BoardAuth).forRoutes('/boards/colleagues/*'); // Apply BoardAuth to all routes starting with '/boards/colleagues/'
+        consumer.apply(WorkspaceAuthMiddleware).forRoutes('/boards');
+        consumer.apply(BoardAuthMiddleware).forRoutes('/boards/colleagues/*'); // Apply BoardAuth to all routes starting with '/boards/colleagues/'
     }
 }
