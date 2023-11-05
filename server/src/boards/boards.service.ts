@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { BoardsGateway } from './boards.gateway';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { IBoard } from 'src/boards/boards.interfaces';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
 
 @Injectable()
@@ -41,6 +40,8 @@ export class BoardsService {
             ],
         });
 
+        body.colleagues = body.colleagues || [];
+
         //filter out any user with access to the workspace including the workspace owner
         const userIdsWithoutWorkspaceAccess = await Promise.all(
             body.colleagues.map(async (colleagueId) => {
@@ -63,16 +64,20 @@ export class BoardsService {
             }),
         );
 
+        const filteredUserIdsWithoutAccess =
+            userIdsWithoutWorkspaceAccess.filter((id) => id !== undefined);
+
         //add colleagues to board
-        await Promise.all(
-            userIdsWithoutWorkspaceAccess.map(async (colleagueId) => {
-                await this.prismaService.user_Board.create({
-                    data: {
-                        userId: colleagueId,
-                        boardId: board.id,
-                    },
-                });
-            }),
+        Promise.all(
+            filteredUserIdsWithoutAccess.map(
+                async (colleagueId) =>
+                    await this.prismaService.user_Board.create({
+                        data: {
+                            userId: colleagueId,
+                            boardId: board.id,
+                        },
+                    }),
+            ),
         );
 
         //emit an event for created board
@@ -83,6 +88,13 @@ export class BoardsService {
     }
 
     async addColleague(body: EditBoardColleagueDto) {
+        if (
+            body.workspaceData.name.toLowerCase() ===
+            'Personal Workspace'.toLowerCase()
+        ) {
+            throw new Error('You cannot add colleagues to personal boards.');
+        }
+
         //check the user to be added (it must not be the user themself, a user with access to the workspace where the board is, or the owner)
         const colleagueIsWorkspaceOwner =
             body.workspaceData.ownerId === body.colleagueId;
@@ -133,6 +145,15 @@ export class BoardsService {
     }
 
     async removeColleague(body: EditBoardColleagueDto) {
+        if (
+            body.workspaceData.name.toLowerCase() ===
+            'Personal Workspace'.toLowerCase()
+        ) {
+            throw new Error(
+                'You cannot remove colleagues from personal boards.',
+            );
+        }
+
         const colleagueIsWorkspaceOwner =
             body.workspaceData.ownerId === body.colleagueId;
 

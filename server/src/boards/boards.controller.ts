@@ -12,7 +12,10 @@ export class BoardsController {
     @Post()
     async createBoard(@Res() res: Response, @Body() body: CreateBoardDto) {
         try {
-            return this.boardsService.create(body);
+            await this.boardsService.create(body);
+            return res.status(200).json({
+                message: 'Board created successfully.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -33,7 +36,10 @@ export class BoardsController {
         @Body() body: EditBoardColleagueDto,
     ) {
         try {
-            return this.boardsService.addColleague(body);
+            await this.boardsService.addColleague(body);
+            return res.status(200).json({
+                message: 'Colleague added to board successfully.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -48,7 +54,10 @@ export class BoardsController {
         @Body() body: EditBoardColleagueDto,
     ) {
         try {
-            return this.boardsService.removeColleague(body);
+            await this.boardsService.removeColleague(body);
+            return res.status(200).json({
+                message: 'Colleague removed from board successfully.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({

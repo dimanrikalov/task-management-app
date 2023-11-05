@@ -9,7 +9,7 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
     providers: [UsersService],
     controllers: [UsersController],
 })
-export class WorkspacesModule implements NestModule {
+export class UsersModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(AuthMiddleware).forRoutes('users/edit');
     }

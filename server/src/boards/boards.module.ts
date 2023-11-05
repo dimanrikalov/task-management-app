@@ -14,8 +14,8 @@ import { WorkspaceAuthMiddleware } from 'src/middlewares/workspaceAuth.middlewar
 })
 export class BoardsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('/boards');
-        consumer.apply(WorkspaceAuthMiddleware).forRoutes('/boards');
-        consumer.apply(BoardAuthMiddleware).forRoutes('/boards/colleagues/*'); // Apply BoardAuth to all routes starting with '/boards/colleagues/'
+        consumer.apply(AuthMiddleware).forRoutes('boards');
+        consumer.apply(WorkspaceAuthMiddleware).forRoutes('boards(/)'); // (/) means exact
+        consumer.apply(BoardAuthMiddleware).forRoutes('boards/colleagues'); // Apply ONLY BoardAuth to all routes starting with '/boards/colleagues/'
     }
 }

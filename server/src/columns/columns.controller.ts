@@ -12,9 +12,9 @@ export class ColumnsController {
     @Post()
     async create(@Res() res: Response, @Body() body: CreateColumnDto) {
         try {
-            this.columnsService.create(body);
-            return res.json({
-                message: 'New column added.',
+            await this.columnsService.create(body);
+            return res.status(200).json({
+                message: 'New column added successfully.',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -26,15 +26,16 @@ export class ColumnsController {
 
     @Delete()
     async delete() {
+        //cannot delete any of the default created columns
         //To Do
     }
 
     @Put('/move')
-    async move(@Res() res: Response, @Body() body: MoveColumnDto) {
+    async changePosition(@Res() res: Response, @Body() body: MoveColumnDto) {
         try {
-            await this.columnsService.move(body);
-            return res.json({
-                message: 'Column position updated.',
+            await this.columnsService.changePosition(body);
+            return res.status(200).json({
+                message: 'Column position updated successfully.',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -48,6 +49,9 @@ export class ColumnsController {
     async rename(@Res() res: Response, @Body() body: RenameColumnDto) {
         try {
             await this.columnsService.rename(body);
+            return res.status(200).json({
+                message: 'Column renamed succesfully.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({

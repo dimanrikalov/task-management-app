@@ -29,7 +29,7 @@ export class TasksController {
         try {
             await this.tasksService.delete(body);
             return res.status(200).json({
-                message: `Task (${body.taskId} deleted successfully.`,
+                message: 'Task deleted successfully.',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -43,6 +43,9 @@ export class TasksController {
     async edit(@Res() res: Response, @Body() body: EditTaskDto) {
         try {
             await this.tasksService.edit(body);
+            return res.status(200).json({
+                message: 'Task modified successfully.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
