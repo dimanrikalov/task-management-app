@@ -1,5 +1,8 @@
 import { ColumnsService } from './columns.service';
 import { ColumnsGateway } from './columns.gateway';
+import { StepsService } from 'src/steps/steps.service';
+import { TasksGateway } from 'src/tasks/tasks.gateway';
+import { TasksService } from 'src/tasks/tasks.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { ColumnsController } from './columns.controller';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
@@ -9,7 +12,13 @@ import { ColumnAuthMiddleware } from 'src/middlewares/columnAuth.middleware';
 @Module({
     imports: [PrismaModule],
     controllers: [ColumnsController],
-    providers: [ColumnsService, ColumnsGateway],
+    providers: [
+        ColumnsService,
+        ColumnsGateway,
+        TasksGateway,
+        TasksService,
+        StepsService,
+    ],
 })
 export class ColumnsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

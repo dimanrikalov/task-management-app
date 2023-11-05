@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { BaseColumnsDto } from './dtos/base.dto';
 import { ColumnsGateway } from './columns.gateway';
 import { MoveColumnDto } from './dtos/moveColumn.dto';
+import { TasksService } from 'src/tasks/tasks.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateColumnDto } from './dtos/createColumn.dto';
 import { RenameColumnDto } from './dtos/renameColumn.dto';
@@ -8,6 +10,7 @@ import { RenameColumnDto } from './dtos/renameColumn.dto';
 @Injectable()
 export class ColumnsService {
     constructor(
+        private readonly tasksService: TasksService,
         private readonly prismaService: PrismaService,
         private readonly columnsGateway: ColumnsGateway,
     ) {}
@@ -51,6 +54,32 @@ export class ColumnsService {
         this.columnsGateway.handleColumnCreated({
             message: 'New column added.',
             affectedBoardId: body.boardData.id,
+        });
+    }
+
+    async delete(body: BaseColumnsDto) {
+        //the deletion includes the task steps
+        await this.tasksService.deleteMany(body.columnData.id);
+    }
+
+    async deleteMany(boardId: number) {
+        const columns = await this.prismaService.column.findMany({
+            where: {
+                boardId,
+            },
+        });
+
+        //deletes all tasks and steps cascadingly
+        await Promise.all(
+            columns.map((column) => async () => {
+                await this.tasksService.deleteMany(column.id);
+            }),
+        );
+
+        await this.prismaService.column.deleteMany({
+            where: {
+                boardId,
+            },
         });
     }
 
@@ -141,9 +170,5 @@ export class ColumnsService {
                 name: body.newName,
             },
         });
-    }
-
-    async delete() {
-        // To Do
     }
 }

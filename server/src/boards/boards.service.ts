@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { BoardsGateway } from './boards.gateway';
 import { CreateBoardDto } from './dtos/createBoard.dto';
+import { DeleteBoardDto } from './dtos/deleteboard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ColumnsService } from 'src/columns/columns.service';
+import { MessagesService } from 'src/messages/messages.service';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
 
 @Injectable()
@@ -9,6 +12,8 @@ export class BoardsService {
     constructor(
         private readonly prismaService: PrismaService,
         private readonly boardsGateway: BoardsGateway,
+        private readonly columnsService: ColumnsService,
+        private readonly messagesService: MessagesService,
     ) {}
 
     async create(body: CreateBoardDto) {
@@ -84,6 +89,69 @@ export class BoardsService {
         this.boardsGateway.handleBoardCreated({
             affectedUserIds: body.colleagues,
             message: 'New board was created.',
+        });
+    }
+
+    async delete(body: DeleteBoardDto) {
+        //check if the user that deletes the board owns the workspace where the board is located
+        const userIsWorkspaceOwner =
+            body.userData.id === body.workspaceData.ownerId;
+
+        if (!userIsWorkspaceOwner) {
+            throw new Error('You must own the workspace to delete this board.');
+        }
+
+        //delete the relationship entries concerning the board to be deleted
+        await this.prismaService.user_Board.deleteMany({
+            where: {
+                boardId: body.boardId,
+            },
+        });
+
+        //deletes all columns, tasks and steps cascadingly
+        await this.columnsService.deleteMany(body.boardId);
+
+        //delete all chat messages
+        await this.messagesService.deleteAll(body.boardId);
+
+        //delete the board
+        await this.prismaService.board.delete({
+            where: {
+                id: body.boardId,
+            },
+        });
+    }
+
+    async deleteMany(workspaceId: number) {
+        const boards = await this.prismaService.board.findMany({
+            where: {
+                workspaceId,
+            },
+        });
+
+        //delete all columns from all boards
+        Promise.all(
+            boards.map((board) => async () => {
+                await this.columnsService.deleteMany(board.id);
+            }),
+        );
+
+        //remove any user_boards relationship with the deleted boards
+        Promise.all(
+            boards.map((board) => async () => {
+                await this.prismaService.user_Board.deleteMany({
+                    where: {
+                        boardId: board.id,
+                    },
+                });
+            }),
+        );
+
+        //delete the boards themselves
+        await this.prismaService.board.deleteMany({
+            where: {
+                workspaceId,
+            },
         });
     }
 

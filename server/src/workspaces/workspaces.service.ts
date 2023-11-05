@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { WorkspacesGateway } from './workspaces.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { BoardsService } from 'src/boards/boards.service';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
@@ -10,6 +11,7 @@ import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
 export class WorkspacesService {
     constructor(
         private readonly prismaService: PrismaService,
+        private readonly boardsService: BoardsService,
         private readonly workspacesGateway: WorkspacesGateway,
     ) {}
 
@@ -83,6 +85,45 @@ export class WorkspacesService {
         }
 
         //delete cascadingly (cannot implement before having entities from all other tables inside the workspace)
+        await this.boardsService.deleteMany(workspace.id);
+
+        //remove all users with access to the workspace
+        await this.prismaService.user_Workspace.deleteMany({
+            where: {
+                workspaceId: workspace.id,
+            },
+        });
+
+        //delete the workspace itself
+        await this.prismaService.workspace.delete({
+            where: {
+                id: workspace.id,
+            },
+        });
+    }
+
+    async deleteMany(userId: number) {
+        //check if user exists
+        const user = await this.prismaService.user.findFirst({
+            where: {
+                id: userId,
+            },
+        });
+        if (!user) {
+            throw new Error('User does not exist!');
+        }
+
+        //delete everything inside owned by the user workspaces
+        const workspaces = await this.prismaService.workspace.findMany({
+            where: {
+                ownerId: user.id,
+            },
+        });
+        Promise.all(
+            workspaces.map((workspace) => async () => {
+                await this.boardsService.deleteMany(workspace.id);
+            }),
+        );
     }
 
     async addColleague(body: EditWorkspaceColleagueDto) {

@@ -3,12 +3,14 @@ import { TasksGateway } from './tasks.gateway';
 import { EditTaskDto } from './dtos/editTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
 import { DeleteTaskDto } from './dtos/deleteTask.dto';
+import { StepsService } from 'src/steps/steps.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TasksService {
     constructor(
         private readonly tasksGateway: TasksGateway,
+        private readonly stepsService: StepsService,
         private readonly prismaService: PrismaService,
     ) {}
 
@@ -41,18 +43,8 @@ export class TasksService {
             },
         });
 
-        //Create steps
-        await Promise.all(
-            body.steps.map(
-                (step) => async () =>
-                    await this.prismaService.step.create({
-                        data: {
-                            taskId: task.id,
-                            description: step,
-                        },
-                    }),
-            ),
-        );
+        // Create steps
+        await this.stepsService.createMany(body.steps, task.id);
 
         // Emit event with boardId to cause everyone on the board to refetch
         this.tasksGateway.handleTaskCreated({
@@ -63,16 +55,35 @@ export class TasksService {
 
     async delete(body: DeleteTaskDto) {
         //delete the steps
-        await this.prismaService.step.deleteMany({
-            where: {
-                taskId: body.taskData.id,
-            },
-        });
+        await this.stepsService.deleteMany(body.taskData.id);
 
         //delete the task
         await this.prismaService.task.delete({
             where: {
                 id: body.taskData.id,
+            },
+        });
+    }
+
+    async deleteMany(columnId: number) {
+        //get all tasks from the column
+        const tasks = await this.prismaService.task.findMany({
+            where: {
+                columnId,
+            },
+        });
+
+        //delete all steps of every task from the column
+        await Promise.all(
+            tasks.map((task) => async () => {
+                await this.stepsService.deleteMany(task.id);
+            }),
+        );
+
+        //delete the tasks themselves
+        await this.prismaService.task.deleteMany({
+            where: {
+                columnId,
             },
         });
     }
@@ -89,8 +100,10 @@ export class TasksService {
             }
         }
 
+        //update the steps
+
+        //update the task
         const data = {
-            ...(body.title && { title: body.title }),
             ...(body.attachmentImgPath && {
                 attachmentImgPath: body.attachmentImgPath,
             }),
@@ -100,13 +113,14 @@ export class TasksService {
             ...(body.estimatedMinutes && {
                 estimatedMinutes: Number(body.estimatedMinutes),
             }),
-            ...(body.effort && { effort: Number(body.effort) }),
+            ...(body.title && { title: body.title }),
             ...(body.priority && { priority: body.priority }),
             ...(body.columnId && { columnId: body.columnId }),
-            ...(body.description && { description: body.description }),
-            ...(body.hoursSpent && { hoursSpent: Number(body.hoursSpent) }),
+            ...(body.effort && { effort: Number(body.effort) }),
             ...(body.assigneeId && { assigneeId: body.assigneeId }),
+            ...(body.description && { description: body.description }),
             ...(body.minutesSpent && { minutesSpent: body.minutesSpent }),
+            ...(body.hoursSpent && { hoursSpent: Number(body.hoursSpent) }),
         };
 
         await this.prismaService.task.update({

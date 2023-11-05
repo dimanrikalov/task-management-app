@@ -1,6 +1,7 @@
 import {
     Min,
     Max,
+    IsArray,
     IsNumber,
     IsString,
     MinLength,
@@ -8,7 +9,7 @@ import {
     IsOptional,
 } from 'class-validator';
 import { BaseTasksDto } from './base.dto';
-import { IsArrayOfType } from 'src/validators/IsArrayOfType';
+import { BaseStepsDto } from 'src/steps/dtos/base.dto';
 
 export class CreateTaskDto extends BaseTasksDto {
     @IsNumber()
@@ -64,6 +65,6 @@ export class CreateTaskDto extends BaseTasksDto {
     effort: number;
 
     @IsOptional()
-    @IsArrayOfType('string')
-    steps: string[];
+    @IsArray()
+    steps: BaseStepsDto[];
 }

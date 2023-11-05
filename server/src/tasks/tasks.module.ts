@@ -7,6 +7,7 @@ import {
 import { TasksService } from './tasks.service';
 import { TasksGateway } from './tasks.gateway';
 import { TasksController } from './tasks.controller';
+import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { TaskAuthMiddleware } from 'src/middlewares/taskAuth.middleware';
@@ -15,7 +16,7 @@ import { ColumnAuthMiddleware } from 'src/middlewares/columnAuth.middleware';
 @Module({
     imports: [PrismaModule],
     controllers: [TasksController],
-    providers: [TasksService, TasksGateway],
+    providers: [TasksService, TasksGateway, StepsService],
 })
 export class TasksModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
