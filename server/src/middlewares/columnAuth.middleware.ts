@@ -62,7 +62,7 @@ export class ColumnAuthMiddleware implements NestMiddleware {
                 await this.prismaService.user_Board.findFirst({
                     where: {
                         AND: [
-                            { boardId: req.body.boardId },
+                            { boardId: board.id },
                             { userId: req.body.userData.id },
                         ],
                     },

@@ -20,12 +20,14 @@ import { ColumnAuthMiddleware } from 'src/middlewares/columnAuth.middleware';
 export class TasksModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(AuthMiddleware).forRoutes('tasks');
-        consumer.apply(ColumnAuthMiddleware).forRoutes('tasks(/)');
+        consumer
+            .apply(ColumnAuthMiddleware)
+            .forRoutes({ path: 'tasks', method: RequestMethod.POST });
         consumer
             .apply(TaskAuthMiddleware)
             .forRoutes(
-                { path: '/tasks/edit', method: RequestMethod.PUT },
-                { path: '/tasks', method: RequestMethod.DELETE },
+                { path: 'tasks', method: RequestMethod.DELETE },
+                { path: 'tasks/edit', method: RequestMethod.PUT },
             );
     }
 }

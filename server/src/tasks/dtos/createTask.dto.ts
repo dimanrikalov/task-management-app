@@ -12,9 +12,6 @@ import { IsArrayOfType } from 'src/validators/IsArrayOfType';
 
 export class CreateTaskDto extends BaseTasksDto {
     @IsNumber()
-    columnId: number;
-
-    @IsNumber()
     assigneeId: number;
 
     @IsString()

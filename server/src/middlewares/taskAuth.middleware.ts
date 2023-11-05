@@ -8,12 +8,17 @@ export class TaskAuthMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
+            if (!req.body.taskId) {
+                throw new Error('Task ID is required.');
+            }
+            
             // need to check if all of this information(queries) is needed
             const task = await this.prismaService.task.findFirst({
                 where: {
                     id: req.body.taskId,
                 },
             });
+            console.log(req.body);
             if (!task) {
                 throw new Error('Invalid task ID!');
             }
@@ -80,14 +85,14 @@ export class TaskAuthMiddleware implements NestMiddleware {
             if (req.body.assigneeId) {
                 //check if user to assign has access to the board
                 const userIsWorkspaceOwner =
-                    req.body.assigneeId === req.body.workspaceData.ownerId;
+                    req.body.assigneeId === workspace.ownerId;
 
                 const userHasAccessToWorkspace =
                     !!(await this.prismaService.user_Workspace.findFirst({
                         where: {
                             AND: [
                                 { userId: req.body.assigneeId },
-                                { workspaceId: req.body.boardData.workspaceId },
+                                { workspaceId: board.workspaceId },
                             ],
                         },
                     }));
@@ -96,8 +101,8 @@ export class TaskAuthMiddleware implements NestMiddleware {
                     !!(await this.prismaService.user_Board.findFirst({
                         where: {
                             AND: [
+                                { boardId: board.id },
                                 { userId: req.body.assigneeId },
-                                { boardId: req.body.boardData.id },
                             ],
                         },
                     }));
@@ -110,7 +115,7 @@ export class TaskAuthMiddleware implements NestMiddleware {
                     throw new Error('Invalid assignee id!');
                 }
             }
-            
+
             req.body.taskData = task;
             req.body.boardData = board;
             req.body.columnData = column;
@@ -120,6 +125,7 @@ export class TaskAuthMiddleware implements NestMiddleware {
 
             next();
         } catch (err: any) {
+            console.log(err.message);
             return res.status(401).json({ errorMessage: err.message });
         }
     }
