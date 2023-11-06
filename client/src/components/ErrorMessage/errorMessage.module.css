@@ -1,0 +1,11 @@
+.container {
+	width: 100%;
+	padding: 6px 0px;
+	text-align: center;
+	border-radius: 9px;
+	background-color: var(--error-background);
+}
+
+.errorMsg {
+	color: var(--error-font-color);
+}

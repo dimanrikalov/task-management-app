@@ -10,7 +10,7 @@ export const IntroView = () => {
 				<h1 className={styles.title}>Taskify</h1>
 				<p className={styles.p1}>
 					Taskify lets you work <span>more</span> collaboratively and
-					get <span>more</span> done
+					get <span>more</span> done.
 				</p>
 				<p className={styles.p2}>
 					Taskify's <span>workspaces</span>, <span>boards</span>,{' '}

@@ -12,6 +12,8 @@
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
 
+	--error-background: #ffccc4;
+	--error-font-color: #ff0000;
 	--blue-main: #1da1f2;
 	--white-main: #ffffff;
 	--white-secondary: whitesmoke;

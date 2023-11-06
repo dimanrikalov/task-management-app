@@ -14,11 +14,11 @@ export const useIntroViewModel = (): ViewModelReturnType<
 	const navigate = useNavigate();
 
 	const signInHandler = () => {
-		navigate('/sign-in');
+		navigate('/auth/sign-in');
 	};
 
 	const signUpHandler = () => {
-		navigate('/sign-in');
+		navigate('/auth/sign-up');
 	};
 
 	return {
