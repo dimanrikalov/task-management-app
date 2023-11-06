@@ -1,7 +1,7 @@
 import styles from './button.module.css';
 
 interface IButtonProps {
-	onClick(): void;
+	onClick?(): void;
 	message?: string;
 	fontSize?: number;
 	icon?: React.ReactNode;

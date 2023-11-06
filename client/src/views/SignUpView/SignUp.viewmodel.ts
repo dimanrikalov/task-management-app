@@ -14,9 +14,9 @@ interface ISignUpViewModelState {
 }
 
 interface ISignUpViewModelOperations {
-	signUp(): void;
 	goToSignInView(): void;
 	goToInitialView(): void;
+	signUp(e: React.FormEvent): void;
 	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -48,7 +48,10 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 		navigate('/auth/sign-in');
 	};
 
-	const signUp = async () => {};
+	const signUp = async (e: React.FormEvent) => {
+		e.preventDefault();
+		console.log('form submitted');
+	};
 
 	return {
 		state: {

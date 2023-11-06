@@ -1,8 +1,9 @@
 import styles from './signUp.module.css';
+import { FaChevronLeft } from 'react-icons/fa';
 import { Input } from '@/components/Input/Input';
 import { Button } from '@/components/Button/Button';
 import { useSignUpViewModel } from './SignUp.viewmodel';
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMEssage';
+import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 
 export const SignUpView = () => {
 	const { state, operations } = useSignUpViewModel();
@@ -10,12 +11,23 @@ export const SignUpView = () => {
 	return (
 		<div className={styles.background}>
 			<div className={styles.leftSide}>
+				<button className={styles.backBtn}>
+					<FaChevronLeft
+						onClick={operations.goToInitialView}
+						size={16}
+					/>
+				</button>
 				<div className={styles.titleContainer}>
 					<h1>Taskify</h1>
 					<h2>Sign Up</h2>
-					<ErrorMessage message="Invalid password!" fontSize={18} />
+					{true && (
+						<ErrorMessage
+							message="Invalid password!"
+							fontSize={18}
+						/>
+					)}
 				</div>
-				<form className={styles.form}>
+				<form className={styles.form} onSubmit={operations.signUp}>
 					<Input
 						name={'firstName'}
 						placeholder={'First Name'}
@@ -32,7 +44,7 @@ export const SignUpView = () => {
 					/>
 					<Input
 						name={'email'}
-						placeholder={'Email'} 
+						placeholder={'Email'}
 						type={'email'}
 						value={state.inputFields.email}
 						onChange={operations.handleInputChange}
@@ -44,11 +56,7 @@ export const SignUpView = () => {
 						value={state.inputFields.password}
 						onChange={operations.handleInputChange}
 					/>
-					<Button
-						message="Sign Up"
-						onClick={operations.signUp}
-						fontSize={18}
-					/>
+					<Button message="Sign Up" fontSize={18} />
 				</form>
 				<p className={styles.haveAnAccount}>
 					Already have an account?{' '}
@@ -56,8 +64,8 @@ export const SignUpView = () => {
 				</p>
 			</div>
 			<div className={styles.rightSide}>
-                <img src="/imgs/sign-up-img.png" alt="sign-up-img" />
-            </div>
+				<img src="/imgs/sign-up-img.png" alt="sign-up-img" />
+			</div>
 		</div>
 	);
 };
