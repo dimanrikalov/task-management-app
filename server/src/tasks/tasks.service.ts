@@ -25,10 +25,20 @@ export class TasksService {
             throw new Error('Task title is taken!');
         }
 
+        //calculate the progress based on how many tasks are completed
+        const completeSteps = body.steps.filter((step) => {
+            if (step.isComplete) {
+                return step;
+            }
+        });
+        const progress = Math.round(
+            (completeSteps.length / body.steps.length) * 100,
+        );
+
         // Create task
         const task = await this.prismaService.task.create({
             data: {
-                progress: 0,
+                progress,
                 title: body.title,
                 effort: body.effort,
                 priority: body.priority,
@@ -101,6 +111,13 @@ export class TasksService {
         }
 
         //update the steps
+        if (body.steps.length > 0) {
+            await Promise.all(
+                body.steps.map((step) => async () => {
+                    await this.stepsService.edit(step);
+                }),
+            );
+        }
 
         //update the task
         const data = {

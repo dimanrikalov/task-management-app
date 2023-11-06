@@ -11,6 +11,10 @@ import { Task } from '@prisma/client';
 import { BaseTasksDto } from './base.dto';
 import { IStep } from 'src/steps/steps.service';
 
+export interface IEditStep extends IStep {
+    id: number
+}
+
 export class EditTaskDto extends BaseTasksDto {
     taskData: Task;
 
@@ -73,5 +77,5 @@ export class EditTaskDto extends BaseTasksDto {
     effort?: number;
 
     @IsOptional()
-    steps?: IStep[];
+    steps?: IEditStep[];
 }
