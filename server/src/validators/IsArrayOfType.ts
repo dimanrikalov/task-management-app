@@ -8,23 +8,24 @@ import {
 
 @ValidatorConstraint({ async: false })
 class IsArrayOfTypeConstraint implements ValidatorConstraintInterface {
-    constructor(private itemType: new () => any) {}
-
-    validate(value: any, _args: ValidationArguments) {
+    validate(value: any, args: ValidationArguments) {
         if (!Array.isArray(value)) {
             return false;
         }
 
-        return value.every((item) => item instanceof this.itemType);
+        const itemType = args.constraints[0]; // TypeScript type
+
+        return value.every((item) => typeof item === itemType);
     }
 
-    defaultMessage(_args: ValidationArguments) {
-        return `Each item in the array must be of type ${this.itemType.name}.`;
+    defaultMessage(args: ValidationArguments) {
+        const itemType = args.constraints[0]; // TypeScript type
+        return `Each item in the array must be of type ${itemType}.`;
     }
 }
 
-export function IsArrayofType(
-    itemType: new () => any,
+export function IsArrayOfType(
+    itemType: string | number,
     validationOptions?: ValidationOptions,
 ) {
     return (object: object, propertyName: string) => {

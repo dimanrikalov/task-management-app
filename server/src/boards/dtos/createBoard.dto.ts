@@ -1,6 +1,6 @@
 import { BaseBoardsDto } from './base.dto';
-import { IsArrayofType } from 'src/validators/IsArrayOfType';
-import { Length, IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsArrayOfType } from 'src/validators/IsArrayOfType';
+import { Length, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateBoardDto extends BaseBoardsDto {
     @IsNotEmpty()
@@ -8,6 +8,6 @@ export class CreateBoardDto extends BaseBoardsDto {
     name: string;
 
     @IsOptional()
-    @IsArrayofType(String)
+    @IsArrayOfType('number')
     colleagues: number[];
 }

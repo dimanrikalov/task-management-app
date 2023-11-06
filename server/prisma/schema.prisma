@@ -37,10 +37,11 @@ model Message {
 }
 
 model Step {
-  id          Int    @id @default(autoincrement())
-  taskId      Int    @map("task_id")
-  description String @db.VarChar(128)
-  Task        Task   @relation(fields: [taskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id          Int     @id @default(autoincrement())
+  taskId      Int     @map("task_id")
+  description String  @db.VarChar(128)
+  isComplete  Boolean @map("is_complete")
+  Task        Task    @relation(fields: [taskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.

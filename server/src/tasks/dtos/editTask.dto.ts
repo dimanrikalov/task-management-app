@@ -9,7 +9,11 @@ import {
 } from 'class-validator';
 import { Task } from '@prisma/client';
 import { BaseTasksDto } from './base.dto';
-import { IsArrayofType } from 'src/validators/IsArrayOfType';
+import { IStep } from 'src/steps/steps.service';
+
+export interface IEditStep extends IStep {
+    id: number
+}
 
 export class EditTaskDto extends BaseTasksDto {
     taskData: Task;
@@ -73,6 +77,5 @@ export class EditTaskDto extends BaseTasksDto {
     effort?: number;
 
     @IsOptional()
-    @IsArrayofType(String)
-    steps?: string[];
+    steps?: IEditStep[];
 }

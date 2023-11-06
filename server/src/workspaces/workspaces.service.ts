@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { WorkspacesGateway } from './workspaces.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { BoardsService } from 'src/boards/boards.service';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
@@ -10,6 +11,7 @@ import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
 export class WorkspacesService {
     constructor(
         private readonly prismaService: PrismaService,
+        private readonly boardsService: BoardsService,
         private readonly workspacesGateway: WorkspacesGateway,
     ) {}
 
@@ -19,7 +21,7 @@ export class WorkspacesService {
 
     async create(body: CreateWorkspaceDto): Promise<void> {
         // A user can have only one Personal Workspace
-        if (body.name === 'Personal Workspace') {
+        if (body.name.toLowerCase() === 'personal workspace') {
             throw new Error('There can only be one workspace with this name!');
         }
 
@@ -36,24 +38,22 @@ export class WorkspacesService {
 
         //if the creator somehow decides to add themself as colleague we need to remove them from the array
         if (body.colleagues.includes(body.userData.id)) {
-            body.colleagues.filter(
+            body.colleagues = body.colleagues.filter(
                 (colleagueId) => colleagueId !== body.userData.id,
             );
         }
 
         //add all listed colleagues different from the workspace creator to the User_Workspace relation table
-        const colleagueCreationPromises = body.colleagues.map(
-            async (colleagueId) => {
+        Promise.all(
+            body.colleagues.map(async (colleagueId) => {
                 await this.prismaService.user_Workspace.create({
                     data: {
                         userId: colleagueId,
                         workspaceId: workspace.id,
                     },
                 });
-            },
+            }),
         );
-
-        await Promise.all(colleagueCreationPromises);
 
         console.log('Emitting an event...');
         //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
@@ -74,8 +74,8 @@ export class WorkspacesService {
             throw new Error('Invalid workspace ID!');
         }
 
-        if (workspace.name === 'Personal Workspace') {
-            throw new Error('You cannot delete this workspace!');
+        if (workspace.name.toLowerCase() === 'personal workspace') {
+            throw new Error('You cannot delete your personal workspace!');
         }
 
         //check if user is the workspace owner
@@ -85,6 +85,45 @@ export class WorkspacesService {
         }
 
         //delete cascadingly (cannot implement before having entities from all other tables inside the workspace)
+        await this.boardsService.deleteMany(workspace.id);
+
+        //remove all users with access to the workspace
+        await this.prismaService.user_Workspace.deleteMany({
+            where: {
+                workspaceId: workspace.id,
+            },
+        });
+
+        //delete the workspace itself
+        await this.prismaService.workspace.delete({
+            where: {
+                id: workspace.id,
+            },
+        });
+    }
+
+    async deleteMany(userId: number) {
+        //check if user exists
+        const user = await this.prismaService.user.findFirst({
+            where: {
+                id: userId,
+            },
+        });
+        if (!user) {
+            throw new Error('User does not exist!');
+        }
+
+        //delete everything inside owned by the user workspaces
+        const workspaces = await this.prismaService.workspace.findMany({
+            where: {
+                ownerId: user.id,
+            },
+        });
+        Promise.all(
+            workspaces.map((workspace) => async () => {
+                await this.boardsService.deleteMany(workspace.id);
+            }),
+        );
     }
 
     async addColleague(body: EditWorkspaceColleagueDto) {
@@ -97,7 +136,7 @@ export class WorkspacesService {
         if (!workspace) {
             throw new Error('Invalid workspace ID!');
         }
-        if (workspace.name === 'Personal Workspace') {
+        if (workspace.name.toLowerCase() === 'personal workspace') {
             throw new Error(
                 'This workspace is not meant to have colleagues inside!',
             );

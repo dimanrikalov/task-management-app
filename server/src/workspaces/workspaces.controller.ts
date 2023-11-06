@@ -51,13 +51,16 @@ export class WorkspacesController {
         }
     }
 
-    @Post('/colleagues/add')
+    @Post('/colleagues')
     async addColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,
     ) {
         try {
-            this.workspacesService.addColleague(body);
+            await this.workspacesService.addColleague(body);
+            return res.status(200).json({
+                message: 'Colleague added to workspace.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -66,13 +69,16 @@ export class WorkspacesController {
         }
     }
 
-    @Delete('/colleagues/remove')
+    @Delete('/colleagues')
     async removeColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,
     ) {
         try {
-            this.workspacesService.removeColleague(body);
+            await this.workspacesService.removeColleague(body);
+            return res.status(200).json({
+                message: 'Colleague removed from workspace.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({

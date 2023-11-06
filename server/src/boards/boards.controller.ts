@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dtos/createBoard.dto';
+import { DeleteBoardDto } from './dtos/deleteboard.dto';
 import { Body, Controller, Post, Res, Delete } from '@nestjs/common';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
 
@@ -8,11 +9,13 @@ import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
 export class BoardsController {
     constructor(private readonly boardsService: BoardsService) {}
 
-    //apply ONLY the workspaceAuth.middleware to this endpoint
     @Post()
-    async createBoard(@Res() res: Response, @Body() body: CreateBoardDto) {
+    async create(@Res() res: Response, @Body() body: CreateBoardDto) {
         try {
-            return this.boardsService.create(body);
+            await this.boardsService.create(body);
+            return res.status(200).json({
+                message: 'Board created successfully.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -22,18 +25,30 @@ export class BoardsController {
     }
 
     @Delete()
-    async deleteBoard(@Res() res: Response, @Body() body) {
-        //To Do
+    async delete(@Res() res: Response, @Body() body: DeleteBoardDto) {
+        try {
+            await this.boardsService.delete(body);
+            return res.status(200).json({
+                message: 'Board deleted successfully.',
+            });
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
     }
 
-    //apply ONLY the boardAuth.middleware to this endpoint
     @Post('/colleagues')
     async addColleague(
         @Res() res: Response,
         @Body() body: EditBoardColleagueDto,
     ) {
         try {
-            return this.boardsService.addColleague(body);
+            await this.boardsService.addColleague(body);
+            return res.status(200).json({
+                message: 'Colleague added to board successfully.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -48,7 +63,10 @@ export class BoardsController {
         @Body() body: EditBoardColleagueDto,
     ) {
         try {
-            return this.boardsService.removeColleague(body);
+            await this.boardsService.removeColleague(body);
+            return res.status(200).json({
+                message: 'Colleague removed from board successfully.',
+            });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({

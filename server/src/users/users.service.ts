@@ -62,6 +62,11 @@ export class UsersService {
     async signIn(body: LoginUserDto): Promise<IGenerateTokens> {
         const user = await this.findUserByEmail(body.email);
 
+        //user must not be able to log in as Deleted_User
+        if (user.email === 'Deleted_User') {
+            throw new Error('Invalid login email!');
+        }
+
         if (!user) {
             throw new Error('Wrong email or password!');
         }
@@ -108,7 +113,43 @@ export class UsersService {
         return refreshJWTToken(refreshToken);
     }
 
-    async delete(tokenBody: DeleteUserDto) {
-        // To Do
+    async delete(userId: number) {
+        //create "Deleted User" if none exists
+        let deletedUser = await this.prismaService.user.findFirst({
+            where: {
+                email: 'Deleted_User',
+            },
+        });
+        if (!deletedUser) {
+            deletedUser = await this.prismaService.user.create({
+                data: {
+                    email: 'Deleted_User',
+                    firstName: 'Deleted',
+                    lastName: 'User',
+                    password: '1',
+                    profileImagePath: '/',
+                },
+            });
+        }
+
+        //transfer all messages to "Deleted user"
+        await this.prismaService.message.updateMany({
+            where: {
+                writtenBy: userId,
+            },
+            data: {
+                writtenBy: deletedUser.id,
+            },
+        });
+
+        //transfer all takss to "Deleted user"
+        await this.prismaService.task.updateMany({
+            where: {
+                assigneeId: userId,
+            },
+            data: {
+                assigneeId: deletedUser.id,
+            },
+        });
     }
 }

@@ -9,12 +9,15 @@ export class WorkspaceAuthMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
+            if (!req.body.workspaceId) {
+                throw new Error('Workspace ID is required!');
+            }
+
             const workspace = await this.prismaService.workspace.findFirst({
                 where: {
                     id: req.body.workspaceId,
                 },
             });
-
             if (!workspace) {
                 throw new Error('Invalid Workspace ID!');
             }
@@ -24,8 +27,8 @@ export class WorkspaceAuthMiddleware implements NestMiddleware {
                 await this.prismaService.user_Workspace.findFirst({
                     where: {
                         AND: [
-                            { userId: req.body.userData.id },
                             { workspaceId: workspace.id },
+                            { userId: req.body.userData.id },
                         ],
                     },
                 });

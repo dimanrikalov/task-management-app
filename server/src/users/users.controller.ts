@@ -9,15 +9,19 @@ import {
     Controller,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { BaseUsersDto } from './dtos/base.dto';
 import { UsersService } from './users.service';
 import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
-import { DeleteUserDto } from './dtos/deleteUser.dto';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(
+        private readonly usersService: UsersService,
+        private readonly workspacesService: WorkspacesService,
+    ) {}
     @Get('/')
     async getUsers() {
         return this.usersService.getAll();
@@ -86,7 +90,18 @@ export class UsersController {
     }
 
     @Delete('/delete')
-    async deleteUser(@Body() tokenBody: DeleteUserDto): Promise<void> {
-        return await this.usersService.delete(tokenBody);
+    async deleteUser(@Res() res: Response, @Body() body: BaseUsersDto) {
+        try {
+            await this.workspacesService.deleteMany(body.userData.id);
+            await this.usersService.delete(body.userData.id);
+            return res.status(200).json({
+                message: 'User deleted successfully.',
+            });
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
     }
 }

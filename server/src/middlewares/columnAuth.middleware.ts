@@ -4,19 +4,29 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 
 //need to somehow extend Request and add userData to the body
 @Injectable()
-export class BoardAuthMiddleware implements NestMiddleware {
+export class ColumnAuthMiddleware implements NestMiddleware {
     constructor(private readonly prismaService: PrismaService) {}
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
-            if (!req.body.boardId) {
-                throw new Error('Board ID is required!');
+            if (!req.body.columnId) {
+                throw new Error('Column ID is required!');
+            }
+
+            //find the column
+            const column = await this.prismaService.column.findFirst({
+                where: {
+                    id: req.body.columnId,
+                },
+            });
+            if (!column) {
+                throw new Error('Invalid column ID!');
             }
 
             //check if the board exists
             const board = await this.prismaService.board.findFirst({
                 where: {
-                    id: req.body.boardId,
+                    id: column.boardId,
                 },
             });
             if (!board) {
@@ -52,7 +62,7 @@ export class BoardAuthMiddleware implements NestMiddleware {
                 await this.prismaService.user_Board.findFirst({
                     where: {
                         AND: [
-                            { boardId: req.body.boardId },
+                            { boardId: board.id },
                             { userId: req.body.userData.id },
                         ],
                     },
@@ -67,8 +77,11 @@ export class BoardAuthMiddleware implements NestMiddleware {
             }
 
             req.body.boardData = board; //add the whole board data
+            req.body.columnData = column; //add the whole column data
             req.body.workspaceData = workspace; // add the whole workspace data
-            delete req.body.boardId; //remove the boardId as it can be accessed through boardData
+
+            delete req.body.columnId; //remove the columnId as it can be accessed through columnData
+
             next();
         } catch (err: any) {
             return res.status(401).json({ message: err.message });
