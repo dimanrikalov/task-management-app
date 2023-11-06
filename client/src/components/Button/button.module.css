@@ -1,0 +1,13 @@
+.button {
+	color: var(--blue-main);
+	background-color: white;
+	border: none;
+	width: 100%;
+	padding: 6px 0px;
+	border-radius: 0.5rem;
+	font-weight: 600;
+	cursor: pointer;
+    box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73);
+    -webkit-box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73);
+    -moz-box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73);
+}
