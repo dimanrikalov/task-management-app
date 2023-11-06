@@ -1,16 +1,19 @@
-import styles from './signUp.module.css';
+import styles from './signIn.module.css';
 import { FaChevronLeft } from 'react-icons/fa';
 import { Input } from '@/components/Input/Input';
 import { Button } from '@/components/Button/Button';
-import { useSignUpViewModel } from './SignUp.viewmodel';
+import { useSignInViewmodel } from './SignIn.viewmodel';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 
-export const SignUpView = () => {
-	const { state, operations } = useSignUpViewModel();
+export const SignInView = () => {
+	const { state, operations } = useSignInViewmodel();
 
 	return (
 		<div className={styles.background}>
 			<div className={styles.leftSide}>
+				<img src="/imgs/sign-in-img.png" alt="sign-in-img" />
+			</div>
+			<div className={styles.rightSide}>
 				<button
 					className={styles.backBtn}
 					onClick={operations.goToInitialView}
@@ -27,21 +30,7 @@ export const SignUpView = () => {
 						/>
 					)}
 				</div>
-				<form className={styles.form} onSubmit={operations.signUp}>
-					<Input
-						name={'firstName'}
-						placeholder={'First Name'}
-						type={'text'}
-						value={state.inputFields.firstName}
-						onChange={operations.handleInputChange}
-					/>
-					<Input
-						name={'lastName'}
-						placeholder={'Last Name'}
-						type={'text'}
-						value={state.inputFields.lastName}
-						onChange={operations.handleInputChange}
-					/>
+				<form className={styles.form} onSubmit={operations.signIn}>
 					<Input
 						name={'email'}
 						placeholder={'Email'}
@@ -56,15 +45,12 @@ export const SignUpView = () => {
 						value={state.inputFields.password}
 						onChange={operations.handleInputChange}
 					/>
-					<Button message="Sign Up" fontSize={18} />
+					<Button message="Sign In" fontSize={18} />
 				</form>
-				<p className={styles.haveAnAccount}>
+				<p className={styles.dontHaveAnAccount}>
 					Already have an account?{' '}
-					<span onClick={operations.goToSignInView}>Sign In</span>
+					<span onClick={operations.goToSignUpView}>Sign Up</span>
 				</p>
-			</div>
-			<div className={styles.rightSide}>
-				<img src="/imgs/sign-up-img.png" alt="sign-up-img" />
 			</div>
 		</div>
 	);
