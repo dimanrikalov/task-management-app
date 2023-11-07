@@ -1,0 +1,15 @@
+.backBtn {
+	border-radius: 9px;
+	padding: 6px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: none;
+	color: var(--blue-main);
+	cursor: pointer;
+}
+
+.reverse {
+	background-color: var(--blue-main);
+	color: var(--white-main);
+}

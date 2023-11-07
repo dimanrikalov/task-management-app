@@ -5,7 +5,7 @@
 	align-items: center;
 	justify-content: space-between;
 	background-color: red;
-    min-height: 495px;
+    min-height: 540px;
 }
 
 .rightSide {
@@ -20,7 +20,6 @@
 	padding: 64px 32px;
 	justify-content: space-evenly;
 	min-width: 400px;
-	min-height: 420px;
 }
 
 .titleContainer {
@@ -55,20 +54,6 @@
 	cursor: pointer;
 }
 
-.backBtn {
-	top: 32px;
-	left: 32px;
-	position: absolute;
-	border-radius: 9px;
-	padding: 6px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: none;
-	color: var(--blue-main);
-	cursor: pointer;
-}
-
 .leftSide {
     min-height: 400px;
 	height: 100%;
@@ -82,6 +67,6 @@
 
 .leftSide img {
     width: 70%;
-    min-width: 340px;
-    max-width: 540px;
+    max-width: 460px;
+	min-width: 340px;
 }

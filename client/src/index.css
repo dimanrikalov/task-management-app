@@ -19,8 +19,43 @@
 	--white-secondary: whitesmoke;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button {
+	font-weight: 500;
+}
+
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	outline-color: var(--blue-main);
+}
+
+
+::-webkit-scrollbar {
+	height: 7px;
+	width: 7px;
+	color: transparent;
+
+}
+::-webkit-scrollbar-corner {
+	background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 2rem;
+	background-color: rgb(177, 177, 177);
+}
+::-webkit-scrollbar-thumb:hover {
+	background-color: var(--blue-main);
+}
+
+::-webkit-scrollbar-track {
+	background-color: rgb(223, 223, 223);
+	border-radius: 2rem;
 }

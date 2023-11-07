@@ -1,8 +1,8 @@
 import styles from './signUp.module.css';
-import { FaChevronLeft } from 'react-icons/fa';
 import { Input } from '@/components/Input/Input';
 import { Button } from '@/components/Button/Button';
 import { useSignUpViewModel } from './SignUp.viewmodel';
+import { BackButton } from '@/components/BackButton/BackButton';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 
 export const SignUpView = () => {
@@ -11,12 +11,7 @@ export const SignUpView = () => {
 	return (
 		<div className={styles.background}>
 			<div className={styles.leftSide}>
-				<button
-					className={styles.backBtn}
-					onClick={operations.goToInitialView}
-				>
-					<FaChevronLeft size={16} />
-				</button>
+				<BackButton onClick={operations.goToInitialView} />
 				<div className={styles.titleContainer}>
 					<h1>Taskify</h1>
 					<h2>Sign Up</h2>

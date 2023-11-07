@@ -1,25 +1,15 @@
 .button {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	justify-content: space-between;
 	color: var(--blue-main);
 	background-color: white;
 	border: none;
 	width: 100%;
-	padding: 6px 0px;
-	border-radius: 9px;
-	font-weight: 600;
+	border-radius: 1rem;
 	cursor: pointer;
 	/* box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73);
     -webkit-box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73);
     -moz-box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73); */
-}
-
-.iconButton {
-	border: none;
-	width: 32px;
-	height: 32px;
-	display: flex;
-	border-radius: 9px;
-	align-items: center;
-	justify-content: center;
-	color: var(--blue-main);
-	background-color: var(--white-main);
 }

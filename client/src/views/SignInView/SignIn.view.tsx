@@ -1,8 +1,8 @@
 import styles from './signIn.module.css';
-import { FaChevronLeft } from 'react-icons/fa';
 import { Input } from '@/components/Input/Input';
 import { Button } from '@/components/Button/Button';
 import { useSignInViewmodel } from './SignIn.viewmodel';
+import { BackButton } from '@/components/BackButton/BackButton';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 
 export const SignInView = () => {
@@ -14,12 +14,7 @@ export const SignInView = () => {
 				<img src="/imgs/sign-in-img.png" alt="sign-in-img" />
 			</div>
 			<div className={styles.rightSide}>
-				<button
-					className={styles.backBtn}
-					onClick={operations.goToInitialView}
-				>
-					<FaChevronLeft size={16} />
-				</button>
+				<BackButton onClick={operations.goToInitialView} />
 				<div className={styles.titleContainer}>
 					<h1>Taskify</h1>
 					<h2>Sign Up</h2>

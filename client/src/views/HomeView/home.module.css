@@ -1,0 +1,74 @@
+.background {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background-color: var(--white-secondary);
+	display: flex;
+}
+
+.mainContainer {
+	width: 100%;
+	padding: 16px;
+	padding-left: 42px;
+	overflow-x: auto;
+	display: flex;
+	flex-direction: column;
+	padding: 32px;
+	gap: 72px;
+	transition: 200ms ease-in-out;
+
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	width: 100%;
+	gap: 16px;
+}
+
+.dashboard h3 {
+	font-weight: 600;
+}
+
+.userData {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.fullName {
+	min-width: 110px;
+	font-weight: 500;
+}
+
+.userInitialsIcon {
+	background-color: var(--blue-main);
+	color: var(--white-main);
+	font-weight: 600;
+	min-width: 30px;
+	min-height: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 9px;
+}
+
+.logout {
+	background-color: var(--blue-main);
+	width: 30px;
+	height: 30px;
+	padding: 4px;
+	border-radius: 9px;
+	color: white;
+	cursor: pointer;
+}
+
+.lists {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+	justify-content: space-between;
+}

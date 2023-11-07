@@ -64,17 +64,3 @@
 	padding: 64px 64px 0px 64px;
 	background-color: white;
 }
-
-.backBtn {
-	top: 32px;
-	left: 32px;
-	position: absolute;
-	border-radius: 9px;
-	padding: 6px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: none;
-	color: var(--blue-main);
-	cursor: pointer;
-}

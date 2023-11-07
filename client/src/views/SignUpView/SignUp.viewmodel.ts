@@ -51,6 +51,7 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 	const signUp = async (e: React.FormEvent) => {
 		e.preventDefault();
 		console.log('form submitted');
+		navigate('/dashboard');
 	};
 
 	return {

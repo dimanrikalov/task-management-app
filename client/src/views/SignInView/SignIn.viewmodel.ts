@@ -47,6 +47,7 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 	const signIn = (e: React.FormEvent) => {
 		e.preventDefault();
 		console.log('signing in...');
+		navigate('/dashboard');
 	};
 
 	return {
