@@ -22,8 +22,10 @@ export const HomeView = () => {
 					<div className={styles.userData}>
 						<div className={styles.userInitialsIcon}>DR</div>
 						<p className={styles.fullName}>Diman Rikalov</p>
-						{/* <BackButton reverse={true} onClick={() => {}} /> */}
-						<TbLogout2 className={styles.logout} />
+						<TbLogout2
+							className={styles.logout}
+							onClick={() => {}}
+						/>
 					</div>
 				</div>
 				<div className={styles.lists}>

@@ -17,13 +17,13 @@
     display: flex;
 	top: 0;
 	right: 6px;
-	transition: 200ms ease-in-out;
+	transition:300ms ease-in-out;
     height: 56px;
 }
 
 .toggleBtnReverse {
 	right: -28px;
-	rotate: 180deg;
+	transform: scaleX(-1);
 }
 
 .operations {

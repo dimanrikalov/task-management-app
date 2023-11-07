@@ -22,7 +22,7 @@ export const HomeCard = ({
 					<h4 className={styles.subtitle}>{subtitle}</h4>
 				</div>
 				<p className={styles.userCount}>
-					<BiSolidUser className={styles.icon} size={16}/>
+					<BiSolidUser className={styles.icon} size={16} />
 					{userCount}
 				</p>
 			</div>
