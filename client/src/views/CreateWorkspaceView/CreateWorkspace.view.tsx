@@ -47,6 +47,7 @@ export const CreateWorkspaceView = ({
 							fontSize={18}
 						/>
 						<Button
+							onClick={operations.goToWorkspace}
 							message="Create Workspace"
 							invert={true}
 							fontSize={18}

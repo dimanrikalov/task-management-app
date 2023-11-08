@@ -3,10 +3,10 @@ import { TbLogout2 } from 'react-icons/tb';
 import { Modal } from '@/components/Modal/Modal';
 import { useHomeViewModel } from './Home.viewmodel';
 import { HomeCard } from '@/components/HomeCard/HomeCard';
-import { CreateBoardView } from '../CreateBoard/CreateBoard.view';
+import { CreateBoardView } from '../CreateBoardView/CreateBoard.view';
 import { HomeGridStats } from '@/components/HomeGridStats/HomeGridStats';
 import { HorizontalList } from '@/components/HorizontalList/HorizontalList';
-import { CreateWorkspaceView } from '../CreateWorkspace/CreateWorkspace.view';
+import { CreateWorkspaceView } from '../CreateWorkspaceView/CreateWorkspace.view';
 import { OperationsRibbon } from '@/components/OperationsRibbon/OperationsRibbon';
 
 export const HomeView = () => {

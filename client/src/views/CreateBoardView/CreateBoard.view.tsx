@@ -4,7 +4,7 @@ import { Input } from '@/components/Input/Input';
 import { Button } from '@/components/Button/Button';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
-import { useCreateWorkspaceViewModel } from '@/views/CreateWorkspace/CreateWorkspace.viewmodel';
+import { useCreateWorkspaceViewModel } from '@/views/CreateWorkspaceView/CreateWorkspace.viewmodel';
 
 interface ICreateBoardView {
 	closeBtnHandler(): void;
