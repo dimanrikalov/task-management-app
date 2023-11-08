@@ -12,6 +12,10 @@
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
 
+	--pink: #de5d83;
+	--green: #00755e;
+	--yellow: #f8cc5c;
+	--purple: #4e2a84;
 	--error-background: #ffccc4;
 	--error-font-color: #ff0000;
 	--blue-main: #1da1f2;
@@ -36,12 +40,10 @@ button {
 	outline-color: var(--blue-main);
 }
 
-
 ::-webkit-scrollbar {
 	height: 7px;
 	width: 7px;
 	color: transparent;
-
 }
 ::-webkit-scrollbar-corner {
 	background-color: transparent;

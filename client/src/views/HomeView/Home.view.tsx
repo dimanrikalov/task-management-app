@@ -1,11 +1,13 @@
 import styles from './home.module.css';
 import { TbLogout2 } from 'react-icons/tb';
 import { useHomeViewModel } from './Home.viewmodel';
+import { HomeCard } from '@/components/HomeCard/HomeCard';
+import { HomeGridStats } from '@/components/HomeGridStats/HomeGridStats';
 import { HorizontalList } from '@/components/HorizontalList/HorizontalList';
 import { OperationsRibbon } from '@/components/OperationsRibbon/OperationsRibbon';
 
 export const HomeView = () => {
-	const { } = useHomeViewModel();
+	const {} = useHomeViewModel();
 
 	return (
 		<div className={styles.background}>
@@ -26,9 +28,113 @@ export const HomeView = () => {
 					</div>
 				</div>
 				<div className={styles.lists}>
-					<HorizontalList title="My Boards" />
-					<HorizontalList title="My Boards" />
-					<HorizontalList title="My Boards" />
+					<HomeGridStats />
+					<HorizontalList
+						title="Performance Overview"
+						showSearchInput={false}
+					>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>{' '}
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+					</HorizontalList>
+					<HorizontalList
+						title="Performance Overview"
+						showSearchInput={false}
+					>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>{' '}
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+						<HomeCard
+							onClick={() => {}}
+							title="Board Name"
+							subtitle="Workspace Name"
+							userCount={16}
+						/>
+					</HorizontalList>
 				</div>
 			</div>
 		</div>

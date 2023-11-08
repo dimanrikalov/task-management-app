@@ -1,0 +1,146 @@
+.grid {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 16px;
+	grid-template-areas:
+		'complete-tasks pending-tasks total-workspaces total-workspaces'
+		'complete-tasks total-boards total-boards total-messages';
+}
+
+.grid > * {
+	padding: 32px;
+	color: var(--white-main);
+	border-radius: 16px;
+	height: 100%;
+	width: 100%;
+	transition: 200ms ease-in-out;
+	cursor: pointer;
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+}
+
+.grid > *:hover {
+	transform: scale(1.03);
+}
+
+.icon {
+	font-size: 64px;
+	background-color: rgba(255, 255, 255, 0.35);
+	border-radius: 12px;
+}
+
+.completeTasks {
+	grid-area: complete-tasks;
+	background-color: var(--blue-main);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.completeTasks .header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+}
+
+.value {
+	font-size: 32px;
+	font-weight: 600;
+}
+
+.completeTasks .header h1 {
+	font-size: 46px;
+}
+
+.completeTasks h3 {
+	align-self: flex-end;
+}
+
+.pendingTasks {
+	grid-area: pending-tasks;
+	background-color: var(--pink);
+}
+
+.totalBoards {
+	grid-area: total-boards;
+	background-color: var(--purple);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.totalWorkspaces {
+	grid-area: total-workspaces;
+	background-color: var(--green);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.totalMessages {
+	grid-area: total-messages;
+	background-color: var(--yellow);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+/* pending tasks */
+.pendingTasks {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.pendingTasks .header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.pendingTasks .header .icon,
+.totalWorkspaces .bottom .icon {
+	padding: 4px 8px;
+}
+
+.totalWorkspaces .bottom {
+	display: flex;
+	align-items: flex-end;
+	gap: 16px;
+	justify-content: space-between;
+}
+
+.totalMessages .bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.totalMessages .bottom .icon {
+	padding: 12px;
+}
+
+.totalMessages h2 {
+	align-self: flex-end;
+}
+
+.totalBoards .header {
+	display: flex;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.totalBoards .icon {
+	padding: 8px;
+}
+
+

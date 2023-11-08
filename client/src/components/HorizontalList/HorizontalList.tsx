@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { Input } from '../Input/Input';
-import { HomeCard } from '../HomeCard/HomeCard';
 import styles from './horizontalList.module.css';
 
 interface IHorizontalListProps {
 	title: string;
 	showSearchInput?: boolean;
+	children: React.ReactNode[];
 }
 
 export const HorizontalList = ({
 	title,
 	showSearchInput = true,
+	children,
 }: IHorizontalListProps) => {
 	const [inputValue, setInputValue] = useState('');
 
@@ -34,56 +35,7 @@ export const HorizontalList = ({
 					</div>
 				)}
 			</div>
-			<div className={styles.horizontalList}>
-				<HomeCard
-					onClick={() => {}}
-					title="Board Name"
-					subtitle="Workspace Name"
-					userCount={16}
-				/>
-				<HomeCard
-					onClick={() => {}}
-					title="Board Name"
-					subtitle="Workspace Name"
-					userCount={16}
-				/>
-				<HomeCard
-					onClick={() => {}}
-					title="Board Name"
-					subtitle="Workspace Name"
-					userCount={16}
-				/>
-				<HomeCard
-					onClick={() => {}}
-					title="Board Name"
-					subtitle="Workspace Name"
-					userCount={16}
-				/>
-				<HomeCard
-					onClick={() => {}}
-					title="Board Name"
-					subtitle="Workspace Name"
-					userCount={16}
-				/>{' '}
-				<HomeCard
-					onClick={() => {}}
-					title="Board Name"
-					subtitle="Workspace Name"
-					userCount={16}
-				/>
-				<HomeCard
-					onClick={() => {}}
-					title="Board Name"
-					subtitle="Workspace Name"
-					userCount={16}
-				/>
-				<HomeCard
-					onClick={() => {}}
-					title="Board Name"
-					subtitle="Workspace Name"
-					userCount={16}
-				/>
-			</div>
+			<div className={styles.horizontalList}>{children}</div>
 		</div>
 	);
 };
