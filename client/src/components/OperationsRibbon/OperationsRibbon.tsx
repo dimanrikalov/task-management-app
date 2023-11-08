@@ -16,7 +16,7 @@ export const OperationsRibbon = ({
 	const navigate = useNavigate();
 
 	const goToProfileSettings = () => {
-		navigate('/user-settings');
+		navigate('/profile');
 	};
 
 	return (

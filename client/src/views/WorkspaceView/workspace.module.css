@@ -70,6 +70,22 @@
 }
 
 .addButton .icon {
-    font-size: 64px;
-    color: var(--blue-main);
+	font-size: 64px;
+	color: var(--blue-main);
+}
+
+.modalContainer {
+	position: relative;
+	width: 360px;
+	background-color: var(--white-main);
+	padding: 64px 32px 0px 32px;
+	border-radius: 16px;
+}
+
+.closeBtn {
+	position: absolute;
+	font-size: 21px;
+	top: 32px;
+	right: 32px;
+	cursor: pointer;
 }

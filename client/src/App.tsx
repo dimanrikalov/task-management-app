@@ -3,6 +3,7 @@ import { HomeView } from './views/HomeView/Home.view';
 import { IntroView } from './views/IntroView/Intro.view';
 import { SignInView } from './views/SignInView/SignIn.view';
 import { SignUpView } from './views/SignUpView/SignUp.view';
+import { ProfileView } from './views/ProfileView/Profile.view';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { WorkspaceView } from './views/WorkspaceView/Workspace.view';
 
@@ -16,6 +17,7 @@ function App() {
 					<Route path="/auth/sign-up" element={<SignUpView />} />
 					<Route path="/auth/sign-in" element={<SignInView />} />
 					<Route path="/workspace" element={<WorkspaceView />} />
+					<Route path="/profile" element={<ProfileView />} />
 				</Routes>
 			</BrowserRouter>
 		</div>

@@ -1,0 +1,84 @@
+.modalBackground {
+	position: relative;
+	background-color: var(--white-main);
+	border-radius: 16px;
+	padding: 32px;
+}
+
+.closeBtn {
+	position: absolute;
+	top: 24px;
+	right: 24px;
+	font-size: 24px;
+	cursor: pointer;
+}
+
+.background {
+	padding: 32px 64px;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 46px;
+}
+
+.notificationMsg {
+	background-color: var(--blue-main);
+	color: var(--white-main);
+	padding: 6px 12px;
+	border-radius: 9px;
+}
+
+.main {
+	display: flex;
+	justify-content: space-between;
+}
+
+h3 {
+	font-size: 24px;
+}
+
+.leftSide {
+	width: 45%;
+	max-width: 350px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 32px;
+}
+
+.imgContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 100%;
+	overflow: hidden;
+	height: 300px;
+	width: 300px;
+}
+
+.formContainer {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+}
+
+.form {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+}
+
+.rightSide {
+	width: 45%;
+	max-width: 350px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
