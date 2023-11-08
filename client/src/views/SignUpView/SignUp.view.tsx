@@ -11,7 +11,9 @@ export const SignUpView = () => {
 	return (
 		<div className={styles.background}>
 			<div className={styles.leftSide}>
-				<BackButton onClick={operations.goToInitialView} />
+				<div className={styles.positionBackButton}>
+					<BackButton onClick={operations.goToInitialView} />
+				</div>
 				<div className={styles.titleContainer}>
 					<h1>Taskify</h1>
 					<h2>Sign Up</h2>

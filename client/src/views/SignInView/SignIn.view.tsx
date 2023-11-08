@@ -14,7 +14,9 @@ export const SignInView = () => {
 				<img src="/imgs/sign-in-img.png" alt="sign-in-img" />
 			</div>
 			<div className={styles.rightSide}>
+				<div className={styles.positionBackButton}>
 				<BackButton onClick={operations.goToInitialView} />
+				</div>
 				<div className={styles.titleContainer}>
 					<h1>Taskify</h1>
 					<h2>Sign Up</h2>

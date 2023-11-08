@@ -5,14 +5,11 @@ import { HorizontalList } from '@/components/HorizontalList/HorizontalList';
 import { OperationsRibbon } from '@/components/OperationsRibbon/OperationsRibbon';
 
 export const HomeView = () => {
-	const { state, operations } = useHomeViewModel();
+	const { } = useHomeViewModel();
 
 	return (
 		<div className={styles.background}>
-			<OperationsRibbon
-				isOpen={state.isMenuVisible}
-				toggle={operations.toggleMenu}
-			/>
+			<OperationsRibbon />
 			<div className={styles.mainContainer}>
 				<div className={styles.header}>
 					<div className={styles.dashboard}>

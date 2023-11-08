@@ -1,37 +1,29 @@
 .background {
 	position: fixed;
 	top: 90px;
-    left: 0;
-	padding: 16px 46px 16px 16px;
+	left: -125px;
+	padding: 12px 6px 12px 12px;
 	border-radius: 0px 12px 12px 0px;
 	transition: 200ms ease-in-out;
 	background-color: var(--blue-main);
-}
-
-.hidden {
-	left: -198px;
-}
-
-.toggleBtn {
-	position: absolute;
-    display: flex;
-	top: 0;
-	right: 6px;
-	transition:300ms ease-in-out;
-    height: 56px;
-}
-
-.toggleBtnReverse {
-	right: -28px;
-	transform: scaleX(-1);
-}
-
-.operations {
 	display: flex;
-	gap: 32px;
+	align-items: center;
+	gap: 16px;
+}
+
+.background:hover {
+	left: 0;
+	.icon:last-of-type {
+		transform: rotate(0);
+	}
 }
 
 .icon {
+	transition: 200ms ease-in-out;
 	color: var(--white-main);
-    cursor: pointer;
+	cursor: pointer;
+}
+
+.icon:last-of-type {
+	transform: rotate(180deg);
 }

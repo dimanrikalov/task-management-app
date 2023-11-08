@@ -22,6 +22,12 @@
 	min-width: 400px;
 }
 
+.positionBackButton {
+	position: absolute;
+		top: 32px;
+		left: 32px;
+}
+
 .titleContainer {
 	display: flex;
 	flex-direction: column;
@@ -69,4 +75,18 @@
     width: 70%;
     max-width: 460px;
 	min-width: 340px;
+}
+
+@media screen and (max-width: 840px) {
+	.rightSide {
+		max-width: unset;
+		width: 100%;
+	}
+	.titleContainer,
+	.form {
+		max-width: 340px;
+	}
+	.leftSide {
+		display: none;
+	}
 }

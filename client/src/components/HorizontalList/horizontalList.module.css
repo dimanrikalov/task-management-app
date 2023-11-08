@@ -10,13 +10,12 @@
 	justify-content: space-between;
 }
 
-
-
 .inputContainer {
 	width: 200px;
 }
 
 .horizontalList {
+	border-radius: 12px;
 	width: 100%;
 	gap: 16px;
 	padding: 12px;
