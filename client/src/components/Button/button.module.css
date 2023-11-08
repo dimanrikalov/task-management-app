@@ -3,7 +3,7 @@
 	align-items: center;
 	gap: 16px;
 	justify-content: center;
-	padding: 6px 0px;
+	padding: 8px 0px;
 	color: var(--blue-main);
 	background-color: white;
 	border: none;
@@ -14,4 +14,9 @@
 	/* box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73);
     -webkit-box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73);
     -moz-box-shadow: 1px 8px 22px -2px rgba(8,65,102,0.73); */
+}
+
+.invert {
+	color: var(--white-main);
+	background-color: var(--blue-main);
 }

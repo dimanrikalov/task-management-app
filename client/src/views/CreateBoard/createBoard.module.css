@@ -1,0 +1,65 @@
+.background {
+	position: relative;
+	background-color: var(--white-main);
+	height: 100%;
+	width: 100%;
+	border-radius: 16px;
+	padding: 72px 54px 32px 54px;
+	display: flex;
+	justify-content: space-between;
+	gap: 122px;
+	align-items: center;
+	overflow-y: auto;
+	width: 90%;
+	height: 90%;
+}
+
+.closeBtn {
+	position: absolute;
+	top: 32px;
+	right: 32px;
+	font-size: 32px;
+	cursor: pointer;
+}
+
+.leftSide {
+	width: 45%;
+	max-width: 420px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.introMessage {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.bold {
+	font-weight: 600;
+}
+
+.inputContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+	width: 350px;
+}
+
+.createForm {
+	display: flex;
+	flex-direction: column;
+	padding: 0px 32px;
+	gap: 16px;
+	margin-bottom: 64px;
+}
+
+.rightSide {
+	width: 45%;
+    max-width: 280px;
+	height: 100%;
+	padding-top: 32px;
+}

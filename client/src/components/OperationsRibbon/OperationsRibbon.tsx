@@ -1,19 +1,19 @@
 import { MdLibraryAdd } from 'react-icons/md';
 import { HiDocumentAdd } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
 import styles from './operationsRibbon.module.css';
 import { FaChevronLeft, FaUserEdit } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 
-export const OperationsRibbon = () => {
+interface IOperationsRibbonProps {
+	createBoardBtnHandler(): void;
+	createWorkspaceBtnHandler(): void;
+}
+
+export const OperationsRibbon = ({
+	createBoardBtnHandler,
+	createWorkspaceBtnHandler,
+}: IOperationsRibbonProps) => {
 	const navigate = useNavigate();
-
-	const goToCreateWorkspace = () => {
-		navigate('/workspace');
-	};
-
-	const goToCreateBoard = () => {
-		navigate('/boards');
-	};
 
 	const goToProfileSettings = () => {
 		navigate('/user-settings');
@@ -24,12 +24,12 @@ export const OperationsRibbon = () => {
 			<MdLibraryAdd
 				size={24}
 				className={styles.icon}
-				onClick={goToCreateWorkspace}
+				onClick={createWorkspaceBtnHandler}
 			/>
 			<HiDocumentAdd
 				size={24}
 				className={styles.icon}
-				onClick={goToCreateBoard}
+				onClick={createBoardBtnHandler}
 			/>
 			<FaUserEdit
 				size={24}

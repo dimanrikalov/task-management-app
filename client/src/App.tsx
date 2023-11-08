@@ -12,6 +12,7 @@ function App() {
 				<Routes>
 					<Route path="/" element={<IntroView />} />
 					<Route path="/dashboard" element={<HomeView />} />
+
 					<Route path="/auth/sign-up" element={<SignUpView />} />
 					<Route path="/auth/sign-in" element={<SignInView />} />
 				</Routes>
