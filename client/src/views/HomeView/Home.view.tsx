@@ -15,8 +15,8 @@ export const HomeView = () => {
 			<div className={styles.mainContainer}>
 				<div className={styles.header}>
 					<div className={styles.dashboard}>
-						<h3>Dashboard</h3>
-						<h5>Tuesday, 17 October 2023</h5>
+						<h2>Dashboard</h2>
+						<h4>Tuesday, 17 October 2023</h4>
 					</div>
 					<div className={styles.userData}>
 						<div className={styles.userInitialsIcon}>DR</div>
@@ -30,7 +30,7 @@ export const HomeView = () => {
 				<div className={styles.lists}>
 					<HomeGridStats />
 					<HorizontalList
-						title="Performance Overview"
+						title="Boards"
 						showSearchInput={false}
 					>
 						<HomeCard
@@ -83,7 +83,7 @@ export const HomeView = () => {
 						/>
 					</HorizontalList>
 					<HorizontalList
-						title="Performance Overview"
+						title="Workspaces"
 						showSearchInput={false}
 					>
 						<HomeCard

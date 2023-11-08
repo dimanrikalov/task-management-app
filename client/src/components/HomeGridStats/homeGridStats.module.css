@@ -1,11 +1,21 @@
+.background {
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+}
+
+.title {
+	font-size: 24px;
+}
+
 .grid {
 	width: 100%;
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
 	gap: 16px;
 	grid-template-areas:
-		'complete-tasks pending-tasks total-workspaces total-workspaces'
-		'complete-tasks total-boards total-boards total-messages';
+		'complete-tasks total-boards total-workspaces total-workspaces'
+		'complete-tasks pending-tasks pending-tasks total-messages';
 }
 
 .grid > * {
@@ -21,8 +31,8 @@
 	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
-.grid > *:hover {
-	transform: scale(1.03);
+h3 {
+	font-size: 32px;
 }
 
 .icon {
@@ -33,7 +43,7 @@
 
 .completeTasks {
 	grid-area: complete-tasks;
-	background-color: var(--blue-main);
+	background-color: var(--purple);
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -67,7 +77,7 @@
 
 .totalBoards {
 	grid-area: total-boards;
-	background-color: var(--purple);
+	background-color: var(--blue-main);
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -142,5 +152,3 @@
 .totalBoards .icon {
 	padding: 8px;
 }
-
-

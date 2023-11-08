@@ -3,13 +3,14 @@
 	border-radius: 16px;
 	cursor: pointer;
 	overflow: hidden;
-	height: 160px;
 	min-width: 260px;
 	background-color: var(--white-main);
 	transition: 200ms ease-in-out;
 	box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
 	-webkit-box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
 	-moz-box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
+	height: 220px;
+	min-width: 420px;
 }
 
 .btn:hover {
@@ -42,25 +43,27 @@
 .title {
 	color: var(--blue-main);
 	font-weight: 600;
+	font-size: 28px;
 	transition: 200ms ease-in-out;
 }
 
 .subtitle {
-	font-size: 12px;
+	font-size: 16px;
 	letter-spacing: 0.2px;
 	transition: 200ms ease-in-out;
 }
 
 .userCount {
-	font-weight: 400;
+	font-size: 24px;
+	font-weight: 500;
 	align-self: flex-end;
 	display: flex;
 	align-items: center;
-	font-size: 14px;
 	transition: 200ms ease-in-out;
 }
 
 .icon {
+	font-size: 32px;
 	color: var(--blue-main);
 	transition: 200ms ease-in-out;
 }
