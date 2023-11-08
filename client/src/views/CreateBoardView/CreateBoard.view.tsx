@@ -30,7 +30,7 @@ export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 
 				<div className={styles.inputContainer}>
 					<h2>
-						STEP 1: Name your <span>board</span>
+						Name your <span>board</span>
 					</h2>
 					<form className={styles.createForm}>
 						<ErrorMessage
@@ -49,7 +49,7 @@ export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 				</div>
 
 				<div className={styles.inputContainer}>
-					<h2>STEP 2: Choose a workspace</h2>
+					<h2>Choose a workspace</h2>
 					<form className={styles.createForm}>
 						<Input
 							type="text"
@@ -68,7 +68,7 @@ export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 				</div>
 			</div>
 			<div className={styles.rightSide}>
-				<AddColleagueInput title={'Board users list'}/>
+				<AddColleagueInput title={'Board users list'} />
 			</div>
 		</div>
 	);

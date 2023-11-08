@@ -38,7 +38,7 @@ export const AddColleagueInput = ({ title }: IAddColleagueInputProps) => {
 	return (
 		<div className={styles.background}>
 			<div className={styles.top}>
-				<h2>STEP 2: Add Colleagues</h2>
+				<h2>Add Colleagues</h2>
 				<div className={styles.input}>
 					<Input
 						type="email"

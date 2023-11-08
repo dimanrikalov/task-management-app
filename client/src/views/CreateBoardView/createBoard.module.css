@@ -52,14 +52,14 @@
 .createForm {
 	display: flex;
 	flex-direction: column;
-	padding: 0px 32px;
+	padding: 0px 64px 0px 0px;
 	gap: 16px;
 	margin-bottom: 64px;
 }
 
 .rightSide {
 	width: 45%;
-    max-width: 280px;
+	max-width: 280px;
 	height: 100%;
 	padding-top: 32px;
 }

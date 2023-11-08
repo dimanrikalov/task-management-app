@@ -31,7 +31,7 @@ export const CreateWorkspaceView = ({
 
 				<div className={styles.inputContainer}>
 					<h2>
-						STEP 1: Name your <span>workspace</span>
+						Name your <span>workspace</span>
 					</h2>
 					<form className={styles.createForm}>
 						<ErrorMessage

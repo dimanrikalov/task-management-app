@@ -1,8 +1,8 @@
 import { BsCheckLg } from 'react-icons/bs';
 import styles from './homeGridStats.module.css';
 import { LuMessageSquare } from 'react-icons/lu';
-import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
 import { HiOutlineDocument } from 'react-icons/hi';
+import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
 
 export const HomeGridStats = () => {
 	return (

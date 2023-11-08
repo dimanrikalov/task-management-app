@@ -1,4 +1,3 @@
-import { MdCancel } from 'react-icons/md';
 import styles from './boardCard.module.css';
 
 interface IBoardCardProps {
@@ -18,7 +17,6 @@ export const BoardCard = ({
 			className={styles.background}
 			onClick={onClickHandler}
 		>
-			<MdCancel className={styles.deleteBtn} onClick={()=>{}} />
 			{boardName}
 		</button>
 	);
