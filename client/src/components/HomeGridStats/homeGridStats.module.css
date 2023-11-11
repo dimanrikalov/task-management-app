@@ -1,30 +1,27 @@
 .background {
-   display: flex;
-   flex-direction: column;
-   gap: 16px;
-}
-
-.title {
-	font-size: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
 }
 
 .grid {
+	height: 100%;
 	width: 100%;
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(5, 1fr);
 	gap: 16px;
 	grid-template-areas:
-		'complete-tasks total-boards total-workspaces total-workspaces'
-		'complete-tasks pending-tasks pending-tasks total-messages';
+		'boards 	boards 		   boards 		 boards		   boards'
+		'workspaces workspaces     complete-tasks total-boards   total-workspaces'
+		'workspaces workspaces pending-tasks  pending-tasks   total-messages';
 }
 
-.grid > * {
+.grid > *:not(.workspaces, .boards) {
 	padding: 32px;
 	color: var(--white-main);
 	border-radius: 16px;
 	height: 100%;
 	width: 100%;
-	transition: 200ms ease-in-out;
 	cursor: pointer;
 	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
@@ -68,6 +65,42 @@ h3 {
 
 .completeTasks h3 {
 	align-self: flex-end;
+}
+
+.workspaces {
+	grid-area: workspaces;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 100%;
+}
+
+.workspaces .list > * {
+	flex: 1;
+}
+
+.workspaces .list {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	width: 100%;
+	flex-wrap: wrap;
+	overflow-y: auto;
+	max-height: 540px;
+}
+
+
+
+.boards {
+	grid-area: boards;
+}
+
+
+.boards .list {
+	display: flex;
+	gap: 16px;
+	padding: 12px;
+	overflow-x: auto;
 }
 
 .pendingTasks {
@@ -151,4 +184,15 @@ h3 {
 
 .totalBoards .icon {
 	padding: 8px;
+}
+
+@media screen and (max-width: 1124px) {
+	.grid {
+		grid-template-columns: repeat(3, 1fr);
+		grid-template-areas:
+			'boards 	   boards 	        boards'
+			'workspaces    workspaces       complete-tasks'
+			'workspaces    workspaces       pending-tasks'
+			'total-boards  total-workspaces total-messages';
+	}
 }

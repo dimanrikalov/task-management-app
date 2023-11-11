@@ -1,8 +1,6 @@
 .background {
 	position: relative;
 	background-color: var(--white-main);
-	height: 100%;
-	width: 100%;
 	border-radius: 16px;
 	padding: 72px 54px 54px 54px;
 	display: flex;
@@ -12,6 +10,8 @@
 	overflow-y: auto;
 	width: 90%;
 	height: 90%;
+	max-width: 980px;
+	max-height: 680px;
 }
 
 .closeBtn {
@@ -52,9 +52,8 @@
 .createForm {
 	display: flex;
 	flex-direction: column;
-    padding: 0px 64px 0px 0px;
+	padding: 0px 64px 0px 0px;
 	gap: 16px;
-	margin-bottom: 64px;
 }
 
 .rightSide {

@@ -11,10 +11,17 @@
 	overflow-x: auto;
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 	padding: 16px;
-	padding-left: 42px;
-	gap: 72px;
+	gap: 56px;
 	transition: 200ms ease-in-out;
+}
+
+.operationsContainer {
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
 }
 
 .header {
@@ -66,12 +73,4 @@
 	border-radius: 9px;
 	color: white;
 	cursor: pointer;
-}
-
-.lists {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: 64px;
-	justify-content: space-between;
 }

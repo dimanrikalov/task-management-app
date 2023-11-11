@@ -1,6 +1,5 @@
 .background {
 	position: fixed;
-	top: 102px;
 	left: -125px;
 	padding: 12px 6px 12px 12px;
 	border-radius: 0px 12px 12px 0px;
@@ -9,6 +8,9 @@
 	display: flex;
 	align-items: center;
 	gap: 16px;
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
 .background:hover {
