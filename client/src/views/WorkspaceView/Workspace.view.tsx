@@ -183,6 +183,14 @@ export const WorkspaceView = () => {
 						onClickHandler={() => {}}
 						boardName="Board Name"
 					/>
+					<BoardCard
+						onClickHandler={() => {}}
+						boardName="Board Name"
+					/>
+					<BoardCard
+						onClickHandler={() => {}}
+						boardName="Board Name"
+					/>
 				</div>
 			</div>
 		</>

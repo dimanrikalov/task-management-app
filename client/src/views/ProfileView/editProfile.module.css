@@ -14,13 +14,20 @@
 }
 
 .background {
+	position: relative;
 	padding: 32px 64px;
+	background-color: var(--white-main);
+	border-radius: 16px;
+	height: 90%;
+	max-height: 590px;
+	overflow-y: auto;
 }
 
 .header {
+	width: 100%;
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	flex-direction: column;
+	align-items: flex-start;
 	margin-bottom: 46px;
 }
 
@@ -36,8 +43,8 @@
 	justify-content: space-between;
 }
 
-h3 {
-	font-size: 24px;
+.background h3 {
+	font-size: 16px;
 }
 
 .leftSide {
@@ -55,8 +62,8 @@ h3 {
 	align-items: center;
 	border-radius: 100%;
 	overflow: hidden;
-	height: 300px;
-	width: 300px;
+	height: 164px;
+	width: 164px;
 }
 
 .formContainer {

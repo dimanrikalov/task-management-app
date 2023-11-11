@@ -1,24 +1,19 @@
 import { MdLibraryAdd } from 'react-icons/md';
 import { HiDocumentAdd } from 'react-icons/hi';
-import { useNavigate } from 'react-router-dom';
 import styles from './operationsRibbon.module.css';
 import { FaChevronLeft, FaUserEdit } from 'react-icons/fa';
 
 interface IOperationsRibbonProps {
 	createBoardBtnHandler(): void;
+	editProfileBtnHandler(): void;
 	createWorkspaceBtnHandler(): void;
 }
 
 export const OperationsRibbon = ({
 	createBoardBtnHandler,
+	editProfileBtnHandler,
 	createWorkspaceBtnHandler,
 }: IOperationsRibbonProps) => {
-	const navigate = useNavigate();
-
-	const goToProfileSettings = () => {
-		navigate('/profile');
-	};
-
 	return (
 		<div className={styles.background}>
 			<MdLibraryAdd
@@ -34,7 +29,7 @@ export const OperationsRibbon = ({
 			<FaUserEdit
 				size={24}
 				className={styles.icon}
-				onClick={goToProfileSettings}
+				onClick={editProfileBtnHandler}
 			/>
 			<FaChevronLeft size={24} className={styles.icon} />
 		</div>

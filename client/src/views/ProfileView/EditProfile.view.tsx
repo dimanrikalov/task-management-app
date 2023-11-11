@@ -1,13 +1,15 @@
 import { RxCross2 } from 'react-icons/rx';
-import styles from './profile.module.css';
+import styles from './editProfile.module.css';
 import { Modal } from '@/components/Modal/Modal';
 import { Input } from '@/components/Input/Input';
 import { Button } from '@/components/Button/Button';
-import { useProfileViewModel } from './Profile.viewmodel';
-import { BackButton } from '@/components/BackButton/BackButton';
+import { useProfileViewModel } from './EditProfile.viewmodel';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 
-export const ProfileView = () => {
+interface IEditProfileView {
+	closeBtnHandler(): void;
+}
+export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 	const { state, operations } = useProfileViewModel();
 
 	return (
@@ -15,31 +17,34 @@ export const ProfileView = () => {
 			{state.isDeletionModalOpen && (
 				<Modal>
 					<div className={styles.modalBackground}>
-					<RxCross2
-						className={styles.closeBtn}
-						onClick={operations.toggleIsDeletionModalOpen}
-					/>
+						<RxCross2
+							className={styles.closeBtn}
+							onClick={operations.toggleIsDeletionModalOpen}
+						/>
 						<DeleteConfirmation entityName="your profile" />
 					</div>
 				</Modal>
 			)}
 
 			<div className={styles.background}>
+				<RxCross2
+					className={styles.closeBtn}
+					onClick={closeBtnHandler}
+				/>
 				<div className={styles.header}>
-					<BackButton onClick={operations.goBack} />
 					<div className={styles.notificationMsg}>
 						<p>New password saved!</p>
 					</div>
 				</div>
 				<div className={styles.main}>
 					<div className={styles.leftSide}>
-						<h3>dimanrikalov1@abv.bg</h3>
 						<div className={styles.imgContainer}>
 							<img
 								src="/imgs/profile-img.jpeg"
 								alt="profile-img"
 							/>
 						</div>
+						<h3>dimanrikalov1@abv.bg</h3>
 						<Button message={'Change Image'} invert={true} />
 						<div className={styles.formContainer}>
 							<h3>Edit password</h3>

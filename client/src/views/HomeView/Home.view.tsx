@@ -2,6 +2,7 @@ import styles from './home.module.css';
 import { TbLogout2 } from 'react-icons/tb';
 import { Modal } from '@/components/Modal/Modal';
 import { useHomeViewModel } from './Home.viewmodel';
+import { EditProfileView } from '../ProfileView/EditProfile.view';
 import { CreateBoardView } from '../CreateBoardView/CreateBoard.view';
 import { HomeGridStats } from '@/components/HomeGridStats/HomeGridStats';
 import { CreateWorkspaceView } from '../CreateWorkspaceView/CreateWorkspace.view';
@@ -32,6 +33,15 @@ export const HomeView = () => {
 					}
 				/>
 			)}
+			{state.isEditProfileModalOpen && (
+				<Modal
+					children={
+						<EditProfileView
+							closeBtnHandler={operations.toggleEditProfileModal}
+						/>
+					}
+				/>
+			)}
 			<div className={styles.background}>
 				<div className={styles.mainContainer}>
 					<div className={styles.header}>
@@ -56,10 +66,13 @@ export const HomeView = () => {
 							createWorkspaceBtnHandler={
 								operations.toggleCreateWorkspaceModal
 							}
+							editProfileBtnHandler={
+								operations.toggleEditProfileModal
+							}
 						/>
 					</div>
 					<div className={styles.lists}>
-						<HomeGridStats />
+						<HomeGridStats goToBoard={operations.goToBoard}/>
 					</div>
 				</div>
 			</div>

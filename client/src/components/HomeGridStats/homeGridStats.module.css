@@ -8,12 +8,12 @@
 	height: 100%;
 	width: 100%;
 	display: grid;
-	grid-template-columns: repeat(5, 1fr);
+	grid-template-columns: repeat(6, 1fr);
 	gap: 16px;
 	grid-template-areas:
-		'boards 	boards 		   boards 		 boards		   boards'
-		'workspaces workspaces     complete-tasks total-boards   total-workspaces'
-		'workspaces workspaces pending-tasks  pending-tasks   total-messages';
+		'boards 	boards 		   boards 		 boards		   boards  boards'
+		'workspaces workspaces     workspaces complete-tasks total-boards   total-workspaces'
+		'workspaces workspaces workspaces pending-tasks  pending-tasks   total-messages';
 }
 
 .grid > *:not(.workspaces, .boards) {
@@ -29,7 +29,7 @@
 }
 
 h3 {
-	font-size: 32px;
+	font-size: 24px;
 }
 
 .icon {
@@ -59,10 +59,6 @@ h3 {
 	font-weight: 600;
 }
 
-.completeTasks .header h1 {
-	font-size: 46px;
-}
-
 .completeTasks h3 {
 	align-self: flex-end;
 }
@@ -75,26 +71,35 @@ h3 {
 	width: 100%;
 }
 
+.header {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.inputContainer {
+	width: 200px;
+}
+
 .workspaces .list > * {
 	flex: 1;
 }
 
 .workspaces .list {
 	display: flex;
+	padding: 6px;
 	justify-content: space-between;
 	gap: 16px;
 	width: 100%;
 	flex-wrap: wrap;
 	overflow-y: auto;
-	max-height: 540px;
+	overflow-x: hidden;
+	max-height: 440px
 }
-
-
 
 .boards {
 	grid-area: boards;
 }
-
 
 .boards .list {
 	display: flex;
@@ -188,11 +193,11 @@ h3 {
 
 @media screen and (max-width: 1124px) {
 	.grid {
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(4, 1fr);
 		grid-template-areas:
-			'boards 	   boards 	        boards'
-			'workspaces    workspaces       complete-tasks'
-			'workspaces    workspaces       pending-tasks'
-			'total-boards  total-workspaces total-messages';
+			'boards 	   boards 	        boards 			boards'
+			'workspaces    workspaces       workspaces		complete-tasks'
+			'workspaces    workspaces       workspaces		pending-tasks'
+			'total-boards  total-workspaces total-messages 	total-messages';
 	}
 }

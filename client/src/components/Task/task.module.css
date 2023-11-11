@@ -1,0 +1,31 @@
+.background {
+	width: 100%;
+	border-radius: 16px;
+	background-color: var(--white-secondary);
+}
+
+.taskImg {
+	height: 60px;
+}
+
+.taskImg img {
+	width: 100%;
+	height: 100%;
+}
+
+.userImg {
+	width: 42px;
+	height: 42px;
+	border-radius: 50%;
+	object-fit: cover;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+}
+
+
+.userImg img {
+	width: 100%;
+	object-fit: fill;
+}

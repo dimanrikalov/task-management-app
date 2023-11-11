@@ -1,0 +1,42 @@
+.background {
+	position: relative;
+	padding: 32px;
+}
+
+.boardContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.titleDiv {
+	width: 100%;
+	max-width: 200px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+    gap: 16px;
+}
+
+.operationsContainer {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	justify-content: space-evenly;
+	width: 100%;
+    max-width: 532px;
+}
+
+.columnsContainer {
+	display: flex;
+	gap: 32px;
+	width: 100%;
+	overflow-x: auto;
+}

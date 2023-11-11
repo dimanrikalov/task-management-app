@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 interface IInputValues {
@@ -8,13 +7,12 @@ interface IInputValues {
 	password: string;
 }
 
-interface IProfileViewModelState {
+interface IEditProfileViewModelState {
 	inputValues: IInputValues;
 	isDeletionModalOpen: boolean;
 }
 
-interface IProfileViewModelOperations {
-	goBack(): void;
+interface IEditProfileViewModelOperations {
 	inputChangeHandler(
 		e: React.ChangeEvent<HTMLInputElement>,
 		fieldName: string
@@ -23,8 +21,8 @@ interface IProfileViewModelOperations {
 }
 
 export const useProfileViewModel = (): ViewModelReturnType<
-	IProfileViewModelState,
-	IProfileViewModelOperations
+	IEditProfileViewModelState,
+	IEditProfileViewModelOperations
 > => {
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
 	const [inputValues, setInputValues] = useState({
@@ -32,11 +30,6 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		lastName: '',
 		password: '',
 	});
-	const navigate = useNavigate();
-
-	const goBack = () => {
-		navigate('/dashboard');
-	};
 
 	const inputChangeHandler = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -51,6 +44,6 @@ export const useProfileViewModel = (): ViewModelReturnType<
 
 	return {
 		state: { inputValues, isDeletionModalOpen },
-		operations: { goBack, inputChangeHandler, toggleIsDeletionModalOpen },
+		operations: { inputChangeHandler, toggleIsDeletionModalOpen },
 	};
 };
