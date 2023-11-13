@@ -1,0 +1,71 @@
+.chatContainer {
+	position: absolute;
+	top: 0;
+	left: -385px;
+	width: 400px;
+	height: 100vh;
+	background-color: var(--white-secondary);
+	display: flex;
+	flex-direction: column;
+	padding: 0px 0px 16px 0px;
+	gap: 16px;
+	align-items: center;
+	justify-content: space-evenly;
+	transition: 200ms ease-in-out;
+	border-radius: 0px 16px 16px 0px;
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+}
+
+.chatContainer.isOpen {
+	left: 0;
+}
+
+.header {
+	width: 100%;
+	padding: 16px;
+}
+
+.hideBtn {
+	position: absolute;
+	right: -18px;
+	top: 16px;
+	rotate: 180deg;
+	transition: 200ms ease-in-out;
+	border-radius: 16px;
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+}
+
+.hideBtn.isOpen {
+	right: 24px;
+	rotate: unset;
+}
+
+.chat {
+	width: 100%;
+	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+	background-color: var(--white-secondary);
+	padding: 16px;
+}
+
+.inputContainer {
+	width: 90%;
+	display: flex;
+	gap: 32px;
+	justify-content: space-between;
+}
+
+.sendBtn {
+	background-color: var(--blue-main);
+	color: var(--white-main);
+	padding: 0px 6px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
