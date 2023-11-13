@@ -1,0 +1,9 @@
+.entry {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.entry .icon {
+	color: var(--blue-main);
+}

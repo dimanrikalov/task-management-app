@@ -1,17 +1,18 @@
 import classNames from 'classnames';
 import styles from './board.module.css';
+import { RxCross2 } from 'react-icons/rx';
 import { LuUserCog } from 'react-icons/lu';
 import { VscGraph } from 'react-icons/vsc';
 import { Chat } from '@/components/Chat/Chat';
+import { Modal } from '@/components/Modal/Modal';
 import { RiDeleteBin2Line } from 'react-icons/ri';
 import { Button } from '@/components/Button/Button';
 import { Column } from '@/components/Column/Column';
 import { useBoardViewModel } from './Board.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
+import { CreateTaskView } from '../CreateTaskView/CreateTask.view';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
-import { Modal } from '@/components/Modal/Modal';
-import { RxCross2 } from 'react-icons/rx';
 
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
@@ -38,6 +39,15 @@ export const BoardView = () => {
 						/>
 						<DeleteConfirmation entityName="Board Name" />
 					</div>
+				</Modal>
+			)}
+			{state.isCreateTaskModalOpen && (
+				<Modal>
+					<CreateTaskView
+						toggleIsCreateTaskModalOpen={
+							operations.toggleIsCreateTaskModalOpen
+						}
+					/>
 				</Modal>
 			)}
 
@@ -103,6 +113,7 @@ export const BoardView = () => {
 						)}
 					>
 						<Column
+							onClick={operations.toggleIsCreateTaskModalOpen}
 							title="To Do"
 							tasks={[
 								{
@@ -147,6 +158,7 @@ export const BoardView = () => {
 						/>
 						<Column
 							title="To Do"
+							onClick={operations.toggleIsCreateTaskModalOpen}
 							tasks={[
 								{
 									title: 'Fix Bug',
@@ -174,6 +186,7 @@ export const BoardView = () => {
 						/>
 						<Column
 							title="To Do"
+							onClick={operations.toggleIsCreateTaskModalOpen}
 							tasks={[
 								{
 									title: 'Fix Bug',
@@ -201,6 +214,7 @@ export const BoardView = () => {
 						/>
 						<Column
 							title="To Do"
+							onClick={operations.toggleIsCreateTaskModalOpen}
 							tasks={[
 								{
 									title: 'Fix Bug',
@@ -228,6 +242,7 @@ export const BoardView = () => {
 						/>
 						<Column
 							title="To Do"
+							onClick={operations.toggleIsCreateTaskModalOpen}
 							tasks={[
 								{
 									title: 'Fix Bug',

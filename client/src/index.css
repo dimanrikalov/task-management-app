@@ -38,6 +38,7 @@ button {
 	padding: 0;
 	box-sizing: border-box;
 	outline-color: var(--blue-main);
+	font-family: var(--font-family);
 }
 
 ::-webkit-scrollbar {
@@ -60,4 +61,17 @@ button {
 ::-webkit-scrollbar-track {
 	background-color: rgb(223, 223, 223);
 	border-radius: 2rem;
+}
+
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }

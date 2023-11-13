@@ -1,0 +1,203 @@
+.background {
+	position: relative;
+	background-color: var(--white-main);
+	width: 90%;
+	height: 80%;
+	max-width: 1300px;
+	padding: 32px 46px 32px 46px;
+	border-radius: 16px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 46px;
+}
+
+.header {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.closeBtn {
+	font-size: 36px;
+	cursor: pointer;
+}
+
+.body {
+	display: flex;
+	justify-content: space-between;
+}
+
+.left,
+.middle,
+.right {
+	width: 30%;
+}
+
+/* left part */
+
+.left {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+.stepOne,
+.stepTwo {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+select,
+input,
+.textArea {
+	height: 100%;
+	padding: 9px;
+	font-size: 16px;
+	border-radius: 16px;
+	border: 1px solid rgb(207, 207, 207);
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+}
+
+/* middle part */
+
+.middle {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.taskImageContainer {
+	width: 100%;
+	max-height: 256px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 16px;
+	overflow: hidden;
+	border: 2px solid var(--blue-main);
+}
+
+.taskImg {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.priority,
+.effort {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.select {
+	width: 50%;
+	font-size: 16px;
+	text-align: center;
+	cursor: pointer;
+	border-radius: 6px;
+}
+
+.timeEstimation {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+}
+
+.timeEstimation .rightSide {
+	display: flex;
+	gap: 9px;
+}
+
+.inputDiv {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.inputDiv > input {
+	width: 64px;
+	height: 36px;
+	border-radius: 6px;
+	text-align: center;
+	font-size: 16px;
+}
+
+/* right part */
+.right {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.stepContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.addSteps {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.stepInputDiv {
+	display: flex;
+
+	gap: 24px;
+}
+
+.stepInputDiv > input {
+	flex: 8;
+}
+
+.stepInputDiv > button {
+	flex: 1;
+	min-width: 32px;
+	min-height: 32px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--blue-main);
+	border: none;
+	border-radius: 6px;
+	color: var(--white-main);
+	cursor: pointer;
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+}
+
+.assigneeInput {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+h3 {
+	font-size: 18px;
+}
+
+.progress {
+	align-self: center;
+	font-size: 21px;
+}
+
+@media screen and (max-width: 1170px) {
+	.timeEstimation {
+		gap: 6px;
+		flex-direction: column;
+	}
+	.timeEstimation .rightSide {
+		width: 100%;
+		justify-content: space-evenly;
+	}
+}

@@ -1,0 +1,21 @@
+.container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.container .operations input {
+	width: 18px;
+	height: 18px;
+}
+
+.operations {
+	display: flex;
+	gap: 16px;
+}
+
+.icon {
+	color: var(--blue-main);
+	cursor: pointer;
+	font-size: 21px;
+}

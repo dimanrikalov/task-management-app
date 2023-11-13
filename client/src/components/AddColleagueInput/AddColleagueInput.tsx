@@ -1,7 +1,7 @@
-import { Input } from '../Input/Input';
-import { MdCancel } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import styles from './addColleagueInput.module.css';
+import { EmailInput } from '../EmailInput/EmailInput';
+import { ListContainer } from '../ListContainer/ListContainer';
 
 const emails = [
 	'johnsmith@gmail.com',
@@ -28,7 +28,6 @@ export const AddColleagueInput = ({ title }: IAddColleagueInputProps) => {
 		setInputValue(e.target.value);
 		setResults(emails.filter((email) => email.includes(e.target.value)));
 	};
-
 	useEffect(() => {
 		if (inputValue === '') {
 			setResults(emails);
@@ -39,72 +38,13 @@ export const AddColleagueInput = ({ title }: IAddColleagueInputProps) => {
 		<div className={styles.background}>
 			<div className={styles.top}>
 				<h2>Add Colleagues</h2>
-				<div className={styles.input}>
-					<Input
-						type="email"
-						name="workspace-name"
-						value={inputValue}
-						placeholder="Enter a colleague email"
-						onChange={inputChangeHandler}
-						fontSize={18}
-					/>
-					<div className={styles.dropdown}>
-						{inputValue !== '' &&
-							results.map((x) => {
-								return (
-									<button className={styles.result}>
-										<div>{x}</div>
-									</button>
-								);
-							})}
-					</div>
-				</div>
-			</div>
+				<EmailInput
+					results={results}
+					inputValue={inputValue}
+					onChange={inputChangeHandler}
+				/>
 
-			<div className={styles.listContainer}>
-				<h2>{title}</h2>
-				<div className={styles.list}>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-					<div className={styles.entry}>
-						<p>dimanrikalov1@abv.bg</p>
-						<MdCancel className={styles.icon} />
-					</div>
-				</div>
+				<ListContainer title={title} />
 			</div>
 		</div>
 	);

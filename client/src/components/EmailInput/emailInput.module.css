@@ -1,0 +1,19 @@
+.input {
+	position: relative;
+}
+
+.dropdown {
+	position: absolute;
+	width: 100%;
+	background-color: var(--white-secondary);
+	max-height: 180px;
+	overflow-y: auto;
+}
+
+.result {
+	width: 100%;
+	cursor: pointer;
+	background-color: transparent;
+	border: none;
+	padding: 6px 0px;
+}

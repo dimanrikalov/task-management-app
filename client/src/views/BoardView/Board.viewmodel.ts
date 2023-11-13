@@ -4,6 +4,7 @@ import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 interface IBoardViewModelState {
 	isChatOpen: boolean;
+	isCreateTaskModalOpen: boolean;
 	isDeleteBoardModalOpen: boolean;
 	isEditBoardUsersModalOpen: boolean;
 }
@@ -11,6 +12,7 @@ interface IBoardViewModelState {
 interface IBoardViewModelOperations {
 	goBack(): void;
 	toggleIsChatOpen(): void;
+	toggleIsCreateTaskModalOpen(): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
 }
@@ -23,6 +25,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
 		useState(false);
+	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 
 	const toggleIsChatOpen = () => {
@@ -37,6 +40,10 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		setIsDeleteBoardModalOpen((prev) => !prev);
 	};
 
+	const toggleIsCreateTaskModalOpen = () => {
+		setIsCreateTaskModalOpen((prev) => !prev);
+	};
+
 	const goBack = () => {
 		navigate(-1);
 	};
@@ -44,12 +51,14 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	return {
 		state: {
 			isChatOpen,
+			isCreateTaskModalOpen,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,
 		},
 		operations: {
 			goBack,
 			toggleIsChatOpen,
+			toggleIsCreateTaskModalOpen,
 			toggleIsDeleteBoardModalOpen,
 			toggleIsEditBoardUsersModalOpen,
 		},

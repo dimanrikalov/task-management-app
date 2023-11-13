@@ -4,10 +4,11 @@ import { Button } from '../Button/Button';
 
 interface IColumnProps {
 	title: string;
+	onClick(): void;
 	tasks?: ITaskProps[];
 }
 
-export const Column = ({ title, tasks }: IColumnProps) => {
+export const Column = ({ title, onClick, tasks }: IColumnProps) => {
 	return (
 		<div className={styles.background}>
 			<h2 className={styles.title}>{title}</h2>
@@ -20,13 +21,18 @@ export const Column = ({ title, tasks }: IColumnProps) => {
 							stepsComplete={task.stepsComplete}
 							totalSteps={task.totalSteps}
 							asigneeImg={task.asigneeImg}
-							taskImg={i % 2 == 0 ? '/imgs/home-img.png': undefined}
+							taskImg={
+								i % 2 == 0 ? '/imgs/home-img.png' : undefined
+							}
 						/>
 					))}
-					<Button  
-					message={'Add task'}
-					invert={true}
+				<div className={styles.boxShadow}>
+					<Button
+						message={'Add task'}
+						invert={true}
+						onClick={onClick}
 					/>
+				</div>
 			</div>
 		</div>
 	);

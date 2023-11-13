@@ -1,0 +1,15 @@
+.listContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-bottom: 32px;
+}
+
+.list {
+	background-color: var(--white-secondary);
+	padding: 4px 16px;
+	border-radius: 16px;
+	height: 200px;
+	overflow-y: auto;
+}
+
