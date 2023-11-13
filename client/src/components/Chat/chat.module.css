@@ -7,7 +7,7 @@
 	background-color: var(--white-secondary);
 	display: flex;
 	flex-direction: column;
-	padding: 0px 0px 16px 0px;
+	padding: 0px 16px 16px 0px;
 	gap: 16px;
 	align-items: center;
 	justify-content: space-evenly;
@@ -55,7 +55,8 @@
 }
 
 .inputContainer {
-	width: 90%;
+	padding-left: 16px;
+	width: 100%;
 	display: flex;
 	gap: 32px;
 	justify-content: space-between;
