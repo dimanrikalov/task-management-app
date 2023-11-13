@@ -2,10 +2,19 @@
 	width: 100%;
 	border-radius: 16px;
 	background-color: var(--white-secondary);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 16px;
+	gap: 8px;
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
 .taskImg {
-	height: 60px;
+	border-radius: 16px;
+	overflow: hidden;
 }
 
 .taskImg img {
@@ -13,9 +22,40 @@
 	height: 100%;
 }
 
+.title {
+	flex-grow: 1;
+	width: 100%;
+}
+
+.footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.rightSide {
+   display: flex;
+   justify-content: space-between;
+   gap: 16px;
+}
+
+.completedSteps {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.completedSteps .icon {
+	background-color: var(--blue-main);
+	color: var(--white-main);
+	padding: 4px;
+	border-radius: 4px;
+	font-size: 21px;
+}
+
 .userImg {
-	width: 42px;
-	height: 42px;
+	width: 36px;
+	height: 36px;
 	border-radius: 50%;
 	object-fit: cover;
 	display: flex;
@@ -24,8 +64,8 @@
 	overflow: hidden;
 }
 
-
 .userImg img {
 	width: 100%;
-	object-fit: fill;
+	height: 100%;
+	object-fit: cover;
 }

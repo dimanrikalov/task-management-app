@@ -22,22 +22,26 @@ export const Task = ({
 }: ITaskProps) => {
 	return (
 		<div className={styles.background}>
-			<h4>{title}</h4>
 			{taskImg && (
 				<div className={styles.taskImg}>
 					<img src={taskImg} alt="task-img" />
 				</div>
 			)}
+			<h4 className={styles.title}>
+				Fix bug
+			</h4>
 			<div className={styles.footer}>
-				<h4>Priority: {priority}</h4>
+				<h5>Priority: {priority}</h5>
+				<div className={styles.rightSide}>
 				<div className={styles.completedSteps}>
 					<FaCheck className={styles.icon} />
-					<h4>
+					<h5>
 						{stepsComplete}/{totalSteps}
-					</h4>
+					</h5>
 				</div>
 				<div className={styles.userImg}>
 					<img src={asigneeImg} alt="profile-img" />
+				</div>
 				</div>
 			</div>
 		</div>
