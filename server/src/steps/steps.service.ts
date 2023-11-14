@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { IEditStep } from 'src/tasks/dtos/editTask.dto';
+import { EditStepDto } from './dtos/editStep.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { DeleteStepDto } from './dtos/deleteStep.dto';
 
 export type IStep = {
     isComplete: boolean;
@@ -26,12 +27,23 @@ export class StepsService {
         });
     }
 
-    async edit(step: IEditStep) {
+    async edit(body: EditStepDto) {
         await this.prismaService.step.update({
             where: {
-                id: step.id,
+                id: body.stepId,
             },
-            data: step,
+            data: {
+                description: body.description,
+                isComplete: body.isComplete,
+            },
+        });
+    }
+
+    async delete(body: DeleteStepDto) {
+        await this.prismaService.step.delete({
+            where: {
+                id: body.stepId,
+            },
         });
     }
 

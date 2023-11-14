@@ -98,6 +98,7 @@ export class TasksService {
         });
     }
 
+    //task steps are updated separately!
     async edit(body: EditTaskDto) {
         if (body.title) {
             const tasksWithName = await this.prismaService.task.findMany({
@@ -110,41 +111,12 @@ export class TasksService {
             }
         }
 
-        //update the steps
-        if (body.steps.length > 0) {
-            await Promise.all(
-                body.steps.map((step) => async () => {
-                    await this.stepsService.edit(step);
-                }),
-            );
-        }
-
         //update the task
-        const data = {
-            ...(body.attachmentImgPath && {
-                attachmentImgPath: body.attachmentImgPath,
-            }),
-            ...(body.estimatedHours && {
-                estimatedHours: Number(body.estimatedHours),
-            }),
-            ...(body.estimatedMinutes && {
-                estimatedMinutes: Number(body.estimatedMinutes),
-            }),
-            ...(body.title && { title: body.title }),
-            ...(body.priority && { priority: body.priority }),
-            ...(body.columnId && { columnId: body.columnId }),
-            ...(body.effort && { effort: Number(body.effort) }),
-            ...(body.assigneeId && { assigneeId: body.assigneeId }),
-            ...(body.description && { description: body.description }),
-            ...(body.minutesSpent && { minutesSpent: body.minutesSpent }),
-            ...(body.hoursSpent && { hoursSpent: Number(body.hoursSpent) }),
-        };
-
         await this.prismaService.task.update({
             where: {
-                id: body.taskData.id,
+                id: body.id,
             },
-            data,
+            data: body,
         });
     }
 }
