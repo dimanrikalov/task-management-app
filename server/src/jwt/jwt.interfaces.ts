@@ -21,3 +21,8 @@ export interface IGenerateTokens {
     accessToken: string;
     refreshToken: string;
 }
+
+export interface IRefreshTokenPayload {
+    userId: number;
+    exp: number;
+}

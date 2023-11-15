@@ -1,14 +1,15 @@
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 import { IUser } from './users.interfaces';
 import { Injectable } from '@nestjs/common';
 import { EditUserDto } from './dtos/editUser.dto';
+import { IJWTPayload } from '../jwt/jwt.interfaces';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
-import { DeleteUserDto } from './dtos/deleteUser.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { refreshJWTToken } from 'src/jwt/refreshJWTToken';
+import { refreshJWTTokens } from 'src/jwt/refreshJWTTokens';
+import { IRefreshTokensBody } from './dtos/users.interfaces';
 import { generateJWTTokens } from 'src/jwt/generateJWTTokens';
-import { IGenerateTokens, IJWTPayload } from '../jwt/jwt.interfaces';
 
 @Injectable()
 export class UsersService {
@@ -39,8 +40,8 @@ export class UsersService {
         );
 
         const userData = {
-            firstName: body.first_name,
-            lastName: body.last_name,
+            firstName: body.firstName,
+            lastName: body.lastName,
             email: body.email,
             password: hashedPassword,
             profileImagePath: 'default_image_path',
@@ -59,17 +60,14 @@ export class UsersService {
         });
     }
 
-    async signIn(body: LoginUserDto): Promise<IGenerateTokens> {
+    async signIn(res: Response, body: LoginUserDto): Promise<void> {
         const user = await this.findUserByEmail(body.email);
-
-        //user must not be able to log in as Deleted_User
-        if (user.email === 'Deleted_User') {
-            throw new Error('Invalid login email!');
-        }
 
         if (!user) {
             throw new Error('Wrong email or password!');
         }
+
+        //user will not be able to login as Deleted_User as the email property does not have '@' and the LoginUserDto will prevent from reaching this service
 
         const isValidPassword = await bcrypt.compare(
             body.password,
@@ -87,12 +85,25 @@ export class UsersService {
         };
 
         //create authorization token + refresh token
-        return generateJWTTokens(payload);
+        const { accessToken, refreshToken } = generateJWTTokens(payload);
+
+        //set the accessToken and refreshToken as a cookies
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: true,
+            maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
+        });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
+        });
     }
 
     async update(body: EditUserDto): Promise<void> {
         const hashedPassword = body.password
-            ? await bcrypt.hash(body.password, process.env.SALT_ROUNDS)
+            ? await bcrypt.hash(body.password, Number(process.env.SALT_ROUNDS))
             : undefined;
 
         const data = {
@@ -109,8 +120,8 @@ export class UsersService {
         });
     }
 
-    refreshToken(refreshToken: string): string {
-        return refreshJWTToken(refreshToken);
+    refreshTokens({ payload, refreshToken }: IRefreshTokensBody) {
+        return refreshJWTTokens({ payload, refreshToken });
     }
 
     async delete(userId: number) {
@@ -142,13 +153,20 @@ export class UsersService {
             },
         });
 
-        //transfer all takss to "Deleted user"
+        //transfer all tasks to "Deleted user"
         await this.prismaService.task.updateMany({
             where: {
                 assigneeId: userId,
             },
             data: {
                 assigneeId: deletedUser.id,
+            },
+        });
+
+        //delete the user
+        await this.prismaService.user.delete({
+            where: {
+                id: userId,
             },
         });
     }

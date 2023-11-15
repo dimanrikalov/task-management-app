@@ -124,6 +124,12 @@ export class WorkspacesService {
                 await this.boardsService.deleteMany(workspace.id);
             }),
         );
+
+        await this.prismaService.workspace.deleteMany({
+            where: {
+                ownerId: userId,
+            },
+        });
     }
 
     async addColleague(body: EditWorkspaceColleagueDto) {

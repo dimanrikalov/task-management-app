@@ -6,9 +6,13 @@ export const generateJWTTokens = (payload: IJWTPayload): IGenerateTokens => {
         // expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN, //not converting to numbers because these are milliseconds
     });
 
-    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-        //  expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN, ///not converting to numbers because these are milliseconds
-    });
+    const refreshToken = jwt.sign(
+        { userId: payload.id },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            // expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN, ///not converting to numbers because these are milliseconds
+        },
+    );
 
     return { accessToken, refreshToken };
 };

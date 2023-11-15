@@ -22,7 +22,8 @@ import { ColumnAuthMiddleware } from 'src/middlewares/columnAuth.middleware';
 })
 export class ColumnsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('columns');
-        consumer.apply(ColumnAuthMiddleware).forRoutes('columns'); // Apply ColumnAuthMiddleware to all endpoints inside the columns
+        consumer
+            .apply(AuthMiddleware, ColumnAuthMiddleware)
+            .forRoutes('columns'); // Apply ColumnAuthMiddleware to all endpoints inside the columns
     }
 }

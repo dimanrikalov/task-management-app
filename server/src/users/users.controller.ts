@@ -22,6 +22,7 @@ export class UsersController {
         private readonly usersService: UsersService,
         private readonly workspacesService: WorkspacesService,
     ) {}
+
     @Get('/')
     async getUsers() {
         return this.usersService.getAll();
@@ -31,7 +32,8 @@ export class UsersController {
     async createUser(@Res() res: Response, @Body() userBody: CreateUserDto) {
         try {
             await this.usersService.signUp(userBody);
-            return await this.loginUser(res, userBody);
+            await this.usersService.signIn(res, userBody);
+            return res.status(200).json({ message: 'Signed-up successfully!' });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -43,16 +45,8 @@ export class UsersController {
     @Post('/sign-in')
     async loginUser(@Res() res: Response, @Body() userBody: LoginUserDto) {
         try {
-            const response = await this.usersService.signIn(userBody);
-            //set the refreshToken as a cookie
-            res.cookie('refreshToken', response.refreshToken, {
-                httpOnly: true,
-                secure: true,
-                maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
-            });
-
-            //set the accessToken as response
-            return res.json({ accessToken: response.accessToken });
+            await this.usersService.signIn(res, userBody);
+            res.status(200).json({ message: 'Signed-in successfully!' });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -76,11 +70,23 @@ export class UsersController {
     }
 
     @Post('/refresh')
-    async refreshUserToken(@Req() req: Request, @Res() res: Response) {
+    async refreshUserTokens(
+        @Req() req: Request,
+        @Body() body: BaseUsersDto,
+        @Res() res: Response,
+    ) {
         try {
             const refreshToken = req.cookies['refreshToken'];
-            const accessToken = this.usersService.refreshToken(refreshToken);
-            return res.status(200).json({ accessToken });
+            const { newAccessToken, newRefreshToken } =
+                this.usersService.refreshTokens({
+                    payload: body,
+                    refreshToken,
+                });
+            res.cookie('accessToken', newAccessToken);
+            res.cookie('refreshToken', newRefreshToken);
+            return res
+                .status(200)
+                .json({ message: 'Tokens refreshed successfully!' });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({

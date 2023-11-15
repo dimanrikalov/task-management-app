@@ -146,7 +146,7 @@ export class BoardsService {
                 });
             }),
         );
-
+        
         //delete the boards themselves
         await this.prismaService.board.deleteMany({
             where: {
