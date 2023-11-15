@@ -1,10 +1,12 @@
-import { IsNumber } from 'class-validator';
+import { IsArray, IsNumber, Min } from 'class-validator';
 import { BaseColumnsDto } from './base.dto';
 
-export class MoveColumnDto extends BaseColumnsDto {
-    @IsNumber()
+interface IColumnsPositions {
     columnId: number;
-
-    @IsNumber()
     newPosition: number;
+}
+
+export class MoveColumnDto extends BaseColumnsDto {
+    @IsArray()
+    columnsPositions: IColumnsPositions[];
 }

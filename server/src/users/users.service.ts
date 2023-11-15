@@ -125,15 +125,16 @@ export class UsersService {
     }
 
     async delete(userId: number) {
-        //create "Deleted User" if none exists
+        //create "Deleted User" (id:0) if none exists
         let deletedUser = await this.prismaService.user.findFirst({
             where: {
-                email: 'Deleted_User',
+                id: 0,
             },
         });
         if (!deletedUser) {
             deletedUser = await this.prismaService.user.create({
                 data: {
+                    id: 0,
                     email: 'Deleted_User',
                     firstName: 'Deleted',
                     lastName: 'User',

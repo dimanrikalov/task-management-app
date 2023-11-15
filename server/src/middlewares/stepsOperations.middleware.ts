@@ -1,39 +1,67 @@
-import { Request, Response, NextFunction } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Request, Response, NextFunction } from 'express';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
-//need to somehow extend Request and add userData to the body
 @Injectable()
-export class BoardAuthMiddleware implements NestMiddleware {
+export class StepsOperationsMiddleware implements NestMiddleware {
     constructor(private readonly prismaService: PrismaService) {}
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
-            if (!req.body.boardId) {
-                throw new Error('Board ID is required!');
+            if (!req.body.stepId) {
+                throw new Error('Step ID is required');
             }
 
-            //check if the board exists
-            const board = await this.prismaService.board.findFirst({
+            const step = await this.prismaService.step.findFirst({
                 where: {
-                    id: req.body.boardId,
+                    id: req.body.stepId,
                 },
             });
+
+            if (!step) {
+                throw new Error('Invalid step ID!');
+            }
+
+            const task = await this.prismaService.task.findFirst({
+                where: {
+                    id: step.taskId,
+                },
+            });
+
+            if (!task) {
+                throw new Error('Invalid task ID!');
+            }
+
+            const column = await this.prismaService.column.findFirst({
+                where: {
+                    id: task.columnId,
+                },
+            });
+
+            if (!column) {
+                throw new Error('Invalid column ID!');
+            }
+
+            const board = await this.prismaService.board.findFirst({
+                where: {
+                    id: column.boardId,
+                },
+            });
+
             if (!board) {
                 throw new Error('Invalid board ID!');
             }
 
-            //check if the workspace exists
             const workspace = await this.prismaService.workspace.findFirst({
                 where: {
                     id: board.workspaceId,
                 },
             });
+
             if (!workspace) {
-                throw new Error('Invalid Workspace ID!');
+                throw new Error('Invalid workspace ID!');
             }
 
-            //check if the user has access to the board by any of the available ways
             const userIsWorkspaceOwner =
                 workspace.ownerId === req.body.userData.id;
 
@@ -58,9 +86,6 @@ export class BoardAuthMiddleware implements NestMiddleware {
                     },
                 });
 
-            console.log(userIsWorkspaceOwner);
-            console.log(userHasAccessToBoard);
-            console.log(userHasAccessToWorkspace);
             if (
                 !userIsWorkspaceOwner &&
                 !userHasAccessToBoard &&
@@ -69,12 +94,15 @@ export class BoardAuthMiddleware implements NestMiddleware {
                 throw new Error('You do not have access to the board!');
             }
 
-            req.body.boardData = board; //add the whole board data
-            req.body.workspaceData = workspace; // add the whole workspace data
-            delete req.body.boardId; //remove the boardId as it can be accessed through boardData
+            req.body.taskData = task;
+            req.body.stepData = step;
+
+            delete req.body.taskId;
+
             next();
         } catch (err: any) {
-            return res.status(401).json({ message: err.message });
+            console.log(err.message);
+            return res.status(401).json({ errorMessage: err.message });
         }
     }
 }

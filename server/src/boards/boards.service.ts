@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { BoardsGateway } from './boards.gateway';
+import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { DeleteBoardDto } from './dtos/deleteboard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetBoardDetails } from './dtos/getBoardDetails.dto';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
@@ -16,7 +18,112 @@ export class BoardsService {
         private readonly messagesService: MessagesService,
     ) {}
 
+    async getUserBoards(body: BaseUsersDto) {
+        /* 
+            get all boards where:
+            - the user_board table has an entry with userId == body.userData.id
+            - the board has workspaceId where the workspace has ownerId == body.userData.id
+            - the user_workspace has an entry where the userId = body.userData.id
+        */
+        return await this.prismaService.board.findMany({
+            where: {
+                OR: [
+                    {
+                        // Boards related to workspaces where the user has access
+                        Workspace: {
+                            User_Workspace: {
+                                some: {
+                                    userId: body.userData.id,
+                                },
+                            },
+                        },
+                    },
+                    {
+                        // Boards where the user is the workspace creator
+                        Workspace: {
+                            ownerId: body.userData.id,
+                        },
+                    },
+                    {
+                        // Boards where the user has direct access
+                        User_Board: {
+                            some: {
+                                userId: body.userData.id,
+                            },
+                        },
+                    },
+                ],
+            },
+            distinct: ['id'],
+        });
+    }
+
+    async getBoardById(body: GetBoardDetails) {
+        const board = body.boardData;
+        const boardId = body.boardData.id;
+
+        const messages = await this.prismaService.message.findMany({
+            where: {
+                boardId,
+            },
+        });
+
+        const boardColumns = await this.prismaService.column.findMany({
+            where: {
+                boardId,
+            },
+        });
+
+        const boardTasks = await this.prismaService.task.findMany({
+            where: {
+                columnId: {
+                    in: boardColumns.map((column) => column.id),
+                },
+            },
+        });
+
+        const boardSteps = await this.prismaService.step.findMany({
+            where: {
+                taskId: {
+                    in: boardTasks.map((task) => task.id),
+                },
+            },
+        });
+
+        const columns = boardColumns.map((column) => {
+            const tasks = boardTasks.filter(
+                (task) => task.columnId === column.id,
+            );
+
+            return { ...column, tasks };
+        });
+
+        const tasks = boardTasks.map((task) => {
+            const steps = boardSteps.filter((step) => step.taskId === task.id);
+
+            return { ...task, steps };
+        });
+
+        return {
+            board: {
+                ...board,
+                tasks,
+                columns,
+                messages,
+            },
+        };
+    }
+
     async create(body: CreateBoardDto) {
+        if (
+            body.colleagues &&
+            body.workspaceData.name.toLowerCase() === 'personal workspace'
+        ) {
+            throw new Error(
+                'You cannot add colleagues to boards belonging to your Personal Workspace!',
+            );
+        }
+
         const board = await this.prismaService.board.create({
             data: {
                 name: body.name,
@@ -47,7 +154,7 @@ export class BoardsService {
 
         body.colleagues = body.colleagues || [];
 
-        //filter out any user with access to the workspace including the workspace owner
+        //filter out any user with access to the workspace including the workspace owner or the "Deleted User"
         const userIdsWithoutWorkspaceAccess = await Promise.all(
             body.colleagues.map(async (colleagueId) => {
                 const userWithWorkspaceAccess =
@@ -62,7 +169,8 @@ export class BoardsService {
 
                 if (
                     !userWithWorkspaceAccess &&
-                    colleagueId !== body.workspaceData.ownerId
+                    colleagueId !== body.workspaceData.ownerId &&
+                    colleagueId !== 0 // "Deleted User" ID
                 ) {
                     return colleagueId;
                 }
@@ -146,7 +254,7 @@ export class BoardsService {
                 });
             }),
         );
-        
+
         //delete the boards themselves
         await this.prismaService.board.deleteMany({
             where: {
@@ -164,6 +272,8 @@ export class BoardsService {
         }
 
         //check the user to be added (it must not be the user themself, a user with access to the workspace where the board is, or the owner)
+        const colleagueIsDeletedUser = body.colleagueId === 0;
+
         const colleagueIsWorkspaceOwner =
             body.workspaceData.ownerId === body.colleagueId;
 
@@ -188,6 +298,10 @@ export class BoardsService {
             });
 
         const userIsAddingThemself = body.colleagueId === body.userData.id;
+
+        if (colleagueIsDeletedUser) {
+            throw new Error('Invalid colleague ID!');
+        }
 
         if (
             userIsAddingThemself ||
@@ -222,6 +336,8 @@ export class BoardsService {
             );
         }
 
+        const colleagueIsDeletedUser = body.colleagueId === 0;
+
         const colleagueIsWorkspaceOwner =
             body.workspaceData.ownerId === body.colleagueId;
 
@@ -247,10 +363,18 @@ export class BoardsService {
 
         const userIsRemovingThemself = body.colleagueId === body.userData.id;
 
+        if (colleagueIsDeletedUser) {
+            throw new Error('Invalid colleague ID!');
+        }
         if (userIsRemovingThemself) {
             throw new Error('You cannot remove yourself from the board!');
         }
-        if (colleagueIsWorkspaceOwner || colleagueIsPartOfWorkspace) {
+        if (colleagueIsWorkspaceOwner) {
+            throw new Error(
+                'You cannot remove the workspace owner from a board that is part of the same workspace!',
+            );
+        }
+        if (colleagueIsPartOfWorkspace) {
             throw new Error(
                 'You cannot remove a user with access to the workspace from the board!',
             );

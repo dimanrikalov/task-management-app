@@ -11,7 +11,6 @@ import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { TaskAuthMiddleware } from 'src/middlewares/taskAuth.middleware';
-import { ColumnAuthMiddleware } from 'src/middlewares/columnAuth.middleware';
 
 @Module({
     imports: [PrismaModule],
@@ -20,15 +19,13 @@ import { ColumnAuthMiddleware } from 'src/middlewares/columnAuth.middleware';
 })
 export class TasksModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('tasks');
-        consumer
-            .apply(ColumnAuthMiddleware)
-            .forRoutes({ path: 'tasks', method: RequestMethod.POST });
+        consumer.apply(AuthMiddleware).forRoutes('tasks*');
         consumer
             .apply(TaskAuthMiddleware)
             .forRoutes(
+                { path: 'tasks', method: RequestMethod.PUT },
+                { path: 'tasks', method: RequestMethod.POST },
                 { path: 'tasks', method: RequestMethod.DELETE },
-                { path: 'tasks/edit', method: RequestMethod.PUT },
             );
     }
 }

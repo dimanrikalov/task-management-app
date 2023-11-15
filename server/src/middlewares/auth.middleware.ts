@@ -8,7 +8,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 export class AuthMiddleware implements NestMiddleware {
     use(req: Request, res: Response, next: NextFunction) {
         const authorizationHeader = req.headers.authorization;
-        console.log('authorizationHeader: ', authorizationHeader);
+
         if (!authorizationHeader) {
             return res.status(401).json({ message: 'Unauthorized access!' });
         }
@@ -17,7 +17,6 @@ export class AuthMiddleware implements NestMiddleware {
 
         try {
             // Verify the JWT token is valid
-            //if invalid use refresh token to get a new access token
             if (!validateJWTToken(authorizationToken)) {
                 throw new Error('Invalid JWT token.');
             }
@@ -25,9 +24,6 @@ export class AuthMiddleware implements NestMiddleware {
             // Decode the JWT token
             const decodedToken: IJWTPayload =
                 extractJWTData(authorizationToken);
-
-            console.log('decodedToken: ', decodedToken);
-            console.log('req.body:', req.body);
 
             //add the decodedUserData to the body
             req.body.userData = decodedToken;

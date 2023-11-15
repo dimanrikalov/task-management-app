@@ -13,10 +13,8 @@ import { BaseStepsDto } from 'src/steps/dtos/base.dto';
 
 export class CreateTaskDto extends BaseTasksDto {
     @IsNumber()
+    @Min(1)
     assigneeId: number;
-
-    @IsNumber()
-    columnId: number;
 
     @IsString()
     @MinLength(2)

@@ -1,18 +1,44 @@
 import { Response } from 'express';
+import { BaseWorkspaceDto } from './dtos/base.dto';
 import { WorkspacesService } from './workspaces.service';
 import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
-import { IWorkspace } from 'src/workspaces/workspace.interfaces';
+import { GetWorkspaceDetails } from './dtos/getWorkspaceDetails.dto';
+import { Res, Get, Body, Post, Delete, Controller } from '@nestjs/common';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
-import { Body, Get, Post, Put, Delete, Controller, Res } from '@nestjs/common';
 
 @Controller('workspaces')
 export class WorkspacesController {
     constructor(private readonly workspacesService: WorkspacesService) {}
 
     @Get()
-    async getAllWorkspaces(): Promise<IWorkspace[]> {
-        return this.workspacesService.getAll();
+    async getUserWorkspaces(
+        @Res() res: Response,
+        @Body() body: BaseWorkspaceDto,
+    ) {
+        try {
+            const workspaces =
+                await this.workspacesService.getUserWorkspaces(body);
+            return res.status(200).json(workspaces);
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.mssage,
+            });
+        }
+    }
+
+    @Get('/details')
+    async getWorkspace(
+        @Body() body: GetWorkspaceDetails,
+        @Res() res: Response,
+    ) {
+        try {
+            const data = await this.workspacesService.getWorkspaceById(body);
+            return res.status(200).json(data);
+        } catch (err: any) {
+            return res.status(400).json({ errorMessage: err.message });
+        }
     }
 
     @Post()
@@ -51,7 +77,7 @@ export class WorkspacesController {
         }
     }
 
-    @Post('/colleagues')
+    @Post('/colleagues/add')
     async addColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,
@@ -69,7 +95,7 @@ export class WorkspacesController {
         }
     }
 
-    @Delete('/colleagues')
+    @Delete('/colleagues/remove')
     async removeColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,

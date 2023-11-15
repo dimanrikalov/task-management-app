@@ -20,8 +20,6 @@ import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { WorkspacesGateway } from 'src/workspaces/workspaces.gateway';
 
 @Module({
-    imports: [PrismaModule],
-    controllers: [UsersController],
     providers: [
         UsersService,
         TasksService,
@@ -35,6 +33,8 @@ import { WorkspacesGateway } from 'src/workspaces/workspaces.gateway';
         WorkspacesService,
         WorkspacesGateway,
     ],
+    imports: [PrismaModule],
+    controllers: [UsersController],
 })
 export class UsersModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

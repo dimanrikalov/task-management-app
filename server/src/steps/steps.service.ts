@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EditStepDto } from './dtos/editStep.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { DeleteStepDto } from './dtos/deleteStep.dto';
+import { CreateStepDto } from './dtos/createStep.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 export type IStep = {
     isComplete: boolean;
@@ -11,11 +12,26 @@ export type IStep = {
 @Injectable()
 export class StepsService {
     constructor(private readonly prismaService: PrismaService) {}
-    async create(stepData: IStep, taskId: number) {
+
+    async create(body: CreateStepDto) {
+        const stepDescriptionIsTaken = await this.prismaService.step.findFirst({
+            where: {
+                AND: [
+                    { taskId: body.taskData.id },
+                    { description: body.payload.description },
+                ],
+            },
+        });
+
+        if (stepDescriptionIsTaken) {
+            throw new Error('Step description is already in use!');
+        }
+
         await this.prismaService.step.create({
             data: {
-                ...stepData,
-                taskId,
+                taskId: body.taskData.id,
+                isComplete: body.payload.isComplete,
+                description: body.payload.description,
             },
         });
     }
@@ -33,8 +49,8 @@ export class StepsService {
                 id: body.stepId,
             },
             data: {
-                description: body.description,
                 isComplete: body.isComplete,
+                description: body.stepData.description,
             },
         });
     }

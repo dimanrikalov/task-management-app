@@ -8,24 +8,27 @@ export class TaskAuthMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
-            if (!req.body.taskId) {
-                throw new Error('Task ID is required.');
-            }
-            
-            // need to check if all of this information(queries) is needed
-            const task = await this.prismaService.task.findFirst({
-                where: {
-                    id: req.body.taskId,
-                },
-            });
-            console.log(req.body);
-            if (!task) {
-                throw new Error('Invalid task ID!');
+            //only fetch task if the request is not createTask
+            let task = null;
+            if (req.method !== 'POST') {
+                if (!req.body.taskId) {
+                    throw new Error('Task ID is required.');
+                }
+
+                // need to check if all of this information(queries) is needed
+                task = await this.prismaService.task.findFirst({
+                    where: {
+                        id: req.body.taskId,
+                    },
+                });
+                if (!task) {
+                    throw new Error('Invalid task ID!');
+                }
             }
 
             const column = await this.prismaService.column.findFirst({
                 where: {
-                    id: task.columnId,
+                    id: req.body.columnId,
                 },
             });
             if (!column) {
@@ -82,38 +85,37 @@ export class TaskAuthMiddleware implements NestMiddleware {
                 throw new Error('You do not have access to this board!');
             }
 
-            if (req.body.assigneeId) {
-                //check if user to assign has access to the board
-                const userIsWorkspaceOwner =
-                    req.body.assigneeId === workspace.ownerId;
+            //check if user to assign has access to the board
+            const assigneeIsWorkspaceOwner =
+                req.body.assigneeId === workspace.ownerId;
 
-                const userHasAccessToWorkspace =
-                    !!(await this.prismaService.user_Workspace.findFirst({
-                        where: {
-                            AND: [
-                                { userId: req.body.assigneeId },
-                                { workspaceId: board.workspaceId },
-                            ],
-                        },
-                    }));
+            const assigneeHasAccessToWorkspace =
+                !!(await this.prismaService.user_Workspace.findFirst({
+                    where: {
+                        AND: [
+                            { userId: req.body.assigneeId },
+                            { workspaceId: board.workspaceId },
+                        ],
+                    },
+                }));
 
-                const userHasAccessToBoard =
-                    !!(await this.prismaService.user_Board.findFirst({
-                        where: {
-                            AND: [
-                                { boardId: board.id },
-                                { userId: req.body.assigneeId },
-                            ],
-                        },
-                    }));
+            const assigneeHasAccessToBoard =
+                await this.prismaService.user_Board.findFirst({
+                    where: {
+                        AND: [
+                            { boardId: board.id },
+                            { userId: req.body.assigneeId },
+                        ],
+                    },
+                });
 
-                if (
-                    !userIsWorkspaceOwner &&
-                    !userHasAccessToBoard &&
-                    !userHasAccessToWorkspace
-                ) {
-                    throw new Error('Invalid assignee id!');
-                }
+
+            if (
+                !assigneeIsWorkspaceOwner &&
+                !assigneeHasAccessToBoard &&
+                !assigneeHasAccessToWorkspace
+            ) {
+                throw new Error('Invalid assignee id!');
             }
 
             req.body.taskData = task;

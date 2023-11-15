@@ -16,14 +16,24 @@ export class TasksService {
 
     async create(body: CreateTaskDto) {
         // Check if task name is unique in the scope of the board
-        const tasksWithName = await this.prismaService.task.findMany({
+        const boardTasks = await this.prismaService.task.findMany({
             where: {
-                AND: [{ id: body.boardData.id }, { title: body.title }],
+                Column: {
+                    boardId: body.boardData.id,
+                },
             },
+            distinct: ['id'],
         });
-        if (tasksWithName.length > 0) {
+
+        const taskTitleIsTaken = boardTasks.find(
+            (task) => task.title === body.title,
+        );
+
+        if (taskTitleIsTaken) {
             throw new Error('Task title is taken!');
         }
+
+        body.steps = body.steps || [];
 
         //calculate the progress based on how many tasks are completed
         const completeSteps = body.steps.filter((step) => {
@@ -34,6 +44,12 @@ export class TasksService {
         const progress = Math.round(
             (completeSteps.length / body.steps.length) * 100,
         );
+
+        if (body.assigneeId === 0) {
+            throw new Error('Invalid assignee ID!');
+        }
+
+        //check if assigneeId has access to board
 
         // Create task
         const task = await this.prismaService.task.create({
@@ -100,23 +116,31 @@ export class TasksService {
 
     //task steps are updated separately!
     async edit(body: EditTaskDto) {
-        if (body.title) {
-            const tasksWithName = await this.prismaService.task.findMany({
-                where: {
-                    AND: [{ id: body.boardData.id }, { title: body.title }],
+        const boardTasks = await this.prismaService.task.findMany({
+            where: {
+                Column: {
+                    boardId: body.boardData.id,
                 },
-            });
-            if (tasksWithName.length > 0) {
-                throw new Error('Task name is taken!');
-            }
+            },
+            distinct: ['id'],
+        });
+
+        const tasksWithSameTitle = !!boardTasks.filter(
+            (task) => task.title === body.taskData.title && task.id !== body.taskData.id,
+        ).length;
+
+        if (tasksWithSameTitle) {
+            throw new Error('Task title is taken!');
         }
+
+        console.log(body.taskData);
 
         //update the task
         await this.prismaService.task.update({
             where: {
-                id: body.id,
+                id: body.taskData.id,
             },
-            data: body,
+            data: body.payload,
         });
     }
 }

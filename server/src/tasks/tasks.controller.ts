@@ -39,7 +39,7 @@ export class TasksController {
         }
     }
 
-    @Put('/edit')
+    @Put()
     async edit(@Res() res: Response, @Body() body: EditTaskDto) {
         try {
             await this.tasksService.edit(body);
@@ -53,4 +53,7 @@ export class TasksController {
             });
         }
     }
+
+    @Put()
+    async move() {}
 }

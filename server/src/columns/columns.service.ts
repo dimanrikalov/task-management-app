@@ -6,6 +6,9 @@ import { TasksService } from 'src/tasks/tasks.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateColumnDto } from './dtos/createColumn.dto';
 import { RenameColumnDto } from './dtos/renameColumn.dto';
+import { DeleteColumnDto } from './dtos/deleteColumn.dto';
+
+const defaultColumnNames = ['To Do', 'Doing', 'Done'];
 
 @Injectable()
 export class ColumnsService {
@@ -57,9 +60,19 @@ export class ColumnsService {
         });
     }
 
-    async delete(body: BaseColumnsDto) {
+    async delete(body: DeleteColumnDto) {
+        console.log(body);
+        if (defaultColumnNames.includes(body.columnData.name)) {
+            throw new Error('You cannot delete the default table columns!');
+        }
+
         //the deletion includes the task steps
         await this.tasksService.deleteMany(body.columnData.id);
+        await this.prismaService.column.delete({
+            where: {
+                id: body.columnData.id,
+            },
+        });
     }
 
     async deleteMany(boardId: number) {
@@ -84,71 +97,14 @@ export class ColumnsService {
     }
 
     async changePosition(body: MoveColumnDto) {
-        //check if the new position is valid
-        const allBoardColumns = await this.prismaService.column.findMany({
-            where: {
-                AND: [{ boardId: body.boardData.id }],
-            },
-        });
-
-        // its is not possible to have empty array as at least 3 columns will be created by default and will not be erasable
-        const maxPosition = allBoardColumns
-            .map((column) => column.position)
-            .sort((a, b) => b - a)[0];
-
-        if (body.newPosition < 0 || body.newPosition > maxPosition) {
-            throw new Error('Invalid new position!');
-        }
-
-        // Update the column's position
-        await this.prismaService.column.update({
-            where: { id: body.columnId },
-            data: {
-                position: body.newPosition,
-            },
-        });
-
-        // Update the positions of other columns if needed
-        if (body.columnData.position < body.newPosition) {
-            // Shift columns between the old and new positions up by 1
-            await this.prismaService.column.updateMany({
-                where: {
-                    AND: [
-                        { boardId: body.columnData.boardId },
-                        {
-                            position: {
-                                gte: body.columnData.position,
-                                lte: body.newPosition - 1,
-                            },
-                        },
-                    ],
-                },
-                data: {
-                    position: { increment: 1 },
-                },
-            });
-        } else if (body.columnData.position > body.newPosition) {
-            // Shift columns between the new and old positions down by 1
-            await this.prismaService.column.updateMany({
-                where: {
-                    AND: [
-                        { boardId: body.columnData.boardId },
-                        {
-                            position: {
-                                gte: body.newPosition,
-                                lte: body.columnData.position - 1,
-                            },
-                        },
-                    ],
-                },
-                data: {
-                    position: { increment: -1 },
-                },
-            });
-        }
+        // To Do
     }
 
     async rename(body: RenameColumnDto) {
+        if (defaultColumnNames.includes(body.columnData.name)) {
+            throw new Error('You cannot rename the default table columns!');
+        }
+
         const isColumnNameTaken = await this.prismaService.column.findFirst({
             where: {
                 AND: {
