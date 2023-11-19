@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { BaseColumnsDto } from './dtos/base.dto';
 import { ColumnsGateway } from './columns.gateway';
 import { MoveColumnDto } from './dtos/moveColumn.dto';
 import { TasksService } from 'src/tasks/tasks.service';
@@ -39,16 +38,12 @@ export class ColumnsService {
             },
         });
 
-        const newColumnPosition =
-            allColumns.sort((a, b) => b.position - a.position)[0].position + 1;
-
         //create the column
-        //set column position == columns + 1
         await this.prismaService.column.create({
             data: {
                 name: body.name,
                 boardId: body.boardData.id,
-                position: newColumnPosition,
+                position: allColumns.length,
             },
         });
 
@@ -61,12 +56,11 @@ export class ColumnsService {
     }
 
     async delete(body: DeleteColumnDto) {
-        console.log(body);
         if (defaultColumnNames.includes(body.columnData.name)) {
             throw new Error('You cannot delete the default table columns!');
         }
 
-        //the deletion includes the task steps
+        //the task deletion is cascading
         await this.tasksService.deleteMany(body.columnData.id);
         await this.prismaService.column.delete({
             where: {
@@ -105,7 +99,7 @@ export class ColumnsService {
             throw new Error('You cannot rename the default table columns!');
         }
 
-        const isColumnNameTaken = await this.prismaService.column.findFirst({
+        const columnsWithSameName = await this.prismaService.column.findMany({
             where: {
                 AND: {
                     name: body.newName,
@@ -113,6 +107,13 @@ export class ColumnsService {
                 },
             },
         });
+
+        const isColumnNameTaken =
+            columnsWithSameName.filter(
+                (column) =>
+                    column.name === body.newName &&
+                    column.id !== body.columnData.id,
+            ).length > 0;
 
         if (isColumnNameTaken) {
             throw new Error('Column name is taken!');

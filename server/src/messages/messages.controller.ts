@@ -12,7 +12,7 @@ export class MessagesController {
         try {
             await this.messagesService.create(body);
             return res.status(200).json({
-                message: 'Message sent.',
+                message: 'Message sent successfully!',
             });
         } catch (err: any) {
             console.log(err.message);

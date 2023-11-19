@@ -101,7 +101,7 @@ export class UsersController {
             await this.workspacesService.deleteMany(body.userData.id);
             await this.usersService.delete(body.userData.id);
             return res.status(200).json({
-                message: 'User deleted successfully.',
+                message: 'User deleted successfully!',
             });
         } catch (err: any) {
             console.log(err.message);

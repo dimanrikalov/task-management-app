@@ -126,7 +126,7 @@ export class UsersService {
 
     async delete(userId: number) {
         //create "Deleted User" (id:0) if none exists
-        let deletedUser = await this.prismaService.user.findFirst({
+        let deletedUser = await this.prismaService.user.findUnique({
             where: {
                 id: 0,
             },
@@ -138,7 +138,7 @@ export class UsersService {
                     email: 'Deleted_User',
                     firstName: 'Deleted',
                     lastName: 'User',
-                    password: '1',
+                    password: '*******',
                     profileImagePath: '/',
                 },
             });

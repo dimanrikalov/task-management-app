@@ -1,5 +1,6 @@
-import { IsArray, IsNumber, Min } from 'class-validator';
+import { Column } from '@prisma/client';
 import { BaseColumnsDto } from './base.dto';
+import { IsArray, IsNumber, IsObject } from 'class-validator';
 
 interface IColumnsPositions {
     columnId: number;
@@ -9,4 +10,7 @@ interface IColumnsPositions {
 export class MoveColumnDto extends BaseColumnsDto {
     @IsArray()
     columnsPositions: IColumnsPositions[];
+
+    @IsObject()
+    columnData: Column;
 }

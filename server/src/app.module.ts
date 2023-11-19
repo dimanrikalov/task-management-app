@@ -8,8 +8,8 @@ import { TasksModule } from './tasks/tasks.module';
 import { BoardsModule } from './boards/boards.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ColumnsModule } from './columns/columns.module';
-import { WorkspacesModule } from './workspaces/workspaces.module';
 import { MessagesModule } from './messages/messages.module';
+import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
     imports: [
@@ -19,11 +19,11 @@ import { MessagesModule } from './messages/messages.module';
         BoardsModule,
         PrismaModule,
         ColumnsModule,
+        MessagesModule,
         WorkspacesModule,
         ConfigModule.forRoot(),
-        MessagesModule,
     ],
-    controllers: [AppController],
     providers: [AppService],
+    controllers: [AppController],
 })
 export class AppModule {}

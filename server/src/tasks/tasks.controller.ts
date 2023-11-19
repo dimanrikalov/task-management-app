@@ -1,8 +1,7 @@
 import { Response } from 'express';
 import { TasksService } from './tasks.service';
-import { EditTaskDto } from './dtos/editTask.dto';
+import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
-import { DeleteTaskDto } from './dtos/deleteTask.dto';
 import { Body, Controller, Delete, Post, Put, Res } from '@nestjs/common';
 
 @Controller('tasks')
@@ -14,7 +13,7 @@ export class TasksController {
         try {
             await this.tasksService.create(body);
             return res.status(200).json({
-                message: 'Task created successfully.',
+                message: 'Task created successfully!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -25,11 +24,11 @@ export class TasksController {
     }
 
     @Delete()
-    async delete(@Res() res: Response, @Body() body: DeleteTaskDto) {
+    async delete(@Res() res: Response, @Body() body: ModifyTaskDto) {
         try {
             await this.tasksService.delete(body);
             return res.status(200).json({
-                message: 'Task deleted successfully.',
+                message: 'Task deleted successfully!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -40,11 +39,11 @@ export class TasksController {
     }
 
     @Put()
-    async edit(@Res() res: Response, @Body() body: EditTaskDto) {
+    async edit(@Res() res: Response, @Body() body: ModifyTaskDto) {
         try {
             await this.tasksService.edit(body);
             return res.status(200).json({
-                message: 'Task modified successfully.',
+                message: 'Task modified successfully!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -55,5 +54,7 @@ export class TasksController {
     }
 
     @Put()
-    async move() {}
+    async move() {
+        // To Do
+    }
 }

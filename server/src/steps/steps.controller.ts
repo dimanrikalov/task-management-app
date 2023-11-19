@@ -43,7 +43,7 @@ export class StepsController {
             this.stepsService.delete(body);
             return res
                 .status(200)
-                .json({ message: 'Step deleted successfully' });
+                .json({ message: 'Step deleted successfully!' });
         } catch (err: any) {
             return res.status(400).json({
                 errorMessage: err.message,

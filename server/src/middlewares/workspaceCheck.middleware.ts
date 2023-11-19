@@ -4,7 +4,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 
 //need to somehow extend Request and add userData to the body
 @Injectable()
-export class WorkspaceAuthMiddleware implements NestMiddleware {
+export class WorkspaceCheckMiddleware implements NestMiddleware {
     constructor(private readonly prismaService: PrismaService) {}
 
     async use(req: Request, res: Response, next: NextFunction) {
@@ -41,8 +41,10 @@ export class WorkspaceAuthMiddleware implements NestMiddleware {
                 throw new Error('You do not have access to the workspace!');
             }
 
-            req.body.workspaceData = workspace; //add the whole workspace data
-            delete req.body.workspaceId; //remove the workspaceId as it can be accessed through workspaceData
+            req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
+            req.body.workspaceData = workspace;
+            delete req.body.workspaceId;
+
             next();
         } catch (err: any) {
             return res.status(401).json({ message: err.message });

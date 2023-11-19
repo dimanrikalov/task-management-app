@@ -12,8 +12,8 @@ import { TasksService } from 'src/tasks/tasks.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { ColumnsController } from './columns.controller';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
-import { BoardAuthMiddleware } from 'src/middlewares/boardAuth.middleware';
-import { ColumnAuthMiddleware } from 'src/middlewares/columnAuth.middleware';
+import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
+import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
 
 @Module({
     providers: [
@@ -29,13 +29,14 @@ import { ColumnAuthMiddleware } from 'src/middlewares/columnAuth.middleware';
 export class ColumnsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
-            .apply(AuthMiddleware, ColumnAuthMiddleware)
-            .forRoutes(
-                { path: 'columns', method: RequestMethod.DELETE },
-                { path: 'columns/*', method: RequestMethod.ALL },
-            );
-        consumer
-            .apply(AuthMiddleware, BoardAuthMiddleware)
+            .apply(AuthMiddleware, BoardCheckMiddleware)
             .forRoutes({ path: 'columns', method: RequestMethod.POST });
+
+        consumer
+            .apply(AuthMiddleware, ColumnCheckMiddleware, BoardCheckMiddleware)
+            .forRoutes(
+                { path: 'columns/*', method: RequestMethod.ALL },
+                { path: 'columns', method: RequestMethod.DELETE },
+            );
     }
 }

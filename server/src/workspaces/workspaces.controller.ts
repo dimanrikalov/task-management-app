@@ -28,19 +28,6 @@ export class WorkspacesController {
         }
     }
 
-    @Get('/details')
-    async getWorkspace(
-        @Body() body: GetWorkspaceDetails,
-        @Res() res: Response,
-    ) {
-        try {
-            const data = await this.workspacesService.getWorkspaceById(body);
-            return res.status(200).json(data);
-        } catch (err: any) {
-            return res.status(400).json({ errorMessage: err.message });
-        }
-    }
-
     @Post()
     async createWorkspace(
         @Res() res: Response,
@@ -49,7 +36,7 @@ export class WorkspacesController {
         try {
             await this.workspacesService.create(body);
             return res.status(200).json({
-                message: `${body.name} successfully created.`,
+                message: 'Workspace successfully created!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -67,7 +54,7 @@ export class WorkspacesController {
         try {
             await this.workspacesService.delete(body);
             return res.status(200).json({
-                message: 'Workspace successfully deleted.',
+                message: 'Workspace successfully deleted!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -77,7 +64,20 @@ export class WorkspacesController {
         }
     }
 
-    @Post('/colleagues/add')
+    @Get('/details')
+    async getWorkspace(
+        @Body() body: GetWorkspaceDetails,
+        @Res() res: Response,
+    ) {
+        try {
+            const data = await this.workspacesService.getWorkspaceById(body);
+            return res.status(200).json(data);
+        } catch (err: any) {
+            return res.status(400).json({ errorMessage: err.message });
+        }
+    }
+
+    @Post('/colleagues')
     async addColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,
@@ -95,7 +95,7 @@ export class WorkspacesController {
         }
     }
 
-    @Delete('/colleagues/remove')
+    @Delete('/colleagues')
     async removeColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,

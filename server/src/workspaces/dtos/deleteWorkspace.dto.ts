@@ -1,7 +1,11 @@
-import { IsNumber } from 'class-validator';
 import { BaseWorkspaceDto } from './base.dto';
+import { IsBoolean, IsNumber } from 'class-validator';
+import { IWorkspace } from '../workspace.interfaces';
 
 export class DeleteWorkspaceDto extends BaseWorkspaceDto {
     @IsNumber()
-    workspaceId: number;
+    workspaceData: IWorkspace;
+
+    @IsBoolean()
+    userIsWorkspaceOwner: boolean;
 }

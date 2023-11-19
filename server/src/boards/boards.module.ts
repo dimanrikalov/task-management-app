@@ -15,8 +15,8 @@ import { ColumnsGateway } from 'src/columns/columns.gateway';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
-import { BoardAuthMiddleware } from 'src/middlewares/boardAuth.middleware';
-import { WorkspaceAuthMiddleware } from 'src/middlewares/workspaceAuth.middleware';
+import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
+import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middleware';
 
 @Module({
     providers: [
@@ -36,21 +36,17 @@ export class BoardsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(AuthMiddleware)
-            .forRoutes({ path: 'boards', method: RequestMethod.GET }); //applies only for boards
-        consumer
-            .apply(AuthMiddleware, BoardAuthMiddleware)
-            .forRoutes({ path: 'boards/details', method: RequestMethod.GET });
-        consumer.apply(AuthMiddleware, BoardAuthMiddleware).forRoutes(
+            .forRoutes({ path: 'boards', method: RequestMethod.GET });
+
+        consumer.apply(AuthMiddleware, BoardCheckMiddleware).forRoutes(
+            { path: 'boards/details', method: RequestMethod.GET },
             {
-                path: 'boards/colleagues*',
+                path: 'boards/colleagues',
                 method: RequestMethod.ALL,
             },
-            {
-                path: 'boards/chat',
-                method: RequestMethod.POST,
-            },
         );
-        consumer.apply(AuthMiddleware, WorkspaceAuthMiddleware).forRoutes(
+
+        consumer.apply(AuthMiddleware, WorkspaceCheckMiddleware).forRoutes(
             {
                 path: 'boards',
                 method: RequestMethod.DELETE,

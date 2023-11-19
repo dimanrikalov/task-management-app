@@ -90,24 +90,23 @@ export class BoardsService {
             },
         });
 
-        const columns = boardColumns.map((column) => {
-            const tasks = boardTasks.filter(
-                (task) => task.columnId === column.id,
-            );
-
-            return { ...column, tasks };
-        });
-
         const tasks = boardTasks.map((task) => {
             const steps = boardSteps.filter((step) => step.taskId === task.id);
 
             return { ...task, steps };
         });
 
+        const columns = boardColumns.map((column) => {
+            const columnTasks = tasks.filter(
+                (task) => task.columnId === column.id,
+            );
+
+            return { ...column, tasks: columnTasks };
+        });
+
         return {
             board: {
                 ...board,
-                tasks,
                 columns,
                 messages,
             },
@@ -117,7 +116,8 @@ export class BoardsService {
     async create(body: CreateBoardDto) {
         if (
             body.colleagues &&
-            body.workspaceData.name.toLowerCase() === 'personal workspace'
+            body.workspaceData.name.toLowerCase().trim() ===
+                'personal workspace'
         ) {
             throw new Error(
                 'You cannot add colleagues to boards belonging to your Personal Workspace!',
@@ -265,14 +265,16 @@ export class BoardsService {
 
     async addColleague(body: EditBoardColleagueDto) {
         if (
-            body.workspaceData.name.toLowerCase() ===
-            'Personal Workspace'.toLowerCase()
+            body.workspaceData.name.toLowerCase().trim() ===
+            'personal workspace'
         ) {
-            throw new Error('You cannot add colleagues to personal boards.');
+            throw new Error('You cannot add colleagues to personal boards!');
         }
 
         //check the user to be added (it must not be the user themself, a user with access to the workspace where the board is, or the owner)
         const colleagueIsDeletedUser = body.colleagueId === 0;
+
+        const userIsAddingThemself = body.colleagueId === body.userData.id;
 
         const colleagueIsWorkspaceOwner =
             body.workspaceData.ownerId === body.colleagueId;
@@ -297,8 +299,6 @@ export class BoardsService {
                 },
             });
 
-        const userIsAddingThemself = body.colleagueId === body.userData.id;
-
         if (colleagueIsDeletedUser) {
             throw new Error('Invalid colleague ID!');
         }
@@ -309,7 +309,7 @@ export class BoardsService {
             colleagueIsWorkspaceOwner ||
             colleagueIsPartOfWorkspace
         ) {
-            throw new Error('User already has access to the workspace!');
+            throw new Error('User already has access to the board!');
         }
 
         await this.prismaService.user_Board.create({
@@ -328,8 +328,8 @@ export class BoardsService {
 
     async removeColleague(body: EditBoardColleagueDto) {
         if (
-            body.workspaceData.name.toLowerCase() ===
-            'Personal Workspace'.toLowerCase()
+            body.workspaceData.name.toLowerCase().trim() ===
+            'personal workspace'
         ) {
             throw new Error(
                 'You cannot remove colleagues from personal boards.',
@@ -383,7 +383,6 @@ export class BoardsService {
             throw new Error('User is not part of the board!');
         }
 
-        //cannot use delete with 'AND'
         await this.prismaService.user_Board.deleteMany({
             where: {
                 AND: [

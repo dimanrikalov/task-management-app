@@ -20,6 +20,8 @@ export class ColumnCheckMiddleware implements NestMiddleware {
                 throw new Error('Invalid column ID');
             }
 
+            req.body.boardId = column.boardId;
+
             next();
         } catch (err: any) {
             return res.status(401).json({ errorMessage: err.message });

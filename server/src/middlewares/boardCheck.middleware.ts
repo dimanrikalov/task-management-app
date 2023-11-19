@@ -4,8 +4,8 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 
 //need to somehow extend Request and add userData to the body
 @Injectable()
-export class BoardAuthMiddleware implements NestMiddleware {
-    constructor(private readonly prismaService: PrismaService) {}
+export class BoardCheckMiddleware implements NestMiddleware {
+    constructor(protected readonly prismaService: PrismaService) {}
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
@@ -58,9 +58,6 @@ export class BoardAuthMiddleware implements NestMiddleware {
                     },
                 });
 
-            console.log(userIsWorkspaceOwner);
-            console.log(userHasAccessToBoard);
-            console.log(userHasAccessToWorkspace);
             if (
                 !userIsWorkspaceOwner &&
                 !userHasAccessToBoard &&
@@ -69,9 +66,12 @@ export class BoardAuthMiddleware implements NestMiddleware {
                 throw new Error('You do not have access to the board!');
             }
 
-            req.body.boardData = board; //add the whole board data
-            req.body.workspaceData = workspace; // add the whole workspace data
-            delete req.body.boardId; //remove the boardId as it can be accessed through boardData
+            req.body.boardData = board;
+            req.body.workspaceData = workspace;
+            req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
+            req.body.userHasAccessToWorkspace = userHasAccessToWorkspace;
+            delete req.body.boardId;
+
             next();
         } catch (err: any) {
             return res.status(401).json({ message: err.message });

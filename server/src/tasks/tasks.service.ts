@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TasksGateway } from './tasks.gateway';
-import { EditTaskDto } from './dtos/editTask.dto';
+import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
-import { DeleteTaskDto } from './dtos/deleteTask.dto';
 import { StepsService } from 'src/steps/steps.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -16,20 +15,21 @@ export class TasksService {
 
     async create(body: CreateTaskDto) {
         // Check if task name is unique in the scope of the board
-        const boardTasks = await this.prismaService.task.findMany({
+        const isTaskTitleTaken = !!(await this.prismaService.task.findFirst({
             where: {
-                Column: {
-                    boardId: body.boardData.id,
-                },
+                AND: [
+                    { title: body.title },
+                    {
+                        Column: {
+                            boardId: body.boardData.id,
+                        },
+                    },
+                ],
             },
             distinct: ['id'],
-        });
+        }));
 
-        const taskTitleIsTaken = boardTasks.find(
-            (task) => task.title === body.title,
-        );
-
-        if (taskTitleIsTaken) {
+        if (isTaskTitleTaken) {
             throw new Error('Task title is taken!');
         }
 
@@ -50,6 +50,40 @@ export class TasksService {
         }
 
         //check if assigneeId has access to board
+        const assigneeHasAccessToBoard =
+            !!(await this.prismaService.user.findFirst({
+                where: {
+                    OR: [
+                        {
+                            User_Workspace: {
+                                some: {
+                                    AND: [
+                                        { userId: body.assigneeId },
+                                        { workspaceId: body.workspaceData.id },
+                                    ],
+                                },
+                            },
+                        },
+                        {
+                            User_Board: {
+                                some: {
+                                    AND: [
+                                        { userId: body.assigneeId },
+                                        { boardId: body.boardData.id },
+                                    ],
+                                },
+                            },
+                        },
+                    ],
+                },
+            }));
+
+        const assigneeIsWorkspaceOwner =
+            body.assigneeId === body.workspaceData.ownerId;
+
+        if (!assigneeIsWorkspaceOwner && !assigneeHasAccessToBoard) {
+            throw new Error('Assignee does not have access to board!');
+        }
 
         // Create task
         const task = await this.prismaService.task.create({
@@ -79,7 +113,7 @@ export class TasksService {
         });
     }
 
-    async delete(body: DeleteTaskDto) {
+    async delete(body: ModifyTaskDto) {
         //delete the steps
         await this.stepsService.deleteMany(body.taskData.id);
 
@@ -115,25 +149,29 @@ export class TasksService {
     }
 
     //task steps are updated separately!
-    async edit(body: EditTaskDto) {
-        const boardTasks = await this.prismaService.task.findMany({
+    async edit(body: ModifyTaskDto) {
+        const isTaskTitleTaken = !!(await this.prismaService.task.findFirst({
             where: {
-                Column: {
-                    boardId: body.boardData.id,
-                },
+                AND: [
+                    { title: body.payload.title },
+                    {
+                        Column: {
+                            boardId: body.boardData.id,
+                        },
+                    },
+                    {
+                        NOT: {
+                            id: body.taskData.id,
+                        },
+                    },
+                ],
             },
             distinct: ['id'],
-        });
+        }));
 
-        const tasksWithSameTitle = !!boardTasks.filter(
-            (task) => task.title === body.taskData.title && task.id !== body.taskData.id,
-        ).length;
-
-        if (tasksWithSameTitle) {
+        if (isTaskTitleTaken) {
             throw new Error('Task title is taken!');
         }
-
-        console.log(body.taskData);
 
         //update the task
         await this.prismaService.task.update({

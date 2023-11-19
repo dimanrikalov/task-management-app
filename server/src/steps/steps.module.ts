@@ -8,8 +8,9 @@ import { StepsService } from './steps.service';
 import { StepsController } from './steps.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
-import { StepsAuthMiddleware } from 'src/middlewares/stepsAuth.middleware';
-import { BoardAuthMiddleware } from 'src/middlewares/boardAuth.middleware';
+import { TaskCheckMiddleware } from 'src/middlewares/taskCheck.middleware';
+import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
+import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
 import { StepsOperationsMiddleware } from 'src/middlewares/stepsOperations.middleware';
 
 @Module({
@@ -20,18 +21,31 @@ import { StepsOperationsMiddleware } from 'src/middlewares/stepsOperations.middl
 export class StepsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
-            .apply(AuthMiddleware, StepsAuthMiddleware, BoardAuthMiddleware)
+            .apply(
+                AuthMiddleware,
+                TaskCheckMiddleware,
+                ColumnCheckMiddleware,
+                BoardCheckMiddleware,
+            )
             .forRoutes({ path: 'steps', method: RequestMethod.POST });
 
-        consumer.apply(AuthMiddleware, StepsOperationsMiddleware).forRoutes(
-            {
-                path: 'steps',
-                method: RequestMethod.PUT,
-            },
-            {
-                path: 'steps',
-                method: RequestMethod.DELETE,
-            },
-        );
+        consumer
+            .apply(
+                AuthMiddleware,
+                StepsOperationsMiddleware,
+                TaskCheckMiddleware,
+                ColumnCheckMiddleware,
+                BoardCheckMiddleware,
+            )
+            .forRoutes(
+                {
+                    path: 'steps',
+                    method: RequestMethod.PUT,
+                },
+                {
+                    path: 'steps',
+                    method: RequestMethod.DELETE,
+                },
+            );
     }
 }

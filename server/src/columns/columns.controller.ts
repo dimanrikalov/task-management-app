@@ -15,7 +15,7 @@ export class ColumnsController {
         try {
             await this.columnsService.create(body);
             return res.status(200).json({
-                message: 'New column added successfully.',
+                message: 'New column added successfully!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -44,7 +44,7 @@ export class ColumnsController {
         try {
             await this.columnsService.changePosition(body);
             return res.status(200).json({
-                message: 'Column position updated successfully.',
+                message: 'Column position updated successfully!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -59,7 +59,7 @@ export class ColumnsController {
         try {
             await this.columnsService.rename(body);
             return res.status(200).json({
-                message: 'Column renamed succesfully.',
+                message: 'Column renamed succesfully!',
             });
         } catch (err: any) {
             console.log(err.message);

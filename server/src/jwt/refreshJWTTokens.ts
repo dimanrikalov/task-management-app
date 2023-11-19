@@ -15,13 +15,21 @@ export const refreshJWTTokens = ({
         throw new Error('User IDs do not match!');
     }
 
-    const newAccessToken = jwt.sign(payload.userData, process.env.ACCESS_TOKEN_SECRET, {
-        // expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
-    });
+    const newAccessToken = jwt.sign(
+        payload.userData,
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            // expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+        },
+    );
 
-    const newRefreshToken = jwt.sign({userId: decoded.userId}, process.env.REFRESH_TOKEN_SECRET, {
-        // expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
-    })
+    const newRefreshToken = jwt.sign(
+        { userId: decoded.userId },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            // expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
+        },
+    );
 
-    return {newAccessToken, newRefreshToken};
+    return { newAccessToken, newRefreshToken };
 };

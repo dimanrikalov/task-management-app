@@ -37,25 +37,18 @@ export class WorkspacesService {
     }
 
     async getWorkspaceById(body: GetWorkspaceDetails) {
-        //check if user has access to the workspace
-        const workspace = await this.prismaService.workspace.findUnique({
-            where: {
-                id: body.workspaceData.id,
-            },
-        });
-
         const workspaceBoards = await this.prismaService.board.findMany({
             where: {
-                workspaceId: workspace.id,
+                workspaceId: body.workspaceData.id,
             },
         });
 
-        return { ...workspace, boards: workspaceBoards };
+        return { ...body.workspaceData, boards: workspaceBoards };
     }
 
     async create(body: CreateWorkspaceDto): Promise<void> {
         // A user can have only one Personal Workspace
-        if (body.name.toLowerCase() === 'personal workspace') {
+        if (body.name.toLowerCase().trim() === 'personal workspace') {
             throw new Error('There can only be one workspace with this name!');
         }
 
@@ -78,17 +71,14 @@ export class WorkspacesService {
             );
         }
 
-        //add all listed colleagues different from the workspace creator to the User_Workspace relation table
-        Promise.all(
-            body.colleagues.map(async (colleagueId) => {
-                await this.prismaService.user_Workspace.create({
-                    data: {
-                        userId: colleagueId,
-                        workspaceId: workspace.id,
-                    },
-                });
-            }),
-        );
+        const payload = body.colleagues.map((colleagueId) => ({
+            userId: colleagueId,
+            workspaceId: workspace.id,
+        }));
+
+        await this.prismaService.user_Workspace.createMany({
+            data: payload,
+        });
 
         console.log('Emitting an event...');
         //trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
@@ -99,40 +89,33 @@ export class WorkspacesService {
     }
 
     async delete(body: DeleteWorkspaceDto) {
-        //check if the workspace exists and is not 'Personal Workspace'
-        const workspace = await this.prismaService.workspace.findFirst({
-            where: {
-                id: body.workspaceId,
-            },
-        });
-        if (!workspace) {
-            throw new Error('Invalid workspace ID!');
-        }
-
-        if (workspace.name.toLowerCase() === 'personal workspace') {
-            throw new Error('You cannot delete your personal workspace!');
-        }
-
         //check if user is the workspace owner
-        const isWorkspaceOwner = body.userData.id === workspace.ownerId;
-        if (!isWorkspaceOwner) {
+        if (!body.userIsWorkspaceOwner) {
             throw new Error('Unauthorized access!');
         }
 
-        //delete cascadingly (cannot implement before having entities from all other tables inside the workspace)
-        await this.boardsService.deleteMany(workspace.id);
+        //check if the workspace exists and is not 'Personal Workspace'
+        if (
+            body.workspaceData.name.toLowerCase().trim() ===
+            'personal workspace'
+        ) {
+            throw new Error('You cannot delete your personal workspace!');
+        }
+
+        //delete cascadingly
+        await this.boardsService.deleteMany(body.workspaceData.id);
 
         //remove all users with access to the workspace
         await this.prismaService.user_Workspace.deleteMany({
             where: {
-                workspaceId: workspace.id,
+                workspaceId: body.workspaceData.id,
             },
         });
 
         //delete the workspace itself
         await this.prismaService.workspace.delete({
             where: {
-                id: workspace.id,
+                id: body.workspaceData.id,
             },
         });
     }
@@ -154,6 +137,7 @@ export class WorkspacesService {
                 ownerId: user.id,
             },
         });
+
         Promise.all(
             workspaces.map((workspace) => async () => {
                 await this.boardsService.deleteMany(workspace.id);
@@ -169,37 +153,13 @@ export class WorkspacesService {
     }
 
     async addColleague(body: EditWorkspaceColleagueDto) {
-        //check if the workspace exists and is not 'Personal Workspace'
-        const workspace = await this.prismaService.workspace.findFirst({
-            where: {
-                id: body.workspaceId,
-            },
-        });
-        if (!workspace) {
-            throw new Error('Invalid workspace ID!');
-        }
-        if (workspace.name.toLowerCase() === 'personal workspace') {
+        if (
+            body.workspaceData.name.toLowerCase().trim() ===
+            'personal workspace'
+        ) {
             throw new Error(
                 'You cannot add / remove colleagues inside this workspace!',
             );
-        }
-
-        //check if the id of the user belongs to the workspace they are adding user to
-        const userHasAccessToWorkspace =
-            await this.prismaService.user_Workspace.findFirst({
-                where: {
-                    AND: [
-                        { userId: body.userData.id },
-                        { workspaceId: body.workspaceId },
-                    ],
-                },
-            });
-        //if user is neither the creator, nor does he have access to the workspace
-        if (
-            !userHasAccessToWorkspace &&
-            workspace.ownerId !== body.userData.id
-        ) {
-            throw new Error('You do not have access to this workspace!');
         }
 
         // check if the added colleague is already added to the workspace or is the creator himself
@@ -207,11 +167,11 @@ export class WorkspacesService {
             await this.prismaService.user_Workspace.findFirst({
                 where: {
                     userId: body.colleagueId,
-                    workspaceId: body.workspaceId,
+                    workspaceId: body.workspaceData.id,
                 },
             });
         const colleagueIsWorkspaceOwner =
-            body.colleagueId === workspace.ownerId;
+            body.colleagueId === body.workspaceData.ownerId;
 
         //Trying to add "Deleted User"
         if (body.colleagueId == 0) {
@@ -229,7 +189,7 @@ export class WorkspacesService {
         await this.prismaService.user_Workspace.create({
             data: {
                 userId: body.colleagueId,
-                workspaceId: body.workspaceId,
+                workspaceId: body.workspaceData.id,
             },
         });
 
@@ -241,67 +201,30 @@ export class WorkspacesService {
     }
 
     async removeColleague(body: EditWorkspaceColleagueDto) {
-        //check if the workspace exists
-        const workspace = await this.prismaService.workspace.findFirst({
-            where: {
-                id: body.workspaceId,
-            },
-        });
-        if (!workspace) {
-            throw new Error('Invalid workspace ID!');
-        }
-
-        if (workspace.name.toLowerCase() === 'personal workspace') {
+        if (
+            body.workspaceData.name.toLowerCase().trim() ===
+            'personal workspace'
+        ) {
             throw new Error(
                 'You cannot add / remove colleagues inside this workspace!',
             );
         }
 
-        //check if the id of the user belongs to the workspace they are adding user to
-        const userHasAccessToWorkspace =
-            await this.prismaService.user_Workspace.findFirst({
-                where: {
-                    AND: [
-                        { userId: body.userData.id },
-                        { workspaceId: body.workspaceId },
-                    ],
-                },
-            });
-        //if user is neither the creator, nor does he have access to the workspace
-        if (
-            !userHasAccessToWorkspace &&
-            workspace.ownerId !== body.userData.id
-        ) {
-            throw new Error('You do not have access to this workspace!');
-        }
-
         // check if the colleague to remove is the workspace owner themself
         const colleagueIsWorkspaceOwner =
-            body.colleagueId === workspace.ownerId;
+            body.colleagueId === body.workspaceData.ownerId;
         if (colleagueIsWorkspaceOwner) {
             throw new Error(
                 'You cannot remove the workspace owner from their workspace!',
             );
         }
 
-        // check if the colleague to remove even has access to the workspace
-        const colleagueIsAlreadyAdded =
-            await this.prismaService.user_Workspace.findFirst({
-                where: {
-                    userId: body.colleagueId,
-                    workspaceId: body.workspaceId,
-                },
-            });
-        if (!colleagueIsAlreadyAdded) {
-            throw new Error('Colleague ID is not part of the workspace!');
-        }
-
+        // deleteMany will not throw error in case of no matching colleagueId record
         await this.prismaService.user_Workspace.deleteMany({
-            //only 'deleteMany' supports 'AND'
             where: {
                 AND: [
                     { userId: body.colleagueId },
-                    { workspaceId: body.workspaceId },
+                    { workspaceId: body.workspaceData.id },
                 ],
             },
         });

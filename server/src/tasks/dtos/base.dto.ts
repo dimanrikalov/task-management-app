@@ -5,7 +5,7 @@ import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 
 export class BaseTasksDto {
     boardData: IBoard;
+    columnData: Column;
     userData: IJWTPayload;
     workspaceData: IWorkspace;
-    columnData: Column;
 }

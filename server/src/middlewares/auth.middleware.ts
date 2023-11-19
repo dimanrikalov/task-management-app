@@ -7,18 +7,16 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
     use(req: Request, res: Response, next: NextFunction) {
-        const authorizationHeader = req.headers.authorization;
-
-        if (!authorizationHeader) {
-            return res.status(401).json({ message: 'Unauthorized access!' });
-        }
-
-        const authorizationToken = authorizationHeader.split(' ')[1];
-
         try {
+            const authorizationHeader = req.headers.authorization;
+            if (!authorizationHeader) {
+                throw new Error('Unauthorized access!');
+            }
+            const authorizationToken = authorizationHeader.split(' ')[1];
+
             // Verify the JWT token is valid
             if (!validateJWTToken(authorizationToken)) {
-                throw new Error('Invalid JWT token.');
+                throw new Error('Invalid JWT token!');
             }
 
             // Decode the JWT token
@@ -27,6 +25,8 @@ export class AuthMiddleware implements NestMiddleware {
 
             //add the decodedUserData to the body
             req.body.userData = decodedToken;
+
+            //proceed accessing the endpoint
             next();
         } catch (err: any) {
             return res.status(401).json({ errorMessage: err.message });
