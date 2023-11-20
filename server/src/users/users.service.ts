@@ -10,10 +10,15 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { refreshJWTTokens } from 'src/jwt/refreshJWTTokens';
 import { IRefreshTokensBody } from './dtos/users.interfaces';
 import { generateJWTTokens } from 'src/jwt/generateJWTTokens';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { BaseUsersDto } from './dtos/base.dto';
 
 @Injectable()
 export class UsersService {
-    constructor(private readonly prismaService: PrismaService) {}
+    constructor(
+        private readonly prismaService: PrismaService,
+        private readonly workspaceService: WorkspacesService,
+    ) {}
 
     async findUserByEmail(email: string): Promise<IUser> {
         return await this.prismaService.user.findFirst({
@@ -23,8 +28,21 @@ export class UsersService {
         });
     }
 
-    async getAll(): Promise<IUser[]> {
-        return this.prismaService.user.findMany();
+    async getAll() {
+        return this.prismaService.user.findMany({
+            where: {
+                NOT: {
+                    id: 0,
+                },
+            },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                profileImagePath: true,
+            },
+        });
     }
 
     async signUp(body: CreateUserDto): Promise<void> {
@@ -87,7 +105,7 @@ export class UsersService {
         //create authorization token + refresh token
         const { accessToken, refreshToken } = generateJWTTokens(payload);
 
-        //set the accessToken and refreshToken as a cookies
+        //set the accessToken and refreshToken as cookies
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
             secure: true,
@@ -124,7 +142,7 @@ export class UsersService {
         return refreshJWTTokens({ payload, refreshToken });
     }
 
-    async delete(userId: number) {
+    async delete(body: BaseUsersDto) {
         //create "Deleted User" (id:0) if none exists
         let deletedUser = await this.prismaService.user.findUnique({
             where: {
@@ -147,27 +165,44 @@ export class UsersService {
         //transfer all messages to "Deleted user"
         await this.prismaService.message.updateMany({
             where: {
-                writtenBy: userId,
+                writtenBy: body.userData.id,
             },
             data: {
                 writtenBy: deletedUser.id,
             },
         });
-
+  
         //transfer all tasks to "Deleted user"
         await this.prismaService.task.updateMany({
             where: {
-                assigneeId: userId,
+                assigneeId: deletedUser.id,
             },
             data: {
                 assigneeId: deletedUser.id,
             },
         });
+      
+        //delete all relationships with other users' boards
+        await this.prismaService.user_Board.deleteMany({
+            where: {
+                userId: body.userData.id,
+            },
+        });
+
+        //delete all relationships with other users' workspaces
+        await this.prismaService.user_Workspace.deleteMany({
+            where: {
+                userId: body.userData.id,
+            },
+        });
+       
+        //delete user workspaces
+        await this.workspaceService.deleteMany(body.userData.id);
 
         //delete the user
         await this.prismaService.user.delete({
             where: {
-                id: userId,
+                id: body.userData.id,
             },
         });
     }

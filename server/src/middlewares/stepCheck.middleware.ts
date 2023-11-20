@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
 @Injectable()
-export class StepsOperationsMiddleware implements NestMiddleware {
+export class StepCheckMiddleware implements NestMiddleware {
     constructor(private readonly prismaService: PrismaService) {}
 
     async use(req: Request, res: Response, next: NextFunction) {
@@ -23,8 +23,6 @@ export class StepsOperationsMiddleware implements NestMiddleware {
 
             req.body.stepData = step;
             req.body.taskId = step.taskId;
-
-            delete req.body.taskId;
 
             next();
         } catch (err: any) {

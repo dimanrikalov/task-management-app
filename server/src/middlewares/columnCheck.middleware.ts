@@ -21,9 +21,11 @@ export class ColumnCheckMiddleware implements NestMiddleware {
             }
 
             req.body.boardId = column.boardId;
+            req.body.columnData = column;
 
             next();
         } catch (err: any) {
+            console.log(err.message);
             return res.status(401).json({ errorMessage: err.message });
         }
     }

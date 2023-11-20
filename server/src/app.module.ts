@@ -13,6 +13,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
     imports: [
+        ConfigModule.forRoot(),
         UsersModule,
         TasksModule,
         StepsModule,
@@ -21,7 +22,6 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
         ColumnsModule,
         MessagesModule,
         WorkspacesModule,
-        ConfigModule.forRoot(),
     ],
     providers: [AppService],
     controllers: [AppController],

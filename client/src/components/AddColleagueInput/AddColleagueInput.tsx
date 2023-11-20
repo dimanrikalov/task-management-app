@@ -43,8 +43,9 @@ export const AddColleagueInput = ({ title }: IAddColleagueInputProps) => {
 					inputValue={inputValue}
 					onChange={inputChangeHandler}
 				/>
-
-				<ListContainer title={title} />
+			</div>
+			<div>
+				<ListContainer title={title} mode='users' />
 			</div>
 		</div>
 	);

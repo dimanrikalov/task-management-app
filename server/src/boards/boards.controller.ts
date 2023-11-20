@@ -19,7 +19,7 @@ export class BoardsController {
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.mssage,
+                errorMessage: err.message,
             });
         }
     }

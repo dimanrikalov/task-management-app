@@ -47,7 +47,7 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
 
             next();
         } catch (err: any) {
-            return res.status(401).json({ message: err.message });
+            return res.status(401).json({ errorMessage: err.message });
         }
     }
 }

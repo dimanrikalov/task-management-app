@@ -14,16 +14,17 @@ export class StepsService {
     constructor(private readonly prismaService: PrismaService) {}
 
     async create(body: CreateStepDto) {
-        const stepDescriptionIsTaken = await this.prismaService.step.findFirst({
+        const taskSteps = await this.prismaService.step.findMany({
             where: {
-                AND: [
-                    { taskId: body.taskData.id },
-                    { description: body.payload.description },
-                ],
+                taskId: body.taskData.id,
             },
         });
 
-        if (stepDescriptionIsTaken) {
+        const taskDescriptionIsTaken = taskSteps.some(
+            (task) => task.description === body.payload.description,
+        );
+
+        if (taskDescriptionIsTaken) {
             throw new Error('Step description is already in use!');
         }
 
@@ -32,6 +33,24 @@ export class StepsService {
                 taskId: body.taskData.id,
                 isComplete: body.payload.isComplete,
                 description: body.payload.description,
+            },
+        });
+
+        const completeStepsCount = taskSteps.reduce(
+            (count, task) => count + (task.isComplete ? 1 : 0),
+            body.payload.isComplete ? 1 : 0,
+        );
+
+        const progress = Math.round(
+            (completeStepsCount / (taskSteps.length + 1)) * 100,
+        );
+
+        await this.prismaService.task.update({
+            where: {
+                id: body.taskData.id,
+            },
+            data: {
+                progress,
             },
         });
     }
@@ -53,12 +72,61 @@ export class StepsService {
                 description: body.stepData.description,
             },
         });
+
+        //recalculate progress
+        if (body.isComplete !== body.stepData.isComplete) {
+            const totalSteps = await this.prismaService.step.count({
+                where: {
+                    taskId: body.taskData.id,
+                },
+            });
+
+            const completeSteps = await this.prismaService.step.count({
+                where: {
+                    AND: [{ taskId: body.taskData.id }, { isComplete: true }],
+                },
+            });
+
+            const progress = Math.round((completeSteps / totalSteps) * 100);
+
+            await this.prismaService.task.update({
+                where: {
+                    id: body.taskData.id,
+                },
+                data: {
+                    progress,
+                },
+            });
+        }
     }
 
     async delete(body: DeleteStepDto) {
         await this.prismaService.step.delete({
             where: {
                 id: body.stepId,
+            },
+        });
+
+        const totalTasks = await this.prismaService.step.count({
+            where: {
+                taskId: body.taskData.id,
+            },
+        });
+
+        const completeTask = await this.prismaService.step.count({
+            where: {
+                AND: [{ taskId: body.taskData.id }, { isComplete: true }],
+            },
+        });
+
+        const progress = Math.round((totalTasks / completeTask) * 100);
+
+        await this.prismaService.task.update({
+            where: {
+                id: body.taskData.id,
+            },
+            data: {
+                progress,
             },
         });
     }

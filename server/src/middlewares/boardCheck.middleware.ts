@@ -38,25 +38,25 @@ export class BoardCheckMiddleware implements NestMiddleware {
                 workspace.ownerId === req.body.userData.id;
 
             const userHasAccessToWorkspace =
-                await this.prismaService.user_Workspace.findFirst({
+                !!(await this.prismaService.user_Workspace.findFirst({
                     where: {
                         AND: [
                             { workspaceId: workspace.id },
                             { userId: req.body.userData.id },
                         ],
                     },
-                });
+                }));
 
             //check if user has access to the board itself
             const userHasAccessToBoard =
-                await this.prismaService.user_Board.findFirst({
+                !!(await this.prismaService.user_Board.findFirst({
                     where: {
                         AND: [
                             { boardId: req.body.boardId },
                             { userId: req.body.userData.id },
                         ],
                     },
-                });
+                }));
 
             if (
                 !userIsWorkspaceOwner &&
@@ -70,11 +70,13 @@ export class BoardCheckMiddleware implements NestMiddleware {
             req.body.workspaceData = workspace;
             req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
             req.body.userHasAccessToWorkspace = userHasAccessToWorkspace;
+
             delete req.body.boardId;
 
             next();
         } catch (err: any) {
-            return res.status(401).json({ message: err.message });
+            console.log(err.message);
+            return res.status(401).json({ errorMessage: err.message });
         }
     }
 }

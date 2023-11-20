@@ -13,12 +13,33 @@ export class TasksService {
         private readonly prismaService: PrismaService,
     ) {}
 
+    stepsHaveRepeatingDescriptions(arr: any[], propertyName: string) {
+        const valueSet = new Set();
+
+        for (const obj of arr) {
+            const propertyValue = obj[propertyName]?.toLowerCase()?.trim();
+
+            if (propertyValue && valueSet.has(propertyValue)) {
+                return true; // Found repeating descriptions, no need to continue checking
+            }
+
+            valueSet.add(propertyValue);
+        }
+
+        return false; // No repeating descriptions found
+    }
+
     async create(body: CreateTaskDto) {
         // Check if task name is unique in the scope of the board
         const isTaskTitleTaken = !!(await this.prismaService.task.findFirst({
             where: {
                 AND: [
-                    { title: body.title },
+                    {
+                        title: {
+                            equals: body.title.toLowerCase().trim(),
+                            mode: 'insensitive',
+                        },
+                    },
                     {
                         Column: {
                             boardId: body.boardData.id,
@@ -28,12 +49,26 @@ export class TasksService {
             },
             distinct: ['id'],
         }));
-
         if (isTaskTitleTaken) {
             throw new Error('Task title is taken!');
         }
 
+        if (body.assigneeId === 0) {
+            throw new Error('Invalid assignee ID!');
+        }
+
+        //handle the case of no array being passed as payload
         body.steps = body.steps || [];
+
+        //check for duplicate task description
+        const isTaskDuplicate = this.stepsHaveRepeatingDescriptions(
+            body.steps,
+            'description',
+        );
+
+        if (isTaskDuplicate) {
+            throw new Error('Task descriptions must be unqiue!');
+        }
 
         //calculate the progress based on how many tasks are completed
         const completeSteps = body.steps.filter((step) => {
@@ -44,10 +79,6 @@ export class TasksService {
         const progress = Math.round(
             (completeSteps.length / body.steps.length) * 100,
         );
-
-        if (body.assigneeId === 0) {
-            throw new Error('Invalid assignee ID!');
-        }
 
         //check if assigneeId has access to board
         const assigneeHasAccessToBoard =
@@ -88,9 +119,9 @@ export class TasksService {
         // Create task
         const task = await this.prismaService.task.create({
             data: {
-                progress,
                 title: body.title,
                 effort: body.effort,
+                progress: progress || 0,
                 priority: body.priority,
                 assigneeId: body.assigneeId,
                 hoursSpent: body.hoursSpent,
@@ -132,10 +163,10 @@ export class TasksService {
                 columnId,
             },
         });
-
         //delete all steps of every task from the column
         await Promise.all(
-            tasks.map((task) => async () => {
+            tasks.map(async (task) => {
+                // await the steps deletion for each task
                 await this.stepsService.deleteMany(task.id);
             }),
         );
@@ -150,10 +181,16 @@ export class TasksService {
 
     //task steps are updated separately!
     async edit(body: ModifyTaskDto) {
+        //check for any task other than the one being updated for having the same title
         const isTaskTitleTaken = !!(await this.prismaService.task.findFirst({
             where: {
                 AND: [
-                    { title: body.payload.title },
+                    {
+                        title: {
+                            equals: body.payload.title.trim(),
+                            mode: 'insensitive',
+                        },
+                    },
                     {
                         Column: {
                             boardId: body.boardData.id,
@@ -168,7 +205,6 @@ export class TasksService {
             },
             distinct: ['id'],
         }));
-
         if (isTaskTitleTaken) {
             throw new Error('Task title is taken!');
         }

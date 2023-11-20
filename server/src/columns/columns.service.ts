@@ -7,7 +7,7 @@ import { CreateColumnDto } from './dtos/createColumn.dto';
 import { RenameColumnDto } from './dtos/renameColumn.dto';
 import { DeleteColumnDto } from './dtos/deleteColumn.dto';
 
-const defaultColumnNames = ['To Do', 'Doing', 'Done'];
+const defaultColumnNames = ['to do', 'doing', 'done'];
 
 @Injectable()
 export class ColumnsService {
@@ -22,7 +22,10 @@ export class ColumnsService {
         const isColumnNameTaken = !!(await this.prismaService.column.findFirst({
             where: {
                 AND: {
-                    name: body.name,
+                    name: {
+                        equals: body.name.trim(),
+                        mode: 'insensitive',
+                    },
                     boardId: body.boardData.id,
                 },
             },
@@ -56,7 +59,11 @@ export class ColumnsService {
     }
 
     async delete(body: DeleteColumnDto) {
-        if (defaultColumnNames.includes(body.columnData.name)) {
+        if (
+            defaultColumnNames.includes(
+                body.columnData.name.trim().toLowerCase(),
+            )
+        ) {
             throw new Error('You cannot delete the default table columns!');
         }
 
@@ -78,7 +85,7 @@ export class ColumnsService {
 
         //deletes all tasks and steps cascadingly
         await Promise.all(
-            columns.map((column) => async () => {
+            columns.map(async (column) => {
                 await this.tasksService.deleteMany(column.id);
             }),
         );
@@ -95,7 +102,11 @@ export class ColumnsService {
     }
 
     async rename(body: RenameColumnDto) {
-        if (defaultColumnNames.includes(body.columnData.name)) {
+        if (
+            defaultColumnNames.includes(
+                body.columnData.name.trim().toLowerCase(),
+            )
+        ) {
             throw new Error('You cannot rename the default table columns!');
         }
 

@@ -8,6 +8,7 @@ import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { GetWorkspaceDetails } from './dtos/getWorkspaceDetails.dto';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
+import { BaseUsersDto } from 'src/users/dtos/base.dto';
 
 @Injectable()
 export class WorkspacesService {
@@ -49,7 +50,37 @@ export class WorkspacesService {
     async create(body: CreateWorkspaceDto): Promise<void> {
         // A user can have only one Personal Workspace
         if (body.name.toLowerCase().trim() === 'personal workspace') {
-            throw new Error('There can only be one workspace with this name!');
+            throw new Error(
+                'There can only be one workspace with this name per user!',
+            );
+        }
+
+        // Handle the case where no colleagues array is passed
+        body.colleagues = body.colleagues || [];
+
+        //if the creator somehow decides to add themself or 'Deleted_User' (id: 0)
+        if (body.colleagues.includes(body.userData.id)) {
+            throw new Error('You cannot add yourself as a colleague!');
+        }
+
+        if (body.colleagues.includes(0)) {
+            throw new Error(
+                'Invalid colleague ID! Double check and try again!',
+            );
+        }
+
+        const colleagues = await this.prismaService.user.findMany({
+            where: {
+                id: {
+                    in: body.colleagues,
+                },
+            },
+        });
+
+        if (colleagues.length < body.colleagues.length) {
+            throw new Error(
+                'Invalid colleague ID! Double check and try again!',
+            );
         }
 
         // Create a new workspace with the owner's ID from the token
@@ -60,19 +91,9 @@ export class WorkspacesService {
             },
         });
 
-        // Handle the case where no colleagues array is passed
-        body.colleagues = body.colleagues || [];
-
-        //if the creator somehow decides to add themself or 'Deleted_User' (id: 0) as colleague we need to remove them from the array
-        if (body.colleagues.includes(body.userData.id)) {
-            body.colleagues = body.colleagues.filter(
-                (colleagueId) =>
-                    colleagueId !== body.userData.id && colleagueId > 0,
-            );
-        }
-
-        const payload = body.colleagues.map((colleagueId) => ({
-            userId: colleagueId,
+        //create many to many relationships
+        const payload = colleagues.map((colleague) => ({
+            userId: colleague.id,
             workspaceId: workspace.id,
         }));
 
@@ -121,25 +142,15 @@ export class WorkspacesService {
     }
 
     async deleteMany(userId: number) {
-        //check if user exists
-        const user = await this.prismaService.user.findFirst({
-            where: {
-                id: userId,
-            },
-        });
-        if (!user) {
-            throw new Error('User does not exist!');
-        }
-
-        //delete everything inside owned by the user workspaces
+        //get all workspaces owned by the user
         const workspaces = await this.prismaService.workspace.findMany({
             where: {
-                ownerId: user.id,
+                ownerId: userId,
             },
         });
-
-        Promise.all(
-            workspaces.map((workspace) => async () => {
+        //delete all boards inside of all user's workspaces
+        await Promise.all(
+            workspaces.map(async (workspace) => {
                 await this.boardsService.deleteMany(workspace.id);
             }),
         );
@@ -217,6 +228,13 @@ export class WorkspacesService {
             throw new Error(
                 'You cannot remove the workspace owner from their workspace!',
             );
+        }
+
+        const colleagueIsUser = body.colleagueId === body.userData.id;
+        console.log(body.colleagueId);
+        console.log(body.userData.id);
+        if (colleagueIsUser) {
+            throw new Error('You cannot remove yourself from the workspace!');
         }
 
         // deleteMany will not throw error in case of no matching colleagueId record

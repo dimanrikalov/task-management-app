@@ -9,9 +9,9 @@ import { StepsController } from './steps.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { TaskCheckMiddleware } from 'src/middlewares/taskCheck.middleware';
+import { StepCheckMiddleware } from 'src/middlewares/stepCheck.middleware';
 import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
 import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
-import { StepsOperationsMiddleware } from 'src/middlewares/stepsOperations.middleware';
 
 @Module({
     imports: [PrismaModule],
@@ -32,7 +32,7 @@ export class StepsModule implements NestModule {
         consumer
             .apply(
                 AuthMiddleware,
-                StepsOperationsMiddleware,
+                StepCheckMiddleware,
                 TaskCheckMiddleware,
                 ColumnCheckMiddleware,
                 BoardCheckMiddleware,

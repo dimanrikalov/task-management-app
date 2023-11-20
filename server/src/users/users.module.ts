@@ -1,3 +1,9 @@
+import {
+    Module,
+    NestModule,
+    RequestMethod,
+    MiddlewareConsumer,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TasksService } from 'src/tasks/tasks.service';
@@ -12,7 +18,6 @@ import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { WorkspacesGateway } from 'src/workspaces/workspaces.gateway';
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 
 @Module({
     providers: [
@@ -34,13 +39,10 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 export class UsersModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
-            .apply(AuthMiddleware)
-            .forRoutes(
-                'users/edit',
-                'users/delete',
-                'users/sign-up',
-                'users/sign-in',
-                'users/refresh',
-            );
+            .apply(AuthMiddleware) //exclude sign-in, sign-up endpoints
+            .forRoutes('users/edit', 'users/delete', 'users/refresh', {
+                path: 'users',
+                method: RequestMethod.GET,
+            });
     }
 }

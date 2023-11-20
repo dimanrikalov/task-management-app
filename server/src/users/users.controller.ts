@@ -98,8 +98,7 @@ export class UsersController {
     @Delete('/delete')
     async deleteUser(@Res() res: Response, @Body() body: BaseUsersDto) {
         try {
-            await this.workspacesService.deleteMany(body.userData.id);
-            await this.usersService.delete(body.userData.id);
+            await this.usersService.delete(body);
             return res.status(200).json({
                 message: 'User deleted successfully!',
             });

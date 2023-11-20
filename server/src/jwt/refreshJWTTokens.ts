@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { IJWTPayload, IRefreshTokenPayload } from './jwt.interfaces';
+import { IRefreshTokenPayload } from './jwt.interfaces';
 import { IRefreshTokensBody } from 'src/users/dtos/users.interfaces';
 
 export const refreshJWTTokens = ({
@@ -10,6 +10,9 @@ export const refreshJWTTokens = ({
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
     ) as IRefreshTokenPayload;
+
+    console.log(decoded.userId);
+    console.log(payload.userData.id);
 
     if (decoded.userId !== payload.userData.id) {
         throw new Error('User IDs do not match!');
