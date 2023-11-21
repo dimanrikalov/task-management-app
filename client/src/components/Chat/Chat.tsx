@@ -4,6 +4,8 @@ import { Message } from '../Message/Message';
 import { LuMessageSquare } from 'react-icons/lu';
 import { BackButton } from '../BackButton/BackButton';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { VscSend } from "react-icons/vsc";
+import { useState } from 'react';
 
 interface IChatProps {
 	isChatOpen: boolean;
@@ -11,6 +13,7 @@ interface IChatProps {
 }
 
 export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
+	const [inputValue, setInputValue] = useState('');
 	return (
 		<div
 			className={classNames(
@@ -38,15 +41,16 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 			</div>
 			<form className={styles.inputContainer}>
 				<IntroInput
-					name="message-input"
-					onChange={() => {}}
-					placeholder="Write message..."
 					type="text"
-					value=""
+					value={inputValue}
+					name="message-input"
+					
+					placeholder="Write message..."
+					onChange={(e) => setInputValue(e.target.value)}
 				/>
-				<button className={styles.sendBtn} onClick={() => {}}>
-					<LuMessageSquare size={21} />
-				</button>
+
+				<VscSend disabled={inputValue == ''} onClick={() => { }} className={classNames(styles.sendBtn, inputValue !== '' && styles.enable)} />
+
 			</form>
 		</div>
 	);

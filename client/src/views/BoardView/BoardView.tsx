@@ -71,9 +71,9 @@ export const BoardView = () => {
 								state.isChatOpen && styles.directionColumn
 							)}
 						>
-							<div className={styles.shadowBackground}>
-								<BackButton onClick={operations.goBack} />
-							</div>
+
+							<BackButton onClick={operations.goBack} />
+
 							<h2>Board Name</h2>
 						</div>
 						<div className={styles.operationsContainer}>

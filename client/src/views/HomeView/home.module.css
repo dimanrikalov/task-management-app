@@ -56,7 +56,7 @@
 .userInitialsIcon {
 	background-color: var(--blue-main);
 	color: var(--white-main);
-	font-weight: 600;
+	font-weight: 500;
 	min-width: 30px;
 	min-height: 30px;
 	display: flex;

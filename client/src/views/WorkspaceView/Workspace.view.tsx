@@ -1,14 +1,12 @@
 import { RxCross2 } from 'react-icons/rx';
-import { LuUserCog } from 'react-icons/lu';
 import styles from './workspace.module.css';
 import { TiDocumentAdd } from 'react-icons/ti';
 import { Modal } from '@/components/Modal/Modal';
-import { Input } from '@/components/Input/Input';
-import { RiDeleteBin2Line } from 'react-icons/ri';
-import { Button } from '@/components/Button/Button';
 import { BoardCard } from '@/components/BoardCard/BoardCard';
 import { useWorkspaceViewModel } from './Workspace.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
+import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 
@@ -54,16 +52,13 @@ export const WorkspaceView = () => {
 						<h2>My class workspace</h2>
 					</div>
 					<div className={styles.right}>
-						<Button
-							icon={<LuUserCog className={styles.icon} />}
+						<IntroButton
 							message={'Edit Users'}
 							onClick={operations.toggleEditcolleaguesModalIsOpen}
-							invert={true}
 						/>
-						<Button
-							icon={<RiDeleteBin2Line className={styles.icon} />}
+						<IntroButton
+
 							message={'Delete Workspace'}
-							invert={true}
 							onClick={
 								operations.toggleDeleteWorkspaceModalIsOpen
 							}
@@ -73,8 +68,7 @@ export const WorkspaceView = () => {
 				<div className={styles.titleContainer}>
 					<h1>Boards</h1>
 					<div className={styles.inputContainer}>
-						<Input
-							fontSize={18}
+						<IntroInput
 							type="text"
 							name="board-name-input"
 							value={state.inputValue}

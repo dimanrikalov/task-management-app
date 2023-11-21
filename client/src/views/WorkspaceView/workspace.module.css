@@ -36,14 +36,15 @@
 .titleContainer {
 	display: flex;
 	justify-content: space-between;
-	align-content: center;
+	align-items: center;
 }
 
 .inputContainer {
 	width: 480px;
+	height: 100%;
 	display: flex;
 	justify-content: center;
-	align-content: center;
+	align-items: center;
 }
 
 .boardsContainer {

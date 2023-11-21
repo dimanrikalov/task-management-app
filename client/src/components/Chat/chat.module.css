@@ -1,21 +1,21 @@
 .chatContainer {
-	position: absolute;
 	top: 0;
+	gap: 16px;
 	left: -385px;
 	width: 400px;
 	height: 100vh;
-	background-color: var(--white-secondary);
 	display: flex;
+	position: absolute;
+	align-items: center;
 	flex-direction: column;
 	padding: 0px 16px 16px 0px;
-	gap: 16px;
-	align-items: center;
 	justify-content: space-evenly;
 	transition: 200ms ease-in-out;
 	border-radius: 0px 16px 16px 0px;
+	background-color: var(--white-secondary);
 	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
 .chatContainer.isOpen {
@@ -34,9 +34,6 @@
 	rotate: 180deg;
 	transition: 200ms ease-in-out;
 	border-radius: 16px;
-	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
 .hideBtn.isOpen {
@@ -45,13 +42,13 @@
 }
 
 .chat {
-	width: 100%;
-	overflow-y: scroll;
-	display: flex;
-	flex-direction: column;
 	gap: 32px;
-	background-color: var(--white-secondary);
+	width: 100%;
 	padding: 16px;
+	display: flex;
+	overflow-y: scroll;
+	flex-direction: column;
+	background-color: var(--white-secondary);
 }
 
 .inputContainer {
@@ -63,10 +60,13 @@
 }
 
 .sendBtn {
-	background-color: var(--blue-main);
-	color: var(--white-main);
-	padding: 0px 6px;
+	color: var(--grey-main);
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
+	font-size: 36px;
+}
+
+.enable {
+	color: var(--blue-main);
 }

@@ -8,7 +8,8 @@
 
 .closeBtn {
 	position: absolute;
-	font-size: 21px;
+	font-size: 36px;
+	color: grey;
 	top: 32px;
 	right: 32px;
 	cursor: pointer;
@@ -62,13 +63,6 @@
 	align-self: flex-end;
 	/* max-width: unset;
 	justify-content: space-between; */
-}
-
-.shadowBackground {
-	border-radius: 16px;
-	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
 .operationsContainer {
