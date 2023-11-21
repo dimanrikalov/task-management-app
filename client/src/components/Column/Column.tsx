@@ -26,12 +26,12 @@ export const Column = ({ title, onClick, tasks }: IColumnProps) => {
 							}
 						/>
 					))}
-				<div className={styles.boxShadow}>
-					<IntroButton
-						onClick={onClick}
-						message={'Add task'}
-					/>
-				</div>
+
+				<IntroButton
+					onClick={onClick}
+					message={'Add task'}
+				/>
+
 			</div>
 		</div>
 	);

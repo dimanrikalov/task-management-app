@@ -24,8 +24,7 @@ export const CreateWorkspaceView = ({
 					<p>
 						Boost your productivity by making it easier for everyone
 						to access multiple{' '}
-						<span className={styles.bold}>boards</span> in one
-						location.
+						<span className={styles.bold}>boards</span> in <span className={styles.bold}>one</span> shared space.
 					</p>
 				</div>
 

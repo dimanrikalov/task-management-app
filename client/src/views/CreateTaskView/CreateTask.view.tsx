@@ -1,4 +1,4 @@
-import { BiPlus } from 'react-icons/bi';
+import { IoAdd } from "react-icons/io5";
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createTaskView.module.css';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
@@ -27,9 +27,9 @@ export const CreateTaskView = ({
 			<div className={styles.body}>
 				<div className={styles.left}>
 					<p>
-						A <span>task</span> is the
+						A <span className={styles.bold}>task</span> is the
 						building block of a{' '}
-						<span>board</span>. This is what
+						<span className={styles.bold}>board</span>. This is what
 						an employee interacts with most of the time.
 					</p>
 
@@ -68,8 +68,8 @@ export const CreateTaskView = ({
 					<div className={styles.priority}>
 						<h3 className={styles.fieldTitle}>Priority:</h3>
 						<select className={styles.select}>
-							<option value="unset">
-								Unset
+							<option value="none">
+								None
 							</option>
 							<option value="low">
 								Low
@@ -85,8 +85,8 @@ export const CreateTaskView = ({
 					<div className={styles.effort}>
 						<h3 className={styles.fieldTitle}>Effort:</h3>
 						<select className={styles.select}>
-							<option value="unset">
-								Unset
+							<option value="none">
+								None
 							</option>
 							<option value="1">
 								1
@@ -145,9 +145,9 @@ export const CreateTaskView = ({
 									onChange={() => { }}
 									placeholder="Take a nap"
 								/>
-								<button>
-									<BiPlus size={21} />
-								</button>
+
+								<IoAdd onClick={() => { }} className={styles.addStepBtn} />
+
 							</div>
 						</div>
 						<ListContainer title="Steps" mode='steps' />
