@@ -1,5 +1,5 @@
-import { Input } from '../Input/Input';
 import styles from './emailInput.module.css';
+import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 
 interface IEmailInputProps {
 	inputValue: string;
@@ -11,13 +11,12 @@ export const EmailInput = ({ inputValue, onChange, results }: IEmailInputProps) 
 
 	return (
 		<div className={styles.input}>
-			<Input
+			<IntroInput
 				type="email"
 				name="email"
 				value={inputValue}
 				placeholder="Enter a colleague email"
 				onChange={onChange}
-				fontSize={16}
 			/>
 			<div className={styles.dropdown}>
 				{inputValue !== '' &&

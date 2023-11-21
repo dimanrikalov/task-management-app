@@ -1,9 +1,9 @@
 import { RxCross2 } from 'react-icons/rx';
-import { Input } from '@/components/Input/Input';
 import styles from './createWorkspace.module.css';
-import { Button } from '@/components/Button/Button';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
+import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { useCreateWorkspaceViewModel } from './CreateWorkspace.viewmodel';
+import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 
 interface ICreateWorkspaceView {
@@ -36,21 +36,18 @@ export const CreateWorkspaceView = ({
 					<form className={styles.createForm}>
 						<ErrorMessage
 							message="Workspace name is taken!"
-							fontSize={18}
+							fontSize={16}
 						/>
-						<Input
+						<IntroInput
 							type="text"
 							name="workspace-name"
 							value={state.inputValue}
 							placeholder="Enter a workspace name"
 							onChange={operations.handleInputChange}
-							fontSize={18}
 						/>
-						<Button
+						<IntroButton
 							onClick={operations.goToWorkspace}
 							message="Create Workspace"
-							invert={true}
-							fontSize={18}
 						/>
 					</form>
 				</div>

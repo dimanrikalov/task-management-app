@@ -23,7 +23,7 @@
 	border-radius: 0.5em;
 	transition: 300ms ease-in-out;
 	background-color: whitesmoke;
-	border: 2px solid rgb(199, 199, 199);
+	border: 2px solid var(--grey-main);
 }
 
 .paddingLeft {

@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { Input } from '../Input/Input';
 import styles from './chat.module.css';
 import { Message } from '../Message/Message';
 import { LuMessageSquare } from 'react-icons/lu';
 import { BackButton } from '../BackButton/BackButton';
+import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 
 interface IChatProps {
 	isChatOpen: boolean;
@@ -37,7 +37,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 				<Message isUser={true} />
 			</div>
 			<form className={styles.inputContainer}>
-				<Input
+				<IntroInput
 					name="message-input"
 					onChange={() => {}}
 					placeholder="Write message..."

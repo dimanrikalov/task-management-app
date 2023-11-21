@@ -1,8 +1,8 @@
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createBoard.module.css';
-import { Input } from '@/components/Input/Input';
-import { Button } from '@/components/Button/Button';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
+import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { useCreateWorkspaceViewModel } from '@/views/CreateWorkspaceView/CreateWorkspace.viewmodel';
 
@@ -34,16 +34,15 @@ export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 					</h2>
 					<form className={styles.createForm}>
 						<ErrorMessage
+							fontSize={16}
 							message="Board name is taken!"
-							fontSize={18}
 						/>
-						<Input
+						<IntroInput
 							type="text"
 							name="board-name"
 							value={state.inputValue}
 							placeholder="Enter a board name"
 							onChange={operations.handleInputChange}
-							fontSize={18}
 						/>
 					</form>
 				</div>
@@ -51,18 +50,16 @@ export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 				<div className={styles.inputContainer}>
 					<h2>Choose a workspace</h2>
 					<form className={styles.createForm}>
-						<Input
+						<IntroInput
 							type="text"
 							name="workspace-name"
 							value={state.inputValue}
-							placeholder="Enter a board name"
+							placeholder="Enter a workspace name"
 							onChange={operations.handleInputChange}
-							fontSize={18}
 						/>
-						<Button
+						<IntroButton
 							message="Create Board"
-							invert={true}
-							fontSize={18}
+							onClick={operations.goToWorkspace}
 						/>
 					</form>
 				</div>

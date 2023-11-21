@@ -28,7 +28,7 @@ export const Task = ({
 				</div>
 			)}
 			<h4 className={styles.title}>
-				Fix bug
+				{title}
 			</h4>
 			<div className={styles.footer}>
 				<h5>Priority: {priority}</h5>

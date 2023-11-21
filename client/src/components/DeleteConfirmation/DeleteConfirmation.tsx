@@ -1,5 +1,5 @@
-import { Button } from '../Button/Button';
 import styles from './deleteConfirmation.module.css';
+import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 
 interface IDeleteConfirmationAlert {
 	entityName: string;
@@ -15,8 +15,8 @@ export const DeleteConfirmation = ({
 				<span className={styles.bold}>{entityName}</span>?
 			</p>
 			<div className={styles.operationsContainer}>
-				<Button fontSize={14} message="Cancel" invert={true} />
-				<Button fontSize={14} message="Confirm" invert={true} />
+				<IntroButton message="Cancel" />
+				<IntroButton message="Confirm" />
 			</div>
 		</div>
 	);

@@ -9,7 +9,7 @@ interface IIntroInputProps {
     Icon?: React.FC;
     placeholder: string;
     ToggleIcon?: React.FC;
-    onChange(e: React.ChangeEvent): void;
+    onChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const IntroInput = ({

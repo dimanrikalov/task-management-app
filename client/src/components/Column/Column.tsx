@@ -1,6 +1,6 @@
 import styles from './column.module.css';
 import { ITaskProps, Task } from '../Task/Task';
-import { Button } from '../Button/Button';
+import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 
 interface IColumnProps {
 	title: string;
@@ -16,21 +16,20 @@ export const Column = ({ title, onClick, tasks }: IColumnProps) => {
 				{tasks &&
 					tasks.map((task, i) => (
 						<Task
-							title={styles.task}
+							title={task.title}
 							priority={task.priority}
-							stepsComplete={task.stepsComplete}
 							totalSteps={task.totalSteps}
 							asigneeImg={task.asigneeImg}
+							stepsComplete={task.stepsComplete}
 							taskImg={
 								i % 2 == 0 ? '/imgs/home-img.png' : undefined
 							}
 						/>
 					))}
 				<div className={styles.boxShadow}>
-					<Button
-						message={'Add task'}
-						invert={true}
+					<IntroButton
 						onClick={onClick}
+						message={'Add task'}
 					/>
 				</div>
 			</div>

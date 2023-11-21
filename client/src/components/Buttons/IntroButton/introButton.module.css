@@ -1,17 +1,17 @@
 .button {
-	background: var(--blue-main);
-	color: var(--white-main);
-	padding: 8px;
 	width: 100%;
-	border-radius: 0.5em;
-	font-size: 16px;
-	border: 1px solid var(--white-main);
+	padding: 8px;
 	cursor: pointer;
+	font-size: 16px;
+	border-radius: 0.5em;
+	color: var(--white-main);
+	background: var(--blue-main);
 	transition: 200ms ease-in-out;
+	border: 1px solid var(--white-main);
 }
 
 .button:hover {
-	background-color: var(--white-main);
 	color: var(--blue-main);
 	border: 1px solid var(--blue-main);
+	background-color: var(--white-main);
 }

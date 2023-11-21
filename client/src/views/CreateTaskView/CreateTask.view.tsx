@@ -1,11 +1,11 @@
 import { BiPlus } from 'react-icons/bi';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createTaskView.module.css';
-import { Input } from '@/components/Input/Input';
-import { Button } from '@/components/Button/Button';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
+import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { ListContainer } from '@/components/ListContainer/ListContainer';
+import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 
 interface ICreateTaskViewProps {
 	toggleIsCreateTaskModalOpen(): void;
@@ -27,19 +27,18 @@ export const CreateTaskView = ({
 			<div className={styles.body}>
 				<div className={styles.left}>
 					<p>
-						A <span className={styles.bold}>task</span> is the
+						A <span>task</span> is the
 						building block of a{' '}
-						<span className={styles.bold}>board</span>. This is what
+						<span>board</span>. This is what
 						an employee interacts with most of the time.
 					</p>
 
 					<div className={styles.stepOne}>
 						<h2>Name your task</h2>
-						<ErrorMessage message="Task name is taken!" />
-						<Input
-							fontSize={16}
+						<ErrorMessage message="Task name is taken!" fontSize={16} />
+						<IntroInput
 							name="name-input"
-							onChange={() => {}}
+							onChange={() => { }}
 							placeholder="Enter task name"
 							type="text"
 							value=""
@@ -52,7 +51,7 @@ export const CreateTaskView = ({
 							className={styles.textArea}
 							name="description-input"
 							rows={10}
-							placeholder="The bug occurs when user presses on ..."
+							placeholder="Enter task description"
 						/>
 					</div>
 				</div>
@@ -65,20 +64,20 @@ export const CreateTaskView = ({
 							alt="task-img"
 						/>
 					</div>
-					<Button message={'Upload Image'} invert={true} />
+					<IntroButton message={'Upload Image'} />
 					<div className={styles.priority}>
 						<h3 className={styles.fieldTitle}>Priority:</h3>
 						<select className={styles.select}>
-							<option className={styles.option} value="unset">
+							<option value="unset">
 								Unset
 							</option>
-							<option className={styles.option} value="low">
+							<option value="low">
 								Low
 							</option>
-							<option className={styles.option} value="medium">
+							<option value="medium">
 								Medium
 							</option>
-							<option className={styles.option} value="high">
+							<option value="high">
 								High
 							</option>
 						</select>
@@ -86,22 +85,22 @@ export const CreateTaskView = ({
 					<div className={styles.effort}>
 						<h3 className={styles.fieldTitle}>Effort:</h3>
 						<select className={styles.select}>
-							<option className={styles.option} value="unset">
+							<option value="unset">
 								Unset
 							</option>
-							<option className={styles.option} value="1">
+							<option value="1">
 								1
 							</option>
-							<option className={styles.option} value="2">
+							<option value="2">
 								2
 							</option>
-							<option className={styles.option} value="3">
+							<option value="3">
 								3
 							</option>
-							<option className={styles.option} value="4">
+							<option value="4">
 								4
 							</option>
-							<option className={styles.option} value="5">
+							<option value="5">
 								5
 							</option>
 						</select>
@@ -111,11 +110,11 @@ export const CreateTaskView = ({
 						<h3 className={styles.fieldTitle}>Time Estimation:</h3>
 						<div className={styles.rightSide}>
 							<div className={styles.inputDiv}>
-								<input type="number" min={0} placeholder='1'/>
+								<input type="number" min={0} placeholder='1' />
 								<p>h</p>
 							</div>
 							<div className={styles.inputDiv}>
-								<input type="number" max={59} min={0} placeholder='45'/>
+								<input type="number" max={59} min={0} placeholder='45' />
 								<p>m</p>
 							</div>
 						</div>
@@ -124,11 +123,11 @@ export const CreateTaskView = ({
 						<h3 className={styles.fieldTitle}>Time Spent:</h3>
 						<div className={styles.rightSide}>
 							<div className={styles.inputDiv}>
-								<input type="number" min={0} placeholder='1'/>
+								<input type="number" min={0} placeholder='1' />
 								<p>h</p>
 							</div>
 							<div className={styles.inputDiv}>
-								<input type="number" max={59} min={0}  placeholder='45'/>
+								<input type="number" max={59} min={0} placeholder='45' />
 								<p>m</p>
 							</div>
 						</div>
@@ -139,12 +138,11 @@ export const CreateTaskView = ({
 						<div className={styles.addSteps}>
 							<h2>Add steps</h2>
 							<div className={styles.stepInputDiv}>
-								<Input
-									fontSize={16}
+								<IntroInput
 									value=""
 									type="text"
 									name="step-name"
-									onChange={() => {}}
+									onChange={() => { }}
 									placeholder="Take a nap"
 								/>
 								<button>
@@ -152,19 +150,19 @@ export const CreateTaskView = ({
 								</button>
 							</div>
 						</div>
-						<ListContainer title="Steps" mode='steps'/>
+						<ListContainer title="Steps" mode='steps' />
 					</div>
 					<div className={styles.assigneeInput}>
 						<h2>Choose assignee</h2>
 						<EmailInput
 							inputValue=""
-							onChange={() => {}}
+							onChange={() => { }}
 							results={[]}
 						/>
 						<h3 className={styles.progress}>
 							Overall completion: 75%
 						</h3>
-						<Button message="Add Task" invert={true} />
+						<IntroButton message="Add Task" />
 					</div>
 				</div>
 			</div>

@@ -1,9 +1,9 @@
 import { RxCross2 } from 'react-icons/rx';
 import styles from './editProfile.module.css';
 import { Modal } from '@/components/Modal/Modal';
-import { Input } from '@/components/Input/Input';
-import { Button } from '@/components/Button/Button';
 import { useProfileViewModel } from './EditProfile.viewmodel';
+import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 
 interface IEditProfileView {
@@ -45,11 +45,11 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 							/>
 						</div>
 						<h3>dimanrikalov1@abv.bg</h3>
-						<Button message={'Change Image'} invert={true} />
+						<IntroButton message={'Change Image'} />
 						<div className={styles.formContainer}>
 							<h3>Edit password</h3>
 							<form className={styles.form}>
-								<Input
+								<IntroInput
 									name="password-input"
 									placeholder="New password"
 									type="password"
@@ -61,9 +61,8 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 										)
 									}
 								/>
-								<Button
+								<IntroButton
 									message={'Change Password'}
-									invert={true}
 								/>
 							</form>
 						</div>
@@ -72,7 +71,7 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 						<div className={styles.formContainer}>
 							<h3>Edit first name</h3>
 							<form className={styles.form}>
-								<Input
+								<IntroInput
 									name="first-name-input"
 									placeholder="New first name"
 									type="text"
@@ -84,9 +83,9 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 										)
 									}
 								/>
-								<Button
+								<IntroButton
 									message={'Change First Name'}
-									invert={true}
+
 								/>
 							</form>
 						</div>
@@ -94,7 +93,7 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 						<div className={styles.formContainer}>
 							<h3>Edit last name</h3>
 							<form className={styles.form}>
-								<Input
+								<IntroInput
 									name="last-name-input"
 									placeholder="New last name"
 									type="text"
@@ -106,16 +105,15 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 										)
 									}
 								/>
-								<Button
+								<IntroButton
 									message={'Change Last Name'}
-									invert={true}
 								/>
 							</form>
 						</div>
 
-						<Button
+						<IntroButton
 							message={'Delete Profile'}
-							invert={true}
+
 							onClick={operations.toggleIsDeletionModalOpen}
 						/>
 					</div>

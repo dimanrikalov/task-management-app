@@ -3,9 +3,8 @@ import { HomeCard } from '../HomeCard/HomeCard';
 import styles from './homeGridStats.module.css';
 import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
-import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
-import { Input } from '../Input/Input';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
 
 interface IHomeGridStatsProps {
 	goToBoard(): void;

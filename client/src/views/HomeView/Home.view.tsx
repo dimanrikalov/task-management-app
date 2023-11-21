@@ -54,7 +54,7 @@ export const HomeView = () => {
 							<p className={styles.fullName}>Diman Rikalov</p>
 							<TbLogout2
 								className={styles.logout}
-								onClick={() => {}}
+								onClick={() => { }}
 							/>
 						</div>
 					</div>
@@ -71,9 +71,7 @@ export const HomeView = () => {
 							}
 						/>
 					</div>
-					<div className={styles.lists}>
-						<HomeGridStats goToBoard={operations.goToBoard}/>
-					</div>
+					<HomeGridStats goToBoard={operations.goToBoard} />
 				</div>
 			</div>
 		</>
