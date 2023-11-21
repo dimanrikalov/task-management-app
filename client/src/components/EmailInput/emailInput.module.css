@@ -6,7 +6,7 @@
 	position: absolute;
 	width: 100%;
 	background-color: var(--white-secondary);
-	max-height: 180px;
+	max-height: 164px;
 	overflow-y: auto;
 }
 

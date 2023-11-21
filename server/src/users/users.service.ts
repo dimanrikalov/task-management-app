@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { IUser } from './users.interfaces';
 import { Injectable } from '@nestjs/common';
+import { BaseUsersDto } from './dtos/base.dto';
 import { EditUserDto } from './dtos/editUser.dto';
 import { IJWTPayload } from '../jwt/jwt.interfaces';
 import { LoginUserDto } from './dtos/loginUser.dto';
@@ -11,7 +12,6 @@ import { refreshJWTTokens } from 'src/jwt/refreshJWTTokens';
 import { IRefreshTokensBody } from './dtos/users.interfaces';
 import { generateJWTTokens } from 'src/jwt/generateJWTTokens';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { BaseUsersDto } from './dtos/base.dto';
 
 @Injectable()
 export class UsersService {
@@ -171,7 +171,7 @@ export class UsersService {
                 writtenBy: deletedUser.id,
             },
         });
-  
+
         //transfer all tasks to "Deleted user"
         await this.prismaService.task.updateMany({
             where: {
@@ -181,7 +181,7 @@ export class UsersService {
                 assigneeId: deletedUser.id,
             },
         });
-      
+
         //delete all relationships with other users' boards
         await this.prismaService.user_Board.deleteMany({
             where: {
@@ -195,7 +195,7 @@ export class UsersService {
                 userId: body.userData.id,
             },
         });
-       
+
         //delete user workspaces
         await this.workspaceService.deleteMany(body.userData.id);
 

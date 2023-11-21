@@ -27,7 +27,7 @@ export const WorkspaceView = () => {
 									operations.toggleEditcolleaguesModalIsOpen
 								}
 							/>
-							<AddColleagueInput title="Edit colleagues" />
+							<AddColleagueInput title="Edit colleagues" enableFlex={true}/>
 						</div>
 					}
 				/>
@@ -71,7 +71,7 @@ export const WorkspaceView = () => {
 					</div>
 				</div>
 				<div className={styles.titleContainer}>
-					<h1 className={styles.title}>Boards</h1>
+					<h1>Boards</h1>
 					<div className={styles.inputContainer}>
 						<Input
 							fontSize={18}
@@ -88,107 +88,107 @@ export const WorkspaceView = () => {
 						<TiDocumentAdd className={styles.icon} />
 					</button>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 					<BoardCard
-						onClickHandler={() => {}}
+						onClickHandler={() => { }}
 						boardName="Board Name"
 					/>
 				</div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from './addColleagueInput.module.css';
 import { EmailInput } from '../EmailInput/EmailInput';
 import { ListContainer } from '../ListContainer/ListContainer';
+import classNames from 'classnames';
 
 const emails = [
 	'johnsmith@gmail.com',
@@ -19,9 +20,10 @@ const emails = [
 
 interface IAddColleagueInputProps {
 	title: string;
+	enableFlex?: boolean;
 }
 
-export const AddColleagueInput = ({ title }: IAddColleagueInputProps) => {
+export const AddColleagueInput = ({ title, enableFlex = false }: IAddColleagueInputProps) => {
 	const [inputValue, setInputValue] = useState('');
 	const [results, setResults] = useState(emails);
 	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,8 +37,8 @@ export const AddColleagueInput = ({ title }: IAddColleagueInputProps) => {
 	}, [inputValue]);
 
 	return (
-		<div className={styles.background}>
-			<div className={styles.top}>
+		<div className={classNames(styles.background, enableFlex && styles.backgroundFlex)}>
+			<div className={classNames(styles.top, enableFlex && styles.topFlex)}>
 				<h2>Add Colleagues</h2>
 				<EmailInput
 					results={results}
@@ -44,7 +46,7 @@ export const AddColleagueInput = ({ title }: IAddColleagueInputProps) => {
 					onChange={inputChangeHandler}
 				/>
 			</div>
-			<div>
+			<div className={classNames(enableFlex && styles.bottomFlex)}>
 				<ListContainer title={title} mode='users' />
 			</div>
 		</div>

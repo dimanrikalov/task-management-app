@@ -26,7 +26,7 @@ export const BoardView = () => {
 							className={styles.closeBtn}
 							onClick={operations.toggleIsEditBoardUsersModalOpen}
 						/>
-						<AddColleagueInput title="Board users" />
+						<AddColleagueInput title="Board users" enableFlex={true} />
 					</div>
 				</Modal>
 			)}
