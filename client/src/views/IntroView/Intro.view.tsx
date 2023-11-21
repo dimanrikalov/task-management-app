@@ -1,6 +1,6 @@
 import styles from './intro.module.css';
-import { Button } from '@/components/Button/Button';
 import { useIntroViewModel } from './intro.viewmodel';
+import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 
 export const IntroView = () => {
 	const { operations } = useIntroViewModel();
@@ -19,16 +19,14 @@ export const IntroView = () => {
 					your assignments in a clear, cohesive and rewarding way.
 				</p>
 				<div className={styles.buttonDiv}>
-					<Button
-						fontSize={18}
+					<IntroButton
+						message={'Sign in'}
 						onClick={operations.signInHandler}
-						message="Sign In"
 					/>
 					<p>or</p>
-					<Button
-						fontSize={18}
+					<IntroButton
+						message={'Sign up'}
 						onClick={operations.signUpHandler}
-						message="Sign Up"
 					/>
 				</div>
 			</div>

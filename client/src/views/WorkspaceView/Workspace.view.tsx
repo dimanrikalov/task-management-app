@@ -27,7 +27,7 @@ export const WorkspaceView = () => {
 									operations.toggleEditcolleaguesModalIsOpen
 								}
 							/>
-							<AddColleagueInput title="Edit colleagues" enableFlex={true}/>
+							<AddColleagueInput title="Edit colleagues" enableFlex={true} />
 						</div>
 					}
 				/>

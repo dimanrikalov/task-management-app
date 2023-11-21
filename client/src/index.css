@@ -20,6 +20,7 @@
 	--error-font-color: #ff0000;
 	--blue-main: #1da1f2;
 	--white-main: #ffffff;
+	--grey-main: rgb(129, 129, 129);
 	--white-secondary: whitesmoke;
 }
 
@@ -63,15 +64,14 @@ button {
 	border-radius: 2rem;
 }
 
-
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+	-webkit-appearance: none;
+	margin: 0;
 }
 
 /* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
+input[type='number'] {
+	-moz-appearance: textfield;
 }

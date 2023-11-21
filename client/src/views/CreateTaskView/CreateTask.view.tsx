@@ -67,7 +67,7 @@ export const CreateTaskView = ({
 					</div>
 					<Button message={'Upload Image'} invert={true} />
 					<div className={styles.priority}>
-						<h3>Priority:</h3>
+						<h3 className={styles.fieldTitle}>Priority:</h3>
 						<select className={styles.select}>
 							<option className={styles.option} value="unset">
 								Unset
@@ -84,7 +84,7 @@ export const CreateTaskView = ({
 						</select>
 					</div>
 					<div className={styles.effort}>
-						<h3>Effort:</h3>
+						<h3 className={styles.fieldTitle}>Effort:</h3>
 						<select className={styles.select}>
 							<option className={styles.option} value="unset">
 								Unset
@@ -108,7 +108,7 @@ export const CreateTaskView = ({
 					</div>
 
 					<div className={styles.timeEstimation}>
-						<h3>Time Estimation:</h3>
+						<h3 className={styles.fieldTitle}>Time Estimation:</h3>
 						<div className={styles.rightSide}>
 							<div className={styles.inputDiv}>
 								<input type="number" min={0} placeholder='1'/>
@@ -121,7 +121,7 @@ export const CreateTaskView = ({
 						</div>
 					</div>
 					<div className={styles.timeEstimation}>
-						<h3>Time Spent:</h3>
+						<h3 className={styles.fieldTitle}>Time Spent:</h3>
 						<div className={styles.rightSide}>
 							<div className={styles.inputDiv}>
 								<input type="number" min={0} placeholder='1'/>

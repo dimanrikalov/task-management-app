@@ -3,81 +3,88 @@
 	width: 100%;
 	display: flex;
 	align-items: center;
+	justify-content: center;
+	background-color: var(--blue-main);
+	min-height: 540px;
+}
+
+.signInContainer {
+	border-radius: 1em;
+	overflow: hidden;
+	padding: 18px 64px 32px 64px;
+	width: 70%;
+	max-width: 1120px;
+	min-height: 520px;
+	height: 70%;
+	background-color: var(--white-main);
+	display: flex;
 	justify-content: space-between;
-	background-color: red;
-    min-height: 540px;
+	box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
+	-webkit-box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
+	-moz-box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
 }
 
 .rightSide {
 	position: relative;
-	width: 40%;
-	max-width: 600px;
+	width: 100%;
+	max-width: 420px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: var(--blue-main);
 	height: 100%;
-	padding: 64px 32px;
+
 	justify-content: space-evenly;
 	min-width: 400px;
 }
 
 .positionBackButton {
 	position: absolute;
-		top: 32px;
-		left: 32px;
+	top: 32px;
+	left: 32px;
 }
 
 .titleContainer {
 	display: flex;
 	flex-direction: column;
-	width: 100%;
+	width: 70%;
 	align-items: center;
 	gap: 32px;
 	margin-bottom: 32px;
 }
 
-.titleContainer h1,
-.titleContainer h2 {
-	color: var(--white-main);
-}
-
 .form {
 	display: flex;
 	flex-direction: column;
-	width: 100%;
+	width: 70%;
 	gap: 16px;
 	margin-bottom: 32px;
 }
 
 .dontHaveAnAccount {
-	color: white;
 	text-align: center;
+	color: var(--grey-main);
 }
 
 .dontHaveAnAccount span {
+	color: var(--blue-main);
 	font-weight: 600;
 	cursor: pointer;
 }
 
 .leftSide {
-    min-height: 400px;
 	height: 100%;
-	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 64px 64px 0px 64px;
 	background-color: white;
+	width: 400px;
 }
 
 .leftSide img {
-    width: 70%;
-    max-width: 460px;
-	min-width: 340px;
+	width: 100%;
 }
 
-@media screen and (max-width: 840px) {
+@media screen and (max-width: 1125px) {
 	.rightSide {
 		max-width: unset;
 		width: 100%;
