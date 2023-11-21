@@ -5,6 +5,7 @@ import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
 import { Input } from '../Input/Input';
+import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 
 interface IHomeGridStatsProps {
 	goToBoard(): void;
@@ -18,9 +19,8 @@ export const HomeGridStats = ({ goToBoard }: IHomeGridStatsProps) => {
 					<div className={styles.header}>
 						<h2>Boards</h2>
 						<div>
-							<Input
-								name="find-board"
-								onChange={() => {}}
+							<IntroInput name="find-board"
+								onChange={() => { }}
 								placeholder="Enter board name"
 								type="text"
 								value=""
@@ -76,9 +76,9 @@ export const HomeGridStats = ({ goToBoard }: IHomeGridStatsProps) => {
 					<div className={styles.header}>
 						<h2>Workspaces</h2>
 						<div className={styles.inputContainer}>
-							<Input
+							<IntroInput
 								name="find-workspace"
-								onChange={() => {}}
+								onChange={() => { }}
 								placeholder="Enter workspace name"
 								type="text"
 								value=""

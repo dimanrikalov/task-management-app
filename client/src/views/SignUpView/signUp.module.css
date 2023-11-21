@@ -2,23 +2,38 @@
 	height: 100%;
 	width: 100%;
 	display: flex;
-	align-items: flex-end;
-	justify-content: space-between;
-	background-color: var(--white-main);
-	min-height: 640px;
+	align-items: center;
+	justify-content: center;
+	min-height: 540px;
 }
+
+.signInContainer {
+	border-radius: 1em;
+	overflow: hidden;
+	padding: 18px 64px 32px 64px;
+	width: 70%;
+	max-width: 1120px;
+	min-height: 540px;
+	height: 70%;
+	background-color: var(--blue-main);
+	display: flex;
+	justify-content: space-between;
+	box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
+	-webkit-box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
+	-moz-box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
+}
+
 
 .leftSide {
 	position: relative;
 	width: 100%;
-	max-width: 400px;
+	max-width: 420px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: var(--blue-main);
 	height: 100%;
-	padding: 64px 32px;
 	justify-content: space-evenly;
+	min-width: 400px;
 }
 
 .positionBackButton {
@@ -30,12 +45,10 @@
 .titleContainer {
 	display: flex;
 	flex-direction: column;
-	width: 100%;
-	min-height: 100px;
+	width: 70%;
 	align-items: center;
-	justify-content: space-between;
+	gap: 32px;
 	margin-bottom: 32px;
-	gap: 16px;
 }
 
 .titleContainer h1,
@@ -46,9 +59,14 @@
 .form {
 	display: flex;
 	flex-direction: column;
-	width: 100%;
+	width: 70%;
 	gap: 16px;
 	margin-bottom: 32px;
+}
+
+.nameInputContainer {
+	display: flex;
+	gap: 16px;
 }
 
 .haveAnAccount {
@@ -63,21 +81,34 @@
 
 .rightSide {
 	height: 100%;
-	width: 100%;
 	display: flex;
-	align-items: flex-end;
+	align-items: center;
 	justify-content: center;
-	padding: 16px 16px 0px 16px;
-	background-color: white;
+	width: 100%;
 }
 
 .rightSide img {
 	width: 100%;
-	max-width: 400px;
+	max-width: 480px;
 }
 
 @media screen and (max-width: 840px) {
 
+	.leftSide {
+		max-width: unset;
+		width: 100%;
+	}
+	.titleContainer,
+	.form {
+		max-width: 340px;
+	}
+	.rightSide {
+		display: none;
+	}
+}
+
+
+@media screen and (max-width: 1286px) {
 	.leftSide {
 		max-width: unset;
 		width: 100%;

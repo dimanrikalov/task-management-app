@@ -6,8 +6,8 @@ interface IIntroInputProps {
     name: string;
     type: string;
     value: string;
-    placeholder: string;
     Icon?: React.FC;
+    placeholder: string;
     ToggleIcon?: React.FC;
     onChange(e: React.ChangeEvent): void;
 }
@@ -42,6 +42,7 @@ export const IntroInput = ({
             placeholder={placeholder}
             onBlur={() => setIsIconColored(false)}
             onFocus={() => setIsIconColored(true)}
+            style={Icon ? { paddingLeft: '36px' } : { paddingLeft: '7px' }}
         />
     </div>
 }

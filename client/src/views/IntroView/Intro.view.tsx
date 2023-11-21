@@ -33,7 +33,7 @@ export const IntroView = () => {
 			<div className={styles.rightSide}>
 				<img
 					className={styles.img}
-					src="/imgs/intro-img.webp"
+					src="/imgs/intro-img.png"
 					alt="greeting-img"
 				/>
 			</div>

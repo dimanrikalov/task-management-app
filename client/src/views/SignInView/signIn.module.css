@@ -14,7 +14,7 @@
 	padding: 18px 64px 32px 64px;
 	width: 70%;
 	max-width: 1120px;
-	min-height: 520px;
+	min-height: 540px;
 	height: 70%;
 	background-color: var(--white-main);
 	display: flex;
@@ -32,7 +32,6 @@
 	flex-direction: column;
 	align-items: center;
 	height: 100%;
-
 	justify-content: space-evenly;
 	min-width: 400px;
 }

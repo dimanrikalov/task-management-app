@@ -6,7 +6,7 @@
 .iconContainer {
 	position: absolute;
 	top: 8px;
-	left: 18px;
+	left: 14px;
 }
 
 .iconContainer > * {
@@ -20,11 +20,14 @@
 	font-size: 16px;
 	padding: 7px 0px;
 	box-shadow: none;
-	padding-left: 46px;
 	border-radius: 0.5em;
 	transition: 300ms ease-in-out;
 	background-color: whitesmoke;
 	border: 2px solid rgb(199, 199, 199);
+}
+
+.paddingLeft {
+	padding-left: 36px;
 }
 
 .input:focus {
