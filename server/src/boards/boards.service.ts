@@ -6,6 +6,7 @@ import { DeleteBoardDto } from './dtos/deleteboard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetBoardDetails } from './dtos/getBoardDetails.dto';
 import { ColumnsService } from 'src/columns/columns.service';
+import { ReorderColumnsDto } from './dtos/reorderColumns.dto';
 import { MessagesService } from 'src/messages/messages.service';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
 
@@ -19,12 +20,6 @@ export class BoardsService {
     ) {}
 
     async getUserBoards(body: BaseUsersDto) {
-        /* 
-            get all boards where:
-            - the user_board table has an entry with userId == body.userData.id
-            - the board has workspaceId where the workspace has ownerId == body.userData.id
-            - the user_workspace has an entry where the userId = body.userData.id
-        */
         return await this.prismaService.board.findMany({
             where: {
                 OR: [
@@ -247,7 +242,7 @@ export class BoardsService {
             body.userData.id === body.workspaceData.ownerId;
 
         if (!userIsWorkspaceOwner) {
-            throw new Error('You must own the workspace to delete this board!')
+            throw new Error('You must own the workspace to delete this board!');
         }
 
         //delete the relationship entries concerning the board to be deleted
@@ -430,5 +425,37 @@ export class BoardsService {
             message: 'You have been removed from a board.',
             affectedUserId: body.colleagueId,
         });
+    }
+
+    async reorderBoardColumns(body: ReorderColumnsDto) {
+        const { columnsOrder } = body;
+
+        // Get all board columns
+        const boardColumns = await this.prismaService.column.findMany({
+            where: {
+                boardId: body.boardData.id,
+            },
+        });
+
+        // Ensure all board columns are passed and that all of them are part of the board
+        const boardColumnIds = boardColumns.map((column) => column.id);
+
+        // Validate that all columns are present in the request
+        if (
+            columnsOrder.length !== boardColumnIds.length ||
+            !columnsOrder.every((colId) => boardColumnIds.includes(colId))
+        ) {
+            throw new Error('Invalid column order');
+        }
+
+        // Update the order of columns in the database
+        await Promise.all(
+            columnsOrder.map(async (colId, index) => {
+                return this.prismaService.column.update({
+                    where: { id: colId },
+                    data: { position: index + 1 },
+                });
+            }),
+        );
     }
 }

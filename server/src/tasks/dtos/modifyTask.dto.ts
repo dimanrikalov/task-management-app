@@ -1,9 +1,16 @@
+import {
+    Max,
+    Min,
+    IsString,
+    IsNumber,
+    MinLength,
+    IsOptional,
+} from 'class-validator';
 import { Column, Task } from '@prisma/client';
 import { IBoard } from 'src/boards/boards.interfaces';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
-import { IsNumber, IsOptional, IsString, Max, Min, MinLength } from 'class-validator';
 
-class EditTaskPayloadDto {
+class ModifyTaskPayloadDto {
     @IsString()
     @MinLength(2)
     title: string;
@@ -11,7 +18,7 @@ class EditTaskPayloadDto {
     @IsNumber()
     @Min(1)
     assigneeId: number;
-    
+
     @IsOptional()
     @IsString()
     @MinLength(2)
@@ -21,7 +28,7 @@ class EditTaskPayloadDto {
     @IsString()
     @MinLength(2)
     attachmentImgPath: string | null;
-    
+
     @IsOptional()
     @IsNumber()
     @Min(0)
@@ -62,5 +69,5 @@ export class ModifyTaskDto {
     columnData: Column;
     boardData: IBoard;
     workspaceData: IWorkspace;
-    payload: EditTaskPayloadDto;
+    payload: ModifyTaskPayloadDto;
 }

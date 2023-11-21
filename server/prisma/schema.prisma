@@ -48,7 +48,7 @@ model Step {
 model Task {
   id                Int     @id @default(autoincrement())
   title             String  @db.VarChar(128)
-  description       String? @db.VarChar(256)
+  description       String? @db.VarChar(512)
   attachmentImgPath String? @map("attachment_img_path")
   estimatedHours    Float?  @map("estimated_hours") @db.Real
   estimatedMinutes  Int?    @map("estimated_minutes")
@@ -69,7 +69,7 @@ model User {
   firstName        String           @map("first_name") @db.VarChar(128)
   lastName         String           @map("last_name") @db.VarChar(128)
   email            String           @unique @db.VarChar(128)
-  password         String           @db.VarChar(60)
+  password         String           @db.VarChar(64)
   profileImagePath String           @map("profile_image_path")
   Message          Message[]
   Task             Task[]

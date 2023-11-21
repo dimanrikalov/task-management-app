@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TasksGateway } from './tasks.gateway';
+import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
 import { StepsService } from 'src/steps/steps.service';
@@ -215,6 +216,30 @@ export class TasksService {
                 id: body.taskData.id,
             },
             data: body.payload,
+        });
+    }
+
+    async move(body: MoveTaskDto) {
+        const destinationColumn = await this.prismaService.column.findFirst({
+            where: {
+                id: body.destinationColumnId,
+            },
+        });
+
+        if (
+            !destinationColumn ||
+            destinationColumn.boardId !== body.boardData.id
+        ) {
+            throw new Error('Invalid destination column ID!');
+        }
+
+        await this.prismaService.task.update({
+            where: {
+                id: body.taskData.id,
+            },
+            data: {
+                columnId: body.destinationColumnId,
+            },
         });
     }
 }

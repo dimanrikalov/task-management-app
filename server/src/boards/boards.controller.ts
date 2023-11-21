@@ -4,8 +4,9 @@ import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { DeleteBoardDto } from './dtos/deleteboard.dto';
 import { GetBoardDetails } from './dtos/getBoardDetails.dto';
+import { ReorderColumnsDto } from './dtos/reorderColumns.dto';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
-import { Res, Get, Body, Post, Delete, Controller } from '@nestjs/common';
+import { Res, Get, Body, Post, Delete, Controller, Put } from '@nestjs/common';
 
 @Controller('boards')
 export class BoardsController {
@@ -95,6 +96,25 @@ export class BoardsController {
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
+    @Put('/reorder')
+    async reorderBoardColumns(
+        @Res() res: Response,
+        @Body() body: ReorderColumnsDto,
+    ) {
+        try {
+            //check if all columns exist and are part of board
+            await this.boardsService.reorderBoardColumns(body);
+            return res.status(200).json({
+                message: 'Columns reordered successfully!',
+            });
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(401).json({
                 errorMessage: err.message,
             });
         }

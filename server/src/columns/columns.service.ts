@@ -97,10 +97,6 @@ export class ColumnsService {
         });
     }
 
-    async changePosition(body: MoveColumnDto) {
-        // To Do
-    }
-
     async rename(body: RenameColumnDto) {
         if (
             defaultColumnNames.includes(

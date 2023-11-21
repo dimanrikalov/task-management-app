@@ -44,6 +44,10 @@ export class BoardsModule implements NestModule {
                 path: 'boards/colleagues',
                 method: RequestMethod.ALL,
             },
+            {
+                path: 'boards/reorder',
+                method: RequestMethod.PUT,
+            },
         );
 
         consumer.apply(AuthMiddleware, WorkspaceCheckMiddleware).forRoutes(
