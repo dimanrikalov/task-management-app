@@ -39,21 +39,6 @@ export class ColumnsController {
         }
     }
 
-    @Put('/move')
-    async changePosition(@Res() res: Response, @Body() body: MoveColumnDto) {
-        try {
-            await this.columnsService.changePosition(body);
-            return res.status(200).json({
-                message: 'Column position updated successfully!',
-            });
-        } catch (err: any) {
-            console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message,
-            });
-        }
-    }
-
     @Put('/rename')
     async rename(@Res() res: Response, @Body() body: RenameColumnDto) {
         try {

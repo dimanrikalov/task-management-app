@@ -1,9 +1,36 @@
 .entry {
+	gap: 16px;
+	height: 48px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 }
 
+.center {
+	padding: 0px 12px;
+	justify-content: unset;
+	gap: 32px;
+}
+
 .entry .icon {
+	color: grey;
+	font-size: 21px;
+	cursor: pointer;
 	color: var(--blue-main);
+	transition: 200ms ease-in-out;
+}
+
+.entry .icon:hover {
+	color: var(--red-main);
+}
+
+.entry p {
+	font-size: 14px;
+}
+
+.entry img {
+	width: 28px;
+	height: 28px;
+	object-fit: cover;
+	border-radius: 50%;
 }

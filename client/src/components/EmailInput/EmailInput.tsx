@@ -1,4 +1,5 @@
 import styles from './emailInput.module.css';
+import { UserEntry } from '../UserEntry/UserEntry';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 
 interface IEmailInputProps {
@@ -18,16 +19,14 @@ export const EmailInput = ({ inputValue, onChange, results }: IEmailInputProps) 
 				placeholder="Enter a colleague email"
 				onChange={onChange}
 			/>
-			<div className={styles.dropdown}>
-				{inputValue !== '' &&
-					results.map((x) => {
-						return (
-							<button className={styles.result}>
-								<div>{x}</div>
-							</button>
-						);
-					})}
+			{inputValue !== '' && results.length > 0 && <div className={styles.dropdownWrapper}>
+				<div className={styles.dropdown}>
+					{
+						results.map((x) => <UserEntry email={x} showBtn={false} />)
+					}
+				</div>
 			</div>
+			}
 		</div>
 	);
 };

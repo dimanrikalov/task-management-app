@@ -5,17 +5,23 @@
 }
 
 .container .operations input {
-	width: 18px;
-	height: 18px;
+	width: 16px;
+	height: 16px;
 }
 
 .operations {
 	display: flex;
-	gap: 16px;
+	align-items: center;
+	gap: 9px;
 }
 
 .icon {
-	color: var(--blue-main);
 	cursor: pointer;
 	font-size: 21px;
+	color: var(--blue-main);
+	transition: 200ms ease-in-out;
+}
+
+.icon:hover {
+	color: var(--red-main);
 }

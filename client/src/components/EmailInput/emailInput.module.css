@@ -1,19 +1,29 @@
 .input {
+	width: 280px;
 	position: relative;
 }
 
-.dropdown {
-	position: absolute;
+.dropdownWrapper {
 	width: 100%;
+	padding: 6px;
+	position: absolute;
+	border-radius: 9px;
+	transition: 200ms ease-in-out;
+	border: 2px solid var(--blue-main);
 	background-color: var(--white-secondary);
-	max-height: 164px;
+}
+
+.dropdown {
+	width: 100%;
 	overflow-y: auto;
+	max-height: 164px;
+	background-color: var(--white-secondary);
 }
 
 .result {
 	width: 100%;
-	cursor: pointer;
-	background-color: transparent;
 	border: none;
+	cursor: pointer;
 	padding: 6px 0px;
+	background-color: transparent;
 }

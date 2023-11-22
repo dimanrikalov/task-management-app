@@ -16,34 +16,36 @@ export const ListContainer = ({
 	return (
 		<div className={styles.listContainer}>
 			<h2>{title}</h2>
-			<div className={styles.list}>
-				{mode === 'users' && (
-					<>
-						<UserEntry email="dimanrikalov1@abv.bg" />
-						<UserEntry email="dimanrikalov1@abv.bg" />
-						<UserEntry email="dimanrikalov1@abv.bg" />
-						<UserEntry email="dimanrikalov1@abv.bg" />
-						<UserEntry email="dimanrikalov1@abv.bg" />
-						<UserEntry email="dimanrikalov1@abv.bg" />
-						<UserEntry email="dimanrikalov1@abv.bg" />
-						<UserEntry email="dimanrikalov1@abv.bg" />
-						<UserEntry email="dimanrikalov1@abv.bg" />
-					</>
-				)}
-				{mode === 'steps' && (
-					<>
-						<StepEntry description={'Create Step Entries'} isCompleted={false} />
-						<StepEntry description={'Create User Entries'} isCompleted={false} />
-						<StepEntry description={'Create Step Entries'} isCompleted={false} />
-						<StepEntry description={'Create User Entries'} isCompleted={false} />
-						<StepEntry description={'Create Step Entries'} isCompleted={false} />
-						<StepEntry description={'Create User Entries'} isCompleted={false} />
-						<StepEntry description={'Create Step Entries'} isCompleted={false} />
-						<StepEntry description={'Create User Entries'} isCompleted={false} />
-						<StepEntry description={'Create Step Entries'} isCompleted={false} />
-						<StepEntry description={'Create User Entries'} isCompleted={false} />
-					</>
-				)}
+			<div className={styles.listWrapper}>
+				<div className={styles.list}>
+					{mode === 'users' && (
+						<>
+							<UserEntry email="dimanrikalov1@abv.bg" />
+							<UserEntry email="dimanrikalov1@abv.bg" />
+							<UserEntry email="dimanrikalov1@abv.bg" />
+							<UserEntry email="dimanrikalov1@abv.bg" />
+							<UserEntry email="dimanrikalov1@abv.bg" />
+							<UserEntry email="dimanrikalov1@abv.bg" />
+							<UserEntry email="dimanrikalov1@abv.bg" />
+							<UserEntry email="dimanrikalov1@abv.bg" />
+							<UserEntry email="dimanrikalov1@abv.bg" />
+						</>
+					)}
+					{mode === 'steps' && (
+						<>
+							<StepEntry description={'Create Step Entries'} isCompleted={false} />
+							<StepEntry description={'Create User Entries'} isCompleted={false} />
+							<StepEntry description={'Create Step Entries'} isCompleted={false} />
+							<StepEntry description={'Create User Entries'} isCompleted={false} />
+							<StepEntry description={'Create Step Entries'} isCompleted={false} />
+							<StepEntry description={'Create User Entries'} isCompleted={false} />
+							<StepEntry description={'Create Step Entries'} isCompleted={false} />
+							<StepEntry description={'Create User Entries'} isCompleted={false} />
+							<StepEntry description={'Create Step Entries'} isCompleted={false} />
+							<StepEntry description={'Create User Entries'} isCompleted={false} />
+						</>
+					)}
+				</div>
 			</div>
 		</div>
 	);

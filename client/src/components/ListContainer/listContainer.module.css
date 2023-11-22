@@ -1,15 +1,24 @@
 .listContainer {
-	display: flex;
-	flex-direction: column;
 	gap: 16px;
+	display: flex;
 	margin-bottom: 32px;
+	flex-direction: column;
+}
+
+.listWrapper {
+	padding: 6px;
+	border-radius: 9px;
+	transition: 200ms ease-in-out;
+	border: 2px solid var(--grey-main);
+	background-color: var(--white-secondary);
+}
+
+.listWrapper:hover {
+	border: 2px solid var(--blue-main);
 }
 
 .list {
-	background-color: var(--white-secondary);
-	padding: 4px 16px;
-	border-radius: 16px;
 	height: 200px;
 	overflow-y: auto;
+	padding: 4px 12px;
 }
-

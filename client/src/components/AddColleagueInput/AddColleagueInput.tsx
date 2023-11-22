@@ -1,8 +1,8 @@
+import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import styles from './addColleagueInput.module.css';
 import { EmailInput } from '../EmailInput/EmailInput';
 import { ListContainer } from '../ListContainer/ListContainer';
-import classNames from 'classnames';
 
 const emails = [
 	'johnsmith@gmail.com',

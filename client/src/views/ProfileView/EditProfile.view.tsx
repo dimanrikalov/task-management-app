@@ -26,6 +26,7 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 				</Modal>
 			)}
 
+			<div className={styles.backgroundWrapper}>
 			<div className={styles.background}>
 				<RxCross2
 					className={styles.closeBtn}
@@ -118,6 +119,7 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 						/>
 					</div>
 				</div>
+			</div>
 			</div>
 		</>
 	);
