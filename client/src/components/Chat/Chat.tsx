@@ -1,11 +1,10 @@
+import { useState } from 'react';
 import classNames from 'classnames';
 import styles from './chat.module.css';
+import { VscSend } from "react-icons/vsc";
 import { Message } from '../Message/Message';
-import { LuMessageSquare } from 'react-icons/lu';
 import { BackButton } from '../BackButton/BackButton';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
-import { VscSend } from "react-icons/vsc";
-import { useState } from 'react';
 
 interface IChatProps {
 	isChatOpen: boolean;
