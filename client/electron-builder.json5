@@ -17,7 +17,8 @@
     "target": [
       "dmg"
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "artifactName": "${productName}-Mac-${version}-Installer.${ext}",
+    "icon": "/icon-macos.icns"
   },
   "win": {
     "target": [
@@ -28,7 +29,8 @@
         ]
       }
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    "artifactName": "${productName}-Windows-${version}-Setup.${ext}",
+    "icon": "/icon.ico"
   },
   "nsis": {
     "oneClick": false,
