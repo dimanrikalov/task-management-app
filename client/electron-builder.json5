@@ -7,7 +7,7 @@
   "asar": true,
   "productName": "Taskify",
   "directories": {
-    "output": "release/${version}"
+    "output": "release/Taskify"
   },
   "files": [
     "dist",
