@@ -69,8 +69,8 @@
 	align-self: flex-end;
 	display: flex;
 	align-items: center;
-	gap: 16px;
-	justify-content: space-evenly;
+	gap: 8px;
+	justify-content: space-between;
 	width: 100%;
 	max-width: 532px;
 }

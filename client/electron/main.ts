@@ -20,8 +20,13 @@ let win: BrowserWindow | null;
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 
 function createWindow() {
+	const isMac = process.platform === 'darwin';
+	const iconPath = isMac
+		? path.join(process.env.VITE_PUBLIC, 'icon.icns')
+		: path.join(process.env.VITE_PUBLIC, 'icon.ico');
+
 	win = new BrowserWindow({
-		icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
+		icon: iconPath,
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
 		},
