@@ -61,7 +61,7 @@
 
 .dontHaveAnAccount {
 	text-align: center;
-	color: var(--grey-main);
+	color: grey;
 }
 
 .dontHaveAnAccount span {
