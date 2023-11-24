@@ -4,13 +4,13 @@ import { BoardView } from './views/BoardView/BoardView';
 import { IntroView } from './views/IntroView/Intro.view';
 import { SignInView } from './views/SignInView/SignIn.view';
 import { SignUpView } from './views/SignUpView/SignUp.view';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { WorkspaceView } from './views/WorkspaceView/Workspace.view';
 
 function App() {
 	return (
 		<div className={styles.background}>
-			<BrowserRouter>
+			<HashRouter>
 				<Routes>
 					<Route path="/" element={<IntroView />} />
 					<Route path="/dashboard" element={<HomeView />} />
@@ -19,7 +19,7 @@ function App() {
 					<Route path="/workspace" element={<WorkspaceView />} />
 					<Route path="/board" element={<BoardView />} />
 				</Routes>
-			</BrowserRouter>
+			</HashRouter>
 		</div>
 	);
 }
