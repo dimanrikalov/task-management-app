@@ -74,6 +74,55 @@
 	border: 2px solid var(--blue-main);
 }
 
+.previewImage {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.imgInput {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border: none;
+	cursor: pointer;
+}
+
+.fileInput {
+	display: none;
+}
+
+.imgOperationsContainer {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	padding: 0 32px;
+}
+
+.imgOperationBtn {
+	font-size: 32px;
+	transition: 200ms ease-in-out;
+	cursor: pointer;
+	border-radius: 9px;
+	padding: 3px;
+}
+
+.imgOperationBtn:first-of-type {
+	color: var(--white-main);
+	background-color: green;
+}
+.imgOperationBtn:last-of-type {
+	color: var(--white-main);
+	background-color: red;
+}
+
+.disabled:first-of-type,
+.disabled:last-of-type {
+	cursor: default;
+	background-color: grey;
+}
+
 .formContainer {
 	gap: 16px;
 	width: 100%;

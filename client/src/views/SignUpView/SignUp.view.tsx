@@ -20,7 +20,7 @@ export const SignUpView = () => {
 				<div className={styles.leftSide}>
 					<div className={styles.titleContainer}>
 						<h1>Taskify</h1>
-						<h2>Sign Up</h2>
+						<h2>Sign up</h2>
 						{true && (
 							<ErrorMessage
 								message="Invalid password!"
