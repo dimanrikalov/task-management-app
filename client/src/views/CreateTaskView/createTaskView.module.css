@@ -66,6 +66,7 @@
 input,
 select,
 .textArea {
+	resize: none;
 	height: 100%;
 	padding: 9px;
 	font-size: 16px;
