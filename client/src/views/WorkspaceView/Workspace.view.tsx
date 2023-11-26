@@ -5,6 +5,7 @@ import { Modal } from '@/components/Modal/Modal';
 import { BoardCard } from '@/components/BoardCard/BoardCard';
 import { useWorkspaceViewModel } from './Workspace.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
+import { CreateBoardView } from '../CreateBoardView/CreateBoard.view';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
@@ -15,6 +16,18 @@ export const WorkspaceView = () => {
 
 	return (
 		<>
+			{
+				state.createBoardModalIsOpen && (
+					<Modal
+						children={
+							<CreateBoardView
+								closeBtnHandler={operations.toggleCreateBoardModalIsOpen}
+								workspaceName={state.workspaceData?.name}
+							/>
+						}
+					/>
+				)
+			}
 			{state.editColleaguesModalIsOpen && (
 				<Modal
 					children={
@@ -49,7 +62,7 @@ export const WorkspaceView = () => {
 				<div className={styles.header}>
 					<div className={styles.left}>
 						<BackButton onClick={operations.backBtnHandler} />
-						<h2>My class workspace</h2>
+						<h2>{state.workspaceData?.name}</h2>
 					</div>
 					<div className={styles.right}>
 						<IntroButton
@@ -78,113 +91,17 @@ export const WorkspaceView = () => {
 					</div>
 				</div>
 				<div className={styles.boardsContainer}>
-					<button className={styles.addButton}>
+					<button className={styles.addButton} onClick={operations.toggleCreateBoardModalIsOpen}>
 						<TiDocumentAdd className={styles.icon} />
 					</button>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
-					<BoardCard
-						onClickHandler={() => { }}
-						boardName="Board Name"
-					/>
+					{
+						state.workspaceData?.boards.map(board => <BoardCard
+							onClickHandler={() => { }}
+							boardName={board.name}
+						/>
+						)
+					}
+
 				</div>
 			</div>
 		</>

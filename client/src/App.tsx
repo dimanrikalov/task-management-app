@@ -13,10 +13,10 @@ function App() {
 			<HashRouter>
 				<Routes>
 					<Route path="/" element={<IntroView />} />
-					<Route path="/dashboard" element={<HomeView />} />
 					<Route path="/auth/sign-up" element={<SignUpView />} />
 					<Route path="/auth/sign-in" element={<SignInView />} />
-					<Route path="/workspace" element={<WorkspaceView />} />
+					<Route path="/workspace/:id" element={<WorkspaceView />} />
+					<Route path="/dashboard" element={<HomeView />} />
 					<Route path="/board" element={<BoardView />} />
 				</Routes>
 			</HashRouter>

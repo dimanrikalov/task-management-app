@@ -21,12 +21,12 @@ export const SignUpView = () => {
 					<div className={styles.titleContainer}>
 						<h1>Taskify</h1>
 						<h2>Sign up</h2>
-						{true && (
+						<div className={styles.errorContainer}>
 							<ErrorMessage
-								message="Invalid password!"
+								message={state.errorMessage}
 								fontSize={16}
 							/>
-						)}
+						</div>
 					</div>
 					<form className={styles.form} onSubmit={operations.signUp}>
 						<div className={styles.nameInputContainer}>

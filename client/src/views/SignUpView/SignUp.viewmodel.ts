@@ -10,6 +10,7 @@ interface IInputFields {
 	[key: string]: string; // Add this index signature
 }
 interface ISignUpViewModelState {
+	errorMessage: string;
 	inputFields: IInputFields;
 }
 
@@ -31,6 +32,7 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 		password: '',
 		firstName: '',
 	});
+	const [errorMessage, setErrorMessage] = useState('');
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -50,13 +52,39 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 
 	const signUp = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log('form submitted');
-		navigate('/dashboard');
+		try {
+			console.log(inputFields);
+			const res = await fetch(
+				`${import.meta.env.VITE_SERVER_URL}/users/sign-up`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(inputFields),
+					credentials: 'include',
+				}
+			);
+
+			const data = await res.json();
+			if (data.statusCode === 400) {
+				throw new Error(data.message[0]);
+			}
+			if (data.errorMessage) {
+				throw new Error(data.errorMessage);
+			}
+
+			navigate('/dashboard');
+		} catch (err: any) {
+			console.log(err.message);
+			setErrorMessage(err.message);
+		}
 	};
 
 	return {
 		state: {
 			inputFields,
+			errorMessage,
 		},
 		operations: {
 			signUp,

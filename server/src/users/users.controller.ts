@@ -14,14 +14,10 @@ import { UsersService } from './users.service';
 import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Controller('users')
 export class UsersController {
-    constructor(
-        private readonly usersService: UsersService,
-        private readonly workspacesService: WorkspacesService,
-    ) {}
+    constructor(private readonly usersService: UsersService) {}
 
     @Get('/')
     async getUsers() {
@@ -69,7 +65,7 @@ export class UsersController {
         }
     }
 
-    @Post('/refresh')
+    @Get('/refresh')
     async refreshUserTokens(
         @Req() req: Request,
         @Body() body: BaseUsersDto,
@@ -82,8 +78,12 @@ export class UsersController {
                     payload: body,
                     refreshToken,
                 });
-            res.cookie('accessToken', newAccessToken);
-            res.cookie('refreshToken', newRefreshToken);
+            res.cookie('accessToken', newAccessToken, {
+                maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
+            });
+            res.cookie('refreshToken', newRefreshToken, {
+                maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
+            });
             return res
                 .status(200)
                 .json({ message: 'Tokens refreshed successfully!' });

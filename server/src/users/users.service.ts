@@ -107,14 +107,10 @@ export class UsersService {
 
         //set the accessToken and refreshToken as cookies
         res.cookie('accessToken', accessToken, {
-            httpOnly: true,
-            secure: true,
             maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
         });
 
         res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: true,
             maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
         });
     }

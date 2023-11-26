@@ -25,12 +25,13 @@ export const SignInView = () => {
 					<div className={styles.titleContainer}>
 						<h1>Taskify</h1>
 						<h2>Sign in</h2>
-						{true && (
+						<div className={styles.errorContainer}>
 							<ErrorMessage
-								message="Invalid password!"
 								fontSize={16}
+								message={state.errorMessage}
+
 							/>
-						)}
+						</div>
 					</div>
 					<form className={styles.form} onSubmit={operations.signIn}>
 						<IntroInput

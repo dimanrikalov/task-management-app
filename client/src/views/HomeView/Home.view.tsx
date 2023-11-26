@@ -71,7 +71,11 @@ export const HomeView = () => {
 							}
 						/>
 					</div>
-					<HomeGridStats goToBoard={operations.goToBoard} />
+					<HomeGridStats
+						boards={state.boards}
+						workspaces={state.workspaces}
+						goToBoard={operations.goToBoard}
+					/>
 				</div>
 			</div>
 		</>

@@ -1,6 +1,7 @@
 .container {
 	width: 100%;
-	padding: 6px 0px;
+	min-height: 38px;
+	padding: 6px;
 	text-align: center;
 	border-radius: 9px;
 	background-color: var(--error-background);

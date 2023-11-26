@@ -1,6 +1,6 @@
-import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 interface ICreateWorkspaceState {
 	inputValue: string;

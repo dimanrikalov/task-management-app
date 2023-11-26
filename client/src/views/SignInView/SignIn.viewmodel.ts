@@ -8,6 +8,7 @@ interface IInputFields {
 }
 
 interface ISignInViewmodelState {
+	errorMessage: string;
 	inputFields: IInputFields;
 }
 
@@ -23,6 +24,7 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 	ISignInViewmodelOperations
 > => {
 	const navigate = useNavigate();
+	const [errorMessage, setErrorMessage] = useState('');
 	const [inputFields, setInputFields] = useState<IInputFields>({
 		email: '',
 		password: '',
@@ -44,14 +46,41 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 		navigate('/auth/sign-up');
 	};
 
-	const signIn = (e: React.FormEvent) => {
+	const signIn = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log('signing in...');
-		navigate('/dashboard');
+		try {
+			const res = await fetch(
+				`${import.meta.env.VITE_SERVER_URL}/users/sign-in`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						email: inputFields.email,
+						password: inputFields.password,
+					}),
+					credentials: 'include',
+				}
+			);
+
+			const data = await res.json();
+			if (data.statusCode === 400) {
+				throw new Error(data.message[0]);
+			}
+			if (data.errorMessage) {
+				throw new Error(data.errorMessage);
+			}
+
+			navigate('/dashboard');
+		} catch (err: any) {
+			setErrorMessage(err.message);
+			console.log(err.message);
+		}
 	};
 
 	return {
-		state: { inputFields },
+		state: { errorMessage, inputFields },
 		operations: {
 			signIn,
 			goToSignUpView,

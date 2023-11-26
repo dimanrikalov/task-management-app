@@ -1,14 +1,16 @@
 import styles from './emailInput.module.css';
 import { UserEntry } from '../UserEntry/UserEntry';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { IUser } from '../AddColleagueInput/AddColleagueInput';
 
 interface IEmailInputProps {
 	inputValue: string;
-	results: string[];
+	matches: IUser[];
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
+	addUser(id: number): void;
 }
 
-export const EmailInput = ({ inputValue, onChange, results }: IEmailInputProps) => {
+export const EmailInput = ({ inputValue, onChange, matches, addUser }: IEmailInputProps) => {
 
 	return (
 		<div className={styles.input}>
@@ -19,13 +21,22 @@ export const EmailInput = ({ inputValue, onChange, results }: IEmailInputProps) 
 				placeholder="Enter a colleague email"
 				onChange={onChange}
 			/>
-			{inputValue !== '' && results.length > 0 && <div className={styles.dropdownWrapper}>
-				<div className={styles.dropdown}>
-					{
-						results.map((x) => <UserEntry email={x} showBtn={false} />)
-					}
+			{
+				inputValue !== '' && matches.length > 0 &&
+				<div className={styles.dropdownWrapper}>
+					<div className={styles.dropdown}>
+						{
+							matches.map((match) => <UserEntry
+								key={match.id}
+								email={match.email}
+								showBtn={false}
+								addHandler={() => addUser(match.id)}
+								removeHandler={()=>{}}
+							/>
+							)
+						}
+					</div>
 				</div>
-			</div>
 			}
 		</div>
 	);

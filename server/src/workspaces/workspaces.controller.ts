@@ -64,7 +64,7 @@ export class WorkspacesController {
         }
     }
 
-    @Get('/details')
+    @Post('/details')
     async getWorkspace(
         @Body() body: GetWorkspaceDetails,
         @Res() res: Response,

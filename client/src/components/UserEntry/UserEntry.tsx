@@ -4,16 +4,17 @@ import classNames from 'classnames';
 
 interface IUserEntryInterface {
 	email: string;
-	onClick?(): void;
+	addHandler?(): void;
+	removeHandler?(): void;
 	showBtn?: boolean;
 }
 
-export const UserEntry = ({ email, onClick, showBtn = true }: IUserEntryInterface) => {
+export const UserEntry = ({ email, addHandler, removeHandler, showBtn = true }: IUserEntryInterface) => {
 	return (
-		<div className={classNames(styles.entry, !showBtn && styles.center)}>
+		<div onClick={addHandler} className={classNames(styles.entry, !showBtn && styles.center)}>
 			<img src="/imgs/profile-img.jpeg" alt="user-img" />
 			<p>{email}</p>
-			{showBtn && <MdCancel className={styles.icon} onClick={onClick} />}
+			{showBtn && <MdCancel className={styles.icon} onClick={removeHandler} />}
 		</div>
 	);
 };

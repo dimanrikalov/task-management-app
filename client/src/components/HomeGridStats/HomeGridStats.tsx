@@ -5,12 +5,17 @@ import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 interface IHomeGridStatsProps {
+	boards: any[];
+	workspaces: any[];
 	goToBoard(): void;
 }
 
-export const HomeGridStats = ({ goToBoard }: IHomeGridStatsProps) => {
+export const HomeGridStats = ({ boards, workspaces }: IHomeGridStatsProps) => {
+	const navigate = useNavigate();
+
 	return (
 		<div className={styles.background}>
 			<div className={styles.grid}>
@@ -27,48 +32,18 @@ export const HomeGridStats = ({ goToBoard }: IHomeGridStatsProps) => {
 						</div>
 					</div>
 					<div className={styles.list}>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isBoardBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isBoardBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isBoardBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isBoardBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isBoardBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isBoardBtn={true}
-						/>
+						{
+							boards.length > 0 &&
+							boards.map((board) =>
+								<HomeCard
+									userCount={12}
+									key={board.id}
+									title={board.name}
+									onClick={() => { }}
+									subtitle={'Workspace name'}
+								/>
+							)
+						}
 					</div>
 				</div>
 				<div className={styles.workspaces}>
@@ -86,97 +61,18 @@ export const HomeGridStats = ({ goToBoard }: IHomeGridStatsProps) => {
 					</div>
 
 					<div className={styles.list}>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
-						<HomeCard
-							onClick={goToBoard}
-							title="Board Name"
-							subtitle="Workspace Name"
-							userCount={16}
-							isWorkspaceBtn={true}
-						/>
+						{
+							workspaces.length > 0 &&
+							workspaces.map((workspace) =>
+								<HomeCard
+									userCount={12}
+									key={workspace.id}
+									onClick={() => navigate(`/workspace/${workspace.id}`)}
+									title={workspace.name}
+									subtitle={'Workspace name'}
+								/>
+							)
+						}
 					</div>
 				</div>
 

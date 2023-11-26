@@ -12,16 +12,16 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
             if (!req.body.workspaceId) {
                 throw new Error('Workspace ID is required!');
             }
-
+            
             const workspace = await this.prismaService.workspace.findFirst({
                 where: {
-                    id: req.body.workspaceId,
+                    id: Number(req.body.workspaceId),
                 },
             });
             if (!workspace) {
                 throw new Error('Invalid Workspace ID!');
             }
-
+            
             //check if user has access to workspace
             const userHasAccessToWorkspace =
                 await this.prismaService.user_Workspace.findFirst({

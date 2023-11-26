@@ -42,7 +42,7 @@ export class WorkspacesModule implements NestModule {
             .apply(WorkspaceCheckMiddleware)
             .forRoutes(
                 { path: 'workspaces', method: RequestMethod.DELETE },
-                { path: 'workspaces/details', method: RequestMethod.GET },
+                { path: 'workspaces/details', method: RequestMethod.POST },
                 { path: 'workspaces/colleagues', method: RequestMethod.ALL },
             );
     }

@@ -6,7 +6,11 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    app.enableCors();
+    app.enableCors({
+        origin: 'http://localhost:5173',
+        credentials: true,
+        methods: '*',
+    });
     app.use(cookieParser());
     app.useWebSocketAdapter(new IoAdapter(app));
     app.useGlobalPipes(new ValidationPipe());

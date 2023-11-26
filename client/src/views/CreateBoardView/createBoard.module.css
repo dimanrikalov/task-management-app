@@ -64,9 +64,29 @@
 	margin-bottom: 32px;
 }
 
+.errorMessageContainer {
+	width: 100%;
+	min-height: 38px;
+}
+
 .rightSide {
+	position: relative;
 	width: 45%;
 	max-width: 280px;
 	height: 100%;
 	padding-top: 32px;
+	overflow: hidden;
+}
+
+.rightSideContent {
+	width: 100%;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	transition: 200ms ease-in-out;
+}
+
+.hidden {
+	left: 320px;
+
 }

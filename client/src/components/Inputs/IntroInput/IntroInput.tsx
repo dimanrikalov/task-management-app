@@ -14,6 +14,7 @@ interface IIntroInputProps {
 	name: string;
 	type: string;
 	value: string;
+	disabled?: boolean;
 	placeholder: string;
 	Icon?: React.FC<IIconProps>;
 	ToggleIcon?: React.FC<IToggleIconProps>;
@@ -28,6 +29,7 @@ export const IntroInput = ({
 	onChange,
 	ToggleIcon,
 	placeholder,
+	disabled = false,
 }: IIntroInputProps) => {
 	const [isIconColored, setIsIconColored] = useState(false);
 
@@ -36,24 +38,25 @@ export const IntroInput = ({
 			<div className={styles.iconContainer}>
 				{value
 					? ToggleIcon && (
-							<ToggleIcon
-								className={classNames(
-									isIconColored && styles.colorIcon
-								)}
-							/>
-					  )
+						<ToggleIcon
+							className={classNames(
+								isIconColored && styles.colorIcon
+							)}
+						/>
+					)
 					: Icon && (
-							<Icon
-								className={classNames(
-									isIconColored && styles.colorIcon
-								)}
-							/>
-					  )}
+						<Icon
+							className={classNames(
+								isIconColored && styles.colorIcon
+							)}
+						/>
+					)}
 			</div>
 			<input
 				type={type}
 				name={name}
 				value={value}
+				disabled={disabled}
 				onChange={onChange}
 				className={styles.input}
 				placeholder={placeholder}
