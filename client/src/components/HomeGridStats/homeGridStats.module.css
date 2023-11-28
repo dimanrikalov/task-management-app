@@ -4,6 +4,13 @@
 	gap: 16px;
 }
 
+.noEntries {
+	height: 64px;
+	width: 100%;
+	text-align: center;
+	color: grey;
+}
+
 .grid {
 	height: 100%;
 	width: 100%;

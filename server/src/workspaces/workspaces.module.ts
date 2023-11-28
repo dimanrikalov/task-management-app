@@ -38,12 +38,16 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
 export class WorkspacesModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(AuthMiddleware).forRoutes('workspaces*');
-        consumer
-            .apply(WorkspaceCheckMiddleware)
-            .forRoutes(
-                { path: 'workspaces', method: RequestMethod.DELETE },
-                { path: 'workspaces/details', method: RequestMethod.POST },
-                { path: 'workspaces/colleagues', method: RequestMethod.ALL },
-            );
+        consumer.apply(WorkspaceCheckMiddleware).forRoutes(
+            { path: 'workspaces', method: RequestMethod.DELETE },
+            {
+                path: 'workspaces/:workspaceId/colleagues',
+                method: RequestMethod.ALL,
+            },
+            {
+                path: 'workspaces/:workspaceId/details',
+                method: RequestMethod.GET,
+            },
+        );
     }
 }

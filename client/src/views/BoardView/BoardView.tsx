@@ -14,6 +14,10 @@ import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfir
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
 
+	if (!state.boardData) {
+		return <h1>Loading...</h1>
+	}
+
 	return (
 		<>
 			{state.isEditBoardUsersModalOpen && (
@@ -23,7 +27,13 @@ export const BoardView = () => {
 							className={styles.closeBtn}
 							onClick={operations.toggleIsEditBoardUsersModalOpen}
 						/>
-						<AddColleagueInput title="Board users" enableFlex={true} />
+						<AddColleagueInput
+							colleagueIds={state.boardData.boardUserIds}
+							boardMode={false}
+							addColleagueHandler={operations.addBoardColleague}
+							removeColleagueHandler={operations.removeWorkspaceColleague}
+							title="Board users" enableFlex={true}
+						/>
 					</div>
 				</Modal>
 			)}
@@ -51,6 +61,7 @@ export const BoardView = () => {
 			<div className={styles.background}>
 				<Chat
 					isChatOpen={state.isChatOpen}
+					messages={state.boardData.messages}
 					toggleIsChatOpen={operations.toggleIsChatOpen}
 				/>
 				<div
@@ -74,7 +85,7 @@ export const BoardView = () => {
 
 							<BackButton onClick={operations.goBack} />
 
-							<h2>Board Name</h2>
+							<h3>{state.boardData.name}</h3>
 						</div>
 						<div className={styles.operationsContainer}>
 							<IntroButton
@@ -100,162 +111,15 @@ export const BoardView = () => {
 							state.isChatOpen && styles.squash
 						)}
 					>
-						<Column
-							onClick={operations.toggleIsCreateTaskModalOpen}
-							title="To Do"
-							tasks={[
-								{
-									title: 'Fix Bug',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'High',
-									stepsComplete: 2,
-									totalSteps: 4,
-								},
-								{
-									title: 'Fix Bug',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'High',
-									stepsComplete: 2,
-									totalSteps: 4,
-								},
+						{
+							state.boardData.columns.map(column => <Column key={column.id}
+								title={column.name}
+								tasks={column.tasks}
+								onClick={operations.toggleIsCreateTaskModalOpen}
+							/>)
 
-								{
-									title: 'Fix Bug',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'High',
-									stepsComplete: 2,
-									totalSteps: 4,
-								},
+						}
 
-								{
-									title: 'Fix modal not opening',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Medium',
-									stepsComplete: 1,
-									totalSteps: 2,
-								},
-								{
-									title: 'Animation not showing',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Low',
-									taskImg: 'imgs/home-img.png',
-									stepsComplete: 0,
-									totalSteps: 1,
-								},
-							]}
-						/>
-						<Column
-							title="To Do"
-							onClick={operations.toggleIsCreateTaskModalOpen}
-							tasks={[
-								{
-									title: 'Fix Bug',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'High',
-									stepsComplete: 2,
-									totalSteps: 4,
-								},
-								{
-									title: 'Fix modal not opening',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Medium',
-									stepsComplete: 1,
-									totalSteps: 2,
-								},
-								{
-									title: 'Animation not showing',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Low',
-									taskImg: 'imgs/home-img.png',
-									stepsComplete: 0,
-									totalSteps: 1,
-								},
-							]}
-						/>
-						<Column
-							title="To Do"
-							onClick={operations.toggleIsCreateTaskModalOpen}
-							tasks={[
-								{
-									title: 'Fix Bug',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'High',
-									stepsComplete: 2,
-									totalSteps: 4,
-								},
-								{
-									title: 'Fix modal not opening',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Medium',
-									stepsComplete: 1,
-									totalSteps: 2,
-								},
-								{
-									title: 'Animation not showing',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Low',
-									taskImg: 'imgs/home-img.png',
-									stepsComplete: 0,
-									totalSteps: 1,
-								},
-							]}
-						/>
-						<Column
-							title="To Do"
-							onClick={operations.toggleIsCreateTaskModalOpen}
-							tasks={[
-								{
-									title: 'Fix Bug',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'High',
-									stepsComplete: 2,
-									totalSteps: 4,
-								},
-								{
-									title: 'Fix modal not opening',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Medium',
-									stepsComplete: 1,
-									totalSteps: 2,
-								},
-								{
-									title: 'Animation not showing',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Low',
-									taskImg: 'imgs/home-img.png',
-									stepsComplete: 0,
-									totalSteps: 1,
-								},
-							]}
-						/>
-						<Column
-							title="To Do"
-							onClick={operations.toggleIsCreateTaskModalOpen}
-							tasks={[
-								{
-									title: 'Fix Bug',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'High',
-									stepsComplete: 2,
-									totalSteps: 4,
-								},
-								{
-									title: 'Fix modal not opening',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Medium',
-									stepsComplete: 1,
-									totalSteps: 2,
-								},
-								{
-									title: 'Animation not showing',
-									asigneeImg: '/imgs/profile-img.jpeg',
-									priority: 'Low',
-									taskImg: 'imgs/home-img.png',
-									stepsComplete: 0,
-									totalSteps: 1,
-								},
-							]}
-						/>
 					</div>
 				</div>
 			</div>

@@ -1,11 +1,11 @@
 import { BsCheckLg } from 'react-icons/bs';
+import { useNavigate } from 'react-router-dom';
 import { HomeCard } from '../HomeCard/HomeCard';
 import styles from './homeGridStats.module.css';
 import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
 
 interface IHomeGridStatsProps {
 	boards: any[];
@@ -33,16 +33,18 @@ export const HomeGridStats = ({ boards, workspaces }: IHomeGridStatsProps) => {
 					</div>
 					<div className={styles.list}>
 						{
-							boards.length > 0 &&
-							boards.map((board) =>
-								<HomeCard
-									userCount={12}
-									key={board.id}
-									title={board.name}
-									onClick={() => { }}
-									subtitle={'Workspace name'}
-								/>
-							)
+							boards.length > 0 ?
+								boards.map((board) =>
+									<HomeCard
+										userCount={12}
+										key={board.id}
+										isBoardBtn={true}
+										title={board.name}
+										subtitle={'Workspace name'}
+										onClick={() => navigate(`/boards/${board.id}`)}
+									/>
+								) :
+								<h1 className={styles.noEntries}>No boards yet...</h1>
 						}
 					</div>
 				</div>
@@ -62,16 +64,18 @@ export const HomeGridStats = ({ boards, workspaces }: IHomeGridStatsProps) => {
 
 					<div className={styles.list}>
 						{
-							workspaces.length > 0 &&
-							workspaces.map((workspace) =>
-								<HomeCard
-									userCount={12}
-									key={workspace.id}
-									onClick={() => navigate(`/workspace/${workspace.id}`)}
-									title={workspace.name}
-									subtitle={'Workspace name'}
-								/>
-							)
+							workspaces.length > 0 ?
+								workspaces.map((workspace) =>
+									<HomeCard
+										userCount={12}
+										key={workspace.id}
+										isWorkspaceBtn={true}
+										onClick={() => navigate(`/workspaces/${workspace.id}`)}
+										title={workspace.name}
+										subtitle={'Workspace name'}
+									/>
+								) :
+								<h1 className={styles.noEntries}>No boards yet...</h1>
 						}
 					</div>
 				</div>

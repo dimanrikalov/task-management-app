@@ -13,20 +13,38 @@ interface IInputFields {
 interface ICreateBoardViewModelState {
 	errorMessage: string;
 	inputFields: IInputFields;
+	colleagueIds: number[];
+	disableDeletionFor: number[];
 	boardData: IBoardData | null;
-	workspaceData: IWorkspace | null;
+	workspaceDetailedData: IDetailedWorkspace | null;
 	accessibleWorkspaces: IWorkspace[];
 }
 
 interface ICreateBoardViewModelOperations {
-	createBoard(): void;
 	chooseWorkspace(workspaceData: IWorkspace): void;
+	createBoard(e: React.FormEvent<HTMLFormElement>): void;
 	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
+	addWorkspaceColleague(colleagueId: number): void;
+	removeWorkspaceColleague(colleagueId: number): void;
 }
 
 export interface IWorkspace {
 	id: number;
 	name: string;
+}
+
+interface IDetailedBoard {
+	id: number;
+	name: string;
+	workspaceId: number;
+}
+
+export interface IDetailedWorkspace {
+	id: number;
+	boards: IDetailedBoard[];
+	name: string;
+	ownerId: number;
+	workspaceUserIds: number[];
 }
 
 export const useCreateBoardViewModel = (): ViewModelReturnType<
@@ -41,10 +59,18 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 		workspaceName: '',
 	});
 	const [workspaceData, setWorkspaceData] = useState<IWorkspace | null>(null);
+	const [workspaceDetailedData, setWorkspaceDetailedData] =
+		useState<IDetailedWorkspace | null>(null);
 	const [accessibleWorkspaces, setAccessibleWorkspaces] = useState<
 		IWorkspace[]
 	>([]);
+	const [colleagueIds, setColleagueIds] = useState<number[]>([]);
+	const { accessToken } = extractTokens();
+	const [disableDeletionFor, setDisableDeletionFor] = useState<number[]>([]);
 
+	if (!isAccessTokenValid(accessToken)) {
+		refreshTokens();
+	}
 	useEffect(() => {
 		const { accessToken } = extractTokens();
 		if (!isAccessTokenValid(accessToken)) {
@@ -59,36 +85,83 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 			.then((res) => res.json())
 			.then((data) => {
 				console.log(data);
-				setAccessibleWorkspaces(data as IWorkspace[]);
+				setAccessibleWorkspaces(data);
 			})
 			.catch((err) => {
 				console.log(err.message);
 			});
 	}, []);
 
-	const createBoard = async () => {
+	useEffect(() => {
+		//upon selecting a workspace we need to check all users with access to the chosen workspace
+		if (workspaceData) {
+			fetch(
+				`${import.meta.env.VITE_SERVER_URL}/workspaces/${
+					workspaceData.id
+				}/details`,
+				{
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+				}
+			)
+				.then((res) => res.json())
+				.then((data) => {
+					console.log('WORKSPACE DATA', data);
+					setWorkspaceDetailedData(data);
+					setColleagueIds([
+						...data.workspaceUserIds.map(
+							(entry: any) => entry.userId
+						),
+					]);
+					setDisableDeletionFor([
+						...data.workspaceUserIds.map((x: any) => x.userId),
+					]);
+				})
+				.catch((err) => {
+					console.log(err.message);
+				});
+		}
+	}, [workspaceData]);
+
+	const createBoard = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		if (!inputFields.boardName) {
+			setErrorMessage('Board name is required!');
+			return;
+		}
 		try {
 			const { accessToken } = extractTokens();
 			if (!isAccessTokenValid(accessToken)) {
 				refreshTokens();
 			}
+			console.log(accessToken);
+			if (!workspaceData) {
+				throw new Error('Invalid Workspace ID!');
+			}
 			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/boards/create`,
+				`${import.meta.env.VITE_SERVER_URL}/boards`,
 				{
 					method: 'POST',
 					headers: {
-						Authorization: `Bearer: ${accessToken}`,
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${accessToken}`,
 					},
+					credentials: 'include', // Include credentials (cookies) in the request
 					body: JSON.stringify({
 						name: inputFields.boardName,
-						workspaceId: 1,
+						workspaceId: workspaceData?.id,
+						colleagues: colleagueIds,
 					}),
 				}
 			);
 			const data = await res.json();
 			setBoardData(data);
+			console.log(data);
 
-			openBoardView(data.id);
+			openBoardView(data.boardId);
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);
@@ -97,10 +170,29 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		setInputFields((prevInputFields) => ({
-			...prevInputFields,
-			[name]: value,
-		}));
+		setWorkspaceDetailedData(null);
+		setInputFields((prevInputFields) => {
+			if (name === 'workspaceName') {
+				setWorkspaceData(() => {
+					const validWorkspace = accessibleWorkspaces.find(
+						(workspace) => workspace.name === value
+					);
+					if (validWorkspace) {
+						return validWorkspace;
+					}
+					return null;
+				});
+			}
+
+			return {
+				...prevInputFields,
+				[name]: value,
+			};
+		});
+	};
+
+	const openBoardView = (boardId: string) => {
+		navigate(`/boards/${boardId}`);
 	};
 
 	const chooseWorkspace = (workspaceData: IWorkspace) => {
@@ -111,8 +203,14 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 		setWorkspaceData(workspaceData);
 	};
 
-	const openBoardView = (boardId: string) => {
-		navigate(`/boards/details/${boardId}`);
+	const addWorkspaceColleague = async (colleagueId: number) => {
+		setColleagueIds((prev) => [...prev, colleagueId]);
+	};
+
+	const removeWorkspaceColleague = (colleagueId: number) => {
+		setColleagueIds((prev) => [
+			...prev.filter((colId) => colId !== colleagueId),
+		]);
 	};
 
 	return {
@@ -120,13 +218,17 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 			boardData,
 			inputFields,
 			errorMessage,
-			workspaceData,
+			colleagueIds,
+			disableDeletionFor,
+			workspaceDetailedData,
 			accessibleWorkspaces,
 		},
 		operations: {
 			createBoard,
 			chooseWorkspace,
 			handleInputChange,
+			addWorkspaceColleague,
+			removeWorkspaceColleague,
 		},
 	};
 };

@@ -12,7 +12,8 @@ interface ICreateWorkspaceView {
 
 export const CreateWorkspaceView = ({
 	closeBtnHandler,
-}: ICreateWorkspaceView) => {
+}: ICreateWorkspaceView
+) => {
 	const { state, operations } = useCreateWorkspaceViewModel();
 
 	return (
@@ -33,11 +34,11 @@ export const CreateWorkspaceView = ({
 						<h2>
 							Name your <span>workspace</span>
 						</h2>
-						<form className={styles.createForm}>
-							<ErrorMessage
-								message="Workspace name is taken!"
+						<form className={styles.createForm} onSubmit={operations.createWorkspace}>
+							{state.errorMessage && <ErrorMessage
+								message={state.errorMessage}
 								fontSize={16}
-							/>
+							/>}
 							<IntroInput
 								type="text"
 								name="workspace-name"
@@ -46,14 +47,19 @@ export const CreateWorkspaceView = ({
 								onChange={operations.handleInputChange}
 							/>
 							<IntroButton
-								onClick={operations.goToWorkspace}
 								message="Create Workspace"
 							/>
 						</form>
 					</div>
 				</div>
 				<div className={styles.rightSide}>
-					<AddColleagueInput title={'Workspace users list'} />
+					<AddColleagueInput
+						boardMode={false}
+						title={'Workspace users list'}
+						colleagueIds={state.colleagueIds}
+						addColleagueHandler={operations.addToColleaguesToAdd}
+						removeColleagueHandler={operations.removeFromColleaguesToAdd}
+					/>
 				</div>
 			</div>
 		</div>

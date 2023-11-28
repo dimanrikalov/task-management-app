@@ -27,7 +27,16 @@ export const isAccessTokenValid = (accessToken: string) => {
 };
 
 export const refreshTokens = async () => {
-	await fetch(`${import.meta.env.VITE_SERVER_URL}/refresh`, {
-		
+	await fetch(`${import.meta.env.VITE_SERVER_URL}/refresh`, {});
+};
+
+export const deleteTokens = () => {
+	document.cookie.split(';').forEach(function (c) {
+		document.cookie = c
+			.replace(/^ +/, '')
+			.replace(
+				/=.*/,
+				'=;expires=' + new Date().toUTCString() + ';path=/'
+			);
 	});
 };

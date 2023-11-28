@@ -9,19 +9,19 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
-            if (!req.body.workspaceId) {
+            if (!req.params.workspaceId) {
                 throw new Error('Workspace ID is required!');
             }
-            
+
             const workspace = await this.prismaService.workspace.findFirst({
                 where: {
-                    id: Number(req.body.workspaceId),
+                    id: Number(req.params.workspaceId),
                 },
             });
             if (!workspace) {
                 throw new Error('Invalid Workspace ID!');
             }
-            
+
             //check if user has access to workspace
             const userHasAccessToWorkspace =
                 await this.prismaService.user_Workspace.findFirst({
@@ -41,10 +41,8 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
                 throw new Error('You do not have access to the workspace!');
             }
 
-            req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
             req.body.workspaceData = workspace;
-            delete req.body.workspaceId;
-
+            req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
             next();
         } catch (err: any) {
             return res.status(401).json({ errorMessage: err.message });

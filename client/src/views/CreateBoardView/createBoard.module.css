@@ -79,14 +79,13 @@
 }
 
 .rightSideContent {
-	width: 100%;
-	height: 100%;
-	left: 0;
-	position: absolute;
-	transition: 200ms ease-in-out;
+    width: 100%;
+    height: 100%;
+	left: 0px;
+    position: absolute;
+    transition: 200ms ease-in-out; /* Apply the transition to the transform property */
 }
 
 .hidden {
 	left: 320px;
-
 }

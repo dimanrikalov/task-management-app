@@ -8,9 +8,26 @@
 }
 
 .center {
-	padding: 0px 12px;
 	justify-content: unset;
 	gap: 32px;
+}
+
+.leftSide {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+}
+
+
+.leftSide p {
+	font-size: 14px;
+}
+
+.leftSide img {
+	width: 28px;
+	height: 28px;
+	object-fit: cover;
+	border-radius: 50%;
 }
 
 .entry .icon {
@@ -25,13 +42,3 @@
 	color: var(--red-main);
 }
 
-.entry p {
-	font-size: 14px;
-}
-
-.entry img {
-	width: 28px;
-	height: 28px;
-	object-fit: cover;
-	border-radius: 50%;
-}

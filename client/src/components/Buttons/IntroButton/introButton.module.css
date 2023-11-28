@@ -10,8 +10,19 @@
 	border: 1px solid var(--white-main);
 }
 
+.disabled {
+	cursor: default;
+	background-color: var(--grey-main);
+}
+
 .button:hover {
 	color: var(--blue-main);
 	border: 1px solid var(--blue-main);
 	background-color: var(--white-main);
+}
+
+.disabled:hover {
+	color: var(--white-main);
+	border-color: var(--white-main);
+	background-color: var(--grey-main);
 }

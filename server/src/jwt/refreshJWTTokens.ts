@@ -11,8 +11,6 @@ export const refreshJWTTokens = ({
         process.env.REFRESH_TOKEN_SECRET,
     ) as IRefreshTokenPayload;
 
-    console.log(decoded.userId);
-    console.log(payload.userData.id);
 
     if (decoded.userId !== payload.userData.id) {
         throw new Error('User IDs do not match!');

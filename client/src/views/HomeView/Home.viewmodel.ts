@@ -1,10 +1,16 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { extractTokens, isAccessTokenValid, refreshTokens } from '@/utils';
+import {
+	deleteTokens,
+	extractTokens,
+	isAccessTokenValid,
+	refreshTokens,
+} from '@/utils';
+import { jwtDecode } from 'jwt-decode';
 interface IUseHomeViewmodelState {
 	boards: any[];
+	userData: any[];
 	workspaces: any[];
 	isCreateBoardModalOpen: boolean;
 	isEditProfileModalOpen: boolean;
@@ -12,12 +18,12 @@ interface IUseHomeViewmodelState {
 }
 
 interface IUserHomeViewmodelOperations {
+	logout(): void;
 	goToBoard(): void;
 	toggleCreateBoardModal(): void;
 	toggleEditProfileModal(): void;
 	toggleCreateWorkspaceModal(): void;
 }
-
 
 export const useHomeViewModel = (): ViewModelReturnType<
 	IUseHomeViewmodelState,
@@ -31,15 +37,17 @@ export const useHomeViewModel = (): ViewModelReturnType<
 	const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
 	const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
+	const { accessToken } = extractTokens();
+	if (!isAccessTokenValid(accessToken)) {
+		refreshTokens();
+	}
+	const userData = jwtDecode(accessToken) as any;
+	console.log(userData)
 	//check if the accessToken has expired
 	//if yes update it
 	//fetch workspaces and boards
 	useEffect(() => {
 		try {
-			const { accessToken } = extractTokens();
-			if (!isAccessTokenValid(accessToken)) {
-				refreshTokens();
-			}
 			getUserBoards(accessToken);
 			getUserWorkspaces(accessToken);
 		} catch (err: any) {
@@ -47,6 +55,11 @@ export const useHomeViewModel = (): ViewModelReturnType<
 			navigate('/');
 		}
 	}, []);
+
+	const logout = () => {
+		deleteTokens();
+		navigate('/');
+	};
 
 	const getUserWorkspaces = async (accessToken: string) => {
 		try {
@@ -117,12 +130,14 @@ export const useHomeViewModel = (): ViewModelReturnType<
 	return {
 		state: {
 			boards,
+			userData,
 			workspaces,
 			isCreateBoardModalOpen,
 			isEditProfileModalOpen,
 			isCreateWorkspaceModalOpen,
 		},
 		operations: {
+			logout,
 			goToBoard,
 			toggleEditProfileModal,
 			toggleCreateBoardModal,

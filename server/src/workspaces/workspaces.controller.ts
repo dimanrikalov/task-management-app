@@ -34,8 +34,9 @@ export class WorkspacesController {
         @Body() body: CreateWorkspaceDto,
     ) {
         try {
-            await this.workspacesService.create(body);
+            const workspace = await this.workspacesService.create(body);
             return res.status(200).json({
+                workspaceId: workspace.id,
                 message: 'Workspace successfully created!',
             });
         } catch (err: any) {
@@ -64,8 +65,8 @@ export class WorkspacesController {
         }
     }
 
-    @Post('/details')
-    async getWorkspace(
+    @Get('/:workspaceId/details')
+    async getWorkspaceById(
         @Body() body: GetWorkspaceDetails,
         @Res() res: Response,
     ) {
@@ -77,7 +78,7 @@ export class WorkspacesController {
         }
     }
 
-    @Post('/colleagues')
+    @Post('/:workspaceId/colleagues')
     async addColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,
@@ -95,7 +96,7 @@ export class WorkspacesController {
         }
     }
 
-    @Delete('/colleagues')
+    @Delete('/:workspaceId/colleagues')
     async removeColleague(
         @Res() res: Response,
         @Body() body: EditWorkspaceColleagueDto,

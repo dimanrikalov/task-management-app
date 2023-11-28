@@ -15,9 +15,9 @@ function App() {
 					<Route path="/" element={<IntroView />} />
 					<Route path="/auth/sign-up" element={<SignUpView />} />
 					<Route path="/auth/sign-in" element={<SignInView />} />
-					<Route path="/workspace/:id" element={<WorkspaceView />} />
+					<Route path="/workspaces/:id" element={<WorkspaceView />} />
 					<Route path="/dashboard" element={<HomeView />} />
-					<Route path="/board" element={<BoardView />} />
+					<Route path="/boards/:id" element={<BoardView />} />
 				</Routes>
 			</HashRouter>
 		</div>

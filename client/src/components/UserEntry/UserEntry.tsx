@@ -12,8 +12,10 @@ interface IUserEntryInterface {
 export const UserEntry = ({ email, addHandler, removeHandler, showBtn = true }: IUserEntryInterface) => {
 	return (
 		<div onClick={addHandler} className={classNames(styles.entry, !showBtn && styles.center)}>
-			<img src="/imgs/profile-img.jpeg" alt="user-img" />
-			<p>{email}</p>
+			<div className={styles.leftSide}>
+				<img src="/imgs/profile-img.jpeg" alt="user-img" />
+				<p>{email}</p>
+			</div>
 			{showBtn && <MdCancel className={styles.icon} onClick={removeHandler} />}
 		</div>
 	);

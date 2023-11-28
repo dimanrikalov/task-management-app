@@ -15,7 +15,6 @@ interface ICreateBoardView {
 
 export const CreateBoardView = ({ workspaceName, closeBtnHandler }: ICreateBoardView) => {
 	const { state, operations } = useCreateBoardViewModel();
-
 	return (
 		<div className={styles.backgroundWrapper}>
 			<RxCross2 className={styles.closeBtn} onClick={closeBtnHandler} />
@@ -58,7 +57,7 @@ export const CreateBoardView = ({ workspaceName, closeBtnHandler }: ICreateBoard
 
 					<div className={styles.inputContainer}>
 						<h2>Choose a workspace</h2>
-						<form className={styles.createForm}>
+						<form className={styles.createForm} onSubmit={operations.createBoard}>
 							<WorkspaceInput
 								onChange={operations.handleInputChange}
 								chooseWorkspace={operations.chooseWorkspace}
@@ -68,14 +67,28 @@ export const CreateBoardView = ({ workspaceName, closeBtnHandler }: ICreateBoard
 
 							<IntroButton
 								message="Create Board"
-								onClick={operations.createBoard}
+								disabled={!state.workspaceDetailedData}
 							/>
 						</form>
 					</div>
 				</div>
 				<div className={styles.rightSide}>
-					<div className={classNames(styles.rightSideContent, !state.workspaceData && styles.hidden)}>
-						<AddColleagueInput title={'Board users list'} />
+					<div className={classNames(
+						styles.rightSideContent,
+						(!state.workspaceDetailedData ||
+							state.workspaceDetailedData.name.toLowerCase().trim() === 'personal workspace') && styles.hidden
+					)}>
+						{
+							<AddColleagueInput
+								boardMode={true}
+								title={'Board users list'}
+								colleagueIds={state.colleagueIds}
+								disableDeletionFor={state.disableDeletionFor}
+								selectedWorkspace={state.workspaceDetailedData}
+								addColleagueHandler={operations.addWorkspaceColleague}
+								removeColleagueHandler={operations.removeWorkspaceColleague}
+							/>
+						}
 					</div>
 				</div>
 			</div>

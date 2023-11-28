@@ -9,7 +9,7 @@ async function bootstrap() {
     app.enableCors({
         origin: 'http://localhost:5173',
         credentials: true,
-        methods: '*',
+        methods: ['GET, POST, PUT, DELETE'],
     });
     app.use(cookieParser());
     app.useWebSocketAdapter(new IoAdapter(app));

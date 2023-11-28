@@ -31,7 +31,6 @@ export const EmailInput = ({ inputValue, onChange, matches, addUser }: IEmailInp
 								email={match.email}
 								showBtn={false}
 								addHandler={() => addUser(match.id)}
-								removeHandler={()=>{}}
 							/>
 							)
 						}

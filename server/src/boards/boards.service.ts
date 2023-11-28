@@ -99,12 +99,17 @@ export class BoardsService {
             return { ...column, tasks: columnTasks };
         });
 
-        return {
-            board: {
-                ...board,
-                columns,
-                messages,
+        const boardUserIds = await this.prismaService.user_Board.findMany({
+            where: {
+                boardId: body.boardData.id,
             },
+        });
+
+        return {
+            ...board,
+            columns,
+            messages,
+            boardUserIds,
         };
     }
 
@@ -234,6 +239,8 @@ export class BoardsService {
             affectedUserIds: body.colleagues,
             message: 'New board was created!',
         });
+
+        return board;
     }
 
     async delete(body: DeleteBoardDto) {

@@ -28,8 +28,9 @@ export class BoardsController {
     @Post()
     async create(@Res() res: Response, @Body() body: CreateBoardDto) {
         try {
-            await this.boardsService.create(body);
+            const newBoard = await this.boardsService.create(body);
             return res.status(200).json({
+                boardId: newBoard.id,
                 message: 'Board created successfully!',
             });
         } catch (err: any) {
@@ -40,7 +41,7 @@ export class BoardsController {
         }
     }
 
-    @Delete()
+    @Delete('/:boardId')
     async delete(@Res() res: Response, @Body() body: DeleteBoardDto) {
         try {
             await this.boardsService.delete(body);
@@ -55,7 +56,7 @@ export class BoardsController {
         }
     }
 
-    @Get('/details')
+    @Get('/:boardId/details')
     async getBoardById(@Res() res: Response, @Body() body: GetBoardDetails) {
         try {
             const data = await this.boardsService.getBoardById(body);
@@ -65,7 +66,7 @@ export class BoardsController {
         }
     }
 
-    @Post('/colleagues')
+    @Post('/:boardId/colleagues')
     async addColleague(
         @Res() res: Response,
         @Body() body: EditBoardColleagueDto,
@@ -83,7 +84,7 @@ export class BoardsController {
         }
     }
 
-    @Delete('/colleagues')
+    @Delete('/:boardId/colleagues')
     async removeColleague(
         @Res() res: Response,
         @Body() body: EditBoardColleagueDto,
@@ -101,7 +102,7 @@ export class BoardsController {
         }
     }
 
-    @Put('/reorder')
+    @Put('/:boardId/reorder')
     async reorderBoardColumns(
         @Res() res: Response,
         @Body() body: ReorderColumnsDto,

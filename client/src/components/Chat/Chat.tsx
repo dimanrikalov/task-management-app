@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 import styles from './chat.module.css';
+import { extractTokens } from '@/utils';
 import { VscSend } from "react-icons/vsc";
 import { Message } from '../Message/Message';
 import { BackButton } from '../BackButton/BackButton';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { IMessage } from '@/views/BoardView/Board.viewmodel';
+
 
 interface IChatProps {
+	messages: IMessage[];
 	isChatOpen: boolean;
 	toggleIsChatOpen(): void;
 }
 
-export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
+export const Chat = ({ messages, isChatOpen, toggleIsChatOpen }: IChatProps) => {
 	const [inputValue, setInputValue] = useState('');
+	const { accessToken } = extractTokens();
 	return (
 		<div
 			className={classNames(
@@ -32,18 +37,17 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 				<h2>Board chat</h2>
 			</div>
 			<div className={styles.chat}>
-				<Message isUser={false} />
-				<Message isUser={true} />
-				<Message isUser={false} />
-				<Message isUser={true} />
-				<Message isUser={true} />
+				{
+					messages.map((message: any) => <Message key={message.id} content={message.content} isUser={message.writtenBy === accessToken} />)
+				}
+
 			</div>
 			<form className={styles.inputContainer}>
 				<IntroInput
 					type="text"
 					value={inputValue}
 					name="message-input"
-					
+
 					placeholder="Write message..."
 					onChange={(e) => setInputValue(e.target.value)}
 				/>

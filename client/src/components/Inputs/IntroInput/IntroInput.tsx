@@ -53,6 +53,7 @@ export const IntroInput = ({
 					)}
 			</div>
 			<input
+				tabIndex={-1}
 				type={type}
 				name={name}
 				value={value}

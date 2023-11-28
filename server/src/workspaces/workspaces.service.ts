@@ -9,6 +9,7 @@ import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { GetWorkspaceDetails } from './dtos/getWorkspaceDetails.dto';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
+import { distinct } from 'rxjs';
 
 @Injectable()
 export class WorkspacesService {
@@ -43,11 +44,21 @@ export class WorkspacesService {
                 workspaceId: body.workspaceData.id,
             },
         });
+        const workspaceUserIds =
+            await this.prismaService.user_Workspace.findMany({
+                where: {
+                    workspaceId: body.workspaceData.id,
+                },
+            });
 
-        return { ...body.workspaceData, boards: workspaceBoards };
+        return {
+            ...body.workspaceData,
+            boards: workspaceBoards,
+            workspaceUserIds,
+        };
     }
 
-    async create(body: CreateWorkspaceDto): Promise<void> {
+    async create(body: CreateWorkspaceDto): Promise<IWorkspace> {
         // A user can have only one Personal Workspace
         if (body.name.toLowerCase().trim() === 'personal workspace') {
             throw new Error(
@@ -107,6 +118,8 @@ export class WorkspacesService {
             affectedUserIds: body.colleagues,
             message: 'New workspace created.',
         });
+
+        return workspace;
     }
 
     async delete(body: DeleteWorkspaceDto) {

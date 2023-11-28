@@ -14,6 +14,10 @@ import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfir
 export const WorkspaceView = () => {
 	const { state, operations } = useWorkspaceViewModel();
 
+	if (!state.workspaceData) {
+		return <div>Loading...</div>
+	}
+
 	return (
 		<>
 			{
@@ -38,7 +42,15 @@ export const WorkspaceView = () => {
 									operations.toggleEditcolleaguesModalIsOpen
 								}
 							/>
-							<AddColleagueInput title="Edit colleagues" enableFlex={true} />
+							<AddColleagueInput
+								boardMode={true}
+								enableFlex={true}
+								title="Edit colleagues"
+								selectedWorkspace={state.workspaceData}
+								addColleagueHandler={operations.addWorkspaceColleague}
+								removeColleagueHandler={operations.removeWorkspaceColleague}
+								colleagueIds={state.workspaceData.workspaceUserIds.map(userEntry => userEntry.userId)}
+							/>
 						</div>
 					}
 				/>
@@ -96,6 +108,7 @@ export const WorkspaceView = () => {
 					</button>
 					{
 						state.workspaceData?.boards.map(board => <BoardCard
+							key={board.id}
 							onClickHandler={() => { }}
 							boardName={board.name}
 						/>

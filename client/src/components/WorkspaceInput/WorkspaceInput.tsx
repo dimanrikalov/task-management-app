@@ -6,7 +6,7 @@ interface IWorkspaceInputProps {
     value: string;
     disabled?: boolean;
     accessibleWorkspaces: IWorkspace[],
-    chooseWorkspace(workspaceData: IWorkspace): void,
+    chooseWorkspace(workspaceData: IWorkspace | null): void,
     onChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -17,7 +17,7 @@ export const WorkspaceInput = ({
     accessibleWorkspaces
 }: IWorkspaceInputProps) => {
     const matches = accessibleWorkspaces
-        .filter(workspace => workspace.name.includes(value));
+        .filter(workspace => workspace.name.toLowerCase().trim().includes(value.toLowerCase().trim()));
 
     const valueIsValidWorkspaceName = matches.find(workspace => workspace.name === value);
 

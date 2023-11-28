@@ -51,10 +51,10 @@ export const HomeView = () => {
 						</div>
 						<div className={styles.userData}>
 							<div className={styles.userInitialsIcon}>DR</div>
-							<p className={styles.fullName}>Diman Rikalov</p>
+							<p className={styles.fullName}>{`${state.userData.first_name} ${state.userData.last_name}`}</p>
 							<TbLogout2
 								className={styles.logout}
-								onClick={() => { }}
+								onClick={operations.logout}
 							/>
 						</div>
 					</div>
