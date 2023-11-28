@@ -26,7 +26,7 @@ export const WorkspaceView = () => {
 						children={
 							<CreateBoardView
 								closeBtnHandler={operations.toggleCreateBoardModalIsOpen}
-								workspaceName={state.workspaceData?.name}
+								workspaceData={state.workspaceData}
 							/>
 						}
 					/>
@@ -78,6 +78,7 @@ export const WorkspaceView = () => {
 					</div>
 					<div className={styles.right}>
 						<IntroButton
+							disabled={state.workspaceData.name.toLowerCase().trim() === 'personal workspace'}
 							message={'Edit Users'}
 							onClick={operations.toggleEditcolleaguesModalIsOpen}
 						/>

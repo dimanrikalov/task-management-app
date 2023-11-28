@@ -1,20 +1,21 @@
 import classNames from 'classnames';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createBoard.module.css';
-import { useCreateBoardViewModel } from './CreateBoard.viewmodel';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { WorkspaceInput } from '@/components/WorkspaceInput/WorkspaceInput';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
+import { IDetailedWorkspace, useCreateBoardViewModel } from './CreateBoard.viewmodel';
 
 interface ICreateBoardView {
-	workspaceName?: string;
+	workspaceData?: IDetailedWorkspace;
 	closeBtnHandler(): void;
 }
 
-export const CreateBoardView = ({ workspaceName, closeBtnHandler }: ICreateBoardView) => {
+export const CreateBoardView = ({ workspaceData, closeBtnHandler, colleagueIds }: ICreateBoardView) => {
 	const { state, operations } = useCreateBoardViewModel();
+
 	return (
 		<div className={styles.backgroundWrapper}>
 			<RxCross2 className={styles.closeBtn} onClick={closeBtnHandler} />
@@ -62,12 +63,12 @@ export const CreateBoardView = ({ workspaceName, closeBtnHandler }: ICreateBoard
 								onChange={operations.handleInputChange}
 								chooseWorkspace={operations.chooseWorkspace}
 								accessibleWorkspaces={state.accessibleWorkspaces}
-								value={workspaceName || state.inputFields.workspaceName}
+								value={workspaceData?.name || state.inputFields.workspaceName}
 							/>
 
 							<IntroButton
 								message="Create Board"
-								disabled={!state.workspaceDetailedData}
+								disabled={!state.workspaceDetailedData && !workspaceData}
 							/>
 						</form>
 					</div>
@@ -75,8 +76,8 @@ export const CreateBoardView = ({ workspaceName, closeBtnHandler }: ICreateBoard
 				<div className={styles.rightSide}>
 					<div className={classNames(
 						styles.rightSideContent,
-						(!state.workspaceDetailedData ||
-							state.workspaceDetailedData.name.toLowerCase().trim() === 'personal workspace') && styles.hidden
+						((!workspaceData || workspaceData.name.toLowerCase().trim() === 'personal workspace') && (!state.workspaceDetailedData ||
+							state.workspaceDetailedData.name.toLowerCase().trim() === 'personal workspace')) && styles.hidden
 					)}>
 						{
 							<AddColleagueInput
