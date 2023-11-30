@@ -2,10 +2,14 @@ import styles from './deleteConfirmation.module.css';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 
 interface IDeleteConfirmationAlert {
+	onCancel(): void;
+	onConfirm(): void;
 	entityName: string;
 }
 
 export const DeleteConfirmation = ({
+	onCancel,
+	onConfirm,
 	entityName,
 }: IDeleteConfirmationAlert) => {
 	return (
@@ -15,8 +19,8 @@ export const DeleteConfirmation = ({
 				<span className={styles.bold}>{entityName}</span>?
 			</p>
 			<div className={styles.operationsContainer}>
-				<IntroButton message="Cancel" />
-				<IntroButton message="Confirm" />
+				<IntroButton message="Cancel" onClick={onCancel} />
+				<IntroButton message="Confirm" onClick={onConfirm} />
 			</div>
 		</div>
 	);

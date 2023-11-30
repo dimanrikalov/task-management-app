@@ -4,17 +4,19 @@ import { HomeCard } from '../HomeCard/HomeCard';
 import styles from './homeGridStats.module.css';
 import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
-import { IUserStats } from '@/views/HomeView/Home.viewmodel';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
+import { ISearchInputs, IUserStats } from '@/views/HomeView/Home.viewmodel';
 
 interface IHomeGridStatsProps {
 	boards: any[];
 	workspaces: any[];
 	userStats: IUserStats;
+	searchInputs: ISearchInputs;
+	filterHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
-export const HomeGridStats = ({ boards, workspaces, userStats }: IHomeGridStatsProps) => {
+export const HomeGridStats = ({ boards, workspaces, userStats, filterHandler, searchInputs }: IHomeGridStatsProps) => {
 	const navigate = useNavigate();
 
 	return (
@@ -24,11 +26,11 @@ export const HomeGridStats = ({ boards, workspaces, userStats }: IHomeGridStatsP
 					<div className={styles.header}>
 						<h2>Boards</h2>
 						<div>
-							<IntroInput name="find-board"
-								onChange={() => { }}
+							<IntroInput name="searchBoards"
+								onChange={filterHandler}
 								placeholder="Enter board name"
 								type="text"
-								value=""
+								value={searchInputs.searchBoards}
 							/>
 						</div>
 					</div>
@@ -54,11 +56,11 @@ export const HomeGridStats = ({ boards, workspaces, userStats }: IHomeGridStatsP
 						<h2>Workspaces</h2>
 						<div className={styles.inputContainer}>
 							<IntroInput
-								name="find-workspace"
-								onChange={() => { }}
+								name="searchWorkspaces"
+								onChange={filterHandler}
 								placeholder="Enter workspace name"
 								type="text"
-								value=""
+								value={searchInputs.searchWorkspaces}
 							/>
 						</div>
 					</div>
@@ -73,7 +75,7 @@ export const HomeGridStats = ({ boards, workspaces, userStats }: IHomeGridStatsP
 										isWorkspaceBtn={true}
 										onClick={() => navigate(`/workspaces/${workspace.id}`)}
 										title={workspace.name}
-										subtitle={'Workspace name'}
+										subtitle={`${workspace.owner.firstName} ${workspace.owner.lastName}`}
 									/>
 								) :
 								<h1 className={styles.noWorkspaces}>You don't have access to any workspaces yet...</h1>

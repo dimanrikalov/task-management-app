@@ -35,10 +35,12 @@ export const CreateWorkspaceView = ({
 							Name your <span>workspace</span>
 						</h2>
 						<form className={styles.createForm} onSubmit={operations.createWorkspace}>
-							{state.errorMessage && <ErrorMessage
-								message={state.errorMessage}
-								fontSize={16}
-							/>}
+							{
+								state.errorMessage && <ErrorMessage
+									message={state.errorMessage}
+									fontSize={16}
+								/>
+							}
 							<IntroInput
 								type="text"
 								name="workspace-name"

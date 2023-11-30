@@ -73,8 +73,10 @@ export const HomeView = () => {
 					</div>
 					<HomeGridStats
 						userStats={state.userStats}
-						boards={state.lists.boards}
-						workspaces={state.lists.workspaces}
+						searchInputs={state.searchInputs}
+						boards={state.filteredLists.boards}
+						workspaces={state.filteredLists.workspaces}
+						filterHandler={operations.handleFilterInputChange}
 					/>
 				</div>
 			</div>

@@ -15,6 +15,11 @@ export enum IModalsStateKeys {
 	CREATE_WORKSPACE_IS_OPEN = 'createWorkspaceIsOpen',
 }
 
+export interface ISearchInputs {
+	searchBoards: string;
+	searchWorkspaces: string;
+}
+
 interface IModalsState {
 	createBoardIsOpen: boolean;
 	editProfileIsOpen: boolean;
@@ -34,7 +39,7 @@ interface IUser {
 }
 
 interface IHomeWorkspaceEntry {
-	User: IUser;
+	owner: IUser;
 	id: number;
 	name: string;
 	_count: number;
@@ -54,15 +59,17 @@ export interface IUserStats {
 }
 
 interface IUseHomeViewmodelState {
-	lists: ILists;
+	filteredLists: ILists;
 	userStats: IUserStats;
 	userData: IJWTPayload;
 	modalsState: IModalsState;
+	searchInputs: ISearchInputs;
 }
 
 interface IUserHomeViewmodelOperations {
 	logout(): void;
 	toggleModal(key: IModalsStateKeys): void;
+	handleFilterInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const useHomeViewModel = (): ViewModelReturnType<
@@ -74,6 +81,16 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		boards: [],
 		workspaces: [],
 	});
+	const [filteredLists, setFilteredLists] = useState<ILists>({
+		boards: [],
+		workspaces: [],
+	});
+
+	const [searchInputs, setSearchInputs] = useState<ISearchInputs>({
+		searchBoards: '',
+		searchWorkspaces: '',
+	});
+
 	const [modalsState, setModalsState] = useState<IModalsState>({
 		createBoardIsOpen: false,
 		editProfileIsOpen: false,
@@ -94,6 +111,50 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		fetchEntries(accessToken, EntriesType.WORKSPACES);
 	}, [accessToken]);
 
+	useEffect(() => {
+		setFilteredLists(() => ({
+			boards: [...lists.boards],
+			workspaces: [...lists.workspaces],
+		}));
+	}, [lists]);
+
+	useEffect(() => {
+		setFilteredLists(() => {
+			const boards = lists.boards.filter((x) =>
+				x.name
+					.trim()
+					.toLowerCase()
+					.includes(searchInputs.searchBoards.trim().toLowerCase())
+			);
+			const workspaces = lists.workspaces.filter(
+				(x) =>
+					x.name
+						.trim()
+						.toLowerCase()
+						.includes(
+							searchInputs.searchWorkspaces.trim().toLowerCase()
+						) ||
+					x.owner.firstName
+						.trim()
+						.toLowerCase()
+						.includes(
+							searchInputs.searchWorkspaces.trim().toLowerCase()
+						) ||
+					x.owner.lastName
+						.trim()
+						.toLowerCase()
+						.includes(
+							searchInputs.searchWorkspaces.trim().toLowerCase()
+						)
+			);
+
+			return {
+				boards,
+				workspaces,
+			};
+		});
+	}, [searchInputs]);
+
 	const logout = () => {
 		deleteTokens();
 		navigate('/');
@@ -103,6 +164,15 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		setModalsState((prev) => ({
 			...prev,
 			[key]: !prev[key],
+		}));
+	};
+
+	const handleFilterInputChange = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
+		setSearchInputs((prev) => ({
+			...prev,
+			[e.target.name]: e.target.value,
 		}));
 	};
 
@@ -153,14 +223,16 @@ export const useHomeViewModel = (): ViewModelReturnType<
 
 	return {
 		state: {
-			lists,
 			userData,
 			userStats,
 			modalsState,
+			searchInputs,
+			filteredLists,
 		},
 		operations: {
 			logout,
 			toggleModal,
+			handleFilterInputChange,
 		},
 	};
 };

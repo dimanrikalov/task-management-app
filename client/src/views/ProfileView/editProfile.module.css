@@ -45,6 +45,11 @@
 	background-color: var(--blue-main);
 }
 
+.error {
+	color: red;
+	background-color: var(--error-background);
+}
+
 .main {
 	display: flex;
 	justify-content: space-between;
@@ -93,11 +98,17 @@
 	display: none;
 }
 
+.imgBtn {
+	border: none;
+	background: none;
+}
+
 .imgOperationsContainer {
+	gap: 32px;
 	width: 100%;
 	display: flex;
-	justify-content: space-between;
 	padding: 0 32px;
+	justify-content: space-between;
 }
 
 .imgOperationBtn {
@@ -108,11 +119,11 @@
 	padding: 3px;
 }
 
-.imgOperationBtn:first-of-type {
+.submitBtn {
 	color: var(--white-main);
 	background-color: green;
 }
-.imgOperationBtn:last-of-type {
+.resetBtn {
 	color: var(--white-main);
 	background-color: red;
 }

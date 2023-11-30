@@ -11,10 +11,10 @@ interface ICreateWorkspaceState {
 
 interface ICreateWorkspaceOperations {
 	goToWorkspace(workspaceId: string): void;
-	createWorkspace(e: React.FormEvent<HTMLFormElement>): void;
-	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 	addToColleaguesToAdd(colleagueId: number): void;
 	removeFromColleaguesToAdd(colleagueId: number): void;
+	createWorkspace(e: React.FormEvent<HTMLFormElement>): void;
+	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const useCreateWorkspaceViewModel = (): ViewModelReturnType<

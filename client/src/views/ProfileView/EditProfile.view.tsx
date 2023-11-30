@@ -1,12 +1,12 @@
+import classNames from 'classnames';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './editProfile.module.css';
 import { Modal } from '@/components/Modal/Modal';
 import { FaCheck, FaXmark } from 'react-icons/fa6';
-import { useProfileViewModel } from './EditProfile.viewmodel';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { NOTIFICATION_TYPE, useProfileViewModel } from './EditProfile.viewmodel';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
-import classNames from 'classnames';
 interface IEditProfileView {
 	closeBtnHandler(): void;
 }
@@ -22,7 +22,11 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 							className={styles.closeBtn}
 							onClick={operations.toggleIsDeletionModalOpen}
 						/>
-						<DeleteConfirmation entityName="your profile" />
+						<DeleteConfirmation
+							entityName="your profile"
+							onConfirm={operations.deleteUser}
+							onCancel={operations.toggleIsDeletionModalOpen}
+						/>
 					</div>
 				</Modal>
 			)}
@@ -34,9 +38,14 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 						onClick={closeBtnHandler}
 					/>
 					<div className={styles.header}>
-						<div className={styles.notificationMsg}>
-							<p>New password saved!</p>
-						</div>
+						{
+							state.notification.message &&
+							<div className={classNames(styles.notificationMsg,
+								state.notification.type === NOTIFICATION_TYPE.ERROR && styles.error)}
+							>
+								<p>{state.notification.message}</p>
+							</div>
+						}
 					</div>
 					<div className={styles.main}>
 						<div className={styles.leftSide}>
@@ -46,50 +55,61 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 								htmlFor={'imgInput'}
 							>
 								<div className={styles.imgContainer}>
-									{state.profileImgPath ? (
-										<img
-											src={state.profileImgPath}
-											alt="profile-img"
-											className={styles.previewImage}
-										/>
-									) : (
-										<img
-											src="/imgs/profile-img.jpeg"
-											alt="default-profile-img"
-											className={styles.defaultImage}
-										/>
-									)}
+									<img
+										src={
+											state.profileImgPath ?
+												state.profileImgPath : '/imgs/profile-img.jpeg'
+										}
+										alt="profile-img"
+										className={styles.previewImage}
+									/>
 								</div>
 							</label>
-							<input
-								id="imgInput"
-								type="file"
-								className={styles.fileInput}
-								onChange={operations.handleProfileImgChange}
-								accept="image/png, image/jpg, image/gif, image/jpeg"
-							/>
-							<div className={styles.imgOperationsContainer}>
-								<FaCheck
-									disabled={!state.profileImg}
-									className={classNames(
-										styles.imgOperationBtn,
-										!state.profileImg && styles.disabled
-									)}
-									onClick={operations.handleProfileImgUpload}
+							<form name='profileImg'
+								onSubmit={operations.updateUserData}
+								onReset={operations.clearProfileImg}
+							>
+								<input
+									type="file"
+									id="imgInput"
+									className={styles.fileInput}
+									disabled={!!state.inputValues.profileImg}
+									onChange={operations.changeProfileImage}
+									accept="image/png, image/jpg, image/gif, image/jpeg"
 								/>
-								<FaXmark
-									disabled={!state.profileImg}
-									className={classNames(
-										styles.imgOperationBtn,
-										!state.profileImg && styles.disabled
-									)}
-									onClick={operations.clearProfileImg}
-								/>
-							</div>
+								<div className={styles.imgOperationsContainer}>
+									<button
+										type='submit'
+										className={styles.imgBtn}
+										disabled={!state.inputValues.profileImg}
+									>
+										<FaCheck
+											className={classNames(
+												styles.submitBtn,
+												styles.imgOperationBtn,
+												!state.inputValues.profileImg && styles.disabled
+											)}
+										/>
+									</button>
+									<button
+										type='reset'
+										className={styles.imgBtn}
+										disabled={!state.inputValues.profileImg}
+									>
+										<FaXmark
+											className={classNames(
+												styles.resetBtn,
+												styles.imgOperationBtn,
+												!state.inputValues.profileImg && styles.disabled
+											)}
+										/>
+									</button>
+								</div>
+							</form>
 
 							<div className={styles.formContainer}>
 								<h3>Edit password</h3>
-								<form className={styles.form}>
+								<form name='password' className={styles.form} onSubmit={operations.updateUserData}>
 									<IntroInput
 										name="password-input"
 										placeholder="New password"
@@ -109,7 +129,7 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 						<div className={styles.rightSide}>
 							<div className={styles.formContainer}>
 								<h3>Edit first name</h3>
-								<form className={styles.form}>
+								<form name='firstName' className={styles.form} onSubmit={operations.updateUserData}>
 									<IntroInput
 										name="first-name-input"
 										placeholder="New first name"
@@ -130,7 +150,7 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 
 							<div className={styles.formContainer}>
 								<h3>Edit last name</h3>
-								<form className={styles.form}>
+								<form name='lastName' className={styles.form} onSubmit={operations.updateUserData}>
 									<IntroInput
 										name="last-name-input"
 										placeholder="New last name"

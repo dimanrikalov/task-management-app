@@ -1,17 +1,38 @@
+import { deleteTokens } from '@/utils';
 import { useEffect, useState } from 'react';
+import { IOutletContext } from '@/guards/authGuard';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+
+export enum NOTIFICATION_TYPE {
+	ERROR = 'error',
+	MESSAGE = 'message',
+}
+
+enum INPUT_FIELDS {
+	PASSWORD = 'password',
+	LAST_NAME = 'lastName',
+	FIRST_NAME = 'firstName',
+	PROFILE_IMG = 'profileImg',
+}
+
+interface INotification {
+	message: string;
+	type: NOTIFICATION_TYPE;
+}
 
 interface IInputValues {
 	password: string;
 	lastName: string;
 	firstName: string;
+	profileImg: File | null;
 }
 
 interface IEditProfileViewModelState {
-	profileImg: File | null;
-	profileImgPath: string | null;
 	inputValues: IInputValues;
+	notification: INotification;
 	isDeletionModalOpen: boolean;
+	profileImgPath: string | null;
 }
 
 interface IEditProfileViewModelOperations {
@@ -19,28 +40,34 @@ interface IEditProfileViewModelOperations {
 		e: React.ChangeEvent<HTMLInputElement>,
 		fieldName: string
 	): void;
+	deleteUser(): void;
 	clearProfileImg(): void;
-	handleProfileImgUpload(): void;
 	toggleIsDeletionModalOpen(): void;
-	handleProfileImgChange(e: React.ChangeEvent<HTMLInputElement>): void;
+	updateUserData(e: React.FormEvent): void;
+	changeProfileImage(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const useProfileViewModel = (): ViewModelReturnType<
 	IEditProfileViewModelState,
 	IEditProfileViewModelOperations
 > => {
+	const navigate = useNavigate();
+	const { accessToken } = useOutletContext<IOutletContext>();
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
-	const [inputValues, setInputValues] = useState({
-		firstName: '',
+	const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
+	const [notification, setNotification] = useState<INotification>({
+		message: '',
+		type: NOTIFICATION_TYPE.MESSAGE,
+	});
+	const [inputValues, setInputValues] = useState<IInputValues>({
 		lastName: '',
 		password: '',
+		firstName: '',
+		profileImg: null,
 	});
 
-	const [profileImg, setProfileImg] = useState<File | null>(null);
-	const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
-
 	useEffect(() => {
-		if (!profileImg) {
+		if (!inputValues.profileImg) {
 			setProfileImgPath(null);
 			return;
 		}
@@ -50,40 +77,88 @@ export const useProfileViewModel = (): ViewModelReturnType<
 			setProfileImgPath(reader.result as string);
 		};
 
-		reader.readAsDataURL(profileImg);
-	}, [profileImg]);
+		reader.readAsDataURL(inputValues.profileImg);
+	}, [inputValues]);
 
-	const handleProfileImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) {
-			setProfileImg(e.target.files[0]);
+	const changeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (!e.target.files || !e.target.files[0]) {
+			return;
 		}
+
+		setInputValues((prev) => ({
+			...prev,
+			profileImg: e.target.files![0],
+		}));
+
 		e.target.value = '';
 	};
 
 	const clearProfileImg = () => {
-		setProfileImg(null);
+		setInputValues((prev) => ({ ...prev, profileImg: null }));
 		setProfileImgPath(null);
 	};
 
-	const handleProfileImgUpload = async () => {
-		if (!profileImg) {
-			console.log('No image uploaded!');
-			return;
-		}
-		const formData = new FormData();
+	const updateUserData = async (e: React.FormEvent) => {
+		e.preventDefault();
+		const inputField = (e.currentTarget as HTMLFormElement)
+			.name as INPUT_FIELDS;
+		const isInputProfileImg = inputField === INPUT_FIELDS.PROFILE_IMG;
 
-		formData.append('image', profileImg);
 		try {
-			const response = await fetch('localhost:3001/user', {
-				method: 'PUT',
-				body: formData,
-			});
+			if (isInputProfileImg && !inputValues.profileImg) {
+				throw new Error('Image file is required!');
+			}
 
-			console.log(response);
-			setProfileImg(null);
+			let formData;
+			if (isInputProfileImg) {
+				formData = new FormData();
+				formData.append('image', inputValues.profileImg!);
+			}
+
+			const body = isInputProfileImg
+				? formData
+				: JSON.stringify({ [inputField]: inputValues[inputField] });
+
+			await fetch(
+				`${import.meta.env.VITE_SERVER_URL}/users/edit`,
+				{
+					method: 'PUT',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						'Content-Type': 'application/json',
+					},
+					body,
+				}
+			);
+
 			setProfileImgPath(null);
+			setInputValues((prev) => ({ ...prev, profileImg: null }));
 		} catch (err: any) {
 			console.log(err.message);
+			setNotification({
+				message: err.message,
+				type: NOTIFICATION_TYPE.ERROR,
+			});
+		}
+	};
+
+	const deleteUser = async () => {
+		try {
+			await fetch(`${import.meta.env.VITE_SERVER_URL}/users/delete`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+					'Content-Type': 'application/json',
+				},
+			});
+			deleteTokens();
+			navigate('/');
+		} catch (err: any) {
+			setIsDeletionModalOpen(false);
+			setNotification({
+				message: err.message,
+				type: NOTIFICATION_TYPE.ERROR,
+			});
 		}
 	};
 
@@ -99,12 +174,18 @@ export const useProfileViewModel = (): ViewModelReturnType<
 	};
 
 	return {
-		state: { inputValues, profileImg, profileImgPath, isDeletionModalOpen },
+		state: {
+			inputValues,
+			notification,
+			profileImgPath,
+			isDeletionModalOpen,
+		},
 		operations: {
+			deleteUser,
+			updateUserData,
 			clearProfileImg,
 			inputChangeHandler,
-			handleProfileImgUpload,
-			handleProfileImgChange,
+			changeProfileImage,
 			toggleIsDeletionModalOpen,
 		},
 	};
