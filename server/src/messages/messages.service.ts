@@ -6,6 +6,42 @@ import { CreateMessageDto } from './dtos/createMessage.dto';
 export class MessagesService {
     constructor(private readonly prismaService: PrismaService) {}
 
+    async getAllByBoardId(boardId: number) {
+        const messages = await this.prismaService.message.findMany({
+            where: {
+                boardId,
+            },
+            select: {
+                id: true,
+                content: true,
+                timestamp: true,
+                writtenBy: true,
+                User: {
+                    select: {
+                        lastName: true,
+                        firstName: true,
+                        profileImagePath: true,
+                    },
+                },
+            },
+            orderBy: {
+                timestamp: { sort: 'asc' },
+            },
+        });
+
+        return messages.map((message) => {
+            const data = {
+                ...message,
+                firstName: message.User.firstName,
+                lastName: message.User.lastName,
+                profileImg: message.User.profileImagePath,
+            };
+
+            delete data.User;
+            return data;
+        });
+    }
+
     async create(body: CreateMessageDto) {
         await this.prismaService.message.create({
             data: {

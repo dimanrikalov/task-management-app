@@ -57,12 +57,6 @@ export class BoardsService {
         const board = body.boardData;
         const boardId = body.boardData.id;
 
-        const messages = await this.prismaService.message.findMany({
-            where: {
-                boardId,
-            },
-        });
-
         const boardColumns = await this.prismaService.column.findMany({
             where: {
                 boardId,
@@ -108,7 +102,6 @@ export class BoardsService {
         return {
             ...board,
             columns,
-            messages,
             boardUserIds,
         };
     }

@@ -12,18 +12,11 @@ interface IColumn {
 	tasks: ITaskProps[];
 }
 
-export interface IMessage {
-	id: number;
-	content: string;
-	writtenBy: number;
-}
-
 interface IBoardData {
 	id: number;
 	name: string;
 	workspaceId: number;
 	columns: IColumn[];
-	messages: IMessage[];
 	boardUserIds: number[];
 }
 
@@ -51,15 +44,15 @@ export const useBoardViewModel = (): ViewModelReturnType<
 > => {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
+	const { accessToken } = extractTokens();
 	const boardId = pathname.split('/').pop();
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
 		useState(false);
+	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
+	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
-	const [boardData, setBoardData] = useState<IBoardData | null>(null);
-	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
-	const { accessToken } = extractTokens();
 
 	if (!isAccessTokenValid(accessToken)) {
 		refreshTokens();
@@ -87,24 +80,24 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		}
 	}, []);
 
+	const goBack = () => {
+		navigate(-1);
+	};
+
 	const toggleIsChatOpen = () => {
 		setIsChatOpen((prev) => !prev);
-	};
-
-	const toggleIsEditBoardUsersModalOpen = () => {
-		setIsEditBoardUsersModalOpen((prev) => !prev);
-	};
-
-	const toggleIsDeleteBoardModalOpen = () => {
-		setIsDeleteBoardModalOpen((prev) => !prev);
 	};
 
 	const toggleIsCreateTaskModalOpen = () => {
 		setIsCreateTaskModalOpen((prev) => !prev);
 	};
 
-	const goBack = () => {
-		navigate(-1);
+	const toggleIsDeleteBoardModalOpen = () => {
+		setIsDeleteBoardModalOpen((prev) => !prev);
+	};
+
+	const toggleIsEditBoardUsersModalOpen = () => {
+		setIsEditBoardUsersModalOpen((prev) => !prev);
 	};
 
 	const addBoardColleague = async (colleagueId: number) => {

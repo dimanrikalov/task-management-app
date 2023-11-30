@@ -14,6 +14,6 @@ export class MessagesModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(AuthMiddleware, BoardCheckMiddleware)
-            .forRoutes('messages*');
+            .forRoutes('boards/:boardId/messages');
     }
 }

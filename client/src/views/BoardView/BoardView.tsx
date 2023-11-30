@@ -44,7 +44,11 @@ export const BoardView = () => {
 							className={styles.closeBtn}
 							onClick={operations.toggleIsDeleteBoardModalOpen}
 						/>
-						<DeleteConfirmation entityName="Board Name" />
+						<DeleteConfirmation
+							onCancel={operations.toggleIsDeleteBoardModalOpen}
+							onConfirm={() => { }}
+							entityName="Board Name"
+						/>
 					</div>
 				</Modal>
 			)}
@@ -61,7 +65,6 @@ export const BoardView = () => {
 			<div className={styles.background}>
 				<Chat
 					isChatOpen={state.isChatOpen}
-					messages={state.boardData.messages}
 					toggleIsChatOpen={operations.toggleIsChatOpen}
 				/>
 				<div
