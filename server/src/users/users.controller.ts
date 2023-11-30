@@ -7,6 +7,7 @@ import {
     Body,
     Delete,
     Controller,
+    Param,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { BaseUsersDto } from './dtos/base.dto';
@@ -22,6 +23,20 @@ export class UsersController {
     @Get('/')
     async getUsers() {
         return this.usersService.getAll();
+    }
+
+    @Get('/stats')
+    async getUserStatsById(
+        @Res() res: Response,
+        @Body() { userData }: BaseUsersDto,
+    ) {
+        try {
+            const stats = await this.usersService.getUserStats(userData.id);
+            return res.status(200).json(stats);
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({ errorMessage: err.message });
+        }
     }
 
     @Post('/sign-up')

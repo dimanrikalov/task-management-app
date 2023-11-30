@@ -1,9 +1,9 @@
 import styles from './home.module.css';
 import { TbLogout2 } from 'react-icons/tb';
 import { Modal } from '@/components/Modal/Modal';
-import { useHomeViewModel } from './Home.viewmodel';
 import { EditProfileView } from '../ProfileView/EditProfile.view';
 import { CreateBoardView } from '../CreateBoardView/CreateBoard.view';
+import { IModalsStateKeys, useHomeViewModel } from './Home.viewmodel';
 import { HomeGridStats } from '@/components/HomeGridStats/HomeGridStats';
 import { CreateWorkspaceView } from '../CreateWorkspaceView/CreateWorkspace.view';
 import { OperationsRibbon } from '@/components/OperationsRibbon/OperationsRibbon';
@@ -13,31 +13,31 @@ export const HomeView = () => {
 
 	return (
 		<>
-			{state.isCreateWorkspaceModalOpen && (
+			{state.modalsState.createWorkspaceIsOpen && (
 				<Modal
 					children={
 						<CreateWorkspaceView
 							closeBtnHandler={
-								operations.toggleCreateWorkspaceModal
+								() => operations.toggleModal(IModalsStateKeys.CREATE_WORKSPACE_IS_OPEN)
 							}
 						/>
 					}
 				/>
 			)}
-			{state.isCreateBoardModalOpen && (
+			{state.modalsState.createBoardIsOpen && (
 				<Modal
 					children={
 						<CreateBoardView
-							closeBtnHandler={operations.toggleCreateBoardModal}
+							closeBtnHandler={() => operations.toggleModal(IModalsStateKeys.CREATE_BOARD_IS_OPEN)}
 						/>
 					}
 				/>
 			)}
-			{state.isEditProfileModalOpen && (
+			{state.modalsState.editProfileIsOpen && (
 				<Modal
 					children={
 						<EditProfileView
-							closeBtnHandler={operations.toggleEditProfileModal}
+							closeBtnHandler={() => operations.toggleModal(IModalsStateKeys.EDIT_PROFILE_IS_OPEN)}
 						/>
 					}
 				/>
@@ -60,21 +60,21 @@ export const HomeView = () => {
 					</div>
 					<div className={styles.operationsContainer}>
 						<OperationsRibbon
-							createBoardBtnHandler={
-								operations.toggleCreateBoardModal
-							}
 							createWorkspaceBtnHandler={
-								operations.toggleCreateWorkspaceModal
+								() => operations.toggleModal(IModalsStateKeys.CREATE_WORKSPACE_IS_OPEN)
+							}
+							createBoardBtnHandler={
+								() => operations.toggleModal(IModalsStateKeys.CREATE_BOARD_IS_OPEN)
 							}
 							editProfileBtnHandler={
-								operations.toggleEditProfileModal
+								() => operations.toggleModal(IModalsStateKeys.EDIT_PROFILE_IS_OPEN)
 							}
 						/>
 					</div>
 					<HomeGridStats
-						boards={state.boards}
-						workspaces={state.workspaces}
-						goToBoard={operations.goToBoard}
+						userStats={state.userStats}
+						boards={state.lists.boards}
+						workspaces={state.lists.workspaces}
 					/>
 				</div>
 			</div>

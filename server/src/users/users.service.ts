@@ -45,6 +45,85 @@ export class UsersService {
         });
     }
 
+    async getUserStats(userId: number) {
+        const messagesCount = await this.prismaService.message.count({
+            where: {
+                writtenBy: userId,
+            },
+        });
+
+        const userTasks = await this.prismaService.task.findMany({
+            where: {
+                assigneeId: userId,
+            },
+        });
+
+        const completedTasksCount = userTasks.reduce((acc, task) => {
+            if (task.progress === 100) {
+                return acc + 1;
+            }
+            return acc;
+        }, 0);
+
+        const pendingTasksCount = userTasks.length - completedTasksCount;
+
+        const workspacesCount = await this.prismaService.workspace.count({
+            where: {
+                OR: [
+                    {
+                        ownerId: userId,
+                    },
+                    {
+                        User_Workspace: {
+                            some: {
+                                userId,
+                            },
+                        },
+                    },
+                ],
+            },
+        });
+
+        const boardsCount = await this.prismaService.board.count({
+            where: {
+                OR: [
+                    {
+                        // Boards related to workspaces where the user has access
+                        Workspace: {
+                            User_Workspace: {
+                                some: {
+                                    userId,
+                                },
+                            },
+                        },
+                    },
+                    {
+                        // Boards where the user is the workspace creator
+                        Workspace: {
+                            ownerId: userId,
+                        },
+                    },
+                    {
+                        // Boards where the user has direct access
+                        User_Board: {
+                            some: {
+                                userId,
+                            },
+                        },
+                    },
+                ],
+            },
+        });
+
+        return {
+            boardsCount,
+            messagesCount,
+            workspacesCount,
+            pendingTasksCount,
+            completedTasksCount,
+        };
+    }
+
     async signUp(body: CreateUserDto): Promise<void> {
         const isEmailTaken = await this.findUserByEmail(body.email);
         if (isEmailTaken) {

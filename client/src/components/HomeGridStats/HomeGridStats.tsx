@@ -4,16 +4,17 @@ import { HomeCard } from '../HomeCard/HomeCard';
 import styles from './homeGridStats.module.css';
 import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
+import { IUserStats } from '@/views/HomeView/Home.viewmodel';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
 
 interface IHomeGridStatsProps {
 	boards: any[];
 	workspaces: any[];
-	goToBoard(): void;
+	userStats: IUserStats;
 }
 
-export const HomeGridStats = ({ boards, workspaces }: IHomeGridStatsProps) => {
+export const HomeGridStats = ({ boards, workspaces, userStats }: IHomeGridStatsProps) => {
 	const navigate = useNavigate();
 
 	return (
@@ -44,7 +45,7 @@ export const HomeGridStats = ({ boards, workspaces }: IHomeGridStatsProps) => {
 										onClick={() => navigate(`/boards/${board.id}`)}
 									/>
 								) :
-								<h1 className={styles.noEntries}>No boards yet...</h1>
+								<h1 className={styles.noBoards}>You don't have access to any boards yet...</h1>
 						}
 					</div>
 				</div>
@@ -75,7 +76,7 @@ export const HomeGridStats = ({ boards, workspaces }: IHomeGridStatsProps) => {
 										subtitle={'Workspace name'}
 									/>
 								) :
-								<h1 className={styles.noEntries}>No boards yet...</h1>
+								<h1 className={styles.noWorkspaces}>You don't have access to any workspaces yet...</h1>
 						}
 					</div>
 				</div>
@@ -83,13 +84,23 @@ export const HomeGridStats = ({ boards, workspaces }: IHomeGridStatsProps) => {
 				<div className={styles.completeTasks}>
 					<div className={styles.header}>
 						<BsCheckLg className={styles.icon} />{' '}
-						<h2 className={styles.value}>2131</h2>
+						<h2 className={styles.value}>
+							{
+								userStats.completedTasksCount === -1 ?
+									'Fetching' : userStats.completedTasksCount
+							}
+						</h2>
 					</div>
 					<h3 className={styles.statName}>Tasks Completed</h3>
 				</div>
 				<div className={styles.pendingTasks}>
 					<div className={styles.header}>
-						<h2 className={styles.value}>13</h2>
+						<h2 className={styles.value}>
+							{
+								userStats.pendingTasksCount === -1 ?
+									'Fetching' : userStats.pendingTasksCount
+							}
+						</h2>
 						<MdPendingActions className={styles.icon} />
 					</div>
 					<h3 className={styles.statName}>Pending Tasks</h3>
@@ -99,20 +110,35 @@ export const HomeGridStats = ({ boards, workspaces }: IHomeGridStatsProps) => {
 						<MdOutlineLibraryBooks className={styles.icon} />
 						<h3 className={styles.statName}>Boards</h3>
 					</div>
-					<h2 className={styles.value}>462</h2>
+					<h2 className={styles.value}>
+						{
+							userStats.boardsCount === -1 ?
+								'Fetching' : userStats.boardsCount
+						}
+					</h2>
 				</div>
 				<div className={styles.totalWorkspaces}>
 					<h3 className={styles.statName}>Workspaces</h3>
 					<div className={styles.bottom}>
 						<HiOutlineDocument className={styles.icon} />
-						<h2 className={styles.value}>128</h2>
+						<h2 className={styles.value}>
+							{
+								userStats.workspacesCount === -1 ?
+									'Fetching' : userStats.workspacesCount
+							}
+						</h2>
 					</div>
 				</div>
 				<div className={styles.totalMessages}>
 					<h3 className={styles.statName}>Messages</h3>
 					<div className={styles.bottom}>
 						<LuMessageSquare className={styles.icon} />
-						<h2 className={styles.value}>512</h2>
+						<h2 className={styles.value}>
+							{
+								userStats.messagesCount === -1 ?
+									'Fetching' : userStats.messagesCount
+							}
+						</h2>
 					</div>
 				</div>
 			</div>

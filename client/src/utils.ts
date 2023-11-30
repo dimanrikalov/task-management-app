@@ -1,5 +1,13 @@
 import { jwtDecode } from 'jwt-decode';
 
+interface IJWTPayload {
+	id: number;
+	first_name: string;
+	last_name: string;
+	iat: number;
+	exp: number;
+}
+
 export const extractTokens = () => {
 	const pattern =
 		/accessToken=([^;]+)(?:; refreshToken=(?<refreshToken>[^;]+))?/;
@@ -7,7 +15,8 @@ export const extractTokens = () => {
 	// Use regex exec method to find the match
 	const match = pattern.exec(document.cookie);
 	if (!match) {
-		throw new Error('No cookies found!');
+		return { accessToken: '', refreshToken: '' };
+		// throw new Error('No cookies found!');
 	}
 	const accessToken = match[1];
 	const refreshToken = match[2];
@@ -16,18 +25,31 @@ export const extractTokens = () => {
 };
 
 export const isAccessTokenValid = (accessToken: string) => {
-	const data = jwtDecode(accessToken);
-	const isAccessTokenExpired = data.exp! < Date.now() / 1000;
+	try {
+		const data = jwtDecode(accessToken);
 
-	if (isAccessTokenExpired) {
+		if (!data) {
+			return false;
+		}
+		const isAccessTokenExpired =
+			(data as IJWTPayload).exp < Date.now() / 1000;
+
+		if (isAccessTokenExpired) {
+			return false;
+		}
+
+		return true;
+	} catch (err: any) {
 		return false;
 	}
-
-	return true;
 };
 
 export const refreshTokens = async () => {
-	await fetch(`${import.meta.env.VITE_SERVER_URL}/refresh`, {});
+	const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/refresh`, {});
+	const data = await res.json();
+	if (data.errorMessage) {
+		throw new Error(data.errorMessage);
+	}
 };
 
 export const deleteTokens = () => {

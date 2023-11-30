@@ -40,7 +40,7 @@ export class UsersModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(AuthMiddleware) //exclude sign-in, sign-up endpoints
-            .forRoutes('users/edit', 'users/delete', 'users/refresh', {
+            .forRoutes('users/edit', 'users/delete', 'users/refresh' , 'users/stats', {
                 path: 'users',
                 method: RequestMethod.GET,
             });

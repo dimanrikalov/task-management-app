@@ -8,8 +8,6 @@ import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { GetWorkspaceDetails } from './dtos/getWorkspaceDetails.dto';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
-import { BaseUsersDto } from 'src/users/dtos/base.dto';
-import { distinct } from 'rxjs';
 
 @Injectable()
 export class WorkspacesService {
@@ -19,8 +17,8 @@ export class WorkspacesService {
         private readonly workspacesGateway: WorkspacesGateway,
     ) {}
 
-    async getUserWorkspaces(body: BaseWorkspaceDto): Promise<IWorkspace[]> {
-        return await this.prismaService.workspace.findMany({
+    async getUserWorkspaces(body: BaseWorkspaceDto): Promise<any[]> {
+        const res = await this.prismaService.workspace.findMany({
             where: {
                 OR: [
                     {
@@ -35,7 +33,40 @@ export class WorkspacesService {
                     },
                 ],
             },
+            select: {
+                id: true,
+                name: true,
+                User: {
+                    select: {
+                        id: true,
+                        lastName: true,
+                        firstName: true,
+                    },
+                },
+                _count: {
+                    select: {
+                        User_Workspace: true,
+                    },
+                },
+            },
         });
+
+        const result = res.map((workspace) => {
+            const usersCount = workspace._count;
+            const owner = workspace.User;
+
+            const res = {
+                ...workspace,
+                usersCount,
+                owner,
+            };
+
+            delete res._count;
+            delete res.User;
+            return res;
+        });
+
+        return result;
     }
 
     async getWorkspaceById(body: GetWorkspaceDetails) {

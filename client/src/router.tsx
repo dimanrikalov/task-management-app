@@ -1,16 +1,32 @@
-import App from './App';
+import { AuthGuard } from './guards/authGuard';
+import { UnAuthGuard } from './guards/unAuthGuard';
+import { HomeView } from './views/HomeView/Home.view';
+import { BoardView } from './views/BoardView/BoardView';
 import { IntroView } from './views/IntroView/Intro.view';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { SignUpView } from './views/SignUpView/SignUp.view';
+import { SignInView } from './views/SignInView/SignIn.view';
+import { RouterProvider, createHashRouter } from 'react-router-dom';
+import { WorkspaceView } from './views/WorkspaceView/Workspace.view';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
 	{
 		path: '/',
-		element: <App />,
+		element: <UnAuthGuard />,
+		children: [
+			{ path: '/', element: <IntroView /> },
+			{ path: '/auth/sign-up', element: <SignUpView /> },
+			{ path: '/auth/sign-in', element: <SignInView /> },
+		]
 	},
 	{
-		path: '/intro',
-		element: <IntroView />,
-	},
+		path: '/',
+		element: <AuthGuard />,
+		children: [
+			{ path: '/dashboard', element: <HomeView /> },
+			{ path: '/boards/:id', element: <BoardView /> },
+			{ path: '/workspaces/:id', element: <WorkspaceView /> },
+		]
+	}
 ]);
 
 export const Router = () => <RouterProvider router={router} />;

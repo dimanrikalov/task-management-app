@@ -4,11 +4,22 @@
 	gap: 16px;
 }
 
-.noEntries {
+.noBoards {
 	height: 64px;
 	width: 100%;
 	text-align: center;
 	color: grey;
+	margin: 58px 0px;
+}
+
+.noWorkspaces {
+	width: 100%;
+	height: 64px;
+	color: grey;
+	margin: 182px 0px;
+	text-align: center;
+	align-self: center;
+	justify-content: center;
 }
 
 .grid {
@@ -97,15 +108,15 @@
 }
 
 .workspaces .list {
-	display: flex;
-	padding: 6px;
-	justify-content: space-between;
 	gap: 16px;
 	width: 100%;
+	padding: 6px;
+	display: flex;
 	flex-wrap: wrap;
 	overflow-y: auto;
 	overflow-x: hidden;
 	max-height: 440px;
+	justify-content: space-between;
 }
 
 .boards {
