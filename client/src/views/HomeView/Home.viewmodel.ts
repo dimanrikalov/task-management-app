@@ -134,13 +134,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 						.includes(
 							searchInputs.searchWorkspaces.trim().toLowerCase()
 						) ||
-					x.owner.firstName
-						.trim()
-						.toLowerCase()
-						.includes(
-							searchInputs.searchWorkspaces.trim().toLowerCase()
-						) ||
-					x.owner.lastName
+					`${x.owner.firstName} ${x.owner.lastName}`
 						.trim()
 						.toLowerCase()
 						.includes(
