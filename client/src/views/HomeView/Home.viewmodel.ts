@@ -1,6 +1,6 @@
 import { deleteTokens } from '@/utils';
 import { useState, useEffect } from 'react';
-import { IJWTPayload, IOutletContext } from '@/guards/authGuard';
+import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
@@ -26,23 +26,18 @@ interface IModalsState {
 	createWorkspaceIsOpen: boolean;
 }
 
-interface IHomeBoardEntry {
+export interface IHomeBoardEntry {
 	id: number;
 	name: string;
-	workspaceId: number;
+	usersCount: number;
+	workspaceName: string;
 }
 
-interface IUser {
-	id: number;
-	lastName: string;
-	firstName: string;
-}
-
-interface IHomeWorkspaceEntry {
-	owner: IUser;
+export interface IHomeWorkspaceEntry {
 	id: number;
 	name: string;
-	_count: number;
+	ownerName: string;
+	usersCount: number;
 }
 
 interface ILists {
@@ -59,9 +54,9 @@ export interface IUserStats {
 }
 
 interface IUseHomeViewmodelState {
+	userData: IUserData;
 	filteredLists: ILists;
 	userStats: IUserStats;
-	userData: IJWTPayload;
 	modalsState: IModalsState;
 	searchInputs: ISearchInputs;
 }
@@ -134,7 +129,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 						.includes(
 							searchInputs.searchWorkspaces.trim().toLowerCase()
 						) ||
-					`${x.owner.firstName} ${x.owner.lastName}`
+					`${x.ownerName}`
 						.trim()
 						.toLowerCase()
 						.includes(

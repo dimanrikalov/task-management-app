@@ -11,8 +11,7 @@ export const refreshJWTTokens = ({
         process.env.REFRESH_TOKEN_SECRET,
     ) as IRefreshTokenPayload;
 
-
-    if (decoded.userId !== payload.userData.id) {
+    if (decoded.id !== payload.userData.id) {
         throw new Error('User IDs do not match!');
     }
 
@@ -25,7 +24,7 @@ export const refreshJWTTokens = ({
     );
 
     const newRefreshToken = jwt.sign(
-        { userId: decoded.userId },
+        { id: decoded.id },
         process.env.REFRESH_TOKEN_SECRET,
         {
             // expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN

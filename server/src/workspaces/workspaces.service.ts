@@ -18,7 +18,7 @@ export class WorkspacesService {
     ) {}
 
     async getUserWorkspaces(body: BaseWorkspaceDto): Promise<any[]> {
-        const res = await this.prismaService.workspace.findMany({
+        const workspaces = await this.prismaService.workspace.findMany({
             where: {
                 OR: [
                     {
@@ -49,24 +49,21 @@ export class WorkspacesService {
                     },
                 },
             },
+            distinct: 'id',
         });
 
-        const result = res.map((workspace) => {
-            const usersCount = workspace._count;
-            const owner = workspace.User;
-
+        return workspaces.map((workspace) => {
             const res = {
                 ...workspace,
-                usersCount,
-                owner,
+                ownerName: `${workspace.User.firstName} ${workspace.User.lastName}`,
+                usersCount: workspace._count.User_Workspace + 1, //workspace owner also has access to the workspace
             };
 
-            delete res._count;
             delete res.User;
+            delete res._count;
+
             return res;
         });
-
-        return result;
     }
 
     async getWorkspaceById(body: GetWorkspaceDetails) {

@@ -38,11 +38,17 @@ import { WorkspacesGateway } from 'src/workspaces/workspaces.gateway';
 })
 export class UsersModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply(AuthMiddleware) //exclude sign-in, sign-up endpoints
-            .forRoutes('users/edit', 'users/delete', 'users/refresh' , 'users/stats', {
-                path: 'users',
-                method: RequestMethod.GET,
-            });
+        consumer //exclude sign-in, sign-up refresh endpoints
+            .apply(AuthMiddleware)
+            .forRoutes(
+                'user',
+                'users/edit',
+                'users/stats',
+                'users/delete',
+                {
+                    path: 'users',
+                    method: RequestMethod.GET,
+                },
+            );
     }
 }

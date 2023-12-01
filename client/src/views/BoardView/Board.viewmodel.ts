@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ITaskProps } from '@/components/Task/Task';
+import { extractTokens } from '@/utils';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { extractTokens, isAccessTokenValid, refreshTokens } from '@/utils';
 
 interface IColumn {
 	id: number;
@@ -53,10 +53,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
-
-	if (!isAccessTokenValid(accessToken)) {
-		refreshTokens();
-	}
 
 	useEffect(() => {
 		if (refreshBoard) {

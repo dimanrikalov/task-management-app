@@ -1,8 +1,5 @@
 export interface IJWTPayload {
     id: number;
-    email: string;
-    first_name: string;
-    last_name: string;
     iat?: number;
     exp?: number;
 }
@@ -23,6 +20,6 @@ export interface IGenerateTokens {
 }
 
 export interface IRefreshTokenPayload {
-    userId: number;
+    id: number;
     exp: number;
 }

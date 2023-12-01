@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { extractTokens, isAccessTokenValid, refreshTokens } from '@/utils';
+import { IOutletContext } from '@/guards/authGuard';
 
 interface ICreateWorkspaceState {
 	inputValue: string;
@@ -28,6 +28,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValue(e.target.value);
 	};
+	const { accessToken } = useOutletContext<IOutletContext>();
 
 	const createWorkspace = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -40,10 +41,6 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 			setErrorMessage(
 				'Workspace name must be at least 4 characters long!'
 			);
-		}
-		const { accessToken } = extractTokens();
-		if (!isAccessTokenValid(accessToken)) {
-			refreshTokens();
 		}
 
 		try {

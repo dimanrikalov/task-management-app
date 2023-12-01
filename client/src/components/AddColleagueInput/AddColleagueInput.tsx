@@ -1,10 +1,11 @@
 import classNames from 'classnames';
-import { jwtDecode } from 'jwt-decode';
+import { extractTokens } from '@/utils';
 import { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import styles from './addColleagueInput.module.css';
+import { IOutletContext } from '@/guards/authGuard';
 import { EmailInput } from '../EmailInput/EmailInput';
 import { ListContainer } from '../ListContainer/ListContainer';
-import { extractTokens, isAccessTokenValid, refreshTokens } from '@/utils';
 import { IDetailedWorkspace } from '@/views/CreateBoardView/CreateBoard.viewmodel';
 
 export interface IUser {
@@ -36,18 +37,11 @@ export const AddColleagueInput = ({
 	const [inputValue, setInputValue] = useState('');
 	const [results, setResults] = useState<IUser[]>([]);
 	const [matches, setMatches] = useState<IUser[]>([]);
-	const { accessToken } = extractTokens();
-	if (!isAccessTokenValid(accessToken)) {
-		refreshTokens();
-	}
-	console.log('colleagueIds', colleagueIds);
-	const data = jwtDecode(accessToken);
+	const { userData: data } = useOutletContext<IOutletContext>();
 
 	useEffect(() => {
 		const { accessToken } = extractTokens();
-		if (!isAccessTokenValid(accessToken)) {
-			refreshTokens();
-		}
+
 
 		fetch(`${import.meta.env.VITE_SERVER_URL}/users`, {
 			headers: {
@@ -152,8 +146,8 @@ export const AddColleagueInput = ({
 					title={title}
 					users={results}
 					removeUser={removeUser}
-					colleagueIds={[...colleagueIds, boardMode && selectedWorkspace?.ownerId, data.id]}
-					disableDeletionFor={[boardMode && selectedWorkspace?.ownerId, ...disableDeletionFor, data.id]}
+					colleagueIds={[...colleagueIds, boardMode && selectedWorkspace?.ownerId || 0, data.id]}
+					disableDeletionFor={[boardMode && selectedWorkspace?.ownerId || 0, ...disableDeletionFor, data.id]}
 				/>
 			</div>
 		</div>

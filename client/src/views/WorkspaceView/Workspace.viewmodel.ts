@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
+import { extractTokens } from '@/utils';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { extractTokens, isAccessTokenValid, refreshTokens } from '@/utils';
 import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
 
 interface IWorkspaceViewModelState {
@@ -39,9 +39,6 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 		useState<IDetailedWorkspace | null>(null);
 	const [refreshWorkspace, setRefreshWorkspace] = useState(true);
 	const { accessToken } = extractTokens();
-	if (!isAccessTokenValid(accessToken)) {
-		refreshTokens();
-	}
 
 	useEffect(() => {
 		if (refreshWorkspace) {

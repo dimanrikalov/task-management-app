@@ -20,7 +20,7 @@ export class BoardsService {
     ) {}
 
     async getUserBoards(body: BaseUsersDto) {
-        return await this.prismaService.board.findMany({
+        const boards = await this.prismaService.board.findMany({
             where: {
                 OR: [
                     {
@@ -49,8 +49,48 @@ export class BoardsService {
                     },
                 ],
             },
+            select: {
+                id: true,
+                name: true,
+                Workspace: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
             distinct: ['id'],
         });
+
+        return await Promise.all(
+            boards.map(async (board) => {
+                const usersWithBoardAccess =
+                    await this.prismaService.user.count({
+                        where: {
+                            User_Board: {
+                                some: {
+                                    boardId: board.id,
+                                },
+                            },
+                            User_Workspace: {
+                                some: {
+                                    AND: [{ workspaceId: board.Workspace.id }],
+                                },
+                            },
+                        },
+                    });
+
+                const res = {
+                    ...board,
+                    usersCount: usersWithBoardAccess + 1, //workspace owner has access to the board
+                    workspaceName: board.Workspace.name,
+                };
+
+                delete res.Workspace;
+
+                return res;
+            }),
+        );
     }
 
     async getBoardById(body: GetBoardDetails) {

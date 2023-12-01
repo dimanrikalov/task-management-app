@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { extractTokens } from '@/utils';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { extractTokens, isAccessTokenValid, refreshTokens } from '@/utils';
 
 interface IBoardData {
 	id: number;
@@ -22,10 +22,10 @@ interface ICreateBoardViewModelState {
 
 interface ICreateBoardViewModelOperations {
 	chooseWorkspace(workspaceData: IWorkspace): void;
-	createBoard(e: React.FormEvent<HTMLFormElement>): void;
-	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 	addWorkspaceColleague(colleagueId: number): void;
 	removeWorkspaceColleague(colleagueId: number): void;
+	createBoard(e: React.FormEvent<HTMLFormElement>): void;
+	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export interface IWorkspace {
@@ -68,15 +68,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	const { accessToken } = extractTokens();
 	const [disableDeletionFor, setDisableDeletionFor] = useState<number[]>([]);
 
-	if (!isAccessTokenValid(accessToken)) {
-		refreshTokens();
-	}
 	useEffect(() => {
-		const { accessToken } = extractTokens();
-		if (!isAccessTokenValid(accessToken)) {
-			refreshTokens();
-		}
-
 		fetch(`${import.meta.env.VITE_SERVER_URL}/workspaces`, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
@@ -133,11 +125,6 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 			return;
 		}
 		try {
-			const { accessToken } = extractTokens();
-			if (!isAccessTokenValid(accessToken)) {
-				refreshTokens();
-			}
-			console.log(accessToken);
 			if (!workspaceData) {
 				throw new Error('Invalid Workspace ID!');
 			}

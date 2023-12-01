@@ -6,13 +6,13 @@ import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
-import { ISearchInputs, IUserStats } from '@/views/HomeView/Home.viewmodel';
+import { IHomeBoardEntry, IHomeWorkspaceEntry, ISearchInputs, IUserStats } from '@/views/HomeView/Home.viewmodel';
 
 interface IHomeGridStatsProps {
-	boards: any[];
-	workspaces: any[];
 	userStats: IUserStats;
+	boards: IHomeBoardEntry[];
 	searchInputs: ISearchInputs;
+	workspaces: IHomeWorkspaceEntry[];
 	filterHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -39,11 +39,11 @@ export const HomeGridStats = ({ boards, workspaces, userStats, filterHandler, se
 							boards.length > 0 ?
 								boards.map((board) =>
 									<HomeCard
-										userCount={12}
 										key={board.id}
 										isBoardBtn={true}
 										title={board.name}
-										subtitle={'Workspace name'}
+										userCount={board.usersCount}
+										subtitle={board.workspaceName}
 										onClick={() => navigate(`/boards/${board.id}`)}
 									/>
 								) :
@@ -56,10 +56,10 @@ export const HomeGridStats = ({ boards, workspaces, userStats, filterHandler, se
 						<h2>Workspaces</h2>
 						<div className={styles.inputContainer}>
 							<IntroInput
+								type="text"
 								name="searchWorkspaces"
 								onChange={filterHandler}
 								placeholder="Enter workspace name"
-								type="text"
 								value={searchInputs.searchWorkspaces}
 							/>
 						</div>
@@ -70,12 +70,12 @@ export const HomeGridStats = ({ boards, workspaces, userStats, filterHandler, se
 							workspaces.length > 0 ?
 								workspaces.map((workspace) =>
 									<HomeCard
-										userCount={12}
 										key={workspace.id}
 										isWorkspaceBtn={true}
-										onClick={() => navigate(`/workspaces/${workspace.id}`)}
 										title={workspace.name}
-										subtitle={`${workspace.owner.firstName} ${workspace.owner.lastName}`}
+										userCount={workspace.usersCount}
+										subtitle={`${workspace.ownerName}`}
+										onClick={() => navigate(`/workspaces/${workspace.id}`)}
 									/>
 								) :
 								<h1 className={styles.noWorkspaces}>You don't have access to any workspaces yet...</h1>

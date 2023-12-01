@@ -45,6 +45,17 @@ export class UsersService {
         });
     }
 
+    async getUserById(userId: number) {
+        console.log(userId);
+        const data = await this.prismaService.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+        delete data.password;
+        return data;
+    }
+
     async getUserStats(userId: number) {
         const messagesCount = await this.prismaService.message.count({
             where: {
@@ -174,15 +185,10 @@ export class UsersService {
             throw new Error('Wrong email or password!');
         }
 
-        const payload: IJWTPayload = {
-            id: user.id,
-            email: user.email,
-            first_name: user.firstName,
-            last_name: user.lastName,
-        };
-
         //create authorization token + refresh token
-        const { accessToken, refreshToken } = generateJWTTokens(payload);
+        const { accessToken, refreshToken } = generateJWTTokens({
+            id: user.id,
+        });
 
         //set the accessToken and refreshToken as cookies
         res.cookie('accessToken', accessToken, {

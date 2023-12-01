@@ -1,4 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
+import { ITokens } from './guards/authGuard';
 
 interface IJWTPayload {
 	id: number;
@@ -8,20 +9,19 @@ interface IJWTPayload {
 	exp: number;
 }
 
-export const extractTokens = () => {
-	const pattern =
-		/accessToken=([^;]+)(?:; refreshToken=(?<refreshToken>[^;]+))?/;
-
-	// Use regex exec method to find the match
-	const match = pattern.exec(document.cookie);
-	if (!match) {
-		return { accessToken: '', refreshToken: '' };
-		// throw new Error('No cookies found!');
+export const extractTokens = (): ITokens => {
+	const pattern = /(accessToken|refreshToken)=([^;]*)/g;
+	let matches: RegExpExecArray | null;
+	let tokens: { [key: string]: string } = {};
+	while ((matches = pattern.exec(document.cookie)) !== null) {
+		let tokenType: string = matches[1].trim();
+		let tokenValue: string = matches[2].trim();
+		tokens[tokenType] = tokenValue;
 	}
-	const accessToken = match[1];
-	const refreshToken = match[2];
-
-	return { accessToken, refreshToken };
+	return {
+		accessToken: tokens['accessToken'],
+		refreshToken: tokens['refreshToken'],
+	};
 };
 
 export const isAccessTokenValid = (accessToken: string) => {
@@ -41,14 +41,6 @@ export const isAccessTokenValid = (accessToken: string) => {
 		return true;
 	} catch (err: any) {
 		return false;
-	}
-};
-
-export const refreshTokens = async () => {
-	const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/refresh`, {});
-	const data = await res.json();
-	if (data.errorMessage) {
-		throw new Error(data.errorMessage);
 	}
 };
 

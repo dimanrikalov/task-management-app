@@ -7,7 +7,6 @@ import {
     Body,
     Delete,
     Controller,
-    Param,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { BaseUsersDto } from './dtos/base.dto';
@@ -15,17 +14,33 @@ import { UsersService } from './users.service';
 import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
+import { extractJWTData } from 'src/jwt/extractJWTData';
 
-@Controller('users')
+@Controller('')
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-    @Get('/')
+    @Get('/user')
+    async getUser(@Res() res: Response, @Body() body: BaseUsersDto) {
+        try {
+            const userData = await this.usersService.getUserById(
+                body.userData.id,
+            );
+            return res.status(200).json(userData);
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(401).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
+    @Get('/users')
     async getUsers() {
         return this.usersService.getAll();
     }
 
-    @Get('/stats')
+    @Get('/users/stats')
     async getUserStatsById(
         @Res() res: Response,
         @Body() { userData }: BaseUsersDto,
@@ -39,7 +54,7 @@ export class UsersController {
         }
     }
 
-    @Post('/sign-up')
+    @Post('/users/sign-up')
     async createUser(@Res() res: Response, @Body() userBody: CreateUserDto) {
         try {
             await this.usersService.signUp(userBody);
@@ -53,7 +68,7 @@ export class UsersController {
         }
     }
 
-    @Post('/sign-in')
+    @Post('/users/sign-in')
     async loginUser(@Res() res: Response, @Body() userBody: LoginUserDto) {
         try {
             await this.usersService.signIn(res, userBody);
@@ -66,7 +81,7 @@ export class UsersController {
         }
     }
 
-    @Put('/edit')
+    @Put('/users/edit')
     async updateUser(@Res() res: Response, @Body() userBody: EditUserDto) {
         try {
             await this.usersService.update(userBody);
@@ -80,18 +95,17 @@ export class UsersController {
         }
     }
 
-    @Get('/refresh')
-    async refreshUserTokens(
-        @Req() req: Request,
-        @Body() body: BaseUsersDto,
-        @Res() res: Response,
-    ) {
+    @Get('/users/refresh')
+    async refreshUserTokens(@Req() req: Request, @Res() res: Response) {
         try {
             const refreshToken = req.cookies['refreshToken'];
+
+            const body = extractJWTData(refreshToken);
+
             const { newAccessToken, newRefreshToken } =
                 this.usersService.refreshTokens({
-                    payload: body,
                     refreshToken,
+                    payload: { userData: body },
                 });
             res.cookie('accessToken', newAccessToken, {
                 maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
@@ -110,7 +124,7 @@ export class UsersController {
         }
     }
 
-    @Delete('/delete')
+    @Delete('/users/delete')
     async deleteUser(@Res() res: Response, @Body() body: BaseUsersDto) {
         try {
             await this.usersService.delete(body);

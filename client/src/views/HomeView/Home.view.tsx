@@ -51,7 +51,7 @@ export const HomeView = () => {
 						</div>
 						<div className={styles.userData}>
 							<div className={styles.userInitialsIcon}>DR</div>
-							<p className={styles.fullName}>{`${state.userData.first_name} ${state.userData.last_name}`}</p>
+							<p className={styles.fullName}>{`${state.userData.firstName} ${state.userData.lastName}`}</p>
 							<TbLogout2
 								className={styles.logout}
 								onClick={operations.logout}
