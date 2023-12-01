@@ -4,13 +4,18 @@ import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 
 interface IEmailInputProps {
-	inputValue: string;
 	matches: IUser[];
-	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
+	inputValue: string;
 	addUser(id: number): void;
+	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
-export const EmailInput = ({ inputValue, onChange, matches, addUser }: IEmailInputProps) => {
+export const EmailInput = ({
+	addUser,
+	matches,
+	onChange,
+	inputValue,
+}: IEmailInputProps) => {
 
 	return (
 		<div className={styles.input}>
@@ -18,24 +23,27 @@ export const EmailInput = ({ inputValue, onChange, matches, addUser }: IEmailInp
 				type="email"
 				name="email"
 				value={inputValue}
-				placeholder="Enter a colleague email"
 				onChange={onChange}
+				placeholder="Enter colleague email"
 			/>
 			{
-				inputValue !== '' && matches.length > 0 &&
-				<div className={styles.dropdownWrapper}>
-					<div className={styles.dropdown}>
-						{
-							matches.map((match) => <UserEntry
-								key={match.id}
-								email={match.email}
-								showBtn={false}
-								addHandler={() => addUser(match.id)}
-							/>
-							)
-						}
+				inputValue && matches.length > 0 &&
+				(
+					<div className={styles.dropdownWrapper}>
+						<div className={styles.dropdown}>
+							{
+								matches.map((match) =>
+									<UserEntry
+										key={match.id}
+										email={match.email}
+										showBtn={false}
+										addHandler={() => addUser(match.id)}
+									/>
+								)
+							}
+						</div>
 					</div>
-				</div>
+				)
 			}
 		</div>
 	);

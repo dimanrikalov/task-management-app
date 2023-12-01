@@ -111,16 +111,11 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 								<h3>Edit password</h3>
 								<form name='password' className={styles.form} onSubmit={operations.updateUserData}>
 									<IntroInput
-										name="password-input"
+										name="password"
 										placeholder="New password"
 										type="password"
 										value={state.inputValues.password}
-										onChange={(e) =>
-											operations.inputChangeHandler(
-												e,
-												'password'
-											)
-										}
+										onChange={operations.inputChangeHandler}
 									/>
 									<IntroButton message={'Change Password'} />
 								</form>
@@ -131,16 +126,11 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 								<h3>Edit first name</h3>
 								<form name='firstName' className={styles.form} onSubmit={operations.updateUserData}>
 									<IntroInput
-										name="first-name-input"
+										name="firstName"
 										placeholder="New first name"
 										type="text"
 										value={state.inputValues.firstName}
-										onChange={(e) =>
-											operations.inputChangeHandler(
-												e,
-												'firstName'
-											)
-										}
+										onChange={operations.inputChangeHandler}
 									/>
 									<IntroButton
 										message={'Change First Name'}
@@ -152,16 +142,11 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 								<h3>Edit last name</h3>
 								<form name='lastName' className={styles.form} onSubmit={operations.updateUserData}>
 									<IntroInput
-										name="last-name-input"
+										name="lastName"
 										placeholder="New last name"
 										type="text"
 										value={state.inputValues.lastName}
-										onChange={(e) =>
-											operations.inputChangeHandler(
-												e,
-												'lastName'
-											)
-										}
+										onChange={operations.inputChangeHandler}
 									/>
 									<IntroButton message={'Change Last Name'} />
 								</form>

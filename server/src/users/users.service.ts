@@ -4,7 +4,7 @@ import { IUser } from './users.interfaces';
 import { Injectable } from '@nestjs/common';
 import { BaseUsersDto } from './dtos/base.dto';
 import { EditUserDto } from './dtos/editUser.dto';
-import { IJWTPayload } from '../jwt/jwt.interfaces';
+import { FindUserDto } from './dtos/findUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -28,12 +28,22 @@ export class UsersService {
         });
     }
 
-    async getAll() {
+    async getAll(body: FindUserDto) {
         return this.prismaService.user.findMany({
             where: {
-                NOT: {
-                    id: 0,
-                },
+                AND: [
+                    {
+                        id: {
+                            notIn: [0, body.userData.id, ...body.notIn],
+                        },
+                    },
+                    {
+                        email: {
+                            contains: body.email,
+                            mode: 'insensitive',
+                        },
+                    },
+                ],
             },
             select: {
                 id: true,

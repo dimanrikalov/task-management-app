@@ -50,7 +50,11 @@ export const HomeView = () => {
 							<h4>Tuesday, 17 October 2023</h4>
 						</div>
 						<div className={styles.userData}>
-							<div className={styles.userInitialsIcon}>DR</div>
+							<div className={styles.userInitialsIcon}>
+								{
+									`${state.userData.firstName[0].toUpperCase()}${state.userData.lastName[0].toUpperCase()}`
+								}
+							</div>
 							<p className={styles.fullName}>{`${state.userData.firstName} ${state.userData.lastName}`}</p>
 							<TbLogout2
 								className={styles.logout}

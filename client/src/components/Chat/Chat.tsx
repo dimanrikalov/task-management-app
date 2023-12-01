@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import styles from './chat.module.css';
-import { extractTokens } from '@/utils';
 import { VscSend } from "react-icons/vsc";
 import { useEffect, useState } from 'react';
 import { Message } from '../Message/Message';
@@ -26,10 +25,10 @@ interface IChatProps {
 }
 
 export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
-	const { accessToken } = extractTokens();
 	const [inputValue, setInputValue] = useState('');
 	const { userData } = useOutletContext<IOutletContext>();
 	const boardId = useLocation().pathname.split('/').pop();
+	const { accessToken } = useOutletContext<IOutletContext>();
 	const [chatMessages, setChatMessages] = useState<IMessage[]>([]);
 	const [refetchMessages, setRefetchMessages] = useState<boolean>(true);
 

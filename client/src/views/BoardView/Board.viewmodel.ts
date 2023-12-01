@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ITaskProps } from '@/components/Task/Task';
-import { extractTokens } from '@/utils';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+import { IOutletContext } from '@/guards/authGuard';
 
 interface IColumn {
 	id: number;
@@ -44,9 +44,9 @@ export const useBoardViewModel = (): ViewModelReturnType<
 > => {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
-	const { accessToken } = extractTokens();
 	const boardId = pathname.split('/').pop();
 	const [isChatOpen, setIsChatOpen] = useState(false);
+	const { accessToken } = useOutletContext<IOutletContext>();
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
 		useState(false);
 	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);

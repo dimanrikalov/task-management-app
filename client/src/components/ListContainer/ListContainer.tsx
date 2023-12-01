@@ -9,7 +9,7 @@ interface IListContainerProps {
 	title: string;
 	users: IUser[],
 	mode: TListMode;
-	colleagueIds: number[];
+	colleagues: IUser[];
 	disableDeletionFor: number[];
 	removeUser(id: number): void;
 }
@@ -18,7 +18,7 @@ export const ListContainer = ({
 	title,
 	users,
 	removeUser,
-	colleagueIds,
+	colleagues,
 	mode = 'users',
 	disableDeletionFor,
 }: IListContainerProps) => {
@@ -30,7 +30,7 @@ export const ListContainer = ({
 					{mode === 'users' && (
 						<>
 							{
-								users.filter(user => colleagueIds.includes(user.id))
+								users.filter(user => colleagues.includes(user.id))
 									.map(user => {
 										if (disableDeletionFor.includes(user.id)) {
 											return <UserEntry

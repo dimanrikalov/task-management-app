@@ -4,6 +4,8 @@ import { IOutletContext } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
+const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
+
 export enum NOTIFICATION_TYPE {
 	ERROR = 'error',
 	MESSAGE = 'message',
@@ -36,14 +38,11 @@ interface IEditProfileViewModelState {
 }
 
 interface IEditProfileViewModelOperations {
-	inputChangeHandler(
-		e: React.ChangeEvent<HTMLInputElement>,
-		fieldName: string
-	): void;
 	deleteUser(): void;
 	clearProfileImg(): void;
 	toggleIsDeletionModalOpen(): void;
 	updateUserData(e: React.FormEvent): void;
+	inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 	changeProfileImage(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -115,11 +114,30 @@ export const useProfileViewModel = (): ViewModelReturnType<
 				formData.append('image', inputValues.profileImg!);
 			}
 
+			if (
+				[INPUT_FIELDS.FIRST_NAME, INPUT_FIELDS.LAST_NAME].includes(
+					inputField
+				) &&
+				(inputValues[inputField] as string).length < 2
+			) {
+				throw new Error(
+					`${inputField} must be at least 2 characters long!`
+				);
+			}
+
+			if (
+				inputField === INPUT_FIELDS.PASSWORD &&
+				!passwordRegex.test(inputValues[inputField] as string)
+			) {
+				throw new Error('Password must conform to the rules!');
+			}
+
 			const body = isInputProfileImg
 				? formData
 				: JSON.stringify({ [inputField]: inputValues[inputField] });
+			console.log(body);
 
-			await fetch(
+			const res = await fetch(
 				`${import.meta.env.VITE_SERVER_URL}/users/edit`,
 				{
 					method: 'PUT',
@@ -133,8 +151,16 @@ export const useProfileViewModel = (): ViewModelReturnType<
 
 			setProfileImgPath(null);
 			setInputValues((prev) => ({ ...prev, profileImg: null }));
+			navigate('/'); // will cause the autguard to kick in and redirect back to dashboard with updated info
 		} catch (err: any) {
+			console.log('asdasdasdads');
 			console.log(err.message);
+			setInputValues((prev) => ({
+				password: '',
+				lastName: '',
+				firstName: '',
+				profileImg: null,
+			}));
 			setNotification({
 				message: err.message,
 				type: NOTIFICATION_TYPE.ERROR,
@@ -162,11 +188,11 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		}
 	};
 
-	const inputChangeHandler = (
-		e: React.ChangeEvent<HTMLInputElement>,
-		fieldName: string
-	) => {
-		setInputValues((prev) => ({ ...prev, [fieldName]: e.target.value }));
+	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setInputValues((prev) => ({
+			...prev,
+			[e.target.name]: e.target.value,
+		}));
 	};
 
 	const toggleIsDeletionModalOpen = () => {

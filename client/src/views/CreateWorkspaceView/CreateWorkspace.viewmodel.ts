@@ -1,18 +1,19 @@
 import { useState } from 'react';
+import { IOutletContext } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { IOutletContext } from '@/guards/authGuard';
+import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 interface ICreateWorkspaceState {
 	inputValue: string;
 	errorMessage: string;
-	colleagueIds: number[];
+	colleagues: IUser[];
 }
 
 interface ICreateWorkspaceOperations {
 	goToWorkspace(workspaceId: string): void;
-	addToColleaguesToAdd(colleagueId: number): void;
-	removeFromColleaguesToAdd(colleagueId: number): void;
+	addToColleaguesToAdd(colleague: IUser): void;
+	removeFromColleaguesToAdd(colleague: IUser): void;
 	createWorkspace(e: React.FormEvent<HTMLFormElement>): void;
 	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
@@ -24,7 +25,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 	const navigate = useNavigate();
 	const [inputValue, setInputValue] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
-	const [colleagueIds, setColleagueIds] = useState<number[]>([]);
+	const [colleagues, setColleagues] = useState<IUser[]>([]);
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValue(e.target.value);
 	};
@@ -55,7 +56,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 					credentials: 'include', // Include credentials (cookies) in the request
 					body: JSON.stringify({
 						name: inputValue,
-						colleagues: colleagueIds,
+						colleagues: colleagues.map((colleague) => colleague.id),
 					}),
 				}
 			);
@@ -78,13 +79,13 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 		}
 	};
 
-	const addToColleaguesToAdd = (colleagueId: number) => {
-		setColleagueIds((prev) => [...prev, colleagueId]);
+	const addToColleaguesToAdd = (colleague: IUser) => {
+		setColleagues((prev) => [...prev, colleague]);
 	};
 
-	const removeFromColleaguesToAdd = (colleagueId: number) => {
-		setColleagueIds((prev) => [
-			...prev.filter((colId) => colId !== colleagueId),
+	const removeFromColleaguesToAdd = (colleague: IUser) => {
+		setColleagues((prev) => [
+			...prev.filter((col) => col.id !== colleague.id),
 		]);
 	};
 
@@ -95,7 +96,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 	return {
 		state: {
 			inputValue,
-			colleagueIds,
+			colleagues,
 			errorMessage,
 		},
 		operations: {

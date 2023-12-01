@@ -19,14 +19,17 @@ export const CreateWorkspaceView = ({
 	return (
 		<div className={styles.backgroundWrapper}>
 			<div className={styles.background}>
-				<RxCross2 className={styles.closeBtn} onClick={closeBtnHandler} />
+				<RxCross2
+					className={styles.closeBtn}
+					onClick={closeBtnHandler}
+				/>
 				<div className={styles.leftSide}>
 					<div className={styles.introMessage}>
 						<h1>Let's create a workspace!</h1>
 						<p>
 							Boost your productivity by making it easier for everyone
-							to access multiple{' '}
-							<span className={styles.bold}>boards</span> in <span className={styles.bold}>one</span> shared space.
+							to access multiple{' '} <span className={styles.bold}>boards </span>
+							in <span className={styles.bold}>one</span> shared space.
 						</p>
 					</div>
 
@@ -36,9 +39,10 @@ export const CreateWorkspaceView = ({
 						</h2>
 						<form className={styles.createForm} onSubmit={operations.createWorkspace}>
 							{
-								state.errorMessage && <ErrorMessage
-									message={state.errorMessage}
+								state.errorMessage &&
+								<ErrorMessage
 									fontSize={16}
+									message={state.errorMessage}
 								/>
 							}
 							<IntroInput
@@ -58,7 +62,7 @@ export const CreateWorkspaceView = ({
 					<AddColleagueInput
 						boardMode={false}
 						title={'Workspace users list'}
-						colleagueIds={state.colleagueIds}
+						colleagues={state.colleagues}
 						addColleagueHandler={operations.addToColleaguesToAdd}
 						removeColleagueHandler={operations.removeFromColleaguesToAdd}
 					/>

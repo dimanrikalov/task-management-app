@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { extractTokens } from '@/utils';
+import { IOutletContext } from '@/guards/authGuard';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 interface IBoardData {
@@ -64,8 +64,8 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	const [accessibleWorkspaces, setAccessibleWorkspaces] = useState<
 		IWorkspace[]
 	>([]);
+	const { accessToken } = useOutletContext<IOutletContext>();
 	const [colleagueIds, setColleagueIds] = useState<number[]>([]);
-	const { accessToken } = extractTokens();
 	const [disableDeletionFor, setDisableDeletionFor] = useState<number[]>([]);
 
 	useEffect(() => {

@@ -1,10 +1,11 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsArray, IsNotEmpty } from 'class-validator';
+import { BaseUsersDto } from './base.dto';
+import { IsArrayOfType } from 'src/validators/IsArrayOfType';
 
-export class FindUserDto {
+export class FindUserDto extends BaseUsersDto {
     @IsNotEmpty()
-    @IsEmail()
     email: string;
 
-    @IsNotEmpty()
-    password: string;
+    @IsArrayOfType('number')
+    notIn: number[];
 }

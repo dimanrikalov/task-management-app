@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { extractTokens } from '@/utils';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
+import { IOutletContext } from '@/guards/authGuard';
 
 interface IWorkspaceViewModelState {
 	inputValue: string;
@@ -38,7 +38,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	const [workspaceData, setWorkspaceData] =
 		useState<IDetailedWorkspace | null>(null);
 	const [refreshWorkspace, setRefreshWorkspace] = useState(true);
-	const { accessToken } = extractTokens();
+	const { accessToken } = useOutletContext<IOutletContext>();
 
 	useEffect(() => {
 		if (refreshWorkspace) {

@@ -11,6 +11,7 @@ import {
 import { Request, Response } from 'express';
 import { BaseUsersDto } from './dtos/base.dto';
 import { UsersService } from './users.service';
+import { FindUserDto } from './dtos/findUser.dto';
 import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
@@ -35,9 +36,17 @@ export class UsersController {
         }
     }
 
-    @Get('/users')
-    async getUsers() {
-        return this.usersService.getAll();
+    @Post('/users')
+    async getUsers(@Res() res: Response, @Body() body: FindUserDto) {
+        try {
+            const users = await this.usersService.getAll(body);
+            res.status(200).json(users);
+        } catch (err: any) {
+            console.log(err.message);
+            res.status(401).json({
+                errorMessage: err.message,
+            });
+        }
     }
 
     @Get('/users/stats')

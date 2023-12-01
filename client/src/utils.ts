@@ -54,3 +54,7 @@ export const deleteTokens = () => {
 			);
 	});
 };
+
+export const deleteAccessToken = () => {
+	document.cookie = `accessToken=;expires=${new Date().toUTCString()};path=/`;
+};
