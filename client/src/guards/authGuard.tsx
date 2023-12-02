@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { extractTokens, isAccessTokenValid } from '../utils';
 import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 
 export interface ITokens {
@@ -28,26 +28,27 @@ export const AuthGuard = () => {
 	const [userData, setUserData] = useState<IUserData | null>(null);
 
 	const refreshTokens = async () => {
-		await fetch(`${import.meta.env.VITE_SERVER_URL}/users/refresh`, {
+		const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/users/refresh`, {
 			credentials: 'include'
 		});
+		if (res.status === 400) {
+			throw new Error('Invalid refresh token!');
+		}
 		setTokens(extractTokens());
 	}
 
 	const getUserData = async () => {
-		try {
-			const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/user`, {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${tokens.accessToken}`
-				}
-			});
-			const data = await res.json();
-			setUserData(data);
-
-		} catch (err: any) {
-			console.log(err.message);
+		const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/user`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${tokens.accessToken}`
+			}
+		});
+		if (res.status === 401) {
+			throw new Error('Unauthorized!')
 		}
+		const data = await res.json();
+		setUserData(data);
 	}
 
 	useEffect(() => {
@@ -62,17 +63,27 @@ export const AuthGuard = () => {
 					}
 
 					await refreshTokens();
+					return;
 				}
 				else if (!isAccessTokenValid(tokens.accessToken)) {
 					await refreshTokens();
+					return;
 				}
 
 				await getUserData();
-				setIsLoading(false);
 			} catch (err: any) {
 				console.log(err.message);
-				setIsLoading(false);
+				if (err.message === 'Invalid refresh token!') {
+					deleteTokens();
+					setIsLoading(false);
+					return;
+				} else if (err.message === 'Unauthorized!') {
+					setIsLoading(false);
+					navigate('/auth/sign-in')
+					return;
+				}
 			}
+			setIsLoading(false);
 		}
 
 		authenticate();

@@ -137,17 +137,14 @@ export const useProfileViewModel = (): ViewModelReturnType<
 				: JSON.stringify({ [inputField]: inputValues[inputField] });
 			console.log(body);
 
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/users/edit`,
-				{
-					method: 'PUT',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
-					},
-					body,
-				}
-			);
+			await fetch(`${import.meta.env.VITE_SERVER_URL}/users/edit`, {
+				method: 'PUT',
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+					'Content-Type': 'application/json',
+				},
+				body,
+			});
 
 			setProfileImgPath(null);
 			setInputValues((prev) => ({ ...prev, profileImg: null }));
@@ -155,12 +152,12 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		} catch (err: any) {
 			console.log('asdasdasdads');
 			console.log(err.message);
-			setInputValues((prev) => ({
+			setInputValues({
 				password: '',
 				lastName: '',
 				firstName: '',
 				profileImg: null,
-			}));
+			});
 			setNotification({
 				message: err.message,
 				type: NOTIFICATION_TYPE.ERROR,

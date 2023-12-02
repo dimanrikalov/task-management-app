@@ -76,20 +76,24 @@ export const WorkspaceView = () => {
 						<BackButton onClick={operations.backBtnHandler} />
 						<h2>{state.workspaceData?.name}</h2>
 					</div>
-					<div className={styles.right}>
-						<IntroButton
-							disabled={state.workspaceData.name.toLowerCase().trim() === 'personal workspace'}
-							message={'Edit Users'}
-							onClick={operations.toggleEditcolleaguesModalIsOpen}
-						/>
-						<IntroButton
+					{
+						state.workspaceData.name.toLowerCase().trim() !== 'personal workspace' &&
+						(
+							<div className={styles.right}>
+								<IntroButton
+									message={'Edit Users'}
+									onClick={operations.toggleEditcolleaguesModalIsOpen}
+								/>
+								<IntroButton
 
-							message={'Delete Workspace'}
-							onClick={
-								operations.toggleDeleteWorkspaceModalIsOpen
-							}
-						/>
-					</div>
+									message={'Delete Workspace'}
+									onClick={
+										operations.toggleDeleteWorkspaceModalIsOpen
+									}
+								/>
+							</div>
+						)
+					}
 				</div>
 				<div className={styles.titleContainer}>
 					<h1>Boards</h1>
