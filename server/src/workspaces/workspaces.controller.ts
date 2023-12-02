@@ -47,7 +47,7 @@ export class WorkspacesController {
         }
     }
 
-    @Delete()
+    @Delete('/:workspaceId')
     async deleteWorkspace(
         @Res() res: Response,
         @Body() body: DeleteWorkspaceDto,

@@ -7,16 +7,14 @@ type TListMode = 'users' | 'steps';
 
 interface IListContainerProps {
 	title: string;
-	users: IUser[],
 	mode: TListMode;
 	colleagues: IUser[];
 	disableDeletionFor: number[];
-	removeUser(id: number): void;
+	removeUser(colleague: IUser): void;
 }
 
 export const ListContainer = ({
 	title,
-	users,
 	removeUser,
 	colleagues,
 	mode = 'users',
@@ -30,20 +28,20 @@ export const ListContainer = ({
 					{mode === 'users' && (
 						<>
 							{
-								users.filter(user => colleagues.includes(user.id))
-									.map(user => {
-										if (disableDeletionFor.includes(user.id)) {
+								colleagues
+									.map(colleague => {
+										if (disableDeletionFor.includes(colleague.id)) {
 											return <UserEntry
-												key={user.id}
+												key={colleague.id}
 												showBtn={false}
-												email={user.email}
-												removeHandler={() => removeUser(user.id)}
+												email={colleague.email}
+												removeHandler={() => removeUser(colleague)}
 											/>
 										}
 										return <UserEntry
-											key={user.id}
-											email={user.email}
-											removeHandler={() => removeUser(user.id)}
+											key={colleague.id}
+											email={colleague.email}
+											removeHandler={() => removeUser(colleague)}
 										/>
 									})
 							}

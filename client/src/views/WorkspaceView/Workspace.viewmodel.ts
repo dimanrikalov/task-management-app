@@ -1,24 +1,38 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
-import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
 import { IOutletContext } from '@/guards/authGuard';
+import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
+import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+
+export enum MODAL_STATES_KEYS {
+	CREATE_BOARD = 'createBoardIsOpen',
+	EDIT_COLLEAGUES = 'editColleaguesIsOpen',
+	DELETE_WORKSPACE = 'deleteWorkspaceIsOpen',
+}
+
+enum EDIT_COLLEAGUE_METHOD {
+	POST = 'POST',
+	DELETE = 'DELETE',
+}
+
+type IModalStates = {
+	[key in MODAL_STATES_KEYS]: boolean;
+};
 
 interface IWorkspaceViewModelState {
 	inputValue: string;
-	createBoardModalIsOpen: boolean;
-	editColleaguesModalIsOpen: boolean;
-	deleteWorkspaceModalIsOpen: boolean;
+	modals: IModalStates;
 	workspaceData: IDetailedWorkspace | null;
 }
 
 interface IWorkspaceViewModelOperations {
 	backBtnHandler(): void;
-	toggleCreateBoardModalIsOpen(): void;
-	toggleEditcolleaguesModalIsOpen(): void;
-	toggleDeleteWorkspaceModalIsOpen(): void;
-	addWorkspaceColleague(colleagueId: number): void;
-	removeWorkspaceColleague(colleagueId: number): void;
+	deleteWorkspace(): void;
+	toggleModal(key: string): void;
+	goToBoard(boardId: number): void;
+	addWorkspaceColleague(colleague: IUser): void;
+	removeWorkspaceColleague(colleague: IUser): void;
 	inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -27,114 +41,132 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	IWorkspaceViewModelOperations
 > => {
 	const navigate = useNavigate();
-	const [inputValue, setInputValue] = useState('');
-	const [editColleaguesModalIsOpen, setEditColleaguesModalIsOpen] =
-		useState(false);
-	const [deleteWorkspaceModalIsOpen, setDeleteWorkspaceModalIsOpen] =
-		useState(false);
-	const [createBoardModalIsOpen, setCreateBoardModalIsOpen] = useState(false);
 	const { pathname } = useLocation();
-	const workspaceId = pathname.split('/').pop();
 	const [workspaceData, setWorkspaceData] =
 		useState<IDetailedWorkspace | null>(null);
+	const workspaceId = pathname.split('/').pop();
+	const [inputValue, setInputValue] = useState('');
 	const [refreshWorkspace, setRefreshWorkspace] = useState(true);
-	const { accessToken } = useOutletContext<IOutletContext>();
-
+	const { userData, accessToken } = useOutletContext<IOutletContext>();
+	const [modals, setModals] = useState<IModalStates>({
+		[MODAL_STATES_KEYS.CREATE_BOARD]: false,
+		[MODAL_STATES_KEYS.EDIT_COLLEAGUES]: false,
+		[MODAL_STATES_KEYS.DELETE_WORKSPACE]: false,
+	});
+	console.log(workspaceData);
 	useEffect(() => {
-		if (refreshWorkspace) {
-			fetch(
-				`${
-					import.meta.env.VITE_SERVER_URL
-				}/workspaces/${workspaceId}/details`,
-				{
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`,
-					},
-				}
-			)
-				.then((res) => res.json())
-				.then((data) => {
-					setWorkspaceData(data);
-					setRefreshWorkspace(false);
+		const fetchWorkspace = async () => {
+			try {
+				const res = await fetch(
+					`${
+						import.meta.env.VITE_SERVER_URL
+					}/workspaces/${workspaceId}/details`,
+					{
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				);
+
+				const data = (await res.json()) as IDetailedWorkspace;
+
+				setWorkspaceData({
+					...data,
+					workspaceUsers: [
+						...data.workspaceUsers,
+						{
+							id: userData.id,
+							email: userData.email,
+							profileImagePath: userData.profileImagePath,
+						},
+					],
 				});
+				setRefreshWorkspace(false);
+			} catch (err: any) {
+				console.log(err.message);
+			}
+		};
+
+		if (refreshWorkspace) {
+			fetchWorkspace();
 		}
 	}, [refreshWorkspace]);
 
 	const backBtnHandler = () => {
-		navigate('/dashboard');
+		navigate(-1);
+	};
+
+	const goToBoard = (boardId: number) => {
+		navigate(`/boards/${boardId}`);
+	};
+
+	const toggleModal = (key: MODAL_STATES_KEYS) => {
+		setModals((prev) => ({ ...prev, [key]: !prev[key] }));
 	};
 
 	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValue(e.target.value);
 	};
 
-	const toggleCreateBoardModalIsOpen = () => {
-		setCreateBoardModalIsOpen((prev) => !prev);
+	const addWorkspaceColleague = async (colleague: IUser) => {
+		await editWorkspaceColleague(colleague, EDIT_COLLEAGUE_METHOD.POST);
+		setRefreshWorkspace(true);
 	};
 
-	const toggleEditcolleaguesModalIsOpen = () => {
-		setEditColleaguesModalIsOpen((prev) => !prev);
+	const removeWorkspaceColleague = async (colleague: IUser) => {
+		await editWorkspaceColleague(colleague, EDIT_COLLEAGUE_METHOD.DELETE);
+		setRefreshWorkspace(true);
 	};
 
-	const toggleDeleteWorkspaceModalIsOpen = () => {
-		setDeleteWorkspaceModalIsOpen((prev) => !prev);
-	};
-
-	const addWorkspaceColleague = async (colleagueId: number) => {
+	const deleteWorkspace = async () => {
 		if (!workspaceData) {
-			console.log('No workspace data!');
-			return;
+			throw new Error('Workspace data missing!');
 		}
-
 		try {
 			await fetch(
 				`${import.meta.env.VITE_SERVER_URL}/workspaces/${
 					workspaceData.id
-				}/colleagues`,
+				}`,
 				{
-					method: 'POST',
+					method: 'DELETE',
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
 					},
-					body: JSON.stringify({
-						colleagueId,
-					}),
 				}
 			);
-
-			// Set refreshWorkspace to true to trigger a re-fetch of the workspace details
-			setRefreshWorkspace(true);
+			navigate('/dashboard');
 		} catch (err: any) {
 			console.log(err.message);
 		}
 	};
 
-	const removeWorkspaceColleague = async (colleagueId: number) => {
+	const editWorkspaceColleague = async (
+		colleague: IUser,
+		method: EDIT_COLLEAGUE_METHOD
+	) => {
 		if (!workspaceData) {
 			console.log('No workspace data!');
 			return;
 		}
+
 		try {
 			await fetch(
 				`${import.meta.env.VITE_SERVER_URL}/workspaces/${
 					workspaceData.id
 				}/colleagues`,
 				{
-					method: 'DELETE',
+					method,
 					headers: {
-						'Content-Type': 'application/json',
 						Authorization: `Bearer ${accessToken}`,
+						'Content-Type': 'application/json',
 					},
 					body: JSON.stringify({
-						colleagueId,
+						colleagueId: colleague.id,
 					}),
 				}
 			);
-
-			setRefreshWorkspace(true);
 		} catch (err: any) {
 			console.log(err.message);
 		}
@@ -142,20 +174,18 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 
 	return {
 		state: {
+			modals,
 			inputValue,
 			workspaceData,
-			createBoardModalIsOpen,
-			editColleaguesModalIsOpen,
-			deleteWorkspaceModalIsOpen,
 		},
 		operations: {
+			goToBoard,
+			toggleModal,
 			backBtnHandler,
+			deleteWorkspace,
 			inputChangeHandler,
 			addWorkspaceColleague,
 			removeWorkspaceColleague,
-			toggleCreateBoardModalIsOpen,
-			toggleEditcolleaguesModalIsOpen,
-			toggleDeleteWorkspaceModalIsOpen,
 		},
 	};
 };

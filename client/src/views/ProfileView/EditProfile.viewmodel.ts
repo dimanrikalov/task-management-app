@@ -148,7 +148,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 
 			setProfileImgPath(null);
 			setInputValues((prev) => ({ ...prev, profileImg: null }));
-			navigate('/'); // will cause the autguard to kick in and redirect back to dashboard with updated info
+			navigate('/'); // cause refetching of user through the guard
 		} catch (err: any) {
 			console.log('asdasdasdads');
 			console.log(err.message);

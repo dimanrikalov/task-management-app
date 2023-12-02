@@ -72,17 +72,28 @@ export class WorkspacesService {
                 workspaceId: body.workspaceData.id,
             },
         });
-        const workspaceUserIds =
+        const workspaceUsersResult =
             await this.prismaService.user_Workspace.findMany({
                 where: {
                     workspaceId: body.workspaceData.id,
                 },
+                select: {
+                    User: {
+                        select: {
+                            id: true,
+                            email: true,
+                            profileImagePath: true,
+                        },
+                    },
+                },
             });
+
+        const workspaceUsers = workspaceUsersResult.map((user) => user.User);
 
         return {
             ...body.workspaceData,
             boards: workspaceBoards,
-            workspaceUserIds,
+            workspaceUsers,
         };
     }
 

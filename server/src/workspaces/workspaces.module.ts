@@ -1,9 +1,3 @@
-import {
-    Module,
-    NestModule,
-    RequestMethod,
-    MiddlewareConsumer,
-} from '@nestjs/common';
 import { TasksService } from 'src/tasks/tasks.service';
 import { TasksGateway } from 'src/tasks/tasks.gateway';
 import { StepsService } from 'src/steps/steps.service';
@@ -17,6 +11,7 @@ import { ColumnsGateway } from 'src/columns/columns.gateway';
 import { WorkspacesController } from './workspaces.controller';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middleware';
 
 @Module({
@@ -38,16 +33,8 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
 export class WorkspacesModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(AuthMiddleware).forRoutes('workspaces*');
-        consumer.apply(WorkspaceCheckMiddleware).forRoutes(
-            { path: 'workspaces', method: RequestMethod.DELETE },
-            {
-                path: 'workspaces/:workspaceId/colleagues',
-                method: RequestMethod.ALL,
-            },
-            {
-                path: 'workspaces/:workspaceId/details',
-                method: RequestMethod.GET,
-            },
-        );
+        consumer
+            .apply(WorkspaceCheckMiddleware)
+            .forRoutes('workspaces/:workspaceId*');
     }
 }

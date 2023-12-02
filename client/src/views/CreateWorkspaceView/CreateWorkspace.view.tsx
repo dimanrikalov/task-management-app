@@ -60,9 +60,8 @@ export const CreateWorkspaceView = ({
 				</div>
 				<div className={styles.rightSide}>
 					<AddColleagueInput
-						boardMode={false}
-						title={'Workspace users list'}
 						colleagues={state.colleagues}
+						title={'Workspace users list'}
 						addColleagueHandler={operations.addToColleaguesToAdd}
 						removeColleagueHandler={operations.removeFromColleaguesToAdd}
 					/>

@@ -25,11 +25,15 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 	const navigate = useNavigate();
 	const [inputValue, setInputValue] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
-	const [colleagues, setColleagues] = useState<IUser[]>([]);
+	const { userData } = useOutletContext<IOutletContext>();
+	const { accessToken } = useOutletContext<IOutletContext>();
+	const [colleagues, setColleagues] = useState<IUser[]>([
+		{ ...userData, email: 'Me' },
+	]);
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValue(e.target.value);
 	};
-	const { accessToken } = useOutletContext<IOutletContext>();
 
 	const createWorkspace = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -56,7 +60,9 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 					credentials: 'include', // Include credentials (cookies) in the request
 					body: JSON.stringify({
 						name: inputValue,
-						colleagues: colleagues.map((colleague) => colleague.id),
+						colleagues: colleagues
+							.filter((colleague) => colleague.id !== userData.id)
+							.map((colleague) => colleague.id),
 					}),
 				}
 			);
@@ -67,7 +73,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 					throw new Error(data.message[0]);
 				}
 			}
-			console.log(data);
+
 			if (data.errorMessage) {
 				throw new Error(data.errorMessage);
 			}

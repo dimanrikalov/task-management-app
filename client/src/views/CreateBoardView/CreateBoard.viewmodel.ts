@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { IOutletContext } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 interface IBoardData {
 	id: number;
@@ -16,8 +17,8 @@ interface ICreateBoardViewModelState {
 	colleagueIds: number[];
 	disableDeletionFor: number[];
 	boardData: IBoardData | null;
-	workspaceDetailedData: IDetailedWorkspace | null;
 	accessibleWorkspaces: IWorkspace[];
+	workspaceDetailedData: IDetailedWorkspace | null;
 }
 
 interface ICreateBoardViewModelOperations {
@@ -41,10 +42,10 @@ interface IDetailedBoard {
 
 export interface IDetailedWorkspace {
 	id: number;
-	boards: IDetailedBoard[];
 	name: string;
 	ownerId: number;
-	workspaceUserIds: number[];
+	workspaceUsers: IUser[];
+	boards: IDetailedBoard[];
 }
 
 export const useCreateBoardViewModel = (): ViewModelReturnType<

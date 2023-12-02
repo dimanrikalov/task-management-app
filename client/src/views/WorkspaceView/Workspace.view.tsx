@@ -3,11 +3,12 @@ import styles from './workspace.module.css';
 import { TiDocumentAdd } from 'react-icons/ti';
 import { Modal } from '@/components/Modal/Modal';
 import { BoardCard } from '@/components/BoardCard/BoardCard';
-import { useWorkspaceViewModel } from './Workspace.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { CreateBoardView } from '../CreateBoardView/CreateBoard.view';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
+import { MODAL_STATES_KEYS, useWorkspaceViewModel } from './Workspace.viewmodel';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 
@@ -15,61 +16,72 @@ export const WorkspaceView = () => {
 	const { state, operations } = useWorkspaceViewModel();
 
 	if (!state.workspaceData) {
-		return <div>Loading...</div>
+		return <LoadingOverlay />
 	}
 
 	return (
 		<>
 			{
-				state.createBoardModalIsOpen && (
+				state.modals.createBoardIsOpen && (
 					<Modal
 						children={
 							<CreateBoardView
-								closeBtnHandler={operations.toggleCreateBoardModalIsOpen}
 								workspaceData={state.workspaceData}
+								closeBtnHandler={
+									() =>
+										operations.toggleModal(MODAL_STATES_KEYS.CREATE_BOARD)
+								}
 							/>
 						}
 					/>
 				)
 			}
-			{state.editColleaguesModalIsOpen && (
-				<Modal
-					children={
-						<div className={styles.modalContainer}>
-							<RxCross2
-								className={styles.closeBtn}
-								onClick={
-									operations.toggleEditcolleaguesModalIsOpen
-								}
-							/>
-							<AddColleagueInput
-								boardMode={true}
-								enableFlex={true}
-								title="Edit colleagues"
-								selectedWorkspace={state.workspaceData}
-								addColleagueHandler={operations.addWorkspaceColleague}
-								removeColleagueHandler={operations.removeWorkspaceColleague}
-								colleagueIds={state.workspaceData.workspaceUserIds.map(userEntry => userEntry.userId)}
-							/>
-						</div>
-					}
-				/>
-			)}
-			{state.deleteWorkspaceModalIsOpen && (
-				<Modal
-					children={
-						<div className={styles.modalContainer}>
-							<RxCross2
-								className={styles.closeBtn}
-								onClick={
-									operations.toggleDeleteWorkspaceModalIsOpen
-								}
-							/>
-							<DeleteConfirmation entityName="My class workspace" />
-						</div>
-					}
-				/>
-			)}
+			{
+				state.modals.editColleaguesIsOpen && (
+					<Modal
+						children={
+							<div className={styles.modalContainer}>
+								<RxCross2
+									className={styles.closeBtn}
+									onClick={
+										() => operations.toggleModal(MODAL_STATES_KEYS.EDIT_COLLEAGUES)
+									}
+								/>
+								<AddColleagueInput
+									enableFlex={true}
+									title="Edit colleagues"
+									colleagues={state.workspaceData.workspaceUsers}
+									addColleagueHandler={operations.addWorkspaceColleague}
+									removeColleagueHandler={operations.removeWorkspaceColleague}
+								/>
+							</div>
+						}
+					/>
+				)
+			}
+			{
+				state.modals.deleteWorkspaceIsOpen && (
+					<Modal
+						children={
+							<div className={styles.modalContainer}>
+								<RxCross2
+									className={styles.closeBtn}
+									onClick={
+										() => operations.toggleModal(MODAL_STATES_KEYS.DELETE_WORKSPACE)
+									}
+								/>
+								<DeleteConfirmation
+									entityName="My class workspace"
+									onConfirm={operations.deleteWorkspace}
+									onCancel={
+										() => operations.toggleModal(MODAL_STATES_KEYS.DELETE_WORKSPACE)
+									}
+								/>
+							</div>
+						}
+					/>
+				)
+			}
 			<div className={styles.background}>
 				<div className={styles.header}>
 					<div className={styles.left}>
@@ -82,13 +94,16 @@ export const WorkspaceView = () => {
 							<div className={styles.right}>
 								<IntroButton
 									message={'Edit Users'}
-									onClick={operations.toggleEditcolleaguesModalIsOpen}
+									onClick={
+										() =>
+											operations.toggleModal(MODAL_STATES_KEYS.EDIT_COLLEAGUES)
+									}
 								/>
 								<IntroButton
 
 									message={'Delete Workspace'}
 									onClick={
-										operations.toggleDeleteWorkspaceModalIsOpen
+										() => operations.toggleModal(MODAL_STATES_KEYS.DELETE_WORKSPACE)
 									}
 								/>
 							</div>
@@ -108,15 +123,23 @@ export const WorkspaceView = () => {
 					</div>
 				</div>
 				<div className={styles.boardsContainer}>
-					<button className={styles.addButton} onClick={operations.toggleCreateBoardModalIsOpen}>
+					<button
+						className={styles.addButton}
+						onClick={
+							() => operations.toggleModal('createBoard')
+						}
+					>
 						<TiDocumentAdd className={styles.icon} />
 					</button>
 					{
-						state.workspaceData?.boards.map(board => <BoardCard
-							key={board.id}
-							onClickHandler={() => { }}
-							boardName={board.name}
-						/>
+						state.workspaceData?.boards.map((board) =>
+							<BoardCard
+								key={board.id}
+								boardName={board.name}
+								onClickHandler={
+									() => operations.goToBoard(board.id)
+								}
+							/>
 						)
 					}
 

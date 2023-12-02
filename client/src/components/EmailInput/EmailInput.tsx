@@ -5,8 +5,9 @@ import { IUser } from '../AddColleagueInput/AddColleagueInput';
 
 interface IEmailInputProps {
 	matches: IUser[];
+	isLoading: boolean;
 	inputValue: string;
-	addUser(id: number): void;
+	addUser(colleague: IUser): void;
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -14,6 +15,7 @@ export const EmailInput = ({
 	addUser,
 	matches,
 	onChange,
+	isLoading,
 	inputValue,
 }: IEmailInputProps) => {
 
@@ -27,7 +29,9 @@ export const EmailInput = ({
 				placeholder="Enter colleague email"
 			/>
 			{
-				inputValue && matches.length > 0 &&
+				inputValue &&
+				!isLoading &&
+				matches.length > 0 &&
 				(
 					<div className={styles.dropdownWrapper}>
 						<div className={styles.dropdown}>
@@ -37,7 +41,7 @@ export const EmailInput = ({
 										key={match.id}
 										email={match.email}
 										showBtn={false}
-										addHandler={() => addUser(match.id)}
+										addHandler={() => addUser(match)}
 									/>
 								)
 							}
