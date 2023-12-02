@@ -1,19 +1,18 @@
 import classNames from 'classnames';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createBoard.module.css';
+import { useCreateBoardViewModel } from './CreateBoard.viewmodel';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { WorkspaceInput } from '@/components/WorkspaceInput/WorkspaceInput';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
-import { IDetailedWorkspace, useCreateBoardViewModel } from './CreateBoard.viewmodel';
 
 interface ICreateBoardView {
-	workspaceData?: IDetailedWorkspace;
 	closeBtnHandler(): void;
 }
 
-export const CreateBoardView = ({ workspaceData, closeBtnHandler, colleagueIds }: ICreateBoardView) => {
+export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 	const { state, operations } = useCreateBoardViewModel();
 
 	return (
@@ -33,10 +32,8 @@ export const CreateBoardView = ({ workspaceData, closeBtnHandler, colleagueIds }
 					</div>
 
 					<div className={styles.inputContainer}>
-						<h2>
-							Name your <span>board</span>
-						</h2>
-						<form className={styles.createForm}>
+						<h2>Choose a workspace</h2>
+						<form className={styles.createForm} >
 							<div className={styles.errorMessageContainer}>
 								{
 									state.errorMessage &&
@@ -46,52 +43,60 @@ export const CreateBoardView = ({ workspaceData, closeBtnHandler, colleagueIds }
 									/>
 								}
 							</div>
-							<IntroInput
-								type="text"
-								name="boardName"
-								value={state.inputFields.boardName}
-								placeholder="Enter a board name"
+							<WorkspaceInput
 								onChange={operations.handleInputChange}
+								value={state.inputValues.workspaceName}
+								accessibleWorkspaces={state.workspacesData}
+								chooseWorkspace={operations.selectWorkspace}
 							/>
 						</form>
 					</div>
 
 					<div className={styles.inputContainer}>
-						<h2>Choose a workspace</h2>
-						<form className={styles.createForm} onSubmit={operations.createBoard}>
-							<WorkspaceInput
+						<h2>
+							Name your <span>board</span>
+						</h2>
+						<form
+							className={styles.createForm}
+							onSubmit={operations.createBoard}
+						>
+							<IntroInput
+								type="text"
+								name="boardName"
+								placeholder="Enter a board name"
+								value={state.inputValues.boardName}
 								onChange={operations.handleInputChange}
-								chooseWorkspace={operations.chooseWorkspace}
-								accessibleWorkspaces={state.accessibleWorkspaces}
-								value={workspaceData?.name || state.inputFields.workspaceName}
 							/>
-
 							<IntroButton
 								message="Create Board"
-								disabled={!state.workspaceDetailedData && !workspaceData}
 							/>
 						</form>
 					</div>
+
 				</div>
+
 				<div className={styles.rightSide}>
 					<div className={classNames(
 						styles.rightSideContent,
-						((!workspaceData || workspaceData.name.toLowerCase().trim() === 'personal workspace') && (!state.workspaceDetailedData ||
-							state.workspaceDetailedData.name.toLowerCase().trim() === 'personal workspace')) && styles.hidden
+						(
+							(
+								!state.selectedWorkspace ||
+								state.selectedWorkspace.name.toLowerCase().trim() === 'personal workspace'
+							)
+						) && styles.hidden
 					)}>
 						{
 							<AddColleagueInput
-								boardMode={true}
 								title={'Board users list'}
-								colleagueIds={state.colleagueIds}
-								disableDeletionFor={state.disableDeletionFor}
-								selectedWorkspace={state.workspaceDetailedData}
-								addColleagueHandler={operations.addWorkspaceColleague}
-								removeColleagueHandler={operations.removeWorkspaceColleague}
+								addColleagueHandler={operations.addBoardColleague}
+								colleagues={state.selectedWorkspace?.workspaceUsers}
+								removeColleagueHandler={operations.removeBoardColleague}
 							/>
 						}
 					</div>
 				</div>
+
+
 			</div>
 		</div>
 	);

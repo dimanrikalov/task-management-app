@@ -9,13 +9,16 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
-            if (!req.params.workspaceId) {
+            if (!req.params.workspaceId && !req.body.workspaceId) {
                 throw new Error('Workspace ID is required!');
             }
 
+            const workspaceId =
+                Number(req.params.workspaceId) || Number(req.body.workspaceId);
+
             const workspace = await this.prismaService.workspace.findFirst({
                 where: {
-                    id: Number(req.params.workspaceId),
+                    id: workspaceId,
                 },
             });
             if (!workspace) {

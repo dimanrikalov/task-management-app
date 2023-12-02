@@ -4,30 +4,14 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
-interface IBoardData {
-	id: number;
-}
-interface IInputFields {
-	boardName: string;
-	workspaceName: string;
-}
-interface ICreateBoardViewModelState {
-	errorMessage: string;
-	inputFields: IInputFields;
-	colleagueIds: number[];
-	disableDeletionFor: number[];
-	boardData: IBoardData | null;
-	accessibleWorkspaces: IWorkspace[];
-	workspaceDetailedData: IDetailedWorkspace | null;
+export enum INPUT_STATES_KEYS {
+	BOARD_NAME = 'boardName',
+	WORKSPACE_NAME = 'workspaceName',
 }
 
-interface ICreateBoardViewModelOperations {
-	chooseWorkspace(workspaceData: IWorkspace): void;
-	addWorkspaceColleague(colleagueId: number): void;
-	removeWorkspaceColleague(colleagueId: number): void;
-	createBoard(e: React.FormEvent<HTMLFormElement>): void;
-	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
-}
+type IInputStates = {
+	[key in INPUT_STATES_KEYS]: string;
+};
 
 export interface IWorkspace {
 	id: number;
@@ -48,175 +32,186 @@ export interface IDetailedWorkspace {
 	boards: IDetailedBoard[];
 }
 
+interface ICreateBoardViewModelState {
+	errorMessage: string;
+	inputValues: IInputStates;
+	workspacesData: IDetailedWorkspace[];
+	selectedWorkspace: IDetailedWorkspace | null;
+}
+
+interface ICreateBoardViewModelOperations {
+	addBoardColleague(colleague: IUser): void;
+	removeBoardColleague(colleague: IUser): void;
+	selectWorkspace(workspace: IDetailedWorkspace): void;
+	createBoard(e: React.FormEvent<HTMLFormElement>): void;
+	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
+}
+
 export const useCreateBoardViewModel = (): ViewModelReturnType<
 	ICreateBoardViewModelState,
 	ICreateBoardViewModelOperations
 > => {
 	const navigate = useNavigate();
-	const [errorMessage, setErrorMessage] = useState('');
-	const [boardData, setBoardData] = useState<IBoardData | null>(null);
-	const [inputFields, setInputFields] = useState<IInputFields>({
-		boardName: '',
-		workspaceName: '',
-	});
-	const [workspaceData, setWorkspaceData] = useState<IWorkspace | null>(null);
-	const [workspaceDetailedData, setWorkspaceDetailedData] =
+	const [errorMessage, setErrorMessage] = useState<string>('');
+	const { accessToken, userData } = useOutletContext<IOutletContext>();
+	const [workspacesData, setWorkspacesData] = useState<IDetailedWorkspace[]>(
+		[]
+	);
+	const [selectedWorkspace, setSelectedWorkspace] =
 		useState<IDetailedWorkspace | null>(null);
-	const [accessibleWorkspaces, setAccessibleWorkspaces] = useState<
-		IWorkspace[]
-	>([]);
-	const { accessToken } = useOutletContext<IOutletContext>();
-	const [colleagueIds, setColleagueIds] = useState<number[]>([]);
-	const [disableDeletionFor, setDisableDeletionFor] = useState<number[]>([]);
+	const [inputValues, setInputValues] = useState<IInputStates>({
+		[INPUT_STATES_KEYS.BOARD_NAME]: '',
+		[INPUT_STATES_KEYS.WORKSPACE_NAME]: '',
+	});
 
 	useEffect(() => {
-		fetch(`${import.meta.env.VITE_SERVER_URL}/workspaces`, {
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-			},
-		})
-			.then((res) => res.json())
-			.then((data) => {
-				console.log(data);
-				setAccessibleWorkspaces(data);
-			})
-			.catch((err) => {
-				console.log(err.message);
-			});
-	}, []);
+		const fetchWorkspaces = async () => {
+			try {
+				const res = await fetch(
+					`${import.meta.env.VITE_SERVER_URL}/workspaces`,
+					{
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				);
+				const workspaces = (await res.json()) as IDetailedWorkspace[];
+				setWorkspacesData(workspaces);
 
-	useEffect(() => {
-		//upon selecting a workspace we need to check all users with access to the chosen workspace
-		if (workspaceData) {
-			fetch(
-				`${import.meta.env.VITE_SERVER_URL}/workspaces/${
-					workspaceData.id
-				}/details`,
-				{
-					method: 'GET',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
+				const matchingWorkspace = workspaces.find(
+					(workspace) =>
+						workspace.name.trim().toLowerCase() ===
+						inputValues.workspaceName.trim().toLowerCase()
+				);
+
+				if (matchingWorkspace) {
+					const getSelectedWorkspaceDetails =
+						async (): Promise<IDetailedWorkspace> => {
+							const res = await fetch(
+								`${
+									import.meta.env.VITE_SERVER_URL
+								}/workspaces/${matchingWorkspace.id}/details`,
+								{
+									method: 'GET',
+									headers: {
+										'Content-Type': 'application/json',
+										Authorization: `Bearer ${accessToken}`,
+									},
+								}
+							);
+							return (await res.json()) as IDetailedWorkspace;
+						};
+
+					const detailedWorkspace =
+						await getSelectedWorkspaceDetails();
+					setSelectedWorkspace({
+						...detailedWorkspace,
+						workspaceUsers: [
+							...detailedWorkspace.workspaceUsers,
+							{
+								id: userData.id,
+								email: userData.email,
+								profileImagePath: userData.profileImagePath,
+							},
+						],
+					});
+					return;
 				}
-			)
-				.then((res) => res.json())
-				.then((data) => {
-					console.log('WORKSPACE DATA', data);
-					setWorkspaceDetailedData(data);
-					setColleagueIds([
-						...data.workspaceUserIds.map(
-							(entry: any) => entry.userId
-						),
-					]);
-					setDisableDeletionFor([
-						...data.workspaceUserIds.map((x: any) => x.userId),
-					]);
-				})
-				.catch((err) => {
-					console.log(err.message);
-				});
-		}
-	}, [workspaceData]);
+			} catch (err: any) {
+				console.log(err.message);
+			}
+			setSelectedWorkspace(null);
+		};
+
+		const timeout = setTimeout(() => {
+			fetchWorkspaces();
+		}, 300);
+
+		return () => clearTimeout(timeout);
+	}, [inputValues]);
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setInputValues((prev) => ({
+			...prev,
+			[e.target.name]: e.target.value,
+		}));
+	};
 
 	const createBoard = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		console.log(selectedWorkspace);
+		setErrorMessage('');
+		if (!selectedWorkspace) return;
 
-		if (!inputFields.boardName) {
-			setErrorMessage('Board name is required!');
-			return;
-		}
 		try {
-			if (!workspaceData) {
-				throw new Error('Invalid Workspace ID!');
-			}
 			const res = await fetch(
 				`${import.meta.env.VITE_SERVER_URL}/boards`,
 				{
 					method: 'POST',
 					headers: {
-						'Content-Type': 'application/json',
 						Authorization: `Bearer ${accessToken}`,
+						'Content-Type': 'application/json',
 					},
-					credentials: 'include', // Include credentials (cookies) in the request
 					body: JSON.stringify({
-						name: inputFields.boardName,
-						workspaceId: workspaceData?.id,
-						colleagues: colleagueIds,
+						name: inputValues.boardName,
+						workspaceId: selectedWorkspace.id,
+						colleagues: selectedWorkspace.workspaceUsers
+							.map((colleague) => colleague.id)
+							.filter(
+								(colleagueId) => colleagueId !== userData.id
+							),
 					}),
 				}
 			);
 			const data = await res.json();
-			setBoardData(data);
-			console.log(data);
+			if (data.errorMessage) {
+				throw new Error(data.errorMessage);
+			}
 
-			openBoardView(data.boardId);
+			navigate(`/boards/${data.boardId}`);
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);
 		}
 	};
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setWorkspaceDetailedData(null);
-		setInputFields((prevInputFields) => {
-			if (name === 'workspaceName') {
-				setWorkspaceData(() => {
-					const validWorkspace = accessibleWorkspaces.find(
-						(workspace) => workspace.name === value
-					);
-					if (validWorkspace) {
-						return validWorkspace;
-					}
-					return null;
-				});
-			}
-
-			return {
-				...prevInputFields,
-				[name]: value,
-			};
-		});
-	};
-
-	const openBoardView = (boardId: string) => {
-		navigate(`/boards/${boardId}`);
-	};
-
-	const chooseWorkspace = (workspaceData: IWorkspace) => {
-		setInputFields((prev) => ({
-			...prev,
-			workspaceName: workspaceData.name,
+	const addBoardColleague = (colleague: IUser) => {
+		setSelectedWorkspace((prev) => ({
+			...prev!,
+			workspaceUsers: [...prev!.workspaceUsers, colleague],
 		}));
-		setWorkspaceData(workspaceData);
 	};
 
-	const addWorkspaceColleague = async (colleagueId: number) => {
-		setColleagueIds((prev) => [...prev, colleagueId]);
+	const removeBoardColleague = (colleague: IUser) => {
+		setSelectedWorkspace((prev) => ({
+			...prev!,
+			workspaceUsers: [
+				...prev!.workspaceUsers.filter(
+					(user) => user.id !== colleague.id
+				),
+			],
+		}));
 	};
 
-	const removeWorkspaceColleague = (colleagueId: number) => {
-		setColleagueIds((prev) => [
-			...prev.filter((colId) => colId !== colleagueId),
-		]);
+	const selectWorkspace = (workspace: IDetailedWorkspace) => {
+		setInputValues((prev) => ({ ...prev, workspaceName: workspace.name }));
 	};
 
 	return {
 		state: {
-			boardData,
-			inputFields,
+			inputValues,
 			errorMessage,
-			colleagueIds,
-			disableDeletionFor,
-			workspaceDetailedData,
-			accessibleWorkspaces,
+			workspacesData,
+			selectedWorkspace,
 		},
 		operations: {
 			createBoard,
-			chooseWorkspace,
+			selectWorkspace,
 			handleInputChange,
-			addWorkspaceColleague,
-			removeWorkspaceColleague,
+			addBoardColleague,
+			removeBoardColleague,
 		},
 	};
 };

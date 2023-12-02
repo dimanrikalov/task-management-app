@@ -14,8 +14,8 @@ export interface IUser {
 
 interface IAddColleagueInputProps {
 	title: string;
-	colleagues: IUser[];
 	enableFlex?: boolean;
+	colleagues?: IUser[];
 	addColleagueHandler(colleague: IUser): void;
 	removeColleagueHandler(colleague: IUser): void;
 }
@@ -44,7 +44,7 @@ export const AddColleagueInput = ({
 					},
 					body: JSON.stringify({
 						email: inputValue.trim(),
-						notIn: colleagues.map(colleague => colleague.id)
+						notIn: (colleagues||[]).map(colleague => colleague.id)
 					})
 				});
 				const data = await res.json();
@@ -107,7 +107,7 @@ export const AddColleagueInput = ({
 					mode="users"
 					title={title}
 					removeUser={removeUser}
-					colleagues={[...colleagues]}
+					colleagues={colleagues || []}
 					disableDeletionFor={[userData.id]}
 				/>
 			</div>
