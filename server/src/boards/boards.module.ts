@@ -39,23 +39,26 @@ export class BoardsModule implements NestModule {
             .forRoutes({ path: 'boards', method: RequestMethod.GET });
 
         consumer.apply(AuthMiddleware, BoardCheckMiddleware).forRoutes(
-            { path: 'boards/:boardId/details', method: RequestMethod.GET },
             {
-                path: 'boards/:boardId/colleagues',
-                method: RequestMethod.ALL,
+                path: 'boards/:boardId',
+                method: RequestMethod.DELETE,
             },
             {
                 path: 'boards/:boardId/reorder',
                 method: RequestMethod.PUT,
             },
+            {
+                path: 'boards/:boardId/details',
+                method: RequestMethod.GET,
+            },
+            {
+                path: 'boards/:boardId/colleagues',
+                method: RequestMethod.ALL,
+            },
         );
 
-        consumer.apply(AuthMiddleware, WorkspaceCheckMiddleware).forRoutes(
-            {
-                path: 'boards/:id',
-                method: RequestMethod.DELETE,
-            },
-            { path: 'boards', method: RequestMethod.POST },
-        );
+        consumer
+            .apply(AuthMiddleware, WorkspaceCheckMiddleware)
+            .forRoutes({ path: 'boards', method: RequestMethod.POST });
     }
 }

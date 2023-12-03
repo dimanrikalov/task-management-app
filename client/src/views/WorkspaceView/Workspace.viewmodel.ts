@@ -11,7 +11,7 @@ export enum MODAL_STATES_KEYS {
 	DELETE_WORKSPACE = 'deleteWorkspaceIsOpen',
 }
 
-enum EDIT_COLLEAGUE_METHOD {
+export enum EDIT_COLLEAGUE_METHOD {
 	POST = 'POST',
 	DELETE = 'DELETE',
 }
@@ -54,7 +54,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 		[MODAL_STATES_KEYS.EDIT_COLLEAGUES]: false,
 		[MODAL_STATES_KEYS.DELETE_WORKSPACE]: false,
 	});
-	console.log(workspaceData);
+
 	useEffect(() => {
 		const fetchWorkspace = async () => {
 			try {

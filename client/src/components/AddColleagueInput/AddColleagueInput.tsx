@@ -50,7 +50,7 @@ export const AddColleagueInput = ({
 					})
 				});
 				const data = await res.json();
-				console.log(data);
+
 				setMatches(data);
 			} catch (err: any) {
 				console.log(err.message);

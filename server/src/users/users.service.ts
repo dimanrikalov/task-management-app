@@ -203,7 +203,6 @@ export class UsersService {
         //set the accessToken and refreshToken as cookies
         res.cookie('accessToken', accessToken, {
             maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
-            
         });
 
         res.cookie('refreshToken', refreshToken, {

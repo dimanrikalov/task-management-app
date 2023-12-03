@@ -8,59 +8,70 @@ import { useBoardViewModel } from './Board.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { CreateTaskView } from '../CreateTaskView/CreateTask.view';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
 
-	if (!state.boardData) {
-		return <h1>Loading...</h1>
+	if (!state.boardData || !state.workspaceUsers) {
+		return <LoadingOverlay />
 	}
-
 	return (
+
 		<>
-			{state.isEditBoardUsersModalOpen && (
-				<Modal>
-					<div className={styles.modalContainer}>
-						<RxCross2
-							className={styles.closeBtn}
-							onClick={operations.toggleIsEditBoardUsersModalOpen}
+			{
+				state.isEditBoardUsersModalOpen &&
+				(
+					<Modal>
+						<div className={styles.modalContainer}>
+							<RxCross2
+								className={styles.closeBtn}
+								onClick={operations.toggleIsEditBoardUsersModalOpen}
+							/>
+							<AddColleagueInput
+								enableFlex={true}
+								title="Board users"
+								addColleagueHandler={operations.addWorkspaceColleague}
+								removeColleagueHandler={operations.removeWorkspaceColleague}
+								colleagues={[...state.workspaceUsers, ...state.boardData.boardUsers]}
+								disableDeletionFor={[...state.workspaceUsers.map(user => user.id), state.userData.id]}
+							/>
+						</div>
+					</Modal>
+				)
+			}
+			{
+				state.isDeleteBoardModalOpen &&
+				(
+					<Modal>
+						<div className={styles.modalContainer}>
+							<RxCross2
+								className={styles.closeBtn}
+								onClick={operations.toggleIsDeleteBoardModalOpen}
+							/>
+							<DeleteConfirmation
+								entityName={state.boardData.name}
+								onConfirm={operations.deleteBoard}
+								onCancel={operations.toggleIsDeleteBoardModalOpen}
+							/>
+						</div>
+					</Modal>
+				)
+			}
+			{
+				state.isCreateTaskModalOpen &&
+				(
+					<Modal>
+						<CreateTaskView
+							toggleIsCreateTaskModalOpen={
+								operations.toggleIsCreateTaskModalOpen
+							}
 						/>
-						<AddColleagueInput
-							colleagueIds={state.boardData.boardUserIds}
-							boardMode={false}
-							addColleagueHandler={operations.addBoardColleague}
-							removeColleagueHandler={operations.removeWorkspaceColleague}
-							title="Board users" enableFlex={true}
-						/>
-					</div>
-				</Modal>
-			)}
-			{state.isDeleteBoardModalOpen && (
-				<Modal>
-					<div className={styles.modalContainer}>
-						<RxCross2
-							className={styles.closeBtn}
-							onClick={operations.toggleIsDeleteBoardModalOpen}
-						/>
-						<DeleteConfirmation
-							onCancel={operations.toggleIsDeleteBoardModalOpen}
-							onConfirm={() => { }}
-							entityName="Board Name"
-						/>
-					</div>
-				</Modal>
-			)}
-			{state.isCreateTaskModalOpen && (
-				<Modal>
-					<CreateTaskView
-						toggleIsCreateTaskModalOpen={
-							operations.toggleIsCreateTaskModalOpen
-						}
-					/>
-				</Modal>
-			)}
+					</Modal>
+				)
+			}
 
 			<div className={styles.background}>
 				<Chat
@@ -109,10 +120,12 @@ export const BoardView = () => {
 						</div>
 					</div>
 					<div
-						className={classNames(
-							styles.columnsContainer,
-							state.isChatOpen && styles.squash
-						)}
+						className={
+							classNames(
+								styles.columnsContainer,
+								state.isChatOpen && styles.squash
+							)
+						}
 					>
 						{
 							state.boardData.columns.map(column => <Column key={column.id}
