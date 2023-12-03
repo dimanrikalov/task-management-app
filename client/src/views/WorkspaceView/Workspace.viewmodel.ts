@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { IOutletContext } from '@/guards/authGuard';
+import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
@@ -22,6 +22,7 @@ type IModalStates = {
 
 interface IWorkspaceViewModelState {
 	inputValue: string;
+	userData: IUserData;
 	modals: IModalStates;
 	workspaceData: IDetailedWorkspace | null;
 }
@@ -77,8 +78,8 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 					workspaceUsers: [
 						...data.workspaceUsers,
 						{
+							email: 'Me',
 							id: userData.id,
-							email: userData.email,
 							profileImagePath: userData.profileImagePath,
 						},
 					],
@@ -175,6 +176,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	return {
 		state: {
 			modals,
+			userData,
 			inputValue,
 			workspaceData,
 		},

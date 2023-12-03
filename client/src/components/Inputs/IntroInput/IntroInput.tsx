@@ -19,6 +19,7 @@ interface IIntroInputProps {
 	Icon?: React.FC<IIconProps>;
 	ToggleIcon?: React.FC<IToggleIconProps>;
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
+	onLoad?():any; //fix
 }
 
 export const IntroInput = ({
@@ -26,6 +27,7 @@ export const IntroInput = ({
 	Icon,
 	type,
 	value,
+	onLoad,
 	onChange,
 	ToggleIcon,
 	placeholder,
@@ -57,6 +59,7 @@ export const IntroInput = ({
 				type={type}
 				name={name}
 				value={value}
+				onLoad={onLoad}
 				disabled={disabled}
 				onChange={onChange}
 				className={styles.input}

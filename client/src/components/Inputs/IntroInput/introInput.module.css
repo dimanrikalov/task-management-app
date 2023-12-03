@@ -26,6 +26,10 @@
 	border: 2px solid var(--grey-main);
 }
 
+.input:disabled:hover {
+	cursor: not-allowed;
+}
+
 .paddingLeft {
 	padding-left: 36px;
 }

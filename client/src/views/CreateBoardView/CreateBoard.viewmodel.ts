@@ -27,13 +27,14 @@ interface IDetailedBoard {
 export interface IDetailedWorkspace {
 	id: number;
 	name: string;
-	ownerId: number;
+	workspaceOwner: IUser;
 	workspaceUsers: IUser[];
 	boards: IDetailedBoard[];
 }
 
 interface ICreateBoardViewModelState {
 	errorMessage: string;
+	boardColleagues: IUser[];
 	inputValues: IInputStates;
 	workspacesData: IDetailedWorkspace[];
 	selectedWorkspace: IDetailedWorkspace | null;
@@ -45,6 +46,7 @@ interface ICreateBoardViewModelOperations {
 	selectWorkspace(workspace: IDetailedWorkspace): void;
 	createBoard(e: React.FormEvent<HTMLFormElement>): void;
 	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
+	setInputValues: React.Dispatch<React.SetStateAction<IInputStates>>;
 }
 
 export const useCreateBoardViewModel = (): ViewModelReturnType<
@@ -52,13 +54,14 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	ICreateBoardViewModelOperations
 > => {
 	const navigate = useNavigate();
+	const [selectedWorkspace, setSelectedWorkspace] =
+		useState<IDetailedWorkspace | null>(null);
 	const [errorMessage, setErrorMessage] = useState<string>('');
+	const [boardColleagues, setBoardColleagues] = useState<IUser[]>([]);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [workspacesData, setWorkspacesData] = useState<IDetailedWorkspace[]>(
 		[]
 	);
-	const [selectedWorkspace, setSelectedWorkspace] =
-		useState<IDetailedWorkspace | null>(null);
 	const [inputValues, setInputValues] = useState<IInputStates>({
 		[INPUT_STATES_KEYS.BOARD_NAME]: '',
 		[INPUT_STATES_KEYS.WORKSPACE_NAME]: '',
@@ -86,39 +89,53 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 						inputValues.workspaceName.trim().toLowerCase()
 				);
 
-				if (matchingWorkspace) {
-					const getSelectedWorkspaceDetails =
-						async (): Promise<IDetailedWorkspace> => {
-							const res = await fetch(
-								`${
-									import.meta.env.VITE_SERVER_URL
-								}/workspaces/${matchingWorkspace.id}/details`,
-								{
-									method: 'GET',
-									headers: {
-										'Content-Type': 'application/json',
-										Authorization: `Bearer ${accessToken}`,
-									},
-								}
-							);
-							return (await res.json()) as IDetailedWorkspace;
-						};
-
-					const detailedWorkspace =
-						await getSelectedWorkspaceDetails();
-					setSelectedWorkspace({
-						...detailedWorkspace,
-						workspaceUsers: [
-							...detailedWorkspace.workspaceUsers,
-							{
-								id: userData.id,
-								email: userData.email,
-								profileImagePath: userData.profileImagePath,
-							},
-						],
-					});
+				if (!matchingWorkspace) {
+					setSelectedWorkspace(null);
 					return;
 				}
+
+				const getSelectedWorkspaceDetails =
+					async (): Promise<IDetailedWorkspace> => {
+						const res = await fetch(
+							`${import.meta.env.VITE_SERVER_URL}/workspaces/${
+								matchingWorkspace.id
+							}/details`,
+							{
+								method: 'GET',
+								headers: {
+									'Content-Type': 'application/json',
+									Authorization: `Bearer ${accessToken}`,
+								},
+							}
+						);
+						return (await res.json()) as IDetailedWorkspace;
+					};
+
+				const detailedWorkspace = await getSelectedWorkspaceDetails();
+
+				const workspaceUsers = [
+					...detailedWorkspace.workspaceUsers,
+					{
+						email: 'Me',
+						id: userData.id,
+						profileImagePath: userData.profileImagePath,
+					},
+				];
+
+				if (
+					!workspaceUsers.some(
+						(x) => detailedWorkspace.workspaceOwner.id === x.id
+					)
+				) {
+					workspaceUsers.push(detailedWorkspace.workspaceOwner);
+				}
+
+				setSelectedWorkspace({
+					...detailedWorkspace,
+					workspaceUsers,
+				});
+
+				return;
 			} catch (err: any) {
 				console.log(err.message);
 			}
@@ -143,7 +160,20 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 		e.preventDefault();
 		console.log(selectedWorkspace);
 		setErrorMessage('');
-		if (!selectedWorkspace) return;
+		if (!selectedWorkspace) {
+			setErrorMessage('Workspace is required!');
+			return;
+		}
+
+		if (!inputValues.boardName) {
+			setErrorMessage('Board name is required!');
+			return;
+		}
+
+		if (inputValues.boardName.length < 2) {
+			setErrorMessage('Board name must be at least 2 characters long!');
+			return;
+		}
 
 		try {
 			const res = await fetch(
@@ -157,7 +187,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 					body: JSON.stringify({
 						name: inputValues.boardName,
 						workspaceId: selectedWorkspace.id,
-						colleagues: selectedWorkspace.workspaceUsers
+						colleagues: boardColleagues
 							.map((colleague) => colleague.id)
 							.filter(
 								(colleagueId) => colleagueId !== userData.id
@@ -178,21 +208,13 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	};
 
 	const addBoardColleague = (colleague: IUser) => {
-		setSelectedWorkspace((prev) => ({
-			...prev!,
-			workspaceUsers: [...prev!.workspaceUsers, colleague],
-		}));
+		setBoardColleagues((prev) => [...prev, colleague]);
 	};
 
 	const removeBoardColleague = (colleague: IUser) => {
-		setSelectedWorkspace((prev) => ({
-			...prev!,
-			workspaceUsers: [
-				...prev!.workspaceUsers.filter(
-					(user) => user.id !== colleague.id
-				),
-			],
-		}));
+		setBoardColleagues((prev) => [
+			...prev.filter((col) => col.id !== colleague.id),
+		]);
 	};
 
 	const selectWorkspace = (workspace: IDetailedWorkspace) => {
@@ -204,10 +226,12 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 			inputValues,
 			errorMessage,
 			workspacesData,
+			boardColleagues,
 			selectedWorkspace,
 		},
 		operations: {
 			createBoard,
+			setInputValues,
 			selectWorkspace,
 			handleInputChange,
 			addBoardColleague,

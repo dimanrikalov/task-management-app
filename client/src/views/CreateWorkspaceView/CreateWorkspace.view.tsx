@@ -62,6 +62,7 @@ export const CreateWorkspaceView = ({
 					<AddColleagueInput
 						colleagues={state.colleagues}
 						title={'Workspace users list'}
+						disableDeletionFor={[state.userData.id]}
 						addColleagueHandler={operations.addToColleaguesToAdd}
 						removeColleagueHandler={operations.removeFromColleaguesToAdd}
 					/>

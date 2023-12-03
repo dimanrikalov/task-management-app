@@ -5,9 +5,10 @@ import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 interface ICreateWorkspaceState {
+	userData: IUser;
 	inputValue: string;
-	errorMessage: string;
 	colleagues: IUser[];
+	errorMessage: string;
 }
 
 interface ICreateWorkspaceOperations {
@@ -61,8 +62,10 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 					body: JSON.stringify({
 						name: inputValue,
 						colleagues: colleagues
-							.filter((colleague) => colleague.id !== userData.id)
-							.map((colleague) => colleague.id),
+							.map((colleague) => colleague.id)
+							.filter(
+								(colleagueId) => colleagueId !== userData.id
+							),
 					}),
 				}
 			);
@@ -101,6 +104,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 
 	return {
 		state: {
+			userData,
 			inputValue,
 			colleagues,
 			errorMessage,

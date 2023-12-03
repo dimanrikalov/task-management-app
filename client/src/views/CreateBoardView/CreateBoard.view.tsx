@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import classNames from 'classnames';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createBoard.module.css';
@@ -9,15 +10,32 @@ import { WorkspaceInput } from '@/components/WorkspaceInput/WorkspaceInput';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 
 interface ICreateBoardView {
+	inputValue?: string;
 	closeBtnHandler(): void;
 }
 
-export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
+export const CreateBoardView = ({
+	inputValue,
+	closeBtnHandler,
+}: ICreateBoardView) => {
 	const { state, operations } = useCreateBoardViewModel();
+
+	useEffect(() => {
+		if (!inputValue) return
+		operations.setInputValues(
+			(prev) => ({
+				...prev,
+				workspaceName: inputValue
+			})
+		);
+	}, []);
 
 	return (
 		<div className={styles.backgroundWrapper}>
-			<RxCross2 className={styles.closeBtn} onClick={closeBtnHandler} />
+			<RxCross2
+				onClick={closeBtnHandler}
+				className={styles.closeBtn}
+			/>
 			<div className={styles.background}>
 				<div className={styles.leftSide}>
 					<div className={styles.introMessage}>
@@ -44,6 +62,7 @@ export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 								}
 							</div>
 							<WorkspaceInput
+								disabled={!!inputValue}
 								onChange={operations.handleInputChange}
 								value={state.inputValues.workspaceName}
 								accessibleWorkspaces={state.workspacesData}
@@ -81,7 +100,10 @@ export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 						(
 							(
 								!state.selectedWorkspace ||
-								state.selectedWorkspace.name.toLowerCase().trim() === 'personal workspace'
+								state.selectedWorkspace
+									.name
+									.toLowerCase()
+									.trim() === 'personal workspace'
 							)
 						) && styles.hidden
 					)}>
@@ -89,14 +111,21 @@ export const CreateBoardView = ({ closeBtnHandler }: ICreateBoardView) => {
 							<AddColleagueInput
 								title={'Board users list'}
 								addColleagueHandler={operations.addBoardColleague}
-								colleagues={state.selectedWorkspace?.workspaceUsers}
 								removeColleagueHandler={operations.removeBoardColleague}
+								colleagues={
+									[
+										...state.selectedWorkspace?.workspaceUsers || [],
+										...state.boardColleagues
+									]
+								}
+								disableDeletionFor={
+									state.selectedWorkspace?.
+										workspaceUsers.map(colleague => colleague.id)
+								}
 							/>
 						}
 					</div>
 				</div>
-
-
 			</div>
 		</div>
 	);

@@ -89,12 +89,27 @@ export class WorkspacesService {
             });
 
         const workspaceUsers = workspaceUsersResult.map((user) => user.User);
+        const workspaceOwner = await this.prismaService.user.findUnique({
+            where: {
+                id: body.workspaceData.ownerId,
+            },
+            select: {
+                id: true,
+                email: true,
+                profileImagePath: true,
+            },
+        });
 
-        return {
+        const data = {
             ...body.workspaceData,
             boards: workspaceBoards,
             workspaceUsers,
+            workspaceOwner,
         };
+
+        delete data.ownerId;
+
+        return data;
     }
 
     async create(body: CreateWorkspaceDto): Promise<IWorkspace> {

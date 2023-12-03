@@ -26,7 +26,7 @@ export const WorkspaceView = () => {
 					<Modal
 						children={
 							<CreateBoardView
-								workspaceData={state.workspaceData}
+								inputValue={state.workspaceData.name}
 								closeBtnHandler={
 									() =>
 										operations.toggleModal(MODAL_STATES_KEYS.CREATE_BOARD)
@@ -53,6 +53,7 @@ export const WorkspaceView = () => {
 									colleagues={state.workspaceData.workspaceUsers}
 									addColleagueHandler={operations.addWorkspaceColleague}
 									removeColleagueHandler={operations.removeWorkspaceColleague}
+									disableDeletionFor={[state.workspaceData.workspaceOwner.id, state.userData.id]}
 								/>
 							</div>
 						}
@@ -126,7 +127,7 @@ export const WorkspaceView = () => {
 					<button
 						className={styles.addButton}
 						onClick={
-							() => operations.toggleModal('createBoard')
+							() => operations.toggleModal(MODAL_STATES_KEYS.CREATE_BOARD)
 						}
 					>
 						<TiDocumentAdd className={styles.icon} />
