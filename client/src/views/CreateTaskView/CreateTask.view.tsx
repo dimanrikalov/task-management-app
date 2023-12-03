@@ -1,19 +1,33 @@
+import classNames from 'classnames';
 import { IoAdd } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
+import { FaXmark } from 'react-icons/fa6';
 import styles from './createTaskView.module.css';
+import { useCreateTaskViewModel } from './CreateTask.viewmodel';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { ListContainer } from '@/components/ListContainer/ListContainer';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { useNavigate } from 'react-router-dom';
 
 interface ICreateTaskViewProps {
+	boardId: number;
+	columnId: number;
+	boardUsers: IUser[],
 	toggleIsCreateTaskModalOpen(): void;
 }
 
 export const CreateTaskView = ({
+	boardId,
+	columnId,
+	boardUsers,
 	toggleIsCreateTaskModalOpen,
 }: ICreateTaskViewProps) => {
+	const navigate = useNavigate();
+	const { state, operations } = useCreateTaskViewModel(boardUsers);
+
 	return (
 		<div className={styles.backgroundWrapper}>
 			<div className={styles.background}>
@@ -36,57 +50,103 @@ export const CreateTaskView = ({
 
 						<div className={styles.stepOne}>
 							<h2>Name your task</h2>
+
 							<ErrorMessage
-								message="Task name is taken!"
 								fontSize={16}
+								message={state.errorMessage || ''}
 							/>
+
 							<IntroInput
-								name="name-input"
-								onChange={() => {}}
-								placeholder="Enter task name"
+								name="name"
 								type="text"
-								value=""
+								placeholder="Enter task name"
+								value={state.inputValues.name}
+								onChange={operations.handleInputChange}
 							/>
 						</div>
 
 						<div className={styles.stepTwo}>
 							<h2>Add description</h2>
 							<textarea
-								className={styles.textArea}
-								name="description-input"
 								rows={10}
+								name="description"
+								className={styles.textArea}
 								placeholder="Enter task description"
+								value={state.inputValues.description}
+								onChange={operations.handleInputChange}
 							/>
 						</div>
 					</div>
 
 					<div className={styles.middle}>
-						<div className={styles.taskImageContainer}>
-							<img
-								className={styles.taskImg}
-								src="/imgs/intro-img-compressed.webp"
-								alt="task-img"
-							/>
+						<label
+							className={styles.imgInput}
+							htmlFor={'image'}
+						>
+							<div className={styles.imgContainer}>
+								<img
+									src={
+										state.taskImagePath ?
+											state.taskImagePath :
+											'/imgs/profile-img.jpeg'
+									}
+									alt="profile-img"
+									className={styles.previewImage}
+								/>
+							</div>
+						</label>
+
+						<input
+							type="file"
+							name='image'
+							id='image'
+							className={styles.fileInput}
+							disabled={!!state.inputValues.image}
+							onChange={operations.changeTaskImage}
+							accept="image/png, image/jpg, image/gif, image/jpeg"
+						/>
+						<div className={styles.imgOperationsContainer}>
+
+							<button
+								className={styles.imgBtn}
+								onClick={operations.clearTaskImage}
+								disabled={!state.inputValues.image}
+							>
+								<FaXmark
+									className={classNames(
+										styles.resetBtn,
+										styles.imgOperationBtn,
+										!state.inputValues.image && styles.disabled
+									)}
+								/>
+							</button>
 						</div>
-						<IntroButton message={'Upload Image'} />
 						<div className={styles.priority}>
 							<h3 className={styles.fieldTitle}>Priority:</h3>
-							<select className={styles.select}>
-								<option value="none">None</option>
-								<option value="low">Low</option>
-								<option value="medium">Medium</option>
-								<option value="high">High</option>
+							<select
+								name='priority'
+								className={styles.select}
+								onChange={operations.handleInputChange}
+								value={state.inputValues.priority}
+							>
+								<option value={1}>Low</option>
+								<option value={2}>Medium</option>
+								<option value={3}>High</option>
 							</select>
 						</div>
 						<div className={styles.effort}>
 							<h3 className={styles.fieldTitle}>Effort:</h3>
-							<select className={styles.select}>
-								<option value="none">None</option>
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
+							<select
+								name='effort'
+								className={styles.select}
+								value={state.inputValues.effort}
+								onChange={operations.handleInputChange}
+							>
+								<option value={1}>1</option>
+								<option value={2}>2</option>
+								<option value={3}>3</option>
+								<option value={4}>4</option>
+								<option value={5}>5</option>
 							</select>
 						</div>
 
@@ -97,20 +157,26 @@ export const CreateTaskView = ({
 							<div className={styles.rightSide}>
 								<div className={styles.inputDiv}>
 									<input
-										type="number"
 										min={0}
+										type="number"
 										placeholder="1"
+										name='estimatedHours'
 										className={styles.numberInput}
+										onChange={operations.handleInputChange}
+										value={state.inputValues.estimatedHours}
 									/>
 									<p>h</p>
 								</div>
 								<div className={styles.inputDiv}>
 									<input
-										type="number"
-										max={59}
 										min={0}
+										max={59}
+										type="number"
 										placeholder="45"
+										name='estimatedMinutes'
 										className={styles.numberInput}
+										onChange={operations.handleInputChange}
+										value={state.inputValues.estimatedMinutes}
 									/>
 									<p>m</p>
 								</div>
@@ -121,20 +187,26 @@ export const CreateTaskView = ({
 							<div className={styles.rightSide}>
 								<div className={styles.inputDiv}>
 									<input
-										type="number"
 										min={0}
+										type="number"
 										placeholder="1"
+										name='spentHours'
 										className={styles.numberInput}
+										value={state.inputValues.spentHours}
+										onChange={operations.handleInputChange}
 									/>
 									<p>h</p>
 								</div>
 								<div className={styles.inputDiv}>
 									<input
-										type="number"
-										max={59}
 										min={0}
+										max={59}
+										type="number"
 										placeholder="45"
+										name='spentMinutes'
 										className={styles.numberInput}
+										value={state.inputValues.spentMinutes}
+										onChange={operations.handleInputChange}
 									/>
 									<p>m</p>
 								</div>
@@ -142,38 +214,58 @@ export const CreateTaskView = ({
 						</div>
 					</div>
 					<div className={styles.right}>
+						<div className={styles.assigneeInput}>
+							<h2>Choose assignee</h2>
+							<EmailInput
+								isLoading={false}
+								matches={state.matches}
+								addUser={operations.selectAssignee}
+								inputValue={state.inputValues.email}
+								onChange={operations.handleInputChange}
+							/>
+						</div>
 						<div className={styles.stepContainer}>
 							<div className={styles.addSteps}>
 								<h2>Add steps</h2>
 								<div className={styles.stepInputDiv}>
 									<IntroInput
-										value=""
 										type="text"
-										name="step-name"
-										onChange={() => {}}
+										name='step'
 										placeholder="Take a nap"
+										value={state.inputValues.step}
+										onChange={operations.handleInputChange}
 									/>
 
 									<IoAdd
-										onClick={() => {}}
-										className={styles.addStepBtn}
+										className={
+											classNames(
+												styles.addStepBtn,
+												!state.inputValues.step && styles.disabled
+											)
+										}
+										onClick={state.inputValues.step ? operations.addStep : () => { }}
 									/>
 								</div>
 							</div>
-							<ListContainer title="Steps" mode="steps" />
-						</div>
-						<div className={styles.assigneeInput}>
-							<h2>Choose assignee</h2>
-							<EmailInput
-								inputValue=""
-								onChange={() => {}}
-								results={[]}
+							<ListContainer
+								mode="steps"
+								title=""
+								colleagues={state.steps}
+								disableDeletionFor={[]}
+								removeUser={operations.removeStep}
+								toggleStatus={operations.toggleStatus}
 							/>
-							<h3 className={styles.progress}>
-								Overall completion: 75%
-							</h3>
-							<IntroButton message="Add Task" />
 						</div>
+						<h3 className={styles.progress}>
+							Overall completion: {state.progress}%
+						</h3>
+						<IntroButton
+							message="Add Task"
+							onClick={() => {
+								operations.createTask(columnId);
+								navigate(`/boards/${boardId}`, {replace: true});
+							}}
+						/>
 					</div>
 				</div>
 			</div>

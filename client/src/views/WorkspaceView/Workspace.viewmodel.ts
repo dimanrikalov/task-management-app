@@ -76,12 +76,12 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 				setWorkspaceData({
 					...data,
 					workspaceUsers: [
-						...data.workspaceUsers,
 						{
 							email: 'Me',
 							id: userData.id,
 							profileImagePath: userData.profileImagePath,
 						},
+						...data.workspaceUsers,
 					],
 				});
 				setRefreshWorkspace(false);

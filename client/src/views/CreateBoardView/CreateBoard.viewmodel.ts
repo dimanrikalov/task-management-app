@@ -114,12 +114,12 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 				const detailedWorkspace = await getSelectedWorkspaceDetails();
 
 				const workspaceUsers = [
-					...detailedWorkspace.workspaceUsers,
 					{
 						email: 'Me',
 						id: userData.id,
 						profileImagePath: userData.profileImagePath,
 					},
+					...detailedWorkspace.workspaceUsers,
 				];
 
 				if (

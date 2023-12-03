@@ -1,47 +1,49 @@
 import styles from './task.module.css';
 import { FaCheck } from 'react-icons/fa';
+import { IStep } from '@/views/CreateTaskView/CreateTask.viewmodel';
 
-type TPriority = 'Low' | 'Medium' | 'High';
-
-export interface ITaskProps {
-	title: string;
-	taskImg?: string;
-	priority: TPriority;
-	stepsComplete: number;
-	totalSteps: number;
-	asigneeImg: string;
+enum PRIORITY {
+	'Low',
+	'Medium',
+	'High'
 }
 
-export const Task = ({
-	title,
-	taskImg,
-	priority,
-	totalSteps,
-	asigneeImg,
-	stepsComplete,
-}: ITaskProps) => {
+export interface ITask {
+	id: number;
+	steps: IStep[];
+	title: string;
+	progress: number;
+	priority: PRIORITY;
+	attachmentImgPath: string
+
+}
+
+export const Task = ({ task }: { task: ITask }) => {
 	return (
 		<div className={styles.background}>
-			{taskImg && (
+			{task.attachmentImgPath && (
 				<div className={styles.taskImg}>
-					<img src={taskImg} alt="task-img" />
+					<img src={task.attachmentImgPath} alt="task-img" />
 				</div>
 			)}
 			<h4 className={styles.title}>
-				{title}
+				{task.title}
 			</h4>
 			<div className={styles.footer}>
-				<h5>Priority: {priority}</h5>
+				<h5>Priority: {PRIORITY[task.priority - 1]}</h5>
 				<div className={styles.rightSide}>
-				<div className={styles.completedSteps}>
-					<FaCheck className={styles.icon} />
-					<h5>
-						{stepsComplete}/{totalSteps}
-					</h5>
-				</div>
-				<div className={styles.userImg}>
-					<img src={asigneeImg} alt="profile-img" />
-				</div>
+					<div className={styles.completedSteps}>
+						<FaCheck className={styles.icon} />
+						<h5>
+							{task.progress}%
+						</h5>
+					</div>
+					<div className={styles.userImg}>
+						<img
+							alt="profile-img"
+							src={'/imgs/profile-img.jpeg'}
+						/>
+					</div>
 				</div>
 			</div>
 		</div>

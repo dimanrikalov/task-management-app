@@ -4,6 +4,7 @@
 	height: 100%;
 	display: flex;
 	min-width: 300px;
+	max-width: 300px;
 	padding-top: 18px;
 	border-radius: 16px;
 	align-items: center;

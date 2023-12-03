@@ -85,26 +85,79 @@ select:focus,
 /* middle part */
 
 .middle {
+	gap: 32px;
 	display: flex;
 	flex-direction: column;
-	gap: 32px;
+	justify-content: space-between;
 }
 
-.taskImageContainer {
+.imgContainer {
 	width: 100%;
 	height: 256px;
 	display: flex;
-	justify-content: center;
-	align-items: center;
-	border-radius: 16px;
 	overflow: hidden;
-	border: 2px solid var(--grey-main);
+	align-items: center;
+	border-radius: 12px;
+	justify-content: center;
+	border: 2px solid var(--blue-main);
 }
 
-.taskImg {
+.previewImage {
 	width: 100%;
 	height: 100%;
-	object-fit: contain;
+	object-fit: cover;
+}
+
+.imgInput {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border: none;
+	cursor: pointer;
+}
+
+.fileInput {
+	display: none;
+}
+
+.imgBtn {
+	width: 100%;
+	border: none;
+	background: none;
+}
+
+.imgOperationsContainer {
+	gap: 32px;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+
+.imgOperationBtn {
+	font-size: 38px;
+	width: 100%;
+	transition: 200ms ease-in-out;
+	cursor: pointer;
+	border-radius: 9px;
+	padding: 8px;
+}
+
+.submitBtn {
+	color: var(--white-main);
+	background-color: green;
+}
+.resetBtn {
+	color: var(--white-main);
+	background-color: red;
+}
+
+.disabled:first-of-type,
+.disabled:last-of-type {
+	cursor: default;
+	background-color: grey;
+	border-color: grey;
+	cursor: not-allowed;
 }
 
 .priority,
@@ -160,7 +213,7 @@ select:focus,
 .stepContainer {
 	display: flex;
 	flex-direction: column;
-	gap: 32px;
+	justify-content: space-between;
 }
 
 .addSteps {
@@ -208,7 +261,7 @@ select:focus,
 
 .progress {
 	align-self: center;
-	font-size: 21px;
+	font-size: 24px;
 }
 
 @media screen and (max-width: 1170px) {

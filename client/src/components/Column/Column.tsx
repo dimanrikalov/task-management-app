@@ -1,35 +1,30 @@
 import styles from './column.module.css';
-import { ITaskProps, Task } from '../Task/Task';
+import { ITask, Task } from '../Task/Task';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 
 interface IColumnProps {
+	id: number;
 	title: string;
-	onClick(): void;
-	tasks?: ITaskProps[];
+	tasks: ITask[];
+	onClick(columnId: number): void;
 }
 
-export const Column = ({ title, onClick, tasks }: IColumnProps) => {
+export const Column = ({ id, title, onClick, tasks }: IColumnProps) => {
 	return (
 		<div className={styles.background}>
 			<h2 className={styles.title}>{title}</h2>
 			<div className={styles.tasksContainer}>
 				{tasks &&
-					tasks.map((task, i) => (
+					tasks.map((task) => (
 						<Task
-							title={task.title}
-							priority={task.priority}
-							totalSteps={task.totalSteps}
-							asigneeImg={task.asigneeImg}
-							stepsComplete={task.stepsComplete}
-							taskImg={
-								i % 2 == 0 ? '/imgs/home-img.png' : undefined
-							}
+							key={task.id}
+							task={task}
 						/>
 					))}
 
 				<IntroButton
-					onClick={onClick}
 					message={'Add task'}
+					onClick={() => onClick(id)}
 				/>
 
 			</div>

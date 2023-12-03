@@ -65,9 +65,12 @@ export const BoardView = () => {
 				(
 					<Modal>
 						<CreateTaskView
+							boardId={state.boardData.id}
+							columnId={state.selectedColumnId}
 							toggleIsCreateTaskModalOpen={
-								operations.toggleIsCreateTaskModalOpen
+								() => operations.toggleIsCreateTaskModalOpen(-1)
 							}
+							boardUsers={[...state.workspaceUsers, ...state.boardData.boardUsers]}
 						/>
 					</Modal>
 				)
@@ -128,11 +131,15 @@ export const BoardView = () => {
 						}
 					>
 						{
-							state.boardData.columns.map(column => <Column key={column.id}
-								title={column.name}
-								tasks={column.tasks}
-								onClick={operations.toggleIsCreateTaskModalOpen}
-							/>)
+							state.boardData.columns.map(column =>
+								<Column
+									id={column.id}
+									key={column.id}
+									title={column.name}
+									tasks={column.tasks}
+									onClick={operations.toggleIsCreateTaskModalOpen}
+								/>
+							)
 
 						}
 

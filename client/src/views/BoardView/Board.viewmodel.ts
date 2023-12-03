@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ITaskProps } from '@/components/Task/Task';
+import { ITask } from '@/components/Task/Task';
 import { IOutletContext } from '@/guards/authGuard';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
@@ -10,9 +10,9 @@ import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 interface IColumn {
 	id: number;
 	name: string;
-	position: number;
+	tasks: ITask[];
 	boardId: number;
-	tasks: ITaskProps[];
+	position: number;
 }
 
 interface IBoardData {
@@ -27,6 +27,7 @@ interface IBoardViewModelState {
 	userData: IUser;
 	isChatOpen: boolean;
 	workspaceUsers: IUser[];
+	selectedColumnId: number;
 	boardData: IBoardData | null;
 	isCreateTaskModalOpen: boolean;
 	isDeleteBoardModalOpen: boolean;
@@ -37,11 +38,11 @@ interface IBoardViewModelOperations {
 	goBack(): void;
 	deleteBoard(): void;
 	toggleIsChatOpen(): void;
-	toggleIsCreateTaskModalOpen(): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
 	addWorkspaceColleague(colleague: IUser): void;
 	removeWorkspaceColleague(colleague: IUser): void;
+	toggleIsCreateTaskModalOpen(columnId: number): void;
 }
 
 export const useBoardViewModel = (): ViewModelReturnType<
@@ -56,16 +57,11 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
+	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
 	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
 		useState(false);
-
-	// useEffect(() => {
-	// 	// console.log('workapceUsers', workspaceUsers);
-	// 	console.log('boardUsers', boardData?.boardUsers);
-	// 	console.log(workspaceUsers.map((user) => user.id));
-	// }, [workspaceUsers, boardData]);
 
 	useEffect(() => {
 		const fetchBoardData = async () => {
@@ -81,7 +77,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 							'Content-Type': 'application/json',
 							Authorization: `Bearer ${accessToken}`,
 						},
-						credentials: 'include', // Include credentials (cookies) in the request
+						credentials: 'include',
 					}
 				);
 				const boardData = (await boardRes.json()) as IBoardData;
@@ -102,12 +98,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					(await workpsaceRes.json()) as IDetailedWorkspace;
 
 				const workspaceUsers = [
-					...workspaceData.workspaceUsers,
 					{
 						email: 'Me',
 						id: userData.id,
 						profileImagePath: userData.profileImagePath,
 					},
+					...workspaceData.workspaceUsers,
 				];
 
 				if (
@@ -124,7 +120,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 							(workspaceUser) => workspaceUser.id === boardUser.id
 						)
 				);
-
+				console.log(boardData);
 				//set data
 				setWorkspaceUsers(workspaceUsers);
 				setBoardData({
@@ -150,8 +146,14 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		setIsChatOpen((prev) => !prev);
 	};
 
-	const toggleIsCreateTaskModalOpen = () => {
-		setIsCreateTaskModalOpen((prev) => !prev);
+	const toggleIsCreateTaskModalOpen = (columnId: number) => {
+		setIsCreateTaskModalOpen((prev) => {
+			if (!prev === true) {
+				setSelectedColumnId(columnId);
+			}
+
+			return !prev;
+		});
 	};
 
 	const toggleIsDeleteBoardModalOpen = () => {
@@ -225,6 +227,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			boardData,
 			isChatOpen,
 			workspaceUsers,
+			selectedColumnId,
 			isCreateTaskModalOpen,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,

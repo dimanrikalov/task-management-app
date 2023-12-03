@@ -39,8 +39,8 @@ export const EmailInput = ({
 								matches.map((match) =>
 									<UserEntry
 										key={match.id}
-										email={match.email}
 										showBtn={false}
+										email={match.email}
 										addHandler={() => addUser(match)}
 									/>
 								)

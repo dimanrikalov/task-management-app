@@ -9,14 +9,14 @@ export class BoardCheckMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
-            if (!req.params.boardId) {
+            if (!req.params.boardId && !req.body.boardId) {
                 throw new Error('Board ID is required!');
             }
 
             //check if the board exists
             const board = await this.prismaService.board.findFirst({
                 where: {
-                    id: Number(req.params.boardId),
+                    id: Number(req.params.boardId || req.body.boardId),
                 },
             });
             if (!board) {
@@ -61,8 +61,8 @@ export class BoardCheckMiddleware implements NestMiddleware {
                 !!(await this.prismaService.user_Board.findFirst({
                     where: {
                         AND: [
+                            { boardId: board.id },
                             { userId: req.body.userData.id },
-                            { boardId: Number(req.params.boardId) },
                         ],
                     },
                 }));
