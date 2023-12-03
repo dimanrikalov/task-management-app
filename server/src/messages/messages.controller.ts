@@ -1,6 +1,6 @@
 import { Response } from 'express';
+import { BaseMessagesDto } from './dtos/base.dto';
 import { MessagesService } from './messages.service';
-import { IBoard } from 'src/boards/boards.interfaces';
 import { CreateMessageDto } from './dtos/createMessage.dto';
 import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 
@@ -9,10 +9,13 @@ export class MessagesController {
     constructor(private readonly messagesService: MessagesService) {}
 
     @Get('/:boardId/messages')
-    async getBoardMessages(@Res() res: Response, @Body() body: IBoard) {
+    async getBoardMessages(
+        @Res() res: Response,
+        @Body() body: BaseMessagesDto,
+    ) {
         try {
             const messages = await this.messagesService.getAllByBoardId(
-                body.id,
+                body.boardData.id,
             );
             return res.status(200).json(messages);
         } catch (err: any) {

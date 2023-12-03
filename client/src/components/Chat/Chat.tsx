@@ -33,31 +33,33 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 	const [refetchMessages, setRefetchMessages] = useState<boolean>(true);
 
 	useEffect(() => {
+		console.log(boardId);
+		const getChatMessages = async () => {
+			try {
+				const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/boards/${boardId}/messages`, {
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						'Content-Type': 'application/json',
+
+					}
+				});
+
+				const data = await res.json();
+
+				console.log(data);
+				setChatMessages(data);
+			} catch (err: any) {
+				console.log(err.message);
+			}
+		}
+
+
 		if (refetchMessages) {
 			getChatMessages();
 			setRefetchMessages(false);
 		}
 	}, [refetchMessages]);
-
-	const getChatMessages = async () => {
-		try {
-			const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/boards/${boardId}/messages`, {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					'Content-Type': 'application/json',
-
-				}
-			});
-
-			const data = await res.json();
-
-			console.log(data);
-			setChatMessages(data);
-		} catch (err: any) {
-			console.log(err.message);
-		}
-	}
 
 
 	const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
