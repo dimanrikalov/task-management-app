@@ -17,8 +17,8 @@ export const Column = ({ id, title, onClick, tasks }: IColumnProps) => {
 				{tasks &&
 					tasks.map((task) => (
 						<Task
-							key={task.id}
 							task={task}
+							key={task.id}
 						/>
 					))}
 

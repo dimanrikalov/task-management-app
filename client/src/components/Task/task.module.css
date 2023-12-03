@@ -16,6 +16,10 @@
 	cursor: grab;
 }
 
+.background:active {
+	cursor: grabbing;
+}
+
 .taskImg {
 	border-radius: 16px;
 	overflow: hidden;
@@ -38,9 +42,9 @@
 }
 
 .rightSide {
-   display: flex;
-   justify-content: space-between;
-   gap: 16px;
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
 }
 
 .completedSteps {
