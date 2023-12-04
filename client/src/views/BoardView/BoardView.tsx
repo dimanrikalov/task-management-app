@@ -70,7 +70,7 @@ export const BoardView = () => {
 							toggleIsCreateTaskModalOpen={
 								() => operations.toggleIsCreateTaskModalOpen(-1)
 							}
-							boardUsers={[...state.workspaceUsers, ...state.boardData.boardUsers]}
+							boardUsers={[...state.boardData.boardUsers]}
 						/>
 					</Modal>
 				)

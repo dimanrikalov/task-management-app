@@ -87,7 +87,14 @@ export const useCreateTaskViewModel = (
 		}
 
 		setAssigneeId(null);
-		setMatches(boardUsers);
+		setMatches(
+			boardUsers.filter((user) =>
+				user.email
+					.trim()
+					.toLowerCase()
+					.includes(inputValues.email.trim().toLowerCase())
+			)
+		);
 	}, [inputValues.email]);
 
 	useEffect(() => {
@@ -205,6 +212,7 @@ export const useCreateTaskViewModel = (
 						assigneeId,
 						title: inputValues.name,
 						attachmentImgPath: taskImagePath,
+						description: inputValues.description,
 						effort: Number(inputValues.effort) || 1,
 						priority: Number(inputValues.priority) || 1,
 						hoursSpent: Number(inputValues.spentHours) || 0,
