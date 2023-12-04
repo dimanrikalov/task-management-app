@@ -73,17 +73,26 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 
 				const data = (await res.json()) as IDetailedWorkspace;
 
+				let workspaceUsers = [
+					data.workspaceOwner,
+					...data.workspaceUsers,
+				];
+
+				workspaceUsers = workspaceUsers.filter(
+					(user) => user.id !== userData.id
+				);
+
+				workspaceUsers.unshift({
+					email: 'Me',
+					id: userData.id,
+					profileImagePath: userData.profileImagePath,
+				});
+
 				setWorkspaceData({
 					...data,
-					workspaceUsers: [
-						{
-							email: 'Me',
-							id: userData.id,
-							profileImagePath: userData.profileImagePath,
-						},
-						...data.workspaceUsers,
-					],
+					workspaceUsers,
 				});
+				
 				setRefreshWorkspace(false);
 			} catch (err: any) {
 				console.log(err.message);

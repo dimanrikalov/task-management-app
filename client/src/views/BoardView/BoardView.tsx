@@ -33,10 +33,10 @@ export const BoardView = () => {
 							<AddColleagueInput
 								enableFlex={true}
 								title="Board users"
+								colleagues={state.boardData.boardUsers}
 								addColleagueHandler={operations.addWorkspaceColleague}
 								removeColleagueHandler={operations.removeWorkspaceColleague}
-								colleagues={[...state.workspaceUsers, ...state.boardData.boardUsers]}
-								disableDeletionFor={[...state.workspaceUsers.map(user => user.id), state.userData.id]}
+								disableDeletionFor={state.workspaceUsers.map(user => user.id)}
 							/>
 						</div>
 					</Modal>

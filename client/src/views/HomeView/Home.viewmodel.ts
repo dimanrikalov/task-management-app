@@ -111,6 +111,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 			boards: [...lists.boards],
 			workspaces: [...lists.workspaces],
 		}));
+		console.log(lists);
 	}, [lists]);
 
 	useEffect(() => {

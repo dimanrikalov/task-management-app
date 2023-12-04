@@ -111,27 +111,25 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 						return (await res.json()) as IDetailedWorkspace;
 					};
 
-				const detailedWorkspace = await getSelectedWorkspaceDetails();
+				const data = await getSelectedWorkspaceDetails();
 
-				const workspaceUsers = [
-					{
-						email: 'Me',
-						id: userData.id,
-						profileImagePath: userData.profileImagePath,
-					},
-					...detailedWorkspace.workspaceUsers,
+				let workspaceUsers = [
+					data.workspaceOwner,
+					...data.workspaceUsers,
 				];
 
-				if (
-					!workspaceUsers.some(
-						(x) => detailedWorkspace.workspaceOwner.id === x.id
-					)
-				) {
-					workspaceUsers.push(detailedWorkspace.workspaceOwner);
-				}
+				workspaceUsers = workspaceUsers.filter(
+					(user) => user.id !== userData.id
+				);
+
+				workspaceUsers.unshift({
+					email: 'Me',
+					id: userData.id,
+					profileImagePath: userData.profileImagePath,
+				});
 
 				setSelectedWorkspace({
-					...detailedWorkspace,
+					...data,
 					workspaceUsers,
 				});
 

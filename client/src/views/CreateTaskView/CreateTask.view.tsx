@@ -129,9 +129,9 @@ export const CreateTaskView = ({
 								onChange={operations.handleInputChange}
 								value={state.inputValues.priority}
 							>
-								<option value={1}>Low</option>
-								<option value={2}>Medium</option>
-								<option value={3}>High</option>
+								<option value={'1'}>Low</option>
+								<option value={'2'}>Medium</option>
+								<option value={'3'}>High</option>
 							</select>
 						</div>
 						<div className={styles.effort}>
@@ -142,11 +142,11 @@ export const CreateTaskView = ({
 								value={state.inputValues.effort}
 								onChange={operations.handleInputChange}
 							>
-								<option value={1}>1</option>
-								<option value={2}>2</option>
-								<option value={3}>3</option>
-								<option value={4}>4</option>
-								<option value={5}>5</option>
+								<option value={'1'}>1</option>
+								<option value={'2'}>2</option>
+								<option value={'3'}>3</option>
+								<option value={'4'}>4</option>
+								<option value={'5'}>5</option>
 							</select>
 						</div>
 
@@ -263,7 +263,7 @@ export const CreateTaskView = ({
 							message="Add Task"
 							onClick={() => {
 								operations.createTask(columnId);
-								navigate(`/boards/${boardId}`, {replace: true});
+								navigate(`/boards/${boardId}`, { replace: true });
 							}}
 						/>
 					</div>

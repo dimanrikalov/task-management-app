@@ -18,9 +18,10 @@ interface IColumn {
 interface IBoardData {
 	id: number;
 	name: string;
-	workspaceId: number;
 	columns: IColumn[];
 	boardUsers: IUser[];
+	workspaceId: number;
+	workspace: IDetailedWorkspace;
 }
 
 interface IBoardViewModelState {
@@ -67,7 +68,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		const fetchBoardData = async () => {
 			try {
 				//fetch board
-				const boardRes = await fetch(
+				const res = await fetch(
 					`${
 						import.meta.env.VITE_SERVER_URL
 					}/boards/${boardId}/details`,
@@ -80,53 +81,41 @@ export const useBoardViewModel = (): ViewModelReturnType<
 						credentials: 'include',
 					}
 				);
-				const boardData = (await boardRes.json()) as IBoardData;
 
-				//fetch board's workspace
-				const workpsaceRes = await fetch(
-					`${import.meta.env.VITE_SERVER_URL}/workspaces/${
-						boardData.workspaceId
-					}/details`,
-					{
-						method: 'GET',
-						headers: {
-							Authorization: `Bearer ${accessToken}`,
-						},
-					}
-				);
-				const workspaceData =
-					(await workpsaceRes.json()) as IDetailedWorkspace;
+				const boardData = (await res.json()) as IBoardData;
 
-				const workspaceUsers = [
-					{
-						email: 'Me',
-						id: userData.id,
-						profileImagePath: userData.profileImagePath,
-					},
-					...workspaceData.workspaceUsers,
+				console.log(boardData);
+
+				let workspaceUsers = [
+					...boardData.workspace.workspaceUsers,
+					boardData.workspace.workspaceOwner,
 				];
 
-				if (
-					!workspaceUsers.some(
-						(x) => workspaceData.workspaceOwner.id === x.id
-					)
-				) {
-					workspaceUsers.push(workspaceData.workspaceOwner);
-				}
-
-				const boardUsers = boardData.boardUsers.filter(
-					(boardUser) =>
-						!workspaceUsers.some(
-							(workspaceUser) => workspaceUser.id === boardUser.id
-						)
+				//remove user from the array if the user is currently logged in
+				workspaceUsers = workspaceUsers.filter(
+					(user) => user.id !== userData.id
 				);
-				console.log(boardData);
-				//set data
-				setWorkspaceUsers(workspaceUsers);
+				//add the currently logged in user as Me
+				workspaceUsers.unshift({
+					id: userData.id,
+					email: 'Me',
+					profileImagePath: userData.profileImagePath,
+				});
+
+				const boardUsers = boardData.boardUsers.filter((user) => {
+					if (
+						!workspaceUsers.some(
+							(workspaceUser) => workspaceUser.id === user.id
+						)
+					) {
+						return user;
+					}
+				});
 				setBoardData({
 					...boardData,
-					boardUsers,
+					boardUsers: [...workspaceUsers, ...boardUsers],
 				});
+				setWorkspaceUsers(workspaceUsers);
 				setRefreshBoard(false);
 				return;
 			} catch (err: any) {

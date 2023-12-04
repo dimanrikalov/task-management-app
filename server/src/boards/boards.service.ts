@@ -9,6 +9,7 @@ import { ColumnsService } from 'src/columns/columns.service';
 import { ReorderColumnsDto } from './dtos/reorderColumns.dto';
 import { MessagesService } from 'src/messages/messages.service';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
+import { GetWorkspaceDetails } from 'src/workspaces/dtos/getWorkspaceDetails.dto';
 
 @Injectable()
 export class BoardsService {
@@ -18,6 +19,52 @@ export class BoardsService {
         private readonly columnsService: ColumnsService,
         private readonly messagesService: MessagesService,
     ) {}
+
+    async getWorkpaceByIdLocal(body: GetWorkspaceDetails) {
+        const workspaceBoards = await this.prismaService.board.findMany({
+            where: {
+                workspaceId: body.workspaceData.id,
+            },
+        });
+        const workspaceUsersResult =
+            await this.prismaService.user_Workspace.findMany({
+                where: {
+                    workspaceId: body.workspaceData.id,
+                },
+                select: {
+                    User: {
+                        select: {
+                            id: true,
+                            email: true,
+                            profileImagePath: true,
+                        },
+                    },
+                },
+            });
+
+        const workspaceUsers = workspaceUsersResult.map((user) => user.User);
+        const workspaceOwner = await this.prismaService.user.findUnique({
+            where: {
+                id: body.workspaceData.ownerId,
+            },
+            select: {
+                id: true,
+                email: true,
+                profileImagePath: true,
+            },
+        });
+
+        const data = {
+            ...body.workspaceData,
+            boards: workspaceBoards,
+            workspaceUsers,
+            workspaceOwner,
+        };
+
+        delete data.ownerId;
+
+        return data;
+    }
 
     async getUserBoards(body: BaseUsersDto) {
         const boards = await this.prismaService.board.findMany({
@@ -67,22 +114,34 @@ export class BoardsService {
                 const usersWithBoardAccess =
                     await this.prismaService.user.count({
                         where: {
-                            User_Board: {
-                                some: {
-                                    boardId: board.id,
+                            OR: [
+                                {
+                                    User_Board: {
+                                        some: {
+                                            boardId: board.id,
+                                        },
+                                    },
                                 },
-                            },
-                            User_Workspace: {
-                                some: {
-                                    AND: [{ workspaceId: board.Workspace.id }],
+                                {
+                                    User_Workspace: {
+                                        some: {
+                                            AND: [
+                                                {
+                                                    workspaceId:
+                                                        board.Workspace.id,
+                                                },
+                                                { userId: body.userData.id },
+                                            ],
+                                        },
+                                    },
                                 },
-                            },
+                            ],
                         },
                     });
 
                 const res = {
                     ...board,
-                    usersCount: usersWithBoardAccess + 1, //workspace owner has access to the board
+                    usersCount: usersWithBoardAccess + 1,
                     workspaceName: board.Workspace.name,
                 };
 
@@ -150,9 +209,15 @@ export class BoardsService {
 
         const boardUsers = boardUsersResult.map((user) => user.User);
 
+        const workspace = await this.getWorkpaceByIdLocal({
+            userData: body.userData,
+            workspaceData: body.workspaceData,
+        });
+
         return {
             ...board,
             columns,
+            workspace,
             boardUsers,
         };
     }

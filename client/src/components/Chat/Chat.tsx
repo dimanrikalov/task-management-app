@@ -33,7 +33,6 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 	const [refetchMessages, setRefetchMessages] = useState<boolean>(true);
 
 	useEffect(() => {
-		console.log(boardId);
 		const getChatMessages = async () => {
 			try {
 				const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/boards/${boardId}/messages`, {
@@ -47,7 +46,6 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 
 				const data = await res.json();
 
-				console.log(data);
 				setChatMessages(data);
 			} catch (err: any) {
 				console.log(err.message);

@@ -95,18 +95,20 @@ export const CreateBoardView = ({
 				</div>
 
 				<div className={styles.rightSide}>
-					<div className={classNames(
-						styles.rightSideContent,
-						(
+					<div className={
+						classNames(
+							styles.rightSideContent,
 							(
-								!state.selectedWorkspace ||
-								state.selectedWorkspace
-									.name
-									.toLowerCase()
-									.trim() === 'personal workspace'
-							)
-						) && styles.hidden
-					)}>
+								(
+									!state.selectedWorkspace ||
+									state.selectedWorkspace
+										.name
+										.toLowerCase()
+										.trim() === 'personal workspace'
+								)
+							) && styles.hidden
+						)}
+					>
 						{
 							<AddColleagueInput
 								title={'Board users list'}

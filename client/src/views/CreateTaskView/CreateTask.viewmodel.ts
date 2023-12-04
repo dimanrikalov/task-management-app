@@ -13,14 +13,14 @@ interface IInputState {
 	name: string;
 	step: string;
 	email: string;
-	effort: number;
-	priority: number;
+	effort: string;
+	priority: string;
 	image: File | null;
-	spentHours: number;
+	spentHours: string;
 	description: string;
-	spentMinutes: number;
-	estimatedHours: number;
-	estimatedMinutes: number;
+	spentMinutes: string;
+	estimatedHours: string;
+	estimatedMinutes: string;
 }
 
 interface ICreateTaskViewModelState {
@@ -57,14 +57,14 @@ export const useCreateTaskViewModel = (
 		step: '',
 		name: '',
 		email: '',
-		effort: 1,
+		effort: '',
 		image: null,
-		priority: 1,
-		spentHours: 0,
+		priority: '',
+		spentHours: '',
 		description: '',
-		spentMinutes: 0,
-		estimatedHours: 0,
-		estimatedMinutes: 0,
+		spentMinutes: '',
+		estimatedHours: '',
+		estimatedMinutes: '',
 	});
 	const [steps, setSteps] = useState<IStep[]>([]);
 	const [progress, setProgress] = useState<number>(0);
@@ -204,13 +204,14 @@ export const useCreateTaskViewModel = (
 						columnId,
 						assigneeId,
 						title: inputValues.name,
-						effort: inputValues.effort,
-						priority: inputValues.priority,
 						attachmentImgPath: taskImagePath,
-						hoursSpent: inputValues.spentHours,
-						minutesSpent: inputValues.spentMinutes,
-						estimatedHours: inputValues.estimatedHours,
-						estimatedMinutes: inputValues.estimatedMinutes,
+						effort: Number(inputValues.effort) || 1,
+						priority: Number(inputValues.priority) || 1,
+						hoursSpent: Number(inputValues.spentHours) || 0,
+						minutesSpent: Number(inputValues.spentMinutes) || 0,
+						estimatedHours: Number(inputValues.estimatedHours) || 0,
+						estimatedMinutes:
+							Number(inputValues.estimatedMinutes) || 0,
 					}),
 				}
 			);
