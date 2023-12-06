@@ -38,6 +38,7 @@ interface IBoardViewModelState {
 interface IBoardViewModelOperations {
 	goBack(): void;
 	deleteBoard(): void;
+	callForRefresh(): void;
 	toggleIsChatOpen(): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
@@ -210,6 +211,10 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		}
 	};
 
+	const callForRefresh = () => {
+		setRefreshBoard(true);
+	};
+
 	return {
 		state: {
 			userData,
@@ -224,6 +229,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		operations: {
 			goBack,
 			deleteBoard,
+			callForRefresh,
 			toggleIsChatOpen,
 			addWorkspaceColleague,
 			removeWorkspaceColleague,

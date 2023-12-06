@@ -15,6 +15,11 @@
 	background-color: var(--grey-main);
 }
 
+.reverse {
+	background-color: var(--white-main);
+	color: var(--blue-main);
+}
+
 .button:hover {
 	color: var(--blue-main);
 	border: 1px solid var(--blue-main);

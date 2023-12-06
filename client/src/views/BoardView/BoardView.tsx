@@ -137,6 +137,7 @@ export const BoardView = () => {
 									key={column.id}
 									title={column.name}
 									tasks={column.tasks}
+									callForRefresh={operations.callForRefresh}
 									onClick={operations.toggleIsCreateTaskModalOpen}
 								/>
 							)
