@@ -44,10 +44,6 @@ export class BoardsModule implements NestModule {
                 method: RequestMethod.DELETE,
             },
             {
-                path: 'boards/:boardId/reorder',
-                method: RequestMethod.PUT,
-            },
-            {
                 path: 'boards/:boardId/details',
                 method: RequestMethod.GET,
             },

@@ -161,8 +161,8 @@ export class BoardsService {
                 boardId,
             },
             orderBy: {
-                position: 'asc'
-            }
+                position: 'asc',
+            },
         });
 
         const boardTasks = await this.prismaService.task.findMany({
@@ -188,9 +188,9 @@ export class BoardsService {
         });
 
         const columns = boardColumns.map((column) => {
-            const columnTasks = tasks.filter(
-                (task) => task.columnId === column.id,
-            ).sort((task_a, task_b)=> task_a.position - task_b.position);
+            const columnTasks = tasks
+                .filter((task) => task.columnId === column.id)
+                .sort((task_a, task_b) => task_a.position - task_b.position);
 
             return { ...column, tasks: columnTasks };
         });
@@ -544,37 +544,5 @@ export class BoardsService {
             message: 'You have been removed from a board.',
             affectedUserId: body.colleagueId,
         });
-    }
-
-    async reorderBoardColumns(body: ReorderColumnsDto) {
-        const { columnsOrder } = body;
-
-        // Get all board columns
-        const boardColumns = await this.prismaService.column.findMany({
-            where: {
-                boardId: body.boardData.id,
-            },
-        });
-
-        // Ensure all board columns are passed and that all of them are part of the board
-        const boardColumnIds = boardColumns.map((column) => column.id);
-
-        // Validate that all columns are present in the request
-        if (
-            columnsOrder.length !== boardColumnIds.length ||
-            !columnsOrder.every((colId) => boardColumnIds.includes(colId))
-        ) {
-            throw new Error('Invalid column order');
-        }
-
-        // Update the order of columns in the database
-        await Promise.all(
-            columnsOrder.map(async (colId, index) => {
-                return this.prismaService.column.update({
-                    where: { id: colId },
-                    data: { position: index + 1 },
-                });
-            }),
-        );
     }
 }

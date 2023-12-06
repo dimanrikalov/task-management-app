@@ -135,4 +135,105 @@ export class ColumnsService {
             },
         });
     }
+
+    async move(body: MoveColumnDto) {
+        const columnsInsideBoard = await this.prismaService.column.findMany({
+            where: {
+                boardId: body.boardData.id,
+            },
+        });
+
+        if (body.destinationPosition == body.columnData.position) {
+            return;
+        }
+
+        // Ensure the destination position is within the valid range
+        if (body.destinationPosition >= columnsInsideBoard.length) {
+            body.destinationPosition = columnsInsideBoard.length - 1;
+        }
+
+        if (body.destinationPosition > body.columnData.position) {
+            const matches = await this.prismaService.column.findMany({
+                where: {
+                    AND: [
+                        {
+                            position: {
+                                gt: body.columnData.position,
+                            },
+                        },
+                        {
+                            position: {
+                                lte: body.destinationPosition,
+                            },
+                        },
+                        { boardId: body.boardData.id },
+                    ],
+                },
+            });
+
+            await Promise.all(
+                matches.map(async (column) => {
+                    await this.prismaService.column.update({
+                        where: {
+                            id: column.id,
+                        },
+                        data: {
+                            position: column.position - 1,
+                        },
+                    });
+                }),
+            );
+
+            await this.prismaService.column.update({
+                where: {
+                    id: body.columnData.id,
+                },
+                data: {
+                    position: body.destinationPosition,
+                },
+            });
+
+            return;
+        }
+
+        const matches = await this.prismaService.column.findMany({
+            where: {
+                AND: [
+                    {
+                        position: {
+                            gte: body.destinationPosition,
+                        },
+                    },
+                    {
+                        position: {
+                            lt: body.columnData.position,
+                        },
+                    },
+                    { boardId: body.boardData.id },
+                ],
+            },
+        });
+
+        await Promise.all(
+            matches.map(async (column) => {
+                await this.prismaService.column.update({
+                    where: {
+                        id: column.id,
+                    },
+                    data: {
+                        position: column.position + 1,
+                    },
+                });
+            }),
+        );
+
+        await this.prismaService.column.update({
+            where: {
+                id: body.columnData.id,
+            },
+            data: {
+                position: body.destinationPosition,
+            },
+        });
+    }
 }

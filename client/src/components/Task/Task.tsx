@@ -20,7 +20,13 @@ export interface ITask {
 
 }
 
-export const Task = ({ task, index }: { task: ITask, index: number }) => {
+interface ITaskProps {
+	task: ITask;
+	index: number;
+	onClick(): void;
+}
+
+export const Task = ({ task, index, onClick }: ITaskProps) => {
 	return (
 		<Draggable
 			index={index}
@@ -29,6 +35,7 @@ export const Task = ({ task, index }: { task: ITask, index: number }) => {
 			{
 				(provided) => (
 					<div
+					onClick={onClick}
 						ref={provided.innerRef}
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}

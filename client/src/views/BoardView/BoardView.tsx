@@ -5,13 +5,13 @@ import { Chat } from '@/components/Chat/Chat';
 import { Modal } from '@/components/Modal/Modal';
 import { Column } from '@/components/Column/Column';
 import { useBoardViewModel } from './Board.viewmodel';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { CreateTaskView } from '../CreateTaskView/CreateTask.view';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
-import { DragDropContext } from 'react-beautiful-dnd';
 
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
@@ -123,35 +123,50 @@ export const BoardView = () => {
 							/>
 						</div>
 					</div>
-					<DragDropContext 
+					<DragDropContext
 						onDragEnd={operations.onDragEnd}
 					>
-						<div
-							className={
-								classNames(
-									styles.columnsContainer,
-									state.isChatOpen && styles.squash
-								)
-							}
+						<Droppable
+							type='column'
+							direction='horizontal'
+							droppableId='boardDroppable'
 						>
 							{
-								state.boardData.columns.map(column =>
-									<Column
-										id={column.id}
-										key={column.id}
-										title={column.name}
-										tasks={column.tasks}
-										callForRefresh={operations.callForRefresh}
-										onClick={operations.toggleIsCreateTaskModalOpen}
-									/>
+								(provider) => (
+
+									<div
+										className={
+											classNames(
+												styles.columnsContainer,
+												state.isChatOpen && styles.squash
+											)
+										}
+										ref={provider.innerRef}
+										{...provider.droppableProps}
+									>
+
+										{
+											state.boardData?.columns.map((column, index) =>
+												<Column
+													index={index}
+													id={column.id}
+													key={column.id}
+													title={column.name}
+													tasks={column.tasks}
+													callForRefresh={operations.callForRefresh}
+													onClick={operations.toggleIsCreateTaskModalOpen}
+												/>
+											)
+										}
+
+									</div>
 								)
-
 							}
+						</Droppable>
 
-						</div>
 					</DragDropContext>
 				</div>
-			</div>
+			</div >
 		</>
 	);
 };

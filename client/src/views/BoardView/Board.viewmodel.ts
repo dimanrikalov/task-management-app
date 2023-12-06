@@ -230,9 +230,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	};
 
 	const onDragEnd = async (result: IResult) => {
-		const { draggableId, source, destination } = result;
-
-		console.log(result);
+		const { draggableId, source, destination, type } = result;
 
 		if (!destination) {
 			return;
@@ -245,10 +243,28 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			return;
 		}
 
-		try {
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/tasks/move`,
-				{
+		if (type === 'column') {
+			try {
+				await fetch(`${import.meta.env.VITE_SERVER_URL}/columns/move`, {
+					method: 'PUT',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						columnId: Number(draggableId),
+						destinationPosition: destination.index,
+					}),
+				});
+
+				callForRefresh();
+			} catch (err: any) {
+				console.log(err.messsage);
+			}
+		} else {
+			//TASK CASE
+			try {
+				await fetch(`${import.meta.env.VITE_SERVER_URL}/tasks/move`, {
 					method: 'PUT',
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -259,16 +275,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 						destinationColumnId: Number(destination.droppableId), //the column where it is being dropped in
 						destinationPosition: destination.index, //need to somehow get the position of where it is going to be placed
 					}),
-				}
-			);
+				});
 
-			const data = await res.json();
-
-			console.log(data);
-
-			callForRefresh();
-		} catch (err: any) {
-			console.log(err.message);
+				callForRefresh();
+			} catch (err: any) {
+				console.log(err.message);
+			}
 		}
 	};
 

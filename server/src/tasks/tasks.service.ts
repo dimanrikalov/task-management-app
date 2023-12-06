@@ -359,7 +359,7 @@ export class TasksService {
 
         // Ensure the destination position is within the valid range
         if (body.destinationPosition >= tasksInsideDestinationColumn.length) {
-            body.destinationPosition = tasksInsideDestinationColumn.length;
+            body.destinationPosition = tasksInsideDestinationColumn.length - 1;
         }
 
         if (body.destinationPosition > body.taskData.position) {

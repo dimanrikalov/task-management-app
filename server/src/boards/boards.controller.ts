@@ -101,23 +101,4 @@ export class BoardsController {
             });
         }
     }
-
-    @Put('/:boardId/reorder')
-    async reorderBoardColumns(
-        @Res() res: Response,
-        @Body() body: ReorderColumnsDto,
-    ) {
-        try {
-            //check if all columns exist and are part of board
-            await this.boardsService.reorderBoardColumns(body);
-            return res.status(200).json({
-                message: 'Columns reordered successfully!',
-            });
-        } catch (err: any) {
-            console.log(err.message);
-            return res.status(401).json({
-                errorMessage: err.message,
-            });
-        }
-    }
 }
