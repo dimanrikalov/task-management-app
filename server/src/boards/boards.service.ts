@@ -160,6 +160,9 @@ export class BoardsService {
             where: {
                 boardId,
             },
+            orderBy: {
+                position: 'asc'
+            }
         });
 
         const boardTasks = await this.prismaService.task.findMany({
@@ -187,7 +190,7 @@ export class BoardsService {
         const columns = boardColumns.map((column) => {
             const columnTasks = tasks.filter(
                 (task) => task.columnId === column.id,
-            );
+            ).sort((task_a, task_b)=> task_a.position - task_b.position);
 
             return { ...column, tasks: columnTasks };
         });

@@ -24,6 +24,19 @@ interface IBoardData {
 	workspace: IDetailedWorkspace;
 }
 
+interface ISource {
+	droppableId: string;
+	index: number;
+}
+
+export interface IResult {
+	draggableId: string;
+	type: string;
+	reason?: string;
+	source: ISource;
+	destination: ISource | null;
+}
+
 interface IBoardViewModelState {
 	userData: IUser;
 	isChatOpen: boolean;
@@ -40,6 +53,7 @@ interface IBoardViewModelOperations {
 	deleteBoard(): void;
 	callForRefresh(): void;
 	toggleIsChatOpen(): void;
+	onDragEnd(result: any): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
 	addWorkspaceColleague(colleague: IUser): void;
@@ -215,6 +229,49 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		setRefreshBoard(true);
 	};
 
+	const onDragEnd = async (result: IResult) => {
+		const { draggableId, source, destination } = result;
+
+		console.log(result);
+
+		if (!destination) {
+			return;
+		}
+
+		if (
+			destination.index === source.index &&
+			destination.droppableId === source.droppableId
+		) {
+			return;
+		}
+
+		try {
+			const res = await fetch(
+				`${import.meta.env.VITE_SERVER_URL}/tasks/move`,
+				{
+					method: 'PUT',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						taskId: Number(draggableId),
+						destinationColumnId: Number(destination.droppableId), //the column where it is being dropped in
+						destinationPosition: destination.index, //need to somehow get the position of where it is going to be placed
+					}),
+				}
+			);
+
+			const data = await res.json();
+
+			console.log(data);
+
+			callForRefresh();
+		} catch (err: any) {
+			console.log(err.message);
+		}
+	};
+
 	return {
 		state: {
 			userData,
@@ -228,6 +285,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		},
 		operations: {
 			goBack,
+			onDragEnd,
 			deleteBoard,
 			callForRefresh,
 			toggleIsChatOpen,

@@ -57,6 +57,7 @@ model Task {
   effort            Int?
   priority          Int?
   progress          Int?
+  position          Int     @default(0)
   assigneeId        Int     @map("assignee_id")
   columnId          Int     @map("column_id")
   Step              Step[]

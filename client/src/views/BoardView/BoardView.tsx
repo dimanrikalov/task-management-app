@@ -11,6 +11,7 @@ import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
+import { DragDropContext } from 'react-beautiful-dnd';
 
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
@@ -122,29 +123,33 @@ export const BoardView = () => {
 							/>
 						</div>
 					</div>
-					<div
-						className={
-							classNames(
-								styles.columnsContainer,
-								state.isChatOpen && styles.squash
-							)
-						}
+					<DragDropContext 
+						onDragEnd={operations.onDragEnd}
 					>
-						{
-							state.boardData.columns.map(column =>
-								<Column
-									id={column.id}
-									key={column.id}
-									title={column.name}
-									tasks={column.tasks}
-									callForRefresh={operations.callForRefresh}
-									onClick={operations.toggleIsCreateTaskModalOpen}
-								/>
-							)
+						<div
+							className={
+								classNames(
+									styles.columnsContainer,
+									state.isChatOpen && styles.squash
+								)
+							}
+						>
+							{
+								state.boardData.columns.map(column =>
+									<Column
+										id={column.id}
+										key={column.id}
+										title={column.name}
+										tasks={column.tasks}
+										callForRefresh={operations.callForRefresh}
+										onClick={operations.toggleIsCreateTaskModalOpen}
+									/>
+								)
 
-						}
+							}
 
-					</div>
+						</div>
+					</DragDropContext>
 				</div>
 			</div>
 		</>

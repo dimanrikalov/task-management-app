@@ -10,5 +10,8 @@ export class MoveTaskDto {
     boardData: IBoard;
 
     @IsNumber()
+    destinationPosition: number;
+
+    @IsNumber()
     destinationColumnId: number;
 }
