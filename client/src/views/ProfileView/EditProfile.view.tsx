@@ -55,18 +55,25 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 								htmlFor={'imgInput'}
 							>
 								<div className={styles.imgContainer}>
-									<img
-										src={
-											state.profileImgPath ?
-												state.profileImgPath : '/imgs/profile-img.jpeg'
-										}
-										alt="profile-img"
-										className={styles.previewImage}
-									/>
+									{
+										state.profileImgPath ? (
+											<img
+												src={state.profileImgPath}
+												alt="profile-img"
+												className={styles.previewImage}
+											/>
+										) : (
+											<img
+												alt="profile-img"
+												className={styles.previewImage}
+												src={state.userData.profileImagePath}
+											/>
+										)
+									}
 								</div>
 							</label>
 							<form name='profileImg'
-								onSubmit={operations.updateUserData}
+								onSubmit={operations.updateUserImg}
 								onReset={operations.clearProfileImg}
 							>
 								<input

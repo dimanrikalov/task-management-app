@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import { promisify } from 'util';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { IUser } from './users.interfaces';
@@ -7,11 +9,16 @@ import { EditUserDto } from './dtos/editUser.dto';
 import { FindUserDto } from './dtos/findUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
+import { extractJWTData } from 'src/jwt/extractJWTData';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { EditProfleImgDto } from './dtos/editProfleImg.dto';
 import { refreshJWTTokens } from 'src/jwt/refreshJWTTokens';
 import { IRefreshTokensBody } from './dtos/users.interfaces';
 import { generateJWTTokens } from 'src/jwt/generateJWTTokens';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
+
+const stat = promisify(fs.stat);
+const unlink = promisify(fs.unlink);
 
 @Injectable()
 export class UsersService {
@@ -158,11 +165,11 @@ export class UsersService {
         );
 
         const userData = {
-            firstName: body.firstName,
-            lastName: body.lastName,
             email: body.email,
+            lastName: body.lastName,
             password: hashedPassword,
-            profileImagePath: 'default_image_path',
+            firstName: body.firstName,
+            profileImagePath: process.env.DEFAULT_PROFILE_IMG_URL,
         };
 
         const user = await this.prismaService.user.create({
@@ -216,9 +223,9 @@ export class UsersService {
             : undefined;
 
         const data = {
-            ...(body.firstName && { firstName: body.firstName }),
             ...(body.lastName && { lastName: body.lastName }),
             ...(hashedPassword && { password: hashedPassword }),
+            ...(body.firstName && { firstName: body.firstName }),
         };
 
         await this.prismaService.user.update({
@@ -226,6 +233,46 @@ export class UsersService {
                 id: body.userData.id,
             },
             data,
+        });
+    }
+
+    async updateProfileImg(body: EditProfleImgDto): Promise<void> {
+        const { id } = extractJWTData(body.token);
+        const userData = await this.prismaService.user.findUnique({
+            where: {
+                id,
+            },
+        });
+
+        if (!userData) {
+            throw new Error('User not found');
+        }
+
+        console.log(userData.profileImagePath);
+        console.log(process.env.DEFAULT_PROFILE_IMG_URL);
+
+        // Check if the file exists before attempting to delete it
+        if (
+            fs.existsSync(userData.profileImagePath) &&
+            userData.profileImagePath !== process.env.DEFAULT_PROFILE_IMG_URL
+        ) {
+            try {
+                // Delete the existing file
+                await unlink(userData.profileImagePath);
+                console.log('File deleted successfully');
+            } catch (error) {
+                console.error('Error deleting file:', error);
+            }
+        }
+
+        // Update the user's profile image path
+        await this.prismaService.user.update({
+            where: {
+                id: userData.id,
+            },
+            data: {
+                profileImagePath: body.profileImagePath,
+            },
         });
     }
 

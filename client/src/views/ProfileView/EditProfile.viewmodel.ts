@@ -1,6 +1,6 @@
 import { deleteTokens } from '@/utils';
 import { useEffect, useState } from 'react';
-import { IOutletContext } from '@/guards/authGuard';
+import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
@@ -31,6 +31,7 @@ interface IInputValues {
 }
 
 interface IEditProfileViewModelState {
+	userData: IUserData;
 	inputValues: IInputValues;
 	notification: INotification;
 	isDeletionModalOpen: boolean;
@@ -41,6 +42,7 @@ interface IEditProfileViewModelOperations {
 	deleteUser(): void;
 	clearProfileImg(): void;
 	toggleIsDeletionModalOpen(): void;
+	updateUserImg(e: React.FormEvent): void;
 	updateUserData(e: React.FormEvent): void;
 	inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 	changeProfileImage(e: React.ChangeEvent<HTMLInputElement>): void;
@@ -51,7 +53,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 	IEditProfileViewModelOperations
 > => {
 	const navigate = useNavigate();
-	const { accessToken } = useOutletContext<IOutletContext>();
+	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
 	const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
 	const [notification, setNotification] = useState<INotification>({
@@ -101,19 +103,8 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		e.preventDefault();
 		const inputField = (e.currentTarget as HTMLFormElement)
 			.name as INPUT_FIELDS;
-		const isInputProfileImg = inputField === INPUT_FIELDS.PROFILE_IMG;
 
 		try {
-			if (isInputProfileImg && !inputValues.profileImg) {
-				throw new Error('Image file is required!');
-			}
-
-			let formData;
-			if (isInputProfileImg) {
-				formData = new FormData();
-				formData.append('image', inputValues.profileImg!);
-			}
-
 			if (
 				[INPUT_FIELDS.FIRST_NAME, INPUT_FIELDS.LAST_NAME].includes(
 					inputField
@@ -132,20 +123,61 @@ export const useProfileViewModel = (): ViewModelReturnType<
 				throw new Error('Password must conform to the rules!');
 			}
 
-			const body = isInputProfileImg
-				? formData
-				: JSON.stringify({ [inputField]: inputValues[inputField] });
-			console.log(body);
-
 			await fetch(`${import.meta.env.VITE_SERVER_URL}/users/edit`, {
 				method: 'PUT',
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
 					'Content-Type': 'application/json',
 				},
-				body,
+				body: JSON.stringify({
+					[inputField]: inputValues[inputField],
+				}),
 			});
 
+			setProfileImgPath(null);
+			setInputValues((prev) => ({ ...prev, profileImg: null }));
+			navigate('/'); // cause refetching of user through the guard
+		} catch (err: any) {
+			console.log(err.message);
+			setInputValues({
+				password: '',
+				lastName: '',
+				firstName: '',
+				profileImg: null,
+			});
+			setNotification({
+				message: err.message,
+				type: NOTIFICATION_TYPE.ERROR,
+			});
+		}
+	};
+
+	const updateUserImg = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		try {
+			if (
+				!inputValues.profileImg ||
+				!(inputValues.profileImg instanceof File)
+			) {
+				return;
+			}
+			let body;
+			body = new FormData();
+			body.append('profileImg', inputValues.profileImg, 'profile-img');
+
+			const res = await fetch(
+				`${import.meta.env.VITE_SERVER_URL}/users/edit/profile-img`,
+				{
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+					body,
+				}
+			);
+			const data = await res.json();
+			console.log(data);
 			setProfileImgPath(null);
 			setInputValues((prev) => ({ ...prev, profileImg: null }));
 			navigate('/'); // cause refetching of user through the guard
@@ -198,6 +230,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 
 	return {
 		state: {
+			userData,
 			inputValues,
 			notification,
 			profileImgPath,
@@ -205,6 +238,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		},
 		operations: {
 			deleteUser,
+			updateUserImg,
 			updateUserData,
 			clearProfileImg,
 			inputChangeHandler,

@@ -7,7 +7,11 @@ import {
     Body,
     Delete,
     Controller,
+    UseInterceptors,
 } from '@nestjs/common';
+import * as fs from 'fs';
+import { join } from 'path';
+import { v4 as uuid } from 'uuid';
 import { Request, Response } from 'express';
 import { BaseUsersDto } from './dtos/base.dto';
 import { UsersService } from './users.service';
@@ -16,6 +20,10 @@ import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { extractJWTData } from 'src/jwt/extractJWTData';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { EditProfleImgDto } from './dtos/editProfleImg.dto';
+import { Headers, UploadedFile } from '@nestjs/common/decorators';
+import { validateJWTToken } from 'src/jwt/validateJWTToken';
 
 @Controller('')
 export class UsersController {
@@ -27,7 +35,16 @@ export class UsersController {
             const userData = await this.usersService.getUserById(
                 body.userData.id,
             );
-            return res.status(200).json(userData);
+
+            const imagePath = join(userData.profileImagePath);
+
+            const imageBuffer = fs.readFileSync(imagePath);
+
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+            return res
+                .status(200)
+                .json({ ...userData, profileImg: imageBinary });
         } catch (err: any) {
             console.log(err.message);
             return res.status(401).json({
@@ -96,6 +113,50 @@ export class UsersController {
             await this.usersService.update(userBody);
             return res.json({
                 message: 'User credentials updated successfully!',
+            });
+        } catch (err: any) {
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
+    @Post('/users/edit/profile-img')
+    @UseInterceptors(FileInterceptor('profileImg'))
+    async updateUserProfileImg(
+        @Res() res: Response,
+        @Headers() headers: any,
+        @UploadedFile() file: any,
+    ) {
+        try {
+            const token = headers.authorization.split(' ')[1];
+            if (!token || !validateJWTToken(token)) {
+                throw new Error('Unauthorized access!');
+            }
+
+            if (!file) {
+                throw new Error('New profile image is required!');
+            }
+
+            const uploadDir = process.env.PROFILE_IMGS_URL;
+
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+
+            const fileName = `profile-img-${uuid()}`;
+            const filePath = join(uploadDir, fileName);
+
+            fs.writeFileSync(filePath, file.buffer);
+
+            const body: EditProfleImgDto = {
+                token,
+                profileImagePath: filePath,
+            };
+
+            await this.usersService.updateProfileImg(body);
+            return res.json({
+                message: 'User image updated successfully!',
             });
         } catch (err: any) {
             return res.status(400).json({

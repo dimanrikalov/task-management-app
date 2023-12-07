@@ -12,6 +12,7 @@ export interface IUserData {
 	email: string;
 	lastName: string;
 	firstName: string;
+	profileImg: Buffer;
 	profileImagePath: string;
 }
 
@@ -97,6 +98,8 @@ export const AuthGuard = () => {
 	if (!userData) {
 		return <Navigate to={'/auth/sign-in'} />
 	}
+
+	userData.profileImagePath = `data:image/png;base64,${userData.profileImg}`;
 
 	const context: IOutletContext = {
 		userData,
