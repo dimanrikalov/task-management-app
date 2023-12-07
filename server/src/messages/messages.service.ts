@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import { join } from 'path';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dtos/createMessage.dto';
@@ -30,11 +32,18 @@ export class MessagesService {
         });
 
         return messages.map((message) => {
+        
+            const imagePath = join(message.User.profileImagePath);
+
+            const imageBuffer = fs.readFileSync(imagePath);
+
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
             const data = {
                 ...message,
-                firstName: message.User.firstName,
+                profileImgPath: imageBinary,
                 lastName: message.User.lastName,
-                profileImg: message.User.profileImagePath,
+                firstName: message.User.firstName,
             };
 
             delete data.User;

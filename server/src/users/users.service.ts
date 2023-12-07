@@ -17,7 +17,6 @@ import { IRefreshTokensBody } from './dtos/users.interfaces';
 import { generateJWTTokens } from 'src/jwt/generateJWTTokens';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
-const stat = promisify(fs.stat);
 const unlink = promisify(fs.unlink);
 
 @Injectable()
@@ -63,7 +62,6 @@ export class UsersService {
     }
 
     async getUserById(userId: number) {
-        console.log(userId);
         const data = await this.prismaService.user.findUnique({
             where: {
                 id: userId,
@@ -247,9 +245,6 @@ export class UsersService {
         if (!userData) {
             throw new Error('User not found');
         }
-
-        console.log(userData.profileImagePath);
-        console.log(process.env.DEFAULT_PROFILE_IMG_URL);
 
         // Check if the file exists before attempting to delete it
         if (

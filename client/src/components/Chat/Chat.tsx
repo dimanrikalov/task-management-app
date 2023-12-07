@@ -16,7 +16,7 @@ export interface IMessage {
 	lastName: string;
 	writtenBy: number;
 	firstName: string;
-	profileImg: string;
+	profileImgPath: string;
 }
 
 interface IChatProps {
@@ -45,8 +45,14 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 				});
 
 				const data = await res.json();
-
-				setChatMessages(data);
+				const messages = data.map((message: any) => {
+					const profileImg = `data:image/png;base64,${message.profileImgPath}`;
+					return {
+						...message,
+						profileImg
+					}
+				})
+				setChatMessages(messages);
 			} catch (err: any) {
 				console.log(err.message);
 			}
@@ -106,6 +112,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 						<Message
 							key={message.id}
 							content={message.content}
+							profileImg={message.profileImgPath}
 							isUser={message.writtenBy === userData.id}
 						/>
 					)

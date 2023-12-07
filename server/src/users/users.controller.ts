@@ -22,8 +22,8 @@ import { CreateUserDto } from './dtos/createUser.dto';
 import { extractJWTData } from 'src/jwt/extractJWTData';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { EditProfleImgDto } from './dtos/editProfleImg.dto';
-import { Headers, UploadedFile } from '@nestjs/common/decorators';
 import { validateJWTToken } from 'src/jwt/validateJWTToken';
+import { Headers, UploadedFile } from '@nestjs/common/decorators';
 
 @Controller('')
 export class UsersController {

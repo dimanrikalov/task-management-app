@@ -55,21 +55,11 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 								htmlFor={'imgInput'}
 							>
 								<div className={styles.imgContainer}>
-									{
-										state.profileImgPath ? (
-											<img
-												src={state.profileImgPath}
-												alt="profile-img"
-												className={styles.previewImage}
-											/>
-										) : (
-											<img
-												alt="profile-img"
-												className={styles.previewImage}
-												src={state.userData.profileImagePath}
-											/>
-										)
-									}
+									<img
+										alt="profile-img"
+										className={styles.previewImage}
+										src={state.profileImgPath || state.userData.profileImagePath}
+									/>
 								</div>
 							</label>
 							<form name='profileImg'
