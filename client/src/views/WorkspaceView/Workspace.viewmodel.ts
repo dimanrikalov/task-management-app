@@ -80,7 +80,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 
 				workspaceUsers = workspaceUsers.filter(
 					(user) => user.id !== userData.id
-				);
+				).map(user => ({...user, profileImagePath: `data:image/png;base64,${user.profileImagePath}`}));
 
 				workspaceUsers.unshift({
 					email: 'Me',

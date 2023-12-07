@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import { join } from 'path';
 import { Injectable } from '@nestjs/common';
 import { BaseWorkspaceDto } from './dtos/base.dto';
 import { WorkspacesGateway } from './workspaces.gateway';
@@ -88,7 +90,15 @@ export class WorkspacesService {
                 },
             });
 
-        const workspaceUsers = workspaceUsersResult.map((user) => user.User);
+        const workspaceUsers = workspaceUsersResult.map((user) => {
+            const imageBuffer = fs.readFileSync(user.User.profileImagePath);
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+            return {
+                ...user.User,
+                profileImagePath: imageBinary,
+            };
+        });
         const workspaceOwner = await this.prismaService.user.findUnique({
             where: {
                 id: body.workspaceData.ownerId,
@@ -99,6 +109,10 @@ export class WorkspacesService {
                 profileImagePath: true,
             },
         });
+
+        workspaceOwner.profileImagePath = Buffer.from(
+            fs.readFileSync(join(workspaceOwner.profileImagePath)),
+        ).toString('base64');
 
         const data = {
             ...body.workspaceData,
