@@ -118,9 +118,12 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 					...data.workspaceUsers,
 				];
 
-				workspaceUsers = workspaceUsers.filter(
-					(user) => user.id !== userData.id
-				);
+				workspaceUsers = workspaceUsers
+					.filter((user) => user.id !== userData.id)
+					.map((user) => ({
+						...user,
+						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
+					}));
 
 				workspaceUsers.unshift({
 					email: 'Me',

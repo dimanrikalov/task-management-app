@@ -51,6 +51,7 @@
 	color: var(--blue-main);
 	font-weight: 600;
 	font-size: 28px;
+	text-align: start;
 	transition: 200ms ease-in-out;
 }
 

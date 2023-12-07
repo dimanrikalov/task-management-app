@@ -49,9 +49,14 @@ export const AddColleagueInput = ({
 						notIn: (colleagues || []).map(colleague => colleague.id)
 					})
 				});
-				const data = await res.json();
+				const data = await res.json() as IUser[];
 
-				setMatches(data);
+				const matchesData = data.map((match) => ({
+					...match,
+					profileImagePath: `data:image/png;base64,${match.profileImagePath}`
+				}));
+
+				setMatches(matchesData);
 			} catch (err: any) {
 				console.log(err.message);
 			}

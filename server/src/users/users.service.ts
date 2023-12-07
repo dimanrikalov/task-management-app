@@ -35,7 +35,7 @@ export class UsersService {
     }
 
     async getAll(body: FindUserDto) {
-        return this.prismaService.user.findMany({
+        const matches = await this.prismaService.user.findMany({
             where: {
                 AND: [
                     {
@@ -59,6 +59,17 @@ export class UsersService {
                 profileImagePath: true,
             },
         });
+
+        return matches.map(match => {
+            const imageBuffer = fs.readFileSync(match.profileImagePath);
+
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+            return {
+                ...match,
+                profileImagePath: imageBinary,
+            };
+        })
     }
 
     async getUserById(userId: number) {

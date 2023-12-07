@@ -42,6 +42,7 @@ export const EmailInput = ({
 										showBtn={false}
 										email={match.email}
 										addHandler={() => addUser(match)}
+										profileImgPath={match.profileImagePath}
 									/>
 								)
 							}
