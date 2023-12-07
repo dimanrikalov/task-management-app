@@ -249,23 +249,32 @@ export class TasksService {
     }
 
     async move(body: MoveTaskDto) {
-        const sourcePosition = body.taskData.position;
-
         //moving tasks between columns
         if (body.taskData.columnId !== body.destinationColumnId) {
+            //make sure the columns are also part of the board!
             const sourceColumn = await this.prismaService.column.findFirst({
                 where: {
-                    id: body.taskData.columnId,
+                    AND: [
+                        { id: body.taskData.columnId },
+                        { boardId: body.boardData.id },
+                    ],
                 },
             });
 
             const destinationColumn = await this.prismaService.column.findFirst(
                 {
                     where: {
-                        id: body.destinationColumnId,
+                        AND: [
+                            { id: body.destinationColumnId },
+                            { boardId: body.boardData.id },
+                        ],
                     },
                 },
             );
+
+            if (!sourceColumn || !destinationColumn) {
+                throw new Error('Invalid column IDs!');
+            }
 
             const tasksInsideSourceColumn =
                 await this.prismaService.task.findMany({
@@ -284,53 +293,38 @@ export class TasksService {
             //DESTINATION CHECKS
             //1st case move task between some other tasks
             //2nd case move after the last task from the column
-            if (
-                body.destinationPosition < tasksInsideDestinationColumn.length
-            ) {
-                //here we need to move all tasks with 1 position
-                await Promise.all(
-                    tasksInsideDestinationColumn
-                        .filter(
-                            (task) => task.position >= body.destinationPosition,
-                        )
-                        .map(async (task) => {
-                            await this.prismaService.task.update({
-                                where: {
-                                    id: task.id,
-                                },
-                                data: {
-                                    position: task.position + 1,
-                                },
-                            });
-                        }),
-                );
-            } else {
-                body.destinationPosition ===
-                    tasksInsideDestinationColumn.length - 1;
-            }
 
-            //SOURCE CHECKS
-            //1st case move task that is already between some other tasks
-            //2nd case move the last task from the column
-            if (sourcePosition < tasksInsideSourceColumn.length) {
-                await Promise.all(
-                    tasksInsideDestinationColumn
-                        .filter(
-                            (task) => task.position >= body.destinationPosition,
-                        )
-                        .map(async (task) => {
-                            await this.prismaService.task.update({
-                                where: {
-                                    id: task.id,
-                                },
-                                data: {
-                                    position: task.position - 1,
-                                },
-                            });
-                        }),
-                );
-            }
+            Promise.all(
+                tasksInsideSourceColumn.map(async (task) => {
+                    if (task.position > body.taskData.position) {
+                        await this.prismaService.task.update({
+                            where: {
+                                id: task.id,
+                            },
+                            data: {
+                                position: task.position - 1,
+                            },
+                        });
+                    }
+                }),
+            );
 
+            Promise.all(
+                tasksInsideDestinationColumn.map(async (task) => {
+                    if (task.position >= body.destinationPosition) {
+                        await this.prismaService.task.update({
+                            where: {
+                                id: task.id,
+                            },
+                            data: {
+                                position: task.position + 1,
+                            },
+                        });
+                    }
+                }),
+            );
+
+            //update the task
             await this.prismaService.task.update({
                 where: {
                     id: body.taskData.id,
