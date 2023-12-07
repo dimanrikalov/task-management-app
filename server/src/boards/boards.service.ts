@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import { join } from 'path';
 import { Injectable } from '@nestjs/common';
 import { BoardsGateway } from './boards.gateway';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
@@ -6,7 +8,6 @@ import { DeleteBoardDto } from './dtos/deleteboard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetBoardDetails } from './dtos/getBoardDetails.dto';
 import { ColumnsService } from 'src/columns/columns.service';
-import { ReorderColumnsDto } from './dtos/reorderColumns.dto';
 import { MessagesService } from 'src/messages/messages.service';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
 import { GetWorkspaceDetails } from 'src/workspaces/dtos/getWorkspaceDetails.dto';
@@ -42,7 +43,16 @@ export class BoardsService {
                 },
             });
 
-        const workspaceUsers = workspaceUsersResult.map((user) => user.User);
+        const workspaceUsers = workspaceUsersResult.map((user) => {
+            const imageBuffer = fs.readFileSync(user.User.profileImagePath);
+
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+            return {
+                ...user.User,
+                profileImagePath: imageBinary,
+            };
+        });
         const workspaceOwner = await this.prismaService.user.findUnique({
             where: {
                 id: body.workspaceData.ownerId,
@@ -53,6 +63,10 @@ export class BoardsService {
                 profileImagePath: true,
             },
         });
+
+        workspaceOwner.profileImagePath = Buffer.from(
+            fs.readFileSync(join(workspaceOwner.profileImagePath)),
+        ).toString('base64');
 
         const data = {
             ...body.workspaceData,
@@ -183,6 +197,12 @@ export class BoardsService {
 
         const tasks = boardTasks.map((task) => {
             const steps = boardSteps.filter((step) => step.taskId === task.id);
+            if (task.attachmentImgPath) {
+                console.log(task.attachmentImgPath);
+                const imageBuffer = fs.readFileSync(task.attachmentImgPath);
+                const imageBinary = Buffer.from(imageBuffer).toString('base64');
+                return { ...task, attachmentImgPath: imageBinary, steps };
+            }
 
             return { ...task, steps };
         });
@@ -210,8 +230,17 @@ export class BoardsService {
             },
         });
 
-        const boardUsers = boardUsersResult.map((user) => user.User);
+        const boardUsers = boardUsersResult.map((user) => {
+            const imageBuffer = fs.readFileSync(user.User.profileImagePath);
 
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+            return {
+                ...user.User,
+                profileImagePath: imageBinary,
+            };
+        });
+        console.log(boardUsers);
         const workspace = await this.getWorkpaceByIdLocal({
             userData: body.userData,
             workspaceData: body.workspaceData,

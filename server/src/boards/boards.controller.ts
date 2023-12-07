@@ -4,7 +4,6 @@ import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { DeleteBoardDto } from './dtos/deleteboard.dto';
 import { GetBoardDetails } from './dtos/getBoardDetails.dto';
-import { ReorderColumnsDto } from './dtos/reorderColumns.dto';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
 import { Res, Get, Body, Post, Delete, Controller, Put } from '@nestjs/common';
 

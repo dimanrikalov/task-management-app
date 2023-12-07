@@ -4,10 +4,10 @@ import styles from './message.module.css';
 interface IMessageProps {
 	content: string
 	isUser: boolean;
-	profileImg: string;
+	profileImgPath: string;
 }
 
-export const Message = ({ content, profileImg, isUser }: IMessageProps) => {
+export const Message = ({ content, profileImgPath, isUser }: IMessageProps) => {
 	return (
 		<div className={classNames(styles.container, isUser && styles.invert)}>
 			<div className={classNames(styles.message, isUser && styles.invert)}>
@@ -16,7 +16,7 @@ export const Message = ({ content, profileImg, isUser }: IMessageProps) => {
 				</p>
 			</div>
 			<div className={classNames(styles.author, isUser && styles.invert)}>
-				<img src={`data:image/png;base64,${profileImg}`} alt="user-img" />
+				<img src={profileImgPath} alt="user-img" />
 			</div>
 		</div>
 	);

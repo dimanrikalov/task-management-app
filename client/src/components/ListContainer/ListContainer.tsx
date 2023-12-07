@@ -39,12 +39,14 @@ export const ListContainer = ({
 													key={colleague.id}
 													showBtn={false}
 													email={colleague.email}
+													profileImgPath={colleague.profileImagePath}
 													removeHandler={() => removeUser(colleague)}
 												/>
 											}
 											return <UserEntry
 												key={colleague.id}
 												email={colleague.email}
+												profileImgPath={colleague.profileImagePath}
 												removeHandler={() => removeUser(colleague)}
 											/>
 										})

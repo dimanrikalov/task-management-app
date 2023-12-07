@@ -15,18 +15,19 @@ export interface ITask {
 	steps: IStep[];
 	title: string;
 	progress: number;
+	assigneeId: number;
 	priority: PRIORITY;
 	attachmentImgPath: string
-
 }
 
 interface ITaskProps {
 	task: ITask;
 	index: number;
 	onClick(): void;
+	assigneeImgPath: string;
 }
 
-export const Task = ({ task, index, onClick }: ITaskProps) => {
+export const Task = ({ task, index, onClick, assigneeImgPath }: ITaskProps) => {
 	return (
 		<Draggable
 			index={index}
@@ -35,7 +36,7 @@ export const Task = ({ task, index, onClick }: ITaskProps) => {
 			{
 				(provided) => (
 					<div
-					onClick={onClick}
+						onClick={onClick}
 						ref={provided.innerRef}
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
@@ -43,7 +44,10 @@ export const Task = ({ task, index, onClick }: ITaskProps) => {
 					>
 						{task.attachmentImgPath && (
 							<div className={styles.taskImg}>
-								<img src={task.attachmentImgPath} alt="task-img" />
+								<img
+									alt="task-img"
+									src={`data:image/png;base64,${task.attachmentImgPath}`}
+								/>
 							</div>
 						)}
 						<h4 className={styles.title}>
@@ -61,7 +65,7 @@ export const Task = ({ task, index, onClick }: ITaskProps) => {
 								<div className={styles.userImg}>
 									<img
 										alt="profile-img"
-										src={'/imgs/profile-img.jpeg'}
+										src={assigneeImgPath}
 									/>
 								</div>
 							</div>

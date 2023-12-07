@@ -1,6 +1,7 @@
 import styles from './column.module.css';
 import { ITask, Task } from '../Task/Task';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 
 
@@ -9,11 +10,12 @@ interface IColumnProps {
 	index: number;
 	title: string;
 	tasks: ITask[];
+	users: IUser[];
 	callForRefresh(): void;
 	onClick(columnId: number): void;
 }
 
-export const Column = ({ id, index, title, onClick, tasks }: IColumnProps) => {
+export const Column = ({ id, index, users, title, onClick, tasks }: IColumnProps) => {
 	return (
 		<Draggable
 			index={index}
@@ -46,6 +48,9 @@ export const Column = ({ id, index, title, onClick, tasks }: IColumnProps) => {
 														index={index}
 														key={task.id.toString()}
 														onClick={() => onClick(id)}
+														assigneeImgPath={
+															users.find(user => user.id === task.assigneeId)?.profileImagePath!
+														}
 													/>
 												))}
 										</div>

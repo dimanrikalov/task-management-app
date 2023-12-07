@@ -5,8 +5,8 @@ import { Chat } from '@/components/Chat/Chat';
 import { Modal } from '@/components/Modal/Modal';
 import { Column } from '@/components/Column/Column';
 import { useBoardViewModel } from './Board.viewmodel';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { BackButton } from '@/components/BackButton/BackButton';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { CreateTaskView } from '../CreateTaskView/CreateTask.view';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
@@ -155,6 +155,7 @@ export const BoardView = () => {
 													tasks={column.tasks}
 													callForRefresh={operations.callForRefresh}
 													onClick={operations.toggleIsCreateTaskModalOpen}
+													users={[...state.workspaceUsers]}
 												/>
 											)
 										}
@@ -166,7 +167,6 @@ export const BoardView = () => {
 								)
 							}
 						</Droppable>
-
 					</DragDropContext>
 				</div>
 			</div >

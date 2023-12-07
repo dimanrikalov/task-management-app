@@ -13,7 +13,6 @@ async function bootstrap() {
         methods: ['GET, POST, PUT, DELETE'],
     });
     app.use(cookieParser());
-    app.use(json({ limit: '500mb' }));
     app.useWebSocketAdapter(new IoAdapter(app));
     app.useGlobalPipes(new ValidationPipe());
     await app.listen(3001);

@@ -36,9 +36,7 @@ export class UsersController {
                 body.userData.id,
             );
 
-            const imagePath = join(userData.profileImagePath);
-
-            const imageBuffer = fs.readFileSync(imagePath);
+            const imageBuffer = fs.readFileSync(userData.profileImagePath);
 
             const imageBinary = Buffer.from(imageBuffer).toString('base64');
 

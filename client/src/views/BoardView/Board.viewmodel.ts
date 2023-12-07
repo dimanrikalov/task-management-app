@@ -107,9 +107,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				];
 
 				//remove user from the array if the user is currently logged in
-				workspaceUsers = workspaceUsers.filter(
-					(user) => user.id !== userData.id
-				);
+				workspaceUsers = workspaceUsers
+					.filter((user) => user.id !== userData.id)
+					.map((user) => ({
+						...user,
+						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
+					}));
 				//add the currently logged in user as Me
 				workspaceUsers.unshift({
 					id: userData.id,
@@ -117,15 +120,20 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					profileImagePath: userData.profileImagePath,
 				});
 
-				const boardUsers = boardData.boardUsers.filter((user) => {
-					if (
-						!workspaceUsers.some(
-							(workspaceUser) => workspaceUser.id === user.id
-						)
-					) {
-						return user;
-					}
-				});
+				const boardUsers = boardData.boardUsers
+					.filter((user) => {
+						if (
+							!workspaceUsers.some(
+								(workspaceUser) => workspaceUser.id === user.id
+							)
+						) {
+							return user;
+						}
+					})
+					.map((user) => ({
+						...user,
+						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
+					}));
 				setBoardData({
 					...boardData,
 					boardUsers: [...workspaceUsers, ...boardUsers],

@@ -32,10 +32,7 @@ export class MessagesService {
         });
 
         return messages.map((message) => {
-        
-            const imagePath = join(message.User.profileImagePath);
-
-            const imageBuffer = fs.readFileSync(imagePath);
+            const imageBuffer = fs.readFileSync(message.User.profileImagePath);
 
             const imageBinary = Buffer.from(imageBuffer).toString('base64');
 
