@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { IOutletContext } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/fetcher';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 interface ICreateWorkspaceState {
@@ -38,6 +39,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 
 	const createWorkspace = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
 		if (!inputValue) {
 			setErrorMessage('A workspace name is required!');
 			return;
@@ -50,27 +52,20 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 		}
 
 		try {
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/workspaces`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`,
-					},
-					credentials: 'include', // Include credentials (cookies) in the request
-					body: JSON.stringify({
-						name: inputValue,
-						colleagues: colleagues
-							.map((colleague) => colleague.id)
-							.filter(
-								(colleagueId) => colleagueId !== userData.id
-							),
-					}),
-				}
-			);
+			const body = {
+				name: inputValue,
+				colleagues: colleagues
+					.map((colleague) => colleague.id)
+					.filter((colleagueId) => colleagueId !== userData.id),
+			};
 
-			const data = await res.json();
+			const data = await request({
+				body,
+				accessToken,
+				method: METHODS.POST,
+				endpoint: WORKSPACE_ENDPOINTS.BASE,
+			});
+
 			if (data.statusCode === 400) {
 				if (data.message.length) {
 					throw new Error(data.message[0]);

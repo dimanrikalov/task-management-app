@@ -1,15 +1,22 @@
+import {
+	request,
+	METHODS,
+	USER_ENDPOINTS,
+	BOARD_ENDPOINTS,
+	WORKSPACE_ENDPOINTS,
+} from '@/utils/fetcher';
 import { deleteTokens } from '@/utils';
 import { useState, useEffect } from 'react';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
-enum EntriesType {
+export enum ENTRIES_TYPES {
 	BOARDS = 'boards',
 	WORKSPACES = 'workspaces',
 }
 
-export enum IModalsStateKeys {
+export enum MODALS_STATE_KEYS {
 	CREATE_BOARD_IS_OPEN = 'createBoardIsOpen',
 	EDIT_PROFILE_IS_OPEN = 'editProfileIsOpen',
 	CREATE_WORKSPACE_IS_OPEN = 'createWorkspaceIsOpen',
@@ -54,6 +61,7 @@ export interface IUserStats {
 }
 
 interface IUseHomeViewmodelState {
+	date: string;
 	userData: IUserData;
 	filteredLists: ILists;
 	userStats: IUserStats;
@@ -61,9 +69,16 @@ interface IUseHomeViewmodelState {
 	searchInputs: ISearchInputs;
 }
 
+const options: Intl.DateTimeFormatOptions = {
+	month: 'long',
+	day: 'numeric',
+	year: 'numeric',
+	weekday: 'long',
+};
+
 interface IUserHomeViewmodelOperations {
 	logout(): void;
-	toggleModal(key: IModalsStateKeys): void;
+	toggleModal(key: MODALS_STATE_KEYS): void;
 	handleFilterInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -80,12 +95,10 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		boards: [],
 		workspaces: [],
 	});
-
 	const [searchInputs, setSearchInputs] = useState<ISearchInputs>({
 		searchBoards: '',
 		searchWorkspaces: '',
 	});
-
 	const [modalsState, setModalsState] = useState<IModalsState>({
 		createBoardIsOpen: false,
 		editProfileIsOpen: false,
@@ -98,12 +111,13 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		pendingTasksCount: -1,
 		completedTasksCount: -1,
 	});
+	const date = new Date().toLocaleDateString('en-US', options);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 
 	useEffect(() => {
 		fetchUserStats(accessToken);
-		fetchEntries(accessToken, EntriesType.BOARDS);
-		fetchEntries(accessToken, EntriesType.WORKSPACES);
+		fetchEntries(accessToken, ENTRIES_TYPES.BOARDS);
+		fetchEntries(accessToken, ENTRIES_TYPES.WORKSPACES);
 	}, [accessToken]);
 
 	useEffect(() => {
@@ -114,33 +128,43 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		console.log(lists);
 	}, [lists]);
 
+	//filter out entries based on search inputs
 	useEffect(() => {
-		setFilteredLists(() => {
-			const boards = lists.boards.filter((x) =>
-				x.name
+		const filterBoards = (input: string, entries: IHomeBoardEntry[]) => {
+			return entries.filter((entry) =>
+				entry.name
 					.trim()
 					.toLowerCase()
-					.includes(searchInputs.searchBoards.trim().toLowerCase())
+					.includes(input.trim().toLowerCase())
 			);
-			const workspaces = lists.workspaces.filter(
-				(x) =>
-					x.name
+		};
+
+		const filterWorkspaces = (
+			input: string,
+			entries: IHomeWorkspaceEntry[]
+		) => {
+			return entries.filter(
+				(entry) =>
+					entry.name
 						.trim()
 						.toLowerCase()
-						.includes(
-							searchInputs.searchWorkspaces.trim().toLowerCase()
-						) ||
-					`${x.ownerName}`
+						.includes(input.trim().toLowerCase()) ||
+					entry.ownerName
 						.trim()
 						.toLowerCase()
 						.includes(
 							searchInputs.searchWorkspaces.trim().toLowerCase()
 						)
 			);
+		};
 
+		setFilteredLists(() => {
 			return {
-				boards,
-				workspaces,
+				boards: filterBoards(searchInputs.searchBoards, lists.boards),
+				workspaces: filterWorkspaces(
+					searchInputs.searchWorkspaces,
+					lists.workspaces
+				),
 			};
 		});
 	}, [searchInputs]);
@@ -150,7 +174,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		navigate('/');
 	};
 
-	const toggleModal = (key: IModalsStateKeys) => {
+	const toggleModal = (key: MODALS_STATE_KEYS) => {
 		setModalsState((prev) => ({
 			...prev,
 			[key]: !prev[key],
@@ -166,46 +190,36 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		}));
 	};
 
-	const fetchEntries = async (accessToken: string, entries: EntriesType) => {
+	const fetchUserStats = async (accessToken: string) => {
 		try {
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/${entries}`,
-				{
-					method: 'GET',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
-				}
-			);
-			const data = await res.json();
-			setLists((prev) => ({ ...prev, [entries]: data }));
+			const data = await request({
+				accessToken,
+				method: METHODS.GET,
+				endpoint: USER_ENDPOINTS.STATS,
+			});
+			setUserStats(data);
 			console.log(data);
 		} catch (err: any) {
 			console.log(err.message);
-			if (
-				['Unauthorized access!', 'Invalid JWT token!'].includes(
-					err.message
-				)
-			) {
-				navigate('/');
-			}
 		}
 	};
 
-	const fetchUserStats = async (accessToken: string) => {
+	const fetchEntries = async (
+		accessToken: string,
+		entries: ENTRIES_TYPES
+	) => {
 		try {
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/users/stats`,
-				{
-					method: 'GET',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
-				}
-			);
-			const data = await res.json();
+			const data = await request({
+				accessToken,
+				method: METHODS.GET,
+				endpoint:
+					entries === ENTRIES_TYPES.BOARDS
+						? BOARD_ENDPOINTS.BASE
+						: WORKSPACE_ENDPOINTS.BASE,
+			});
+
+			setLists((prev) => ({ ...prev, [entries]: data }));
 			console.log(data);
-			setUserStats(data);
 		} catch (err: any) {
 			console.log(err.message);
 		}
@@ -213,6 +227,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 
 	return {
 		state: {
+			date,
 			userData,
 			userStats,
 			modalsState,

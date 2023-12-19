@@ -1,0 +1,108 @@
+.statName {
+	font-size: 24px;
+}
+
+.icon {
+	font-size: 64px;
+	background-color: rgba(255, 255, 255, 0.35);
+	border-radius: 12px;
+}
+
+.completeTasks {
+	grid-area: complete-tasks;
+	background-color: var(--purple);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.completeTasks .header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+}
+
+.pendingTasks {
+	grid-area: pending-tasks;
+	background-color: var(--pink);
+}
+
+.totalBoards {
+	grid-area: total-boards;
+	background-color: var(--blue-main);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.totalWorkspaces {
+	grid-area: total-workspaces;
+	background-color: var(--green);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.totalMessages {
+	grid-area: total-messages;
+	background-color: var(--yellow);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+/* pending tasks */
+.pendingTasks {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.pendingTasks .header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.pendingTasks .header .icon,
+.totalWorkspaces .bottom .icon {
+	padding: 4px 8px;
+}
+
+.totalWorkspaces .bottom {
+	display: flex;
+	align-items: flex-end;
+	gap: 16px;
+	justify-content: space-between;
+}
+
+.totalMessages .bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.totalMessages .bottom .icon {
+	padding: 12px;
+}
+
+.totalMessages h2 {
+	align-self: flex-end;
+}
+
+.totalBoards .header {
+	display: flex;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.totalBoards .icon {
+	padding: 8px;
+}

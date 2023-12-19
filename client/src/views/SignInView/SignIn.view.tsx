@@ -53,20 +53,6 @@ export const SignInView = () => {
 							value={state.inputFields.password}
 							onChange={operations.handleInputChange}
 						/>
-						{/* <Input
-						name={'email'}
-						placeholder={'Email'}
-						type={'email'}
-						value={state.inputFields.email}
-						onChange={operations.handleInputChange}
-					/>
-					<Input
-						name={'password'}
-						placeholder={'Password'}
-						type={'password'}
-						value={state.inputFields.password}
-						onChange={operations.handleInputChange}
-					/> */}
 						<IntroButton message={'Sign in'} />
 					</form>
 					<p className={styles.dontHaveAnAccount}>

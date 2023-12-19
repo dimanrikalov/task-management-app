@@ -28,31 +28,31 @@ export const AuthGuard = () => {
 	const [tokens, setTokens] = useState<ITokens>(extractTokens());
 	const [userData, setUserData] = useState<IUserData | null>(null);
 
-	const refreshTokens = async () => {
-		const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/users/refresh`, {
-			credentials: 'include'
-		});
-		if (res.status === 400) {
-			throw new Error('Invalid refresh token!');
-		}
-		setTokens(extractTokens());
-	}
-
-	const getUserData = async () => {
-		const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/user`, {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${tokens.accessToken}`
-			}
-		});
-		if (res.status === 401) {
-			throw new Error('Unauthorized!')
-		}
-		const data = await res.json();
-		setUserData(data);
-	}
-
 	useEffect(() => {
+		const refreshTokens = async () => {
+			const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/users/refresh`, {
+				credentials: 'include'
+			});
+			if (res.status === 400) {
+				throw new Error('Invalid refresh token!');
+			}
+			setTokens(extractTokens());
+		}
+
+		const getUserData = async () => {
+			const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/user`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${tokens.accessToken}`
+				}
+			});
+			if (res.status === 401) {
+				throw new Error('Unauthorized!')
+			}
+			const data = await res.json();
+			setUserData(data);
+		}
+
 		const authenticate = async () => {
 			setIsLoading(true);
 			try {
@@ -72,6 +72,7 @@ export const AuthGuard = () => {
 				}
 
 				await getUserData();
+				setIsLoading(false);
 			} catch (err: any) {
 				console.log(err.message);
 				if (err.message === 'Invalid refresh token!') {
@@ -84,7 +85,6 @@ export const AuthGuard = () => {
 					return;
 				}
 			}
-			setIsLoading(false);
 		}
 
 		authenticate();

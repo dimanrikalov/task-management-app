@@ -5,6 +5,7 @@ import styles from './addColleagueInput.module.css';
 import { IOutletContext } from '@/guards/authGuard';
 import { EmailInput } from '../EmailInput/EmailInput';
 import { ListContainer } from '../ListContainer/ListContainer';
+import { METHODS, USER_ENDPOINTS, request } from '@/utils/fetcher';
 
 export interface IUser {
 	id: number;
@@ -19,6 +20,11 @@ interface IAddColleagueInputProps {
 	disableDeletionFor?: number[];
 	addColleagueHandler(colleague: IUser): void;
 	removeColleagueHandler(colleague: IUser): void;
+}
+
+interface IFetchUsersPayload {
+	email: string;
+	notIn: number[];
 }
 
 export const AddColleagueInput = ({
@@ -37,23 +43,24 @@ export const AddColleagueInput = ({
 	useEffect(() => {
 		const fetchUsers = async () => {
 			setIsLoading(true);
+
+			const body: IFetchUsersPayload = {
+				email: inputValue.trim(),
+				notIn: (colleagues || []).map(colleague => colleague.id)
+			}
+
 			try {
-				const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/users`, {
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						email: inputValue.trim(),
-						notIn: (colleagues || []).map(colleague => colleague.id)
-					})
-				});
-				const data = await res.json() as IUser[];
+				const data = await request({
+					body,
+					accessToken,
+					method: METHODS.GET,
+					endpoint: USER_ENDPOINTS.BASE,
+				}) as IUser[];
 
 				const matchesData = data.map((match) => ({
 					...match,
-					profileImagePath: `data:image/png;base64,${match.profileImagePath}`
+					profileImagePath:
+						`data:image/png;base64,${match.profileImagePath}`
 				}));
 
 				setMatches(matchesData);
@@ -95,8 +102,10 @@ export const AddColleagueInput = ({
 			)
 		}>
 			<div className={
-				classNames(styles.top,
-					enableFlex && styles.topFlex)
+				classNames(
+					styles.top,
+					enableFlex && styles.topFlex
+				)
 			}>
 				<h2>Add Colleagues</h2>
 				<EmailInput
