@@ -76,12 +76,11 @@
 }
 
 .columnsContainer {
-	display: flex;
-	gap: 32px;
 	width: 100%;
-	height: calc(100vh - 108px);
-	padding: 12px 6px 18px 6px;
+	display: flex;
 	overflow-x: auto;
+	padding: 12px 6px 18px 6px;
+	height: calc(100vh - 108px);
 }
 
 .columnsContainer.squash {

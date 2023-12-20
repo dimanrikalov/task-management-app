@@ -53,12 +53,8 @@ export const Column = ({ id, index, users, title, onClick, tasks }: IColumnProps
 														}
 													/>
 												))}
-										</div>
-
-
-										<span style={{ display: 'none' }}>
 											{provided.placeholder}
-										</span>
+										</div>
 									</>
 								)
 							}

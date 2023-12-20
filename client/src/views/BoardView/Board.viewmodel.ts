@@ -93,7 +93,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			try {
 				setIsLoading(true);
 
-				const boardData = (await request({
+				const newBoardData = (await request({
 					accessToken,
 					method: METHODS.GET,
 					endpoint: BOARD_ENDPOINTS.DETAILS(boardId),
@@ -102,8 +102,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 
 				//add workspace owner to the users with access to the workspace, and filter out the currently logged user
 				const workspaceUsers = [
-					...boardData.workspace.workspaceUsers,
-					boardData.workspace.workspaceOwner,
+					...newBoardData.workspace.workspaceUsers,
+					newBoardData.workspace.workspaceOwner,
 				]
 					.filter((user) => user.id !== userData.id)
 					.map((user) => ({
@@ -122,7 +122,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					profileImagePath: userData.profileImagePath,
 				});
 
-				const boardUsers = boardData.boardUsers
+				const boardUsers = newBoardData.boardUsers
 					.filter((user) => {
 						if (
 							!workspaceUsers.some(
@@ -138,7 +138,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					}));
 
 				setBoardData({
-					...boardData,
+					...newBoardData,
 					boardUsers: [...workspaceUsers, ...boardUsers],
 				});
 				setWorkspaceUsers(workspaceUsers);
@@ -228,6 +228,10 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const onDragEnd = async (result: IResult) => {
 		const { draggableId, source, destination, type } = result;
 
+		if (!boardData) {
+			return;
+		}
+
 		if (!destination) {
 			return;
 		}
@@ -239,8 +243,11 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			return;
 		}
 
+		// make the api request without calling for refresh
 		try {
 			if (type === 'column') {
+				//make optimistic update
+
 				await request({
 					accessToken,
 					method: METHODS.PUT,
@@ -251,6 +258,91 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					},
 				});
 			} else {
+				//make optimistic update
+
+				const srcColumn = boardData.columns.find(
+					(col) => col.id === Number(source.droppableId)
+				);
+				const destColumn = boardData.columns.find(
+					(col) => col.id === Number(destination.droppableId)
+				);
+
+				if (!srcColumn || !destColumn) {
+					return;
+				}
+
+				const srcColumnTasks = [...srcColumn.tasks];
+
+				//case where task is moved between columns
+				if (srcColumn.id !== destColumn.id) {
+					const destColumnTasks = [...destColumn.tasks];
+
+					const [task] = srcColumnTasks.splice(source.index, 1);
+					destColumnTasks.splice(destination.index, 0, task);
+
+					setBoardData((prev) => {
+						if (!prev) {
+							return null;
+						}
+
+						const updatedColumns = prev.columns.map((col) => {
+							if (col.id === Number(source.droppableId)) {
+								return {
+									...col,
+									tasks: srcColumnTasks,
+								};
+							}
+
+							if (col.id === Number(destination.droppableId)) {
+								return {
+									...col,
+									tasks: destColumnTasks,
+								};
+							}
+
+							return col;
+						});
+
+						return {
+							...prev,
+							columns: updatedColumns,
+						};
+					});
+				} else {
+					//case where task is changing only its position in the same column
+					if (source.index === destination.index) {
+						return;
+					}
+
+					if (destination.index >= destColumn.tasks.length) {
+						destination.index = destColumn.tasks.length - 1;
+					}
+
+					const [task] = srcColumnTasks.splice(source.index, 1);
+					srcColumnTasks.splice(destination.index, 0, task);
+
+					setBoardData((prev) => {
+						if (!prev) {
+							return null;
+						}
+
+						const updatedColumns = prev.columns.map((col) => {
+							if (col.id === srcColumn.id) {
+								return {
+									...col,
+									tasks: srcColumnTasks,
+								};
+							}
+							return col;
+						});
+
+						return {
+							...prev,
+							columns: updatedColumns,
+						};
+					});
+				}
+
 				await request({
 					accessToken,
 					method: METHODS.PUT,
@@ -262,7 +354,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					},
 				});
 			}
-			callForRefresh();
 		} catch (err: any) {
 			console.log(err.messsage);
 		}

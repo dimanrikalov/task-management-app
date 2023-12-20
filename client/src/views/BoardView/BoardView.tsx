@@ -165,9 +165,9 @@ export const BoardView = () => {
 												/>
 											)
 										}
-										<span style={{ display: 'none' }}>
-											{provider.placeholder}
-										</span>
+
+										{provider.placeholder}
+
 									</div>
 								)
 							}

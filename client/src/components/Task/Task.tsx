@@ -15,6 +15,7 @@ export interface ITask {
 	steps: IStep[];
 	title: string;
 	progress: number;
+	position: number;
 	assigneeId: number;
 	priority: PRIORITY;
 	attachmentImgPath: string
