@@ -226,7 +226,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	};
 
 	const onDragEnd = async (result: IResult) => {
-		const { draggableId, source, destination, type } = result;
+		const {
+			draggableId: rawDraggableId,
+			source,
+			destination,
+			type,
+		} = result;
 
 		if (!boardData) {
 			return;
@@ -236,9 +241,15 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			return;
 		}
 
+		const draggableId = rawDraggableId.split('-').pop();
+		const sourceDroppableId = source.droppableId.split('-').pop();
+		const destinationDroppableId = destination?.droppableId
+			.split('-')
+			.pop();
+
 		if (
 			destination.index === source.index &&
-			destination.droppableId === source.droppableId
+			sourceDroppableId === destinationDroppableId
 		) {
 			return;
 		}
@@ -258,8 +269,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					1
 				);
 				updatedColumns.splice(destination.index, 0, selectedColumn);
-
-				console.log('selectedColumn', selectedColumn);
 
 				setBoardData((prev) => {
 					if (!prev) {
@@ -286,10 +295,10 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				//make optimistic update
 
 				const srcColumn = boardData.columns.find(
-					(col) => col.id === Number(source.droppableId)
+					(col) => col.id === Number(sourceDroppableId)
 				);
 				const destColumn = boardData.columns.find(
-					(col) => col.id === Number(destination.droppableId)
+					(col) => col.id === Number(destinationDroppableId)
 				);
 
 				if (!srcColumn || !destColumn) {
@@ -311,14 +320,14 @@ export const useBoardViewModel = (): ViewModelReturnType<
 						}
 
 						const updatedColumns = prev.columns.map((col) => {
-							if (col.id === Number(source.droppableId)) {
+							if (col.id === Number(sourceDroppableId)) {
 								return {
 									...col,
 									tasks: srcColumnTasks,
 								};
 							}
 
-							if (col.id === Number(destination.droppableId)) {
+							if (col.id === Number(destinationDroppableId)) {
 								return {
 									...col,
 									tasks: destColumnTasks,
@@ -376,7 +385,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					body: {
 						taskId: Number(draggableId),
 						destinationPosition: destination.index,
-						destinationColumnId: Number(destination.droppableId),
+						destinationColumnId: Number(destinationDroppableId),
 					},
 				});
 			}
