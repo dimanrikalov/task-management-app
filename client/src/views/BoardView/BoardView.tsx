@@ -160,7 +160,6 @@ export const BoardView = () => {
 													title={column.name}
 													tasks={column.tasks}
 													users={[...state.workspaceUsers]}
-													callForRefresh={operations.callForRefresh}
 													onClick={operations.toggleIsCreateTaskModalOpen}
 												/>
 											)

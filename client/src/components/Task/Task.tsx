@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import styles from './task.module.css';
 import { FaCheck } from 'react-icons/fa';
 import { Draggable } from 'react-beautiful-dnd';
@@ -35,13 +36,18 @@ export const Task = ({ task, index, onClick, assigneeImgPath }: ITaskProps) => {
 			draggableId={task.id.toString()}
 		>
 			{
-				(provided) => (
+				(provided, snapshot) => (
 					<div
 						onClick={onClick}
 						ref={provided.innerRef}
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
-						className={styles.background}
+						className={
+							classNames(
+								styles.background,
+								snapshot.isDragging && styles.isDragging
+							)
+						}
 					>
 						{task.attachmentImgPath && (
 							<div className={styles.taskImg}>
@@ -58,7 +64,7 @@ export const Task = ({ task, index, onClick, assigneeImgPath }: ITaskProps) => {
 							<h5>Priority: {PRIORITY[task.priority - 1]}</h5>
 							<div className={styles.rightSide}>
 								<div className={styles.completedSteps}>
-									<FaCheck className={styles.icon} />
+									<FaCheck className={classNames(styles.icon, snapshot.isDragging && styles.invert)} />
 									<h5>
 										{task.progress}%
 									</h5>

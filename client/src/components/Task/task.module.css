@@ -6,19 +6,23 @@
 	border-radius: 16px;
 	margin-bottom: 32px;
 	flex-direction: column;
+	background-color: #f5f5f5;
 	justify-content: space-between;
-	background-color: var(--white-secondary);
 	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
-
 .background:hover {
 	cursor: grab;
 }
 
 .background:active {
 	cursor: grabbing;
+}
+
+.isDragging {
+	color: white;
+	background-color: #1da1f2;
 }
 
 .taskImg {
@@ -60,6 +64,11 @@
 	border-radius: 4px;
 	color: var(--white-main);
 	background-color: var(--blue-main);
+}
+
+.completedSteps .icon.invert {
+	color: var(--blue-main);
+	background-color: var(--white-main);
 }
 
 .userImg {

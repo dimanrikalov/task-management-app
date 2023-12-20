@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { IOutletContext } from '@/guards/authGuard';
 import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
@@ -40,6 +40,7 @@ interface ICreateTaskViewModelOperations {
 	removeStep(description: string): void;
 	toggleStatus(description: string): void;
 	createTask(columnId: number): Promise<void>;
+	setErrorMessage: Dispatch<SetStateAction<string>>;
 	changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
 	handleInputChange(
 		e: React.ChangeEvent<
@@ -181,68 +182,59 @@ export const useCreateTaskViewModel = (
 	};
 
 	const createTask = async (columnId: number) => {
-		try {
-			if (!columnId) {
-				throw new Error('Invalid column!');
-			}
+		if (!columnId) {
+			throw new Error('Invalid column!');
+		}
 
-			if (!assigneeId) {
-				throw new Error('Assignee is required!');
-			}
+		if (!assigneeId) {
+			throw new Error('Assignee is required!');
+		}
 
-			if (!inputValues.name) {
-				throw new Error('Task name is required!');
-			}
+		if (!inputValues.name) {
+			throw new Error('Task name is required!');
+		}
 
-			if (inputValues.name.length < 2) {
-				throw new Error(
-					'Task name must be at least 2 characters long!'
-				);
-			}
+		if (inputValues.name.length < 2) {
+			throw new Error('Task name must be at least 2 characters long!');
+		}
 
-			//create the task
-			const body = {
-				steps,
-				columnId,
-				assigneeId,
-				title: inputValues.name,
-				description: inputValues.description,
-				effort: Number(inputValues.effort) || 1,
-				priority: Number(inputValues.priority) || 1,
-				hoursSpent: Number(inputValues.spentHours) || 0,
-				minutesSpent: Number(inputValues.spentMinutes) || 0,
-				estimatedHours: Number(inputValues.estimatedHours) || 0,
-				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
-			};
+		//create the task
+		const body = {
+			steps,
+			columnId,
+			assigneeId,
+			title: inputValues.name,
+			description: inputValues.description,
+			effort: Number(inputValues.effort) || 1,
+			priority: Number(inputValues.priority) || 1,
+			hoursSpent: Number(inputValues.spentHours) || 0,
+			minutesSpent: Number(inputValues.spentMinutes) || 0,
+			estimatedHours: Number(inputValues.estimatedHours) || 0,
+			estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
+		};
 
-			const data = await request({
-				body,
+		const data = await request({
+			body,
+			accessToken,
+			method: METHODS.POST,
+			endpoint: TASK_ENDPOINTS.BASE,
+		});
+
+		//set task image optionally
+		if (inputValues.image) {
+			const payload = new FormData();
+			payload.append('taskImg', inputValues.image, 'task-img');
+
+			const imageUploadData = await request({
 				accessToken,
-				method: METHODS.POST,
-				endpoint: TASK_ENDPOINTS.BASE,
+				body: payload,
+				method: METHODS.PUT,
+				endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.taskId),
 			});
 
-			//set task image optionally
-			if (inputValues.image) {
-				const payload = new FormData();
-				payload.append('taskImg', inputValues.image, 'task-img');
-
-				const imageUploadData = await request({
-					accessToken,
-					body: payload,
-					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.taskId),
-				});
-
-				if (imageUploadData.errorMessage) {
-					throw new Error(imageUploadData.errorMessage);
-				}
+			if (imageUploadData.errorMessage) {
+				throw new Error(imageUploadData.errorMessage);
 			}
-
-			console.log(data);
-		} catch (err: any) {
-			setErrorMessage(err.message);
-			console.log(err.message);
 		}
 	};
 
@@ -262,6 +254,7 @@ export const useCreateTaskViewModel = (
 			toggleStatus,
 			selectAssignee,
 			clearTaskImage,
+			setErrorMessage,
 			changeTaskImage,
 			handleInputChange,
 		},

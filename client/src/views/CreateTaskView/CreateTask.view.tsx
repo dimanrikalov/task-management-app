@@ -27,9 +27,14 @@ export const CreateTaskView = ({
 	const { state, operations } = useCreateTaskViewModel(boardUsers);
 
 	const createTask = async () => {
-		await operations.createTask(columnId);
-		toggleIsCreateTaskModalOpen();
-		callForRefresh();
+		try {
+			await operations.createTask(columnId);
+			toggleIsCreateTaskModalOpen();
+			callForRefresh();
+		} catch (err: any) {
+			operations.setErrorMessage(err.message);
+			console.log(err.message);
+		}
 	}
 
 	return (

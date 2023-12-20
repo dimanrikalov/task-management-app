@@ -11,7 +11,6 @@ interface IColumnProps {
 	title: string;
 	tasks: ITask[];
 	users: IUser[];
-	callForRefresh(): void;
 	onClick(columnId: number): void;
 }
 
@@ -26,12 +25,14 @@ export const Column = ({ id, index, users, title, onClick, tasks }: IColumnProps
 					<div
 						ref={provided.innerRef}
 						{...provided.draggableProps}
-						{...provided.dragHandleProps}
 						className={styles.background}
 					>
-						<h2 className={styles.title}>{title}</h2>
+						<h2 className={styles.title}
+							{...provided.dragHandleProps}
+						>{title}</h2>
 						<Droppable
 							droppableId={id.toString()}
+							type='task'
 						>
 							{
 								(provided) => (

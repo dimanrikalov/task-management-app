@@ -253,22 +253,24 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				);
 
 				const updatedColumns = [...boardData.columns];
-				const [selectedColumn] = updatedColumns.splice(selectedColumnIndex, 1);
+				const [selectedColumn] = updatedColumns.splice(
+					selectedColumnIndex,
+					1
+				);
 				updatedColumns.splice(destination.index, 0, selectedColumn);
 
 				console.log('selectedColumn', selectedColumn);
 
 				setBoardData((prev) => {
-					if(!prev) {
+					if (!prev) {
 						return null;
 					}
 
 					return {
 						...prev,
-						columns: updatedColumns
-					}
-					
-				})
+						columns: updatedColumns,
+					};
+				});
 
 				//make request
 				await request({
