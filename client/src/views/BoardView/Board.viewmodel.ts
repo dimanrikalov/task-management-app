@@ -248,6 +248,29 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			if (type === 'column') {
 				//make optimistic update
 
+				const selectedColumnIndex = boardData.columns.findIndex(
+					(col) => col.id === Number(draggableId)
+				);
+
+				const updatedColumns = [...boardData.columns];
+				const [selectedColumn] = updatedColumns.splice(selectedColumnIndex, 1);
+				updatedColumns.splice(destination.index, 0, selectedColumn);
+
+				console.log('selectedColumn', selectedColumn);
+
+				setBoardData((prev) => {
+					if(!prev) {
+						return null;
+					}
+
+					return {
+						...prev,
+						columns: updatedColumns
+					}
+					
+				})
+
+				//make request
 				await request({
 					accessToken,
 					method: METHODS.PUT,
@@ -343,6 +366,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					});
 				}
 
+				//make request
 				await request({
 					accessToken,
 					method: METHODS.PUT,

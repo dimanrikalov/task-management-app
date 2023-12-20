@@ -25,7 +25,7 @@
 	height: 100%;
 	padding: 12px;
 	display: flex;
-	overflow-y: auto;
+	overflow-y: scroll;
 	align-items: center;
 	flex-direction: column;
 }
