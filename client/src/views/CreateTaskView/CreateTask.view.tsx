@@ -1,9 +1,7 @@
-import { ROUTES } from '@/router';
 import classNames from 'classnames';
 import { IoAdd } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { FaXmark } from 'react-icons/fa6';
-import { useNavigate } from 'react-router-dom';
 import styles from './createTaskView.module.css';
 import { useCreateTaskViewModel } from './CreateTask.viewmodel';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
@@ -14,20 +12,25 @@ import { ListContainer } from '@/components/ListContainer/ListContainer';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 
 interface ICreateTaskViewProps {
-	boardId: number;
 	columnId: number;
 	boardUsers: IUser[],
+	callForRefresh(): void;
 	toggleIsCreateTaskModalOpen(): void;
 }
 
 export const CreateTaskView = ({
-	boardId,
 	columnId,
 	boardUsers,
+	callForRefresh,
 	toggleIsCreateTaskModalOpen,
 }: ICreateTaskViewProps) => {
-	const navigate = useNavigate();
 	const { state, operations } = useCreateTaskViewModel(boardUsers);
+
+	const createTask = async () => {
+		await operations.createTask(columnId);
+		toggleIsCreateTaskModalOpen();
+		callForRefresh();
+	}
 
 	return (
 		<div className={styles.backgroundWrapper}>
@@ -86,21 +89,17 @@ export const CreateTaskView = ({
 						>
 							<div className={styles.imgContainer}>
 								<img
-									src={
-										state.taskImagePath ?
-											state.taskImagePath :
-											'/imgs/profile-img.jpeg'
-									}
-									alt="profile-img"
+									alt="task-img"
 									className={styles.previewImage}
+									src={state.taskImagePath || '/imgs/profile-img.jpeg'}
 								/>
 							</div>
 						</label>
 
 						<input
-							type="file"
-							name='image'
 							id='image'
+							type='file'
+							name='image'
 							className={styles.fileInput}
 							disabled={!!state.inputValues.image}
 							onChange={operations.changeTaskImage}
@@ -262,10 +261,7 @@ export const CreateTaskView = ({
 						</h3>
 						<IntroButton
 							message="Add Task"
-							onClick={() => {
-								operations.createTask(columnId);
-								navigate(ROUTES.BOARD(boardId), { replace: true });
-							}}
+							onClick={createTask}
 						/>
 					</div>
 				</div>

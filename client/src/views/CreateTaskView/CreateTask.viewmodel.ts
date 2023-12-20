@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { IOutletContext } from '@/guards/authGuard';
 import { useOutletContext } from 'react-router-dom';
+import { IOutletContext } from '@/guards/authGuard';
 import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
@@ -29,17 +29,17 @@ interface ICreateTaskViewModelState {
 	matches: IUser[];
 	progress: number;
 	errorMessage: string;
-	taskImagePath: string;
 	inputValues: IInputState;
+	taskImagePath: string | null;
 }
 
 interface ICreateTaskViewModelOperations {
 	addStep(): void;
 	clearTaskImage(): void;
 	selectAssignee(user: IUser): void;
-	createTask(columnId: number): void;
 	removeStep(description: string): void;
 	toggleStatus(description: string): void;
+	createTask(columnId: number): Promise<void>;
 	changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
 	handleInputChange(
 		e: React.ChangeEvent<
@@ -72,8 +72,8 @@ export const useCreateTaskViewModel = (
 	const { accessToken } = useOutletContext<IOutletContext>();
 	const [matches, setMatches] = useState<IUser[]>(boardUsers);
 	const [errorMessage, setErrorMessage] = useState<string>('');
-	const [taskImagePath, setTaskImagePath] = useState<string>('');
 	const [assigneeId, setAssigneeId] = useState<number | null>(null);
+	const [taskImagePath, setTaskImagePath] = useState<string | null>(null);
 
 	useEffect(() => {
 		const assignee = matches.find(
@@ -100,7 +100,7 @@ export const useCreateTaskViewModel = (
 
 	useEffect(() => {
 		if (!inputValues.image) {
-			setTaskImagePath('');
+			setTaskImagePath(null);
 			return;
 		}
 
@@ -108,6 +108,7 @@ export const useCreateTaskViewModel = (
 		reader.onloadend = () => {
 			setTaskImagePath(reader.result as string);
 		};
+
 		reader.readAsDataURL(inputValues.image);
 	}, [inputValues]);
 
@@ -130,10 +131,11 @@ export const useCreateTaskViewModel = (
 		if (!e.target.files || !e.target.files[0]) {
 			return;
 		}
+		const selectedFile = e.target.files[0];
 
 		setInputValues((prev) => ({
 			...prev,
-			image: e.target.files![0],
+			image: selectedFile,
 		}));
 
 		e.target.value = '';
@@ -198,12 +200,12 @@ export const useCreateTaskViewModel = (
 				);
 			}
 
+			//create the task
 			const body = {
 				steps,
 				columnId,
 				assigneeId,
 				title: inputValues.name,
-				attachmentImgPath: taskImagePath,
 				description: inputValues.description,
 				effort: Number(inputValues.effort) || 1,
 				priority: Number(inputValues.priority) || 1,
@@ -219,6 +221,23 @@ export const useCreateTaskViewModel = (
 				method: METHODS.POST,
 				endpoint: TASK_ENDPOINTS.BASE,
 			});
+
+			//set task image optionally
+			if (inputValues.image) {
+				const payload = new FormData();
+				payload.append('taskImg', inputValues.image, 'task-img');
+
+				const imageUploadData = await request({
+					accessToken,
+					body: payload,
+					method: METHODS.PUT,
+					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.taskId),
+				});
+
+				if (imageUploadData.errorMessage) {
+					throw new Error(imageUploadData.errorMessage);
+				}
+			}
 
 			console.log(data);
 		} catch (err: any) {

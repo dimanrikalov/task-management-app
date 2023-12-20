@@ -153,7 +153,7 @@ export class UsersController {
             };
 
             await this.usersService.updateProfileImg(body);
-            return res.json({
+            return res.status(200).json({
                 message: 'User image updated successfully!',
             });
         } catch (err: any) {

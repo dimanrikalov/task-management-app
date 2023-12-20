@@ -81,8 +81,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
-	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
+	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
@@ -166,7 +166,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			if (!prev === true) {
 				setSelectedColumnId(columnId);
 			}
-
 			return !prev;
 		});
 	};

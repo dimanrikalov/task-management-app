@@ -72,8 +72,8 @@ export const BoardView = () => {
 				(
 					<Modal>
 						<CreateTaskView
-							boardId={state.boardData.id}
 							columnId={state.selectedColumnId}
+							callForRefresh={operations.callForRefresh}
 							boardUsers={[...state.boardData.boardUsers]}
 							toggleIsCreateTaskModalOpen={
 								() => operations.toggleIsCreateTaskModalOpen(-1)

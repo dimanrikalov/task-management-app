@@ -10,6 +10,7 @@ const BASE_URL = import.meta.env.VITE_SERVER_URL as string;
 export const TASK_ENDPOINTS = {
 	BASE: `${BASE_URL}/tasks`,
 	MOVE: `${BASE_URL}/tasks/move`,
+	UPLOAD_IMG: (taskId: number) => `${BASE_URL}/tasks/${taskId}/upload-image`,
 };
 
 export const STEP_ENDPOINTS = {

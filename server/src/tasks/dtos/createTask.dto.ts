@@ -28,7 +28,6 @@ export class CreateTaskDto extends BaseTasksDto {
 
     @IsOptional()
     @IsString()
-    @MaxLength(1024)
     attachmentImgPath?: string;
 
     @IsOptional()

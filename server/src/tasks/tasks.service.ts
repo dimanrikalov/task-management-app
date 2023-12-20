@@ -1,10 +1,16 @@
+import * as fs from 'fs';
+import { promisify } from 'util';
 import { Injectable } from '@nestjs/common';
 import { TasksGateway } from './tasks.gateway';
 import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
 import { StepsService } from 'src/steps/steps.service';
+import { extractJWTData } from 'src/jwt/extractJWTData';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
+
+const unlink = promisify(fs.unlink);
 
 @Injectable()
 export class TasksService {
@@ -13,6 +19,14 @@ export class TasksService {
         private readonly stepsService: StepsService,
         private readonly prismaService: PrismaService,
     ) {}
+
+    async getById(id: number) {
+        return await this.prismaService.task.findUnique({
+            where: {
+                id,
+            },
+        });
+    }
 
     stepsHaveRepeatingDescriptions(arr: any[], propertyName: string) {
         const valueSet = new Set();
@@ -149,6 +163,31 @@ export class TasksService {
         this.tasksGateway.handleTaskCreated({
             message: 'New task created.',
             affectedBoardId: body.boardData.id,
+        });
+
+        return task.id;
+    }
+
+    async uploadTaskImg(body: UploadTaskImgDto) {
+        // Check if the file exists before attempting to delete it
+        if (fs.existsSync(body.task.attachmentImgPath)) {
+            try {
+                // Delete the existing file
+                await unlink(body.task.attachmentImgPath);
+                console.log('File deleted successfully');
+            } catch (error) {
+                console.error('Error deleting file:', error);
+            }
+        }
+
+        // Update the user's profile image path
+        await this.prismaService.task.update({
+            where: {
+                id: body.task.id,
+            },
+            data: {
+                attachmentImgPath: body.taskImagePath,
+            },
         });
     }
 
