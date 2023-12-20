@@ -110,11 +110,11 @@ select:focus,
 
 .imgInput {
 	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
 	border: none;
+	display: flex;
 	cursor: pointer;
+	align-items: center;
+	flex-direction: column;
 }
 
 .fileInput {
@@ -135,12 +135,12 @@ select:focus,
 }
 
 .imgOperationBtn {
-	font-size: 38px;
 	width: 100%;
-	transition: 200ms ease-in-out;
+	padding: 8px;
+	font-size: 38px;
 	cursor: pointer;
 	border-radius: 9px;
-	padding: 8px;
+	transition: 200ms ease-in-out;
 }
 
 .submitBtn {
@@ -155,52 +155,59 @@ select:focus,
 .disabled:first-of-type,
 .disabled:last-of-type {
 	cursor: default;
-	background-color: grey;
 	border-color: grey;
 	cursor: not-allowed;
+	background-color: grey;
+}
+
+.disabled:first-of-type:hover,
+.disabled:last-of-type:hover {
+	color: white;
+	border-color: grey;
+	background-color: grey;
 }
 
 .priority,
 .effort {
+	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	width: 100%;
 }
 
 .select {
 	width: 50%;
-	font-size: 16px;
-	text-align: center;
-	cursor: pointer;
-	border-radius: 9px;
 	padding: 6px;
+	cursor: pointer;
+	font-size: 16px;
+	border-radius: 9px;
+	text-align: center;
 }
 
 .timeEstimation {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
 	gap: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .timeEstimation .rightSide {
-	display: flex;
 	gap: 9px;
+	display: flex;
 }
 
 .inputDiv {
+	gap: 6px;
 	display: flex;
 	align-items: center;
-	gap: 6px;
 }
 
 .inputDiv > input {
 	width: 64px;
 	height: 36px;
+	font-size: 16px;
 	border-radius: 9px;
 	text-align: center;
-	font-size: 16px;
 }
 
 /* right part */
@@ -223,9 +230,9 @@ select:focus,
 }
 
 .stepInputDiv {
+	gap: 24px;
 	display: flex;
 	align-items: center;
-	gap: 24px;
 }
 
 .stepInputDiv > input {
@@ -250,9 +257,9 @@ select:focus,
 }
 
 .assigneeInput {
+	gap: 16px;
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
 }
 
 .fieldTitle {

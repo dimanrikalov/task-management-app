@@ -7,7 +7,8 @@ import { IOutletContext } from '@/guards/authGuard';
 import { BackButton } from '../BackButton/BackButton';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { useLocation, useOutletContext } from 'react-router-dom';
-
+import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
+import { MESSAGE_ENDPOINTS, METHODS, request } from '@/utils/requester';
 
 export interface IMessage {
 	id: number;
@@ -27,24 +28,22 @@ interface IChatProps {
 export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 	const [inputValue, setInputValue] = useState('');
 	const { userData } = useOutletContext<IOutletContext>();
-	const boardId = useLocation().pathname.split('/').pop();
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const { accessToken } = useOutletContext<IOutletContext>();
+	const boardId = Number(useLocation().pathname.split('/').pop());
 	const [chatMessages, setChatMessages] = useState<IMessage[]>([]);
 	const [refetchMessages, setRefetchMessages] = useState<boolean>(true);
 
 	useEffect(() => {
+		setIsLoading(true);
 		const getChatMessages = async () => {
 			try {
-				const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/boards/${boardId}/messages`, {
-					method: 'GET',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
+				const data = await request({
+					accessToken,
+					method: METHODS.GET,
+					endpoint: MESSAGE_ENDPOINTS.BASE(boardId),
+				})
 
-					}
-				});
-
-				const data = await res.json();
 				const messages = data.map((message: any) => {
 					const profileImgPath = `data:image/png;base64,${message.profileImgPath}`;
 					return {
@@ -52,12 +51,13 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 						profileImgPath
 					}
 				})
+
 				setChatMessages(messages);
 			} catch (err: any) {
 				console.log(err.message);
 			}
+			setIsLoading(false);
 		}
-
 
 		if (refetchMessages) {
 			getChatMessages();
@@ -68,19 +68,16 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 
 	const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		try {
-			await fetch(`${import.meta.env.VITE_SERVER_URL}/boards/${boardId}/messages`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					'Content-Type': 'application/json',
+		if (!inputValue) return;
 
-				},
-				body: JSON.stringify({
-					boardId: boardId,
-					content: inputValue
-				})
+		try {
+			await request({
+				accessToken,
+				method: METHODS.POST,
+				body: { boardId, content: inputValue },
+				endpoint: MESSAGE_ENDPOINTS.BASE(boardId),
 			})
+
 			setInputValue('');
 			setRefetchMessages(true);
 		} catch (err: any) {
@@ -108,14 +105,15 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 			</div>
 			<div className={styles.chat}>
 				{
-					chatMessages.map((message: IMessage) =>
-						<Message
-							key={message.id}
-							content={message.content}
-							profileImgPath={message.profileImgPath}
-							isUser={message.writtenBy === userData.id}
-						/>
-					)
+					isLoading ? <LoadingOverlay />
+						: chatMessages.map((message: IMessage) =>
+							<Message
+								key={message.id}
+								content={message.content}
+								profileImgPath={message.profileImgPath}
+								isUser={message.writtenBy === userData.id}
+							/>
+						)
 				}
 
 			</div>
@@ -131,12 +129,9 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 					onChange={(e) => setInputValue(e.target.value)}
 				/>
 
-				<VscSend
-					disabled={inputValue == ''}
-					onClick={sendMessage}
-					className={classNames(styles.sendBtn, inputValue !== '' && styles.enable)}
-				/>
-
+				<button className={classNames(styles.sendBtn, inputValue !== '' && styles.enable)}>
+					<VscSend disabled={inputValue == ''} />
+				</button>
 			</form>
 		</div>
 	);

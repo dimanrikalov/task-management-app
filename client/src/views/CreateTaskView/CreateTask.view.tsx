@@ -1,7 +1,9 @@
+import { ROUTES } from '@/router';
 import classNames from 'classnames';
 import { IoAdd } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { FaXmark } from 'react-icons/fa6';
+import { useNavigate } from 'react-router-dom';
 import styles from './createTaskView.module.css';
 import { useCreateTaskViewModel } from './CreateTask.viewmodel';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
@@ -10,7 +12,6 @@ import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { ListContainer } from '@/components/ListContainer/ListContainer';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
-import { useNavigate } from 'react-router-dom';
 
 interface ICreateTaskViewProps {
 	boardId: number;
@@ -263,7 +264,7 @@ export const CreateTaskView = ({
 							message="Add Task"
 							onClick={() => {
 								operations.createTask(columnId);
-								navigate(`/boards/${boardId}`, { replace: true });
+								navigate(ROUTES.BOARD(boardId), { replace: true });
 							}}
 						/>
 					</div>

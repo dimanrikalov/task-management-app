@@ -1,8 +1,13 @@
+import {
+	IDetailedBoard,
+	IDetailedWorkspace,
+} from '../CreateBoardView/CreateBoard.viewmodel';
+import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
-import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
+import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 
 export enum MODAL_STATES_KEYS {
@@ -11,10 +16,7 @@ export enum MODAL_STATES_KEYS {
 	DELETE_WORKSPACE = 'deleteWorkspaceIsOpen',
 }
 
-export enum EDIT_COLLEAGUE_METHOD {
-	POST = 'POST',
-	DELETE = 'DELETE',
-}
+export type EDIT_COLLEAGUE_METHOD = METHODS.POST | METHODS.DELETE;
 
 type IModalStates = {
 	[key in MODAL_STATES_KEYS]: boolean;
@@ -24,6 +26,7 @@ interface IWorkspaceViewModelState {
 	inputValue: string;
 	userData: IUserData;
 	modals: IModalStates;
+	filteredBoards: IDetailedBoard[];
 	workspaceData: IDetailedWorkspace | null;
 }
 
@@ -45,42 +48,53 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	const { pathname } = useLocation();
 	const [workspaceData, setWorkspaceData] =
 		useState<IDetailedWorkspace | null>(null);
-	const workspaceId = pathname.split('/').pop();
 	const [inputValue, setInputValue] = useState('');
+	const workspaceId = Number(pathname.split('/').pop());
 	const [refreshWorkspace, setRefreshWorkspace] = useState(true);
 	const { userData, accessToken } = useOutletContext<IOutletContext>();
+	const [filteredBoards, setFilteredBoards] = useState<IDetailedBoard[]>([]);
 	const [modals, setModals] = useState<IModalStates>({
 		[MODAL_STATES_KEYS.CREATE_BOARD]: false,
 		[MODAL_STATES_KEYS.EDIT_COLLEAGUES]: false,
 		[MODAL_STATES_KEYS.DELETE_WORKSPACE]: false,
 	});
 
+	//search filter
+	useEffect(() => {
+		setFilteredBoards(
+			(workspaceData?.boards || []).filter((board) =>
+				board.name
+					.trim()
+					.toLowerCase()
+					.includes(inputValue.trim().toLowerCase())
+			)
+		);
+	}, [inputValue]);
+
 	useEffect(() => {
 		const fetchWorkspace = async () => {
 			try {
-				const res = await fetch(
-					`${
-						import.meta.env.VITE_SERVER_URL
-					}/workspaces/${workspaceId}/details`,
-					{
-						method: 'GET',
-						headers: {
-							'Content-Type': 'application/json',
-							Authorization: `Bearer ${accessToken}`,
-						},
-					}
-				);
+				const workspaceData = (await request({
+					accessToken,
+					method: METHODS.GET,
+					endpoint: WORKSPACE_ENDPOINTS.DETAILS(workspaceId),
+				})) as IDetailedWorkspace;
 
-				const data = (await res.json()) as IDetailedWorkspace;
+				//add workspace owner to the users with access to the workspace, and filter out the currently logged user
+				const workspaceUsers = [
+					workspaceData.workspaceOwner,
+					...workspaceData.workspaceUsers,
+				]
+					.filter((user) => user.id !== userData.id)
+					.map((user) => ({
+						...user,
+						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
+					}));
 
-				let workspaceUsers = [
-					data.workspaceOwner,
-					...data.workspaceUsers,
-				];
-
-				workspaceUsers = workspaceUsers.filter(
-					(user) => user.id !== userData.id
-				).map(user => ({...user, profileImagePath: `data:image/png;base64,${user.profileImagePath}`}));
+				/* 
+					add the currently logged user as 'Me' on top of the list
+					and directly give the profileImagePath as we have it loaded from the authGuard
+				*/
 
 				workspaceUsers.unshift({
 					email: 'Me',
@@ -88,11 +102,10 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 					profileImagePath: userData.profileImagePath,
 				});
 
-				setWorkspaceData({
-					...data,
-					workspaceUsers,
-				});
-				
+				workspaceData.workspaceUsers = workspaceUsers;
+
+				setWorkspaceData(workspaceData);
+				setFilteredBoards(workspaceData.boards);
 				setRefreshWorkspace(false);
 			} catch (err: any) {
 				console.log(err.message);
@@ -109,7 +122,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	};
 
 	const goToBoard = (boardId: number) => {
-		navigate(`/boards/${boardId}`);
+		navigate(ROUTES.BOARD(boardId));
 	};
 
 	const toggleModal = (key: MODAL_STATES_KEYS) => {
@@ -121,12 +134,12 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	};
 
 	const addWorkspaceColleague = async (colleague: IUser) => {
-		await editWorkspaceColleague(colleague, EDIT_COLLEAGUE_METHOD.POST);
+		await editWorkspaceColleague(colleague, METHODS.POST);
 		setRefreshWorkspace(true);
 	};
 
 	const removeWorkspaceColleague = async (colleague: IUser) => {
-		await editWorkspaceColleague(colleague, EDIT_COLLEAGUE_METHOD.DELETE);
+		await editWorkspaceColleague(colleague, METHODS.DELETE);
 		setRefreshWorkspace(true);
 	};
 
@@ -135,18 +148,12 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			throw new Error('Workspace data missing!');
 		}
 		try {
-			await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/workspaces/${
-					workspaceData.id
-				}`,
-				{
-					method: 'DELETE',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
-				}
-			);
-			navigate('/dashboard');
+			await request({
+				accessToken,
+				method: METHODS.DELETE,
+				endpoint: WORKSPACE_ENDPOINTS.WORKSPACE(workspaceData.id),
+			});
+			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
 			console.log(err.message);
 		}
@@ -162,21 +169,12 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 		}
 
 		try {
-			await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/workspaces/${
-					workspaceData.id
-				}/colleagues`,
-				{
-					method,
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						colleagueId: colleague.id,
-					}),
-				}
-			);
+			await request({
+				method,
+				accessToken,
+				body: { colleagueId: colleague.id },
+				endpoint: WORKSPACE_ENDPOINTS.COLLEAGUES(workspaceData.id),
+			});
 		} catch (err: any) {
 			console.log(err.message);
 		}
@@ -188,6 +186,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			userData,
 			inputValue,
 			workspaceData,
+			filteredBoards,
 		},
 		operations: {
 			goToBoard,

@@ -5,7 +5,7 @@ import styles from './addColleagueInput.module.css';
 import { IOutletContext } from '@/guards/authGuard';
 import { EmailInput } from '../EmailInput/EmailInput';
 import { ListContainer } from '../ListContainer/ListContainer';
-import { METHODS, USER_ENDPOINTS, request } from '@/utils/fetcher';
+import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 
 export interface IUser {
 	id: number;
@@ -53,7 +53,7 @@ export const AddColleagueInput = ({
 				const data = await request({
 					body,
 					accessToken,
-					method: METHODS.GET,
+					method: METHODS.POST,
 					endpoint: USER_ENDPOINTS.BASE,
 				}) as IUser[];
 
@@ -73,7 +73,7 @@ export const AddColleagueInput = ({
 		const timeout = setTimeout(() => {
 			if (!inputValue) return;
 			fetchUsers();
-		}, 300);
+		}, 100);
 
 		return () => clearTimeout(timeout);
 	}, [inputValue]);
@@ -120,7 +120,7 @@ export const AddColleagueInput = ({
 				classNames(enableFlex && styles.bottomFlex)
 			}>
 				<ListContainer
-					mode="users"
+					mode='users'
 					title={title}
 					removeUser={removeUser}
 					colleagues={colleagues}

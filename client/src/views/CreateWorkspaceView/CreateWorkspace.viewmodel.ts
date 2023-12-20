@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { ROUTES } from '@/router';
 import { IOutletContext } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/fetcher';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
+import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
 
 interface ICreateWorkspaceState {
 	userData: IUser;
@@ -13,7 +14,6 @@ interface ICreateWorkspaceState {
 }
 
 interface ICreateWorkspaceOperations {
-	goToWorkspace(workspaceId: string): void;
 	addToColleaguesToAdd(colleague: IUser): void;
 	removeFromColleaguesToAdd(colleague: IUser): void;
 	createWorkspace(e: React.FormEvent<HTMLFormElement>): void;
@@ -76,7 +76,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 				throw new Error(data.errorMessage);
 			}
 
-			goToWorkspace(data.workspaceId);
+			navigate(ROUTES.WORKSPACE(data.workspaceId));
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);
@@ -93,10 +93,6 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 		]);
 	};
 
-	const goToWorkspace = (workspaceId: string) => {
-		navigate(`/workspaces/${workspaceId}`);
-	};
-
 	return {
 		state: {
 			userData,
@@ -105,7 +101,6 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 			errorMessage,
 		},
 		operations: {
-			goToWorkspace,
 			createWorkspace,
 			handleInputChange,
 			addToColleaguesToAdd,

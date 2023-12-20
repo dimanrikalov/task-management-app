@@ -72,7 +72,7 @@ export const WorkspaceView = () => {
 									}
 								/>
 								<DeleteConfirmation
-									entityName="My class workspace"
+									entityName={state.workspaceData.name}
 									onConfirm={operations.deleteWorkspace}
 									onCancel={
 										() => operations.toggleModal(MODAL_STATES_KEYS.DELETE_WORKSPACE)
@@ -133,7 +133,7 @@ export const WorkspaceView = () => {
 						<TiDocumentAdd className={styles.icon} />
 					</button>
 					{
-						state.workspaceData?.boards.map((board) =>
+						state.filteredBoards.map((board) =>
 							<BoardCard
 								key={board.id}
 								boardName={board.name}
@@ -143,7 +143,6 @@ export const WorkspaceView = () => {
 							/>
 						)
 					}
-
 				</div>
 			</div>
 		</>

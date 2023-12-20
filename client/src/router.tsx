@@ -8,6 +8,15 @@ import { SignInView } from './views/SignInView/SignIn.view';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { WorkspaceView } from './views/WorkspaceView/Workspace.view';
 
+export const ROUTES = {
+	HOME: '/',
+	DASHBOARD: '/dashboard',
+	SIGN_IN: '/auth/sign-in',
+	SIGN_UP: '/auth/sign-up',
+	BOARD: (boardId: number) => `/boards/${boardId}`,
+	WORKSPACE: (workspaceId: number) => `workspaces/${workspaceId}`
+}
+
 const router = createHashRouter([
 	{
 		path: '/',

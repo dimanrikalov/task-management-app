@@ -4,7 +4,8 @@ import {
 	USER_ENDPOINTS,
 	BOARD_ENDPOINTS,
 	WORKSPACE_ENDPOINTS,
-} from '@/utils/fetcher';
+} from '@/utils/requester';
+import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
 import { useState, useEffect } from 'react';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
@@ -171,7 +172,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 
 	const logout = () => {
 		deleteTokens();
-		navigate('/');
+		navigate(ROUTES.HOME);
 	};
 
 	const toggleModal = (key: MODALS_STATE_KEYS) => {

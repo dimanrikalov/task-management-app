@@ -1,5 +1,7 @@
+import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
 import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 
@@ -30,26 +32,28 @@ export const AuthGuard = () => {
 
 	useEffect(() => {
 		const refreshTokens = async () => {
-			const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/users/refresh`, {
-				credentials: 'include'
-			});
-			if (res.status === 400) {
+			const data = await request({
+				method: METHODS.GET,
+				endpoint: USER_ENDPOINTS.REFRESH
+			})
+
+			if (data.errorMessage) {
+				console.log(data.errorMessage);
 				throw new Error('Invalid refresh token!');
 			}
 			setTokens(extractTokens());
 		}
 
 		const getUserData = async () => {
-			const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/user`, {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${tokens.accessToken}`
-				}
+			const data = await request({
+				method: METHODS.GET,
+				endpoint: USER_ENDPOINTS.USER,
+				accessToken: tokens.accessToken,
 			});
-			if (res.status === 401) {
-				throw new Error('Unauthorized!')
+
+			if (data.errorMessage) {
+				throw new Error(data.errorMessage);
 			}
-			const data = await res.json();
 			setUserData(data);
 		}
 
@@ -59,7 +63,7 @@ export const AuthGuard = () => {
 				if (!tokens.accessToken) {
 					if (!tokens.refreshToken) {
 						setIsLoading(false);
-						navigate('/auth/sign-in');
+						navigate(ROUTES.SIGN_IN);
 						return;
 					}
 
@@ -81,7 +85,7 @@ export const AuthGuard = () => {
 					return;
 				} else if (err.message === 'Unauthorized!') {
 					setIsLoading(false);
-					navigate('/auth/sign-in')
+					navigate(ROUTES.SIGN_IN)
 					return;
 				}
 			}
@@ -96,7 +100,7 @@ export const AuthGuard = () => {
 	}
 
 	if (!userData) {
-		return <Navigate to={'/auth/sign-in'} />
+		return <Navigate to={ROUTES.SIGN_IN} />
 	}
 
 	userData.profileImagePath = `data:image/png;base64,${userData.profileImg}`;

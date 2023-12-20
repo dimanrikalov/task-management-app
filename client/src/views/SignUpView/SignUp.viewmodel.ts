@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { ROUTES } from '@/router';
 import { useNavigate } from 'react-router-dom';
+import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 interface IInputFields {
@@ -43,30 +45,23 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 	};
 
 	const goToInitialView = () => {
-		navigate('/');
+		navigate(ROUTES.HOME);
 	};
 
 	const goToSignInView = () => {
-		navigate('/auth/sign-in');
+		navigate(ROUTES.SIGN_IN);
 	};
 
 	const signUp = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
 			console.log(inputFields);
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/users/sign-up`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(inputFields),
-					credentials: 'include',
-				}
-			);
+			const data = await request({
+				body: inputFields,
+				method: METHODS.POST,
+				endpoint: USER_ENDPOINTS.SIGN_UP,
+			});
 
-			const data = await res.json();
 			if (data.statusCode === 400) {
 				throw new Error(data.message[0]);
 			}
@@ -74,7 +69,7 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 				throw new Error(data.errorMessage);
 			}
 
-			navigate('/dashboard');
+			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);

@@ -1,6 +1,8 @@
+import { ROUTES } from '@/router';
 import classNames from 'classnames';
 import styles from './board.module.css';
 import { RxCross2 } from 'react-icons/rx';
+import { Navigate } from 'react-router-dom';
 import { Chat } from '@/components/Chat/Chat';
 import { Modal } from '@/components/Modal/Modal';
 import { Column } from '@/components/Column/Column';
@@ -16,11 +18,15 @@ import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfir
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
 
-	if (!state.boardData || !state.workspaceUsers) {
+	if (state.isLoading) {
 		return <LoadingOverlay />
 	}
-	return (
 
+	if (!state.boardData || !state.workspaceUsers) {
+		return <Navigate to={ROUTES.DASHBOARD} />
+	}
+
+	return (
 		<>
 			{
 				state.isEditBoardUsersModalOpen &&
@@ -68,10 +74,10 @@ export const BoardView = () => {
 						<CreateTaskView
 							boardId={state.boardData.id}
 							columnId={state.selectedColumnId}
+							boardUsers={[...state.boardData.boardUsers]}
 							toggleIsCreateTaskModalOpen={
 								() => operations.toggleIsCreateTaskModalOpen(-1)
 							}
-							boardUsers={[...state.boardData.boardUsers]}
 						/>
 					</Modal>
 				)
@@ -153,9 +159,9 @@ export const BoardView = () => {
 													key={column.id}
 													title={column.name}
 													tasks={column.tasks}
+													users={[...state.workspaceUsers]}
 													callForRefresh={operations.callForRefresh}
 													onClick={operations.toggleIsCreateTaskModalOpen}
-													users={[...state.workspaceUsers]}
 												/>
 											)
 										}
@@ -163,7 +169,6 @@ export const BoardView = () => {
 											{provider.placeholder}
 										</span>
 									</div>
-
 								)
 							}
 						</Droppable>

@@ -1,7 +1,9 @@
+import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
 import { useEffect, useState } from 'react';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
+import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
@@ -42,7 +44,6 @@ interface IEditProfileViewModelOperations {
 	deleteUser(): void;
 	clearProfileImg(): void;
 	toggleIsDeletionModalOpen(): void;
-	updateUserImg(e: React.FormEvent): void;
 	updateUserData(e: React.FormEvent): void;
 	inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 	changeProfileImage(e: React.ChangeEvent<HTMLInputElement>): void;
@@ -81,6 +82,99 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		reader.readAsDataURL(inputValues.profileImg);
 	}, [inputValues]);
 
+	const updateUserData = async (e: React.FormEvent) => {
+		e.preventDefault();
+		const inputField = (e.currentTarget as HTMLFormElement)
+			.name as INPUT_FIELDS;
+
+		try {
+			if (inputField === INPUT_FIELDS.PROFILE_IMG) {
+				await requestProfileImgUpdate();
+			} else {
+				await requestCredentialUpdate(inputField);
+			}
+
+			setProfileImgPath(null);
+			setInputValues((prev) => ({ ...prev, profileImg: null }));
+			navigate(ROUTES.HOME); // cause refetching of user data through the guard
+		} catch (err: any) {
+			console.log(err.message);
+			setInputValues({
+				password: '',
+				lastName: '',
+				firstName: '',
+				profileImg: null,
+			});
+			setNotification({
+				message: err.message,
+				type: NOTIFICATION_TYPE.ERROR,
+			});
+		}
+	};
+
+	const requestCredentialUpdate = async (inputField: INPUT_FIELDS) => {
+		if (
+			[INPUT_FIELDS.FIRST_NAME, INPUT_FIELDS.LAST_NAME].includes(
+				inputField
+			) &&
+			(inputValues[inputField] as string).length < 2
+		) {
+			throw new Error(
+				`${inputField} must be at least 2 characters long!`
+			);
+		}
+
+		if (
+			inputField === INPUT_FIELDS.PASSWORD &&
+			!passwordRegex.test(inputValues[inputField] as string)
+		) {
+			throw new Error('Password must conform to the rules!');
+		}
+
+		await request({
+			accessToken,
+			method: METHODS.PUT,
+			endpoint: USER_ENDPOINTS.EDIT,
+			body: { [inputField]: inputValues[inputField] },
+		});
+	};
+
+	const requestProfileImgUpdate = async () => {
+		if (
+			!inputValues.profileImg ||
+			!(inputValues.profileImg instanceof File)
+		) {
+			return;
+		}
+		const body = new FormData();
+		body.append('profileImg', inputValues.profileImg, 'profile-img');
+
+		await request({
+			body,
+			accessToken,
+			method: METHODS.POST,
+			endpoint: USER_ENDPOINTS.PROFILE_IMG_EDIT,
+		});
+	};
+
+	const deleteUser = async () => {
+		try {
+			await request({
+				accessToken,
+				method: METHODS.DELETE,
+				endpoint: USER_ENDPOINTS.DELETE,
+			});
+			deleteTokens();
+			navigate(ROUTES.HOME); // force refetching of user through the guard
+		} catch (err: any) {
+			setIsDeletionModalOpen(false);
+			setNotification({
+				message: err.message,
+				type: NOTIFICATION_TYPE.ERROR,
+			});
+		}
+	};
+
 	const changeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (!e.target.files || !e.target.files[0]) {
 			return;
@@ -94,134 +188,16 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		e.target.value = '';
 	};
 
-	const clearProfileImg = () => {
-		setInputValues((prev) => ({ ...prev, profileImg: null }));
-		setProfileImgPath(null);
-	};
-
-	const updateUserData = async (e: React.FormEvent) => {
-		e.preventDefault();
-		const inputField = (e.currentTarget as HTMLFormElement)
-			.name as INPUT_FIELDS;
-
-		try {
-			if (
-				[INPUT_FIELDS.FIRST_NAME, INPUT_FIELDS.LAST_NAME].includes(
-					inputField
-				) &&
-				(inputValues[inputField] as string).length < 2
-			) {
-				throw new Error(
-					`${inputField} must be at least 2 characters long!`
-				);
-			}
-
-			if (
-				inputField === INPUT_FIELDS.PASSWORD &&
-				!passwordRegex.test(inputValues[inputField] as string)
-			) {
-				throw new Error('Password must conform to the rules!');
-			}
-
-			await fetch(`${import.meta.env.VITE_SERVER_URL}/users/edit`, {
-				method: 'PUT',
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					[inputField]: inputValues[inputField],
-				}),
-			});
-
-			setProfileImgPath(null);
-			setInputValues((prev) => ({ ...prev, profileImg: null }));
-			navigate('/'); // cause refetching of user through the guard
-		} catch (err: any) {
-			console.log(err.message);
-			setInputValues({
-				password: '',
-				lastName: '',
-				firstName: '',
-				profileImg: null,
-			});
-			setNotification({
-				message: err.message,
-				type: NOTIFICATION_TYPE.ERROR,
-			});
-		}
-	};
-
-	const updateUserImg = async (e: React.FormEvent) => {
-		e.preventDefault();
-
-		try {
-			if (
-				!inputValues.profileImg ||
-				!(inputValues.profileImg instanceof File)
-			) {
-				return;
-			}
-			let body;
-			body = new FormData();
-			body.append('profileImg', inputValues.profileImg, 'profile-img');
-
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/users/edit/profile-img`,
-				{
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
-					body,
-				}
-			);
-			const data = await res.json();
-			console.log(data);
-			setProfileImgPath(null);
-			setInputValues((prev) => ({ ...prev, profileImg: null }));
-			navigate('/'); // cause refetching of user through the guard
-		} catch (err: any) {
-			console.log('asdasdasdads');
-			console.log(err.message);
-			setInputValues({
-				password: '',
-				lastName: '',
-				firstName: '',
-				profileImg: null,
-			});
-			setNotification({
-				message: err.message,
-				type: NOTIFICATION_TYPE.ERROR,
-			});
-		}
-	};
-
-	const deleteUser = async () => {
-		try {
-			await fetch(`${import.meta.env.VITE_SERVER_URL}/users/delete`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					'Content-Type': 'application/json',
-				},
-			});
-			deleteTokens();
-			navigate('/');
-		} catch (err: any) {
-			setIsDeletionModalOpen(false);
-			setNotification({
-				message: err.message,
-				type: NOTIFICATION_TYPE.ERROR,
-			});
-		}
-	};
-
 	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValues((prev) => ({
 			...prev,
 			[e.target.name]: e.target.value,
 		}));
+	};
+
+	const clearProfileImg = () => {
+		setInputValues((prev) => ({ ...prev, profileImg: null }));
+		setProfileImgPath(null);
 	};
 
 	const toggleIsDeletionModalOpen = () => {
@@ -238,7 +214,6 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		},
 		operations: {
 			deleteUser,
-			updateUserImg,
 			updateUserData,
 			clearProfileImg,
 			inputChangeHandler,

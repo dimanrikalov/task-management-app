@@ -1,3 +1,10 @@
+import {
+	request,
+	METHODS,
+	BOARD_ENDPOINTS,
+	WORKSPACE_ENDPOINTS,
+} from '@/utils/requester';
+import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
 import { IOutletContext } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
@@ -18,7 +25,7 @@ export interface IWorkspace {
 	name: string;
 }
 
-interface IDetailedBoard {
+export interface IDetailedBoard {
 	id: number;
 	name: string;
 	workspaceId: number;
@@ -70,19 +77,16 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	useEffect(() => {
 		const fetchWorkspaces = async () => {
 			try {
-				const res = await fetch(
-					`${import.meta.env.VITE_SERVER_URL}/workspaces`,
-					{
-						method: 'GET',
-						headers: {
-							'Content-Type': 'application/json',
-							Authorization: `Bearer ${accessToken}`,
-						},
-					}
-				);
-				const workspaces = (await res.json()) as IDetailedWorkspace[];
+				//get only the workspaces to which the user has access to
+				const workspaces = (await request({
+					accessToken,
+					method: METHODS.GET,
+					endpoint: WORKSPACE_ENDPOINTS.BASE,
+				})) as IDetailedWorkspace[];
+
 				setWorkspacesData(workspaces);
 
+				//filter out all that don't match the user input
 				const matchingWorkspace = workspaces.find(
 					(workspace) =>
 						workspace.name.trim().toLowerCase() ===
@@ -94,36 +98,28 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 					return;
 				}
 
-				const getSelectedWorkspaceDetails =
-					async (): Promise<IDetailedWorkspace> => {
-						const res = await fetch(
-							`${import.meta.env.VITE_SERVER_URL}/workspaces/${
-								matchingWorkspace.id
-							}/details`,
-							{
-								method: 'GET',
-								headers: {
-									'Content-Type': 'application/json',
-									Authorization: `Bearer ${accessToken}`,
-								},
-							}
-						);
-						return (await res.json()) as IDetailedWorkspace;
-					};
+				// if there is a match fetch the details for the workspace
+				const detailedWorkspace = (await request({
+					accessToken,
+					method: METHODS.GET,
+					endpoint: WORKSPACE_ENDPOINTS.DETAILS(matchingWorkspace.id),
+				})) as IDetailedWorkspace;
 
-				const data = await getSelectedWorkspaceDetails();
-
-				let workspaceUsers = [
-					data.workspaceOwner,
-					...data.workspaceUsers,
-				];
-
-				workspaceUsers = workspaceUsers
+				//add workspace owner to the users with access to the workspace, and filter out the currently logged user
+				const workspaceUsers = [
+					detailedWorkspace.workspaceOwner,
+					...detailedWorkspace.workspaceUsers,
+				]
 					.filter((user) => user.id !== userData.id)
 					.map((user) => ({
 						...user,
 						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
 					}));
+
+				/* 
+					add the currently logged user as 'Me' on top of the list
+					and directly give the profileImagePath as we have it loaded from the authGuard
+				*/
 
 				workspaceUsers.unshift({
 					email: 'Me',
@@ -131,21 +127,18 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 					profileImagePath: userData.profileImagePath,
 				});
 
-				setSelectedWorkspace({
-					...data,
-					workspaceUsers,
-				});
+				detailedWorkspace.workspaceUsers = workspaceUsers;
 
-				return;
+				setSelectedWorkspace(detailedWorkspace);
 			} catch (err: any) {
 				console.log(err.message);
+				setSelectedWorkspace(null);
 			}
-			setSelectedWorkspace(null);
 		};
 
 		const timeout = setTimeout(() => {
 			fetchWorkspaces();
-		}, 300);
+		}, 100);
 
 		return () => clearTimeout(timeout);
 	}, [inputValues]);
@@ -161,6 +154,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 		e.preventDefault();
 		console.log(selectedWorkspace);
 		setErrorMessage('');
+
 		if (!selectedWorkspace) {
 			setErrorMessage('Workspace is required!');
 			return;
@@ -177,31 +171,26 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 		}
 
 		try {
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/boards`,
-				{
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						name: inputValues.boardName,
-						workspaceId: selectedWorkspace.id,
-						colleagues: boardColleagues
-							.map((colleague) => colleague.id)
-							.filter(
-								(colleagueId) => colleagueId !== userData.id
-							),
-					}),
-				}
-			);
-			const data = await res.json();
+			const body = {
+				name: inputValues.boardName,
+				workspaceId: selectedWorkspace.id,
+				colleagues: boardColleagues
+					.map((colleague) => colleague.id)
+					.filter((colleagueId) => colleagueId !== userData.id),
+			};
+
+			const data = await request({
+				body,
+				accessToken,
+				method: METHODS.POST,
+				endpoint: BOARD_ENDPOINTS.BASE,
+			});
+
 			if (data.errorMessage) {
 				throw new Error(data.errorMessage);
 			}
 
-			navigate(`/boards/${data.boardId}`);
+			navigate(ROUTES.BOARD(data.boardId));
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);

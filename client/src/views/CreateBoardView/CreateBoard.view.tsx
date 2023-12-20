@@ -20,6 +20,7 @@ export const CreateBoardView = ({
 }: ICreateBoardView) => {
 	const { state, operations } = useCreateBoardViewModel();
 
+	//use the inputValue from the argument to modify the inputValue from the viewmodel and cause refetching
 	useEffect(() => {
 		if (!inputValue) return
 		operations.setInputValues(
@@ -91,7 +92,6 @@ export const CreateBoardView = ({
 							/>
 						</form>
 					</div>
-
 				</div>
 
 				<div className={styles.rightSide}>

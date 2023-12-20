@@ -63,7 +63,7 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 								</div>
 							</label>
 							<form name='profileImg'
-								onSubmit={operations.updateUserImg}
+								onSubmit={operations.updateUserData}
 								onReset={operations.clearProfileImg}
 							>
 								<input

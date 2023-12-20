@@ -1,3 +1,10 @@
+import {
+	request,
+	METHODS,
+	TASK_ENDPOINTS,
+	BOARD_ENDPOINTS,
+	COLUMN_ENDPOINTS,
+} from '@/utils/requester';
 import { useEffect, useState } from 'react';
 import { ITask } from '@/components/Task/Task';
 import { IOutletContext } from '@/guards/authGuard';
@@ -25,20 +32,21 @@ interface IBoardData {
 }
 
 interface ISource {
-	droppableId: string;
 	index: number;
+	droppableId: string;
 }
 
 export interface IResult {
-	draggableId: string;
 	type: string;
 	reason?: string;
 	source: ISource;
+	draggableId: string;
 	destination: ISource | null;
 }
 
 interface IBoardViewModelState {
 	userData: IUser;
+	isLoading: boolean;
 	isChatOpen: boolean;
 	workspaceUsers: IUser[];
 	selectedColumnId: number;
@@ -67,8 +75,9 @@ export const useBoardViewModel = (): ViewModelReturnType<
 > => {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
-	const boardId = pathname.split('/').pop();
+	const boardId = Number(pathname.split('/').pop());
 	const [isChatOpen, setIsChatOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
@@ -82,41 +91,34 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	useEffect(() => {
 		const fetchBoardData = async () => {
 			try {
-				//fetch board
-				const res = await fetch(
-					`${
-						import.meta.env.VITE_SERVER_URL
-					}/boards/${boardId}/details`,
-					{
-						method: 'GET',
-						headers: {
-							'Content-Type': 'application/json',
-							Authorization: `Bearer ${accessToken}`,
-						},
-						credentials: 'include',
-					}
-				);
+				setIsLoading(true);
 
-				const boardData = (await res.json()) as IBoardData;
-
+				const boardData = (await request({
+					accessToken,
+					method: METHODS.GET,
+					endpoint: BOARD_ENDPOINTS.DETAILS(boardId),
+				})) as IBoardData;
 				console.log(boardData);
 
-				let workspaceUsers = [
+				//add workspace owner to the users with access to the workspace, and filter out the currently logged user
+				const workspaceUsers = [
 					...boardData.workspace.workspaceUsers,
 					boardData.workspace.workspaceOwner,
-				];
-
-				//remove user from the array if the user is currently logged in
-				workspaceUsers = workspaceUsers
+				]
 					.filter((user) => user.id !== userData.id)
 					.map((user) => ({
 						...user,
 						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
 					}));
-				//add the currently logged in user as Me
+
+				/* 
+					add the currently logged user as 'Me' on top of the list
+					and directly give the profileImagePath as we have it loaded from the authGuard
+				*/
+
 				workspaceUsers.unshift({
-					id: userData.id,
 					email: 'Me',
+					id: userData.id,
 					profileImagePath: userData.profileImagePath,
 				});
 
@@ -134,16 +136,17 @@ export const useBoardViewModel = (): ViewModelReturnType<
 						...user,
 						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
 					}));
+
 				setBoardData({
 					...boardData,
 					boardUsers: [...workspaceUsers, ...boardUsers],
 				});
 				setWorkspaceUsers(workspaceUsers);
 				setRefreshBoard(false);
-				return;
 			} catch (err: any) {
 				console.log(err.message);
 			}
+			setIsLoading(false);
 		};
 
 		if (!refreshBoard) return;
@@ -184,49 +187,35 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			console.log('No board data!');
 			return;
 		}
-
 		try {
-			await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/boards/${
-					boardData.id
-				}/colleagues`,
-				{
-					method,
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						colleagueId: colleague.id,
-					}),
-				}
-			);
+			await request({
+				method,
+				accessToken,
+				body: { colleagueId: colleague.id },
+				endpoint: BOARD_ENDPOINTS.COLLEAGUES(boardData.id),
+			});
 		} catch (err: any) {
 			console.log(err.message);
 		}
 	};
 
 	const addWorkspaceColleague = async (colleague: IUser) => {
-		await editBoardColleague(colleague, EDIT_COLLEAGUE_METHOD.POST);
+		await editBoardColleague(colleague, METHODS.POST);
 		setRefreshBoard(true);
 	};
 
 	const removeWorkspaceColleague = async (colleague: IUser) => {
-		await editBoardColleague(colleague, EDIT_COLLEAGUE_METHOD.DELETE);
+		await editBoardColleague(colleague, METHODS.DELETE);
 		setRefreshBoard(true);
 	};
 
 	const deleteBoard = async () => {
 		try {
-			await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/boards/${boardId}`,
-				{
-					method: 'DELETE',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
-				}
-			);
+			await request({
+				accessToken,
+				method: METHODS.DELETE,
+				endpoint: BOARD_ENDPOINTS.BOARD(boardId),
+			});
 			navigate(-1);
 		} catch (err: any) {
 			console.log(err.message);
@@ -251,44 +240,32 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			return;
 		}
 
-		if (type === 'column') {
-			try {
-				await fetch(`${import.meta.env.VITE_SERVER_URL}/columns/move`, {
-					method: 'PUT',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
+		try {
+			if (type === 'column') {
+				await request({
+					accessToken,
+					method: METHODS.PUT,
+					endpoint: COLUMN_ENDPOINTS.MOVE,
+					body: {
 						columnId: Number(draggableId),
 						destinationPosition: destination.index,
-					}),
-				});
-
-				callForRefresh();
-			} catch (err: any) {
-				console.log(err.messsage);
-			}
-		} else {
-			//TASK CASE
-			try {
-				await fetch(`${import.meta.env.VITE_SERVER_URL}/tasks/move`, {
-					method: 'PUT',
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
 					},
-					body: JSON.stringify({
-						taskId: Number(draggableId),
-						destinationColumnId: Number(destination.droppableId), //the column where it is being dropped in
-						destinationPosition: destination.index, //need to somehow get the position of where it is going to be placed
-					}),
 				});
-
-				callForRefresh();
-			} catch (err: any) {
-				console.log(err.message);
+			} else {
+				await request({
+					accessToken,
+					method: METHODS.PUT,
+					endpoint: TASK_ENDPOINTS.MOVE,
+					body: {
+						taskId: Number(draggableId),
+						destinationPosition: destination.index,
+						destinationColumnId: Number(destination.droppableId),
+					},
+				});
 			}
+			callForRefresh();
+		} catch (err: any) {
+			console.log(err.messsage);
 		}
 	};
 
@@ -296,6 +273,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		state: {
 			userData,
 			boardData,
+			isLoading,
 			isChatOpen,
 			workspaceUsers,
 			selectedColumnId,

@@ -50,12 +50,6 @@
 	transform: scale(1.03);
 }
 
-
-.value {
-	font-size: 32px;
-	font-weight: 600;
-}
-
 .completeTasks h3 {
 	align-self: flex-end;
 }

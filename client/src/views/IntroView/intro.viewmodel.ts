@@ -1,3 +1,4 @@
+import { ROUTES } from '@/router';
 import { useNavigate } from 'react-router';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
@@ -14,11 +15,11 @@ export const useIntroViewModel = (): ViewModelReturnType<
 	const navigate = useNavigate();
 
 	const signInHandler = () => {
-		navigate('/auth/sign-in');
+		navigate(ROUTES.SIGN_IN);
 	};
 
 	const signUpHandler = () => {
-		navigate('/auth/sign-up');
+		navigate(ROUTES.SIGN_UP);
 	};
 
 	return {

@@ -1,3 +1,10 @@
+export enum METHODS {
+	GET = 'GET',
+	PUT = 'PUT',
+	POST = 'POST',
+	DELETE = 'DELETE',
+}
+
 const BASE_URL = import.meta.env.VITE_SERVER_URL as string;
 
 export const TASK_ENDPOINTS = {
@@ -16,6 +23,7 @@ export const COLUMN_ENDPOINTS = {
 };
 
 export const USER_ENDPOINTS = {
+	USER: `${BASE_URL}/user`,
 	BASE: `${BASE_URL}/users`,
 	EDIT: `${BASE_URL}/users/edit`,
 	STATS: `${BASE_URL}/users/stats`,
@@ -28,33 +36,26 @@ export const USER_ENDPOINTS = {
 
 export const WORKSPACE_ENDPOINTS = {
 	BASE: `${BASE_URL}/workspaces`,
-	WORKSPACE: (workspaceId: string) => `${BASE_URL}/workspaces/${workspaceId}`,
-	DETAILS: (workspaceId: string) =>
+	WORKSPACE: (workspaceId: number) => `${BASE_URL}/workspaces/${workspaceId}`,
+	DETAILS: (workspaceId: number) =>
 		`${BASE_URL}/workspaces/${workspaceId}/details`,
-	COLLEAGUES: (workspaceId: string) =>
+	COLLEAGUES: (workspaceId: number) =>
 		`${BASE_URL}/workspaces/${workspaceId}/colleagues`,
 };
 
 export const MESSAGE_ENDPOINTS = {
-	BASE: (boardId: string) => `${BASE_URL}/boards/${boardId}/messages`,
+	BASE: (boardId: number) => `${BASE_URL}/boards/${boardId}/messages`,
 };
 
 export const BOARD_ENDPOINTS = {
 	BASE: `${BASE_URL}/boards`,
-	BOARD: (boardId: string) => `${BASE_URL}/boards/${boardId}`,
-	DETAILS: (boardId: string) => `${BASE_URL}/boards/${boardId}/details`,
-	COLLEAGUES: (boardId: string) => `${BASE_URL}/boards/${boardId}/colleagues`,
+	BOARD: (boardId: number) => `${BASE_URL}/boards/${boardId}`,
+	DETAILS: (boardId: number) => `${BASE_URL}/boards/${boardId}/details`,
+	COLLEAGUES: (boardId: number) => `${BASE_URL}/boards/${boardId}/colleagues`,
 };
 
-export enum METHODS {
-	GET = 'GET',
-	PUT = 'PUT',
-	POST = 'POST',
-	DELETE = 'DELETE',
-}
-
 interface IFetcherProps {
-	body?: object;
+	body?: FormData | object;
 	method?: METHODS;
 	endpoint: string;
 	accessToken?: string;
@@ -66,15 +67,25 @@ export const request = async ({
 	endpoint,
 	accessToken,
 }: IFetcherProps) => {
-	const res = await fetch(endpoint, {
+	const headers = new Headers();
+	headers.set('Authorization', `Bearer ${accessToken}`);
+
+	const request: RequestInit = {
+		headers,
 		credentials: 'include',
-		body: JSON.stringify(body),
 		method: method || METHODS.GET,
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
+	};
+
+	if (body) {
+		if (body instanceof FormData) {
+			request.body = body;
+		} else {
+			request.body = JSON.stringify(body);
+			headers.set('Content-Type', 'application/json');
+		}
+	}
+
+	const res = await fetch(endpoint, request);
 
 	return await res.json();
 };

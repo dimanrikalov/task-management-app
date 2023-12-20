@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { IOutletContext } from '@/guards/authGuard';
 import { useOutletContext } from 'react-router-dom';
+import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
@@ -141,7 +142,6 @@ export const useCreateTaskViewModel = (
 	const selectAssignee = (user: IUser) => {
 		setAssigneeId(user.id);
 		setInputValues((prev) => ({ ...prev, email: user.email }));
-		console.log('here');
 	};
 
 	const clearTaskImage = () => {
@@ -198,33 +198,28 @@ export const useCreateTaskViewModel = (
 				);
 			}
 
-			const res = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/tasks`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${accessToken}`,
-					},
-					body: JSON.stringify({
-						steps,
-						columnId,
-						assigneeId,
-						title: inputValues.name,
-						attachmentImgPath: taskImagePath,
-						description: inputValues.description,
-						effort: Number(inputValues.effort) || 1,
-						priority: Number(inputValues.priority) || 1,
-						hoursSpent: Number(inputValues.spentHours) || 0,
-						minutesSpent: Number(inputValues.spentMinutes) || 0,
-						estimatedHours: Number(inputValues.estimatedHours) || 0,
-						estimatedMinutes:
-							Number(inputValues.estimatedMinutes) || 0,
-					}),
-				}
-			);
+			const body = {
+				steps,
+				columnId,
+				assigneeId,
+				title: inputValues.name,
+				attachmentImgPath: taskImagePath,
+				description: inputValues.description,
+				effort: Number(inputValues.effort) || 1,
+				priority: Number(inputValues.priority) || 1,
+				hoursSpent: Number(inputValues.spentHours) || 0,
+				minutesSpent: Number(inputValues.spentMinutes) || 0,
+				estimatedHours: Number(inputValues.estimatedHours) || 0,
+				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
+			};
 
-			const data = await res.json();
+			const data = await request({
+				body,
+				accessToken,
+				method: METHODS.POST,
+				endpoint: TASK_ENDPOINTS.BASE,
+			});
+
 			console.log(data);
 		} catch (err: any) {
 			setErrorMessage(err.message);

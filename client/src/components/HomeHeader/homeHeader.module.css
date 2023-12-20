@@ -1,0 +1,50 @@
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	width: 100%;
+	gap: 16px;
+	padding-top: 16px;
+}
+
+.dashboard h3 {
+	font-weight: 600;
+}
+
+.dashboard h5 {
+	font-weight: 400;
+}
+
+.userData {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.fullName {
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.userInitialsIcon {
+	background-color: var(--blue-main);
+	color: var(--white-main);
+	font-weight: 500;
+	min-width: 30px;
+	min-height: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 9px;
+}
+
+.logout {
+	background-color: var(--blue-main);
+	width: 30px;
+	height: 30px;
+	padding: 4px;
+	border-radius: 9px;
+	color: white;
+	cursor: pointer;
+}
