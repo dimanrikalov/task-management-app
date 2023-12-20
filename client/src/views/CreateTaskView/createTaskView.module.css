@@ -99,7 +99,13 @@ select:focus,
 	align-items: center;
 	border-radius: 12px;
 	justify-content: center;
+	background-color: whitesmoke;
 	border: 2px solid var(--blue-main);
+}
+
+.addTaskImgMessage {
+	color: grey;
+	text-align: center;
 }
 
 .previewImage {

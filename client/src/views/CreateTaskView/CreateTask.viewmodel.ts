@@ -30,6 +30,7 @@ interface ICreateTaskViewModelState {
 	progress: number;
 	errorMessage: string;
 	inputValues: IInputState;
+	assigneeId: number | null;
 	taskImagePath: string | null;
 }
 
@@ -243,6 +244,7 @@ export const useCreateTaskViewModel = (
 			steps,
 			matches,
 			progress,
+			assigneeId,
 			inputValues,
 			errorMessage,
 			taskImagePath,

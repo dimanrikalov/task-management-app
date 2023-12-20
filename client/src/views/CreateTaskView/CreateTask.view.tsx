@@ -93,11 +93,20 @@ export const CreateTaskView = ({
 							htmlFor={'image'}
 						>
 							<div className={styles.imgContainer}>
-								<img
-									alt="task-img"
-									className={styles.previewImage}
-									src={state.taskImagePath || '/imgs/profile-img.jpeg'}
-								/>
+								{
+									state.taskImagePath ?
+										(
+											<img
+												alt="task-img"
+												className={styles.previewImage}
+												src={state.taskImagePath}
+											/>
+										)
+										:
+										<h3 className={styles.addTaskImgMessage}>
+											Click here to add a task image
+										</h3>
+								}
 							</div>
 						</label>
 
@@ -236,7 +245,7 @@ export const CreateTaskView = ({
 									<IntroInput
 										type="text"
 										name='step'
-										placeholder="Take a nap"
+										placeholder='ex: "Take a nap"'
 										value={state.inputValues.step}
 										onChange={operations.handleInputChange}
 									/>
@@ -253,10 +262,10 @@ export const CreateTaskView = ({
 								</div>
 							</div>
 							<ListContainer
-								mode="steps"
 								title=""
-								colleagues={state.steps}
+								mode="steps"
 								disableDeletionFor={[]}
+								colleagues={state.steps}
 								removeUser={operations.removeStep}
 								toggleStatus={operations.toggleStatus}
 							/>
@@ -267,6 +276,7 @@ export const CreateTaskView = ({
 						<IntroButton
 							message="Add Task"
 							onClick={createTask}
+							disabled={!!!state.inputValues.name || !state.assigneeId}
 						/>
 					</div>
 				</div>

@@ -5,14 +5,15 @@
 	font-size: 16px;
 	border-radius: 0.5em;
 	color: var(--white-main);
-	background: var(--blue-main);
 	transition: 200ms ease-in-out;
+	background: var(--blue-main);
 	border: 1px solid var(--white-main);
 }
 
 .disabled {
-	cursor: default;
-	background-color: var(--grey-main);
+	cursor: not-allowed;
+	border-color: grey;
+	background-color: grey;
 }
 
 .reverse {
@@ -27,7 +28,7 @@
 }
 
 .disabled:hover {
+	border-color: grey;
+	background-color: grey;
 	color: var(--white-main);
-	border-color: var(--white-main);
-	background-color: var(--grey-main);
 }
