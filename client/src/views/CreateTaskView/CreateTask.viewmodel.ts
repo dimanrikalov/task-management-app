@@ -341,12 +341,16 @@ export const useCreateTaskViewModel = (
 			estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
 		};
 
-		await request({
+		const res = await request({
 			body: { payload: body },
 			accessToken,
 			method: METHODS.PUT,
 			endpoint: TASK_ENDPOINTS.EDIT(taskId),
 		});
+
+		if(res.errorMessage) {
+			throw new Error(res.errorMessage);
+		}
 
 		//set task image optionally
 		if (inputValues.image) {

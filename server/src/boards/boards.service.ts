@@ -198,7 +198,6 @@ export class BoardsService {
         const tasks = boardTasks.map((task) => {
             const steps = boardSteps.filter((step) => step.taskId === task.id);
             if (task.attachmentImgPath) {
-                console.log(task.attachmentImgPath);
                 const imageBuffer = fs.readFileSync(task.attachmentImgPath);
                 const imageBinary = Buffer.from(imageBuffer).toString('base64');
                 return { ...task, attachmentImgPath: imageBinary, steps };

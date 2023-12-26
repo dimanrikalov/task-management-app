@@ -55,7 +55,6 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 	const signUp = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
-			console.log(inputFields);
 			const data = await request({
 				body: inputFields,
 				method: METHODS.POST,

@@ -48,6 +48,7 @@ export const CreateTaskView = ({
 			callForRefresh();
 		} catch (err: any) {
 			console.log(err.message);
+			operations.setErrorMessage(err.message);
 		}
 	}
 	//set submit handler based on if there is taskData or not

@@ -312,8 +312,6 @@ export class WorkspacesService {
         }
 
         const colleagueIsUser = body.colleagueId === body.userData.id;
-        console.log(body.colleagueId);
-        console.log(body.userData.id);
         if (colleagueIsUser) {
             throw new Error('You cannot remove yourself from the workspace!');
         }

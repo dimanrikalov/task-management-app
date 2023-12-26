@@ -301,24 +301,27 @@ export class TasksService {
         await this.stepsService.createMany(stepsToCreate, body.taskData.id);
 
         delete body.payload.steps;
-
+        
         //update progress
         const totalSteps = await this.prismaService.step.count({
             where: {
                 taskId: body.taskData.id,
             },
         });
-
+        
         const completeSteps = await this.prismaService.step.count({
             where: {
                 AND: [{ taskId: body.taskData.id }, { isComplete: true }],
             },
         });
-
+        
         const progress = Math.round((completeSteps / totalSteps) * 100) || 0;
+        
+        //remove image if the task has and add it with next request
+        if(body.taskData.attachmentImgPath) {
+            await unlink(body.taskData.attachmentImgPath);
 
-        await unlink(body.taskData.attachmentImgPath);
-
+        }
         //update the task
         await this.prismaService.task.update({
             where: {
