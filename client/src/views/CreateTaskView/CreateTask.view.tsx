@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import classNames from 'classnames';
 import { IoAdd } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { FaXmark } from 'react-icons/fa6';
+import { ITask } from '@/components/Task/Task';
 import styles from './createTaskView.module.css';
 import { useCreateTaskViewModel } from './CreateTask.viewmodel';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
@@ -15,11 +17,13 @@ interface ICreateTaskViewProps {
 	columnId: number;
 	boardUsers: IUser[],
 	callForRefresh(): void;
+	taskData?: ITask | null;
 	toggleIsCreateTaskModalOpen(): void;
 }
 
 export const CreateTaskView = ({
 	columnId,
+	taskData,
 	boardUsers,
 	callForRefresh,
 	toggleIsCreateTaskModalOpen,
@@ -37,11 +41,27 @@ export const CreateTaskView = ({
 		}
 	}
 
+	const editTask = async () => {
+		try {
+			await operations.editTask(taskData!.id);
+			toggleIsCreateTaskModalOpen();
+			callForRefresh();
+		} catch (err: any) {
+			console.log(err.message);
+		}
+	}
+	//set submit handler based on if there is taskData or not
+
+	useEffect(() => {
+		if (!taskData) return;
+		operations.loadTaskData(taskData);
+	}, []);
+
 	return (
 		<div className={styles.backgroundWrapper}>
 			<div className={styles.background}>
 				<div className={styles.header}>
-					<h1>Let's create a Task</h1>
+					<h1>Let's {taskData ? 'edit' : 'create'} a Task</h1>
 					<RxCross2
 						className={styles.closeBtn}
 						onClick={toggleIsCreateTaskModalOpen}
@@ -50,15 +70,26 @@ export const CreateTaskView = ({
 
 				<div className={styles.body}>
 					<div className={styles.left}>
-						<p>
-							A <span className={styles.bold}>task</span> is the
-							building block of a{' '}
-							<span className={styles.bold}>board</span>. This is
-							what an employee interacts with most of the time.
-						</p>
+						{
+							taskData ?
+								<p>
+									It is only normal that a <span className={styles.bold}>task</span>
+									{' '} changes its properties throughout the lifecycle of a {' '}
+									<span className={styles.bold}>board</span>. Fortunately with {' '}
+									<span className={styles.bold}>Taskify</span>, no user should worry
+									about modifying any task detail.
+								</p>
+								:
+								<p>
+									A <span className={styles.bold}>task</span> is the
+									building block of a{' '}
+									<span className={styles.bold}>board</span>. This is
+									what an employee interacts with most of the time.
+								</p>
+						}
 
 						<div className={styles.stepOne}>
-							<h2>Name your task</h2>
+							<h2>{taskData ? 'Edit task name' : 'Name your task'}</h2>
 
 							<ErrorMessage
 								fontSize={16}
@@ -66,16 +97,16 @@ export const CreateTaskView = ({
 							/>
 
 							<IntroInput
-								name="name"
+								name="title"
 								type="text"
 								placeholder="Enter task name"
-								value={state.inputValues.name}
+								value={state.inputValues.title}
 								onChange={operations.handleInputChange}
 							/>
 						</div>
 
 						<div className={styles.stepTwo}>
-							<h2>Add description</h2>
+							<h2>{taskData ? 'Edit description' : 'Add description'}</h2>
 							<textarea
 								rows={10}
 								name="description"
@@ -95,13 +126,11 @@ export const CreateTaskView = ({
 							<div className={styles.imgContainer}>
 								{
 									state.taskImagePath ?
-										(
-											<img
-												alt="task-img"
-												className={styles.previewImage}
-												src={state.taskImagePath}
-											/>
-										)
+										<img
+											alt="task-img"
+											src={state.taskImagePath}
+											className={styles.previewImage}
+										/>
 										:
 										<h3 className={styles.addTaskImgMessage}>
 											Click here to add a task image
@@ -204,9 +233,9 @@ export const CreateTaskView = ({
 										min={0}
 										type="number"
 										placeholder="1"
-										name='spentHours'
+										name='hoursSpent'
 										className={styles.numberInput}
-										value={state.inputValues.spentHours}
+										value={state.inputValues.hoursSpent}
 										onChange={operations.handleInputChange}
 									/>
 									<p>h</p>
@@ -217,9 +246,9 @@ export const CreateTaskView = ({
 										max={59}
 										type="number"
 										placeholder="45"
-										name='spentMinutes'
+										name='minutesSpent'
 										className={styles.numberInput}
-										value={state.inputValues.spentMinutes}
+										value={state.inputValues.minutesSpent}
 										onChange={operations.handleInputChange}
 									/>
 									<p>m</p>
@@ -229,7 +258,7 @@ export const CreateTaskView = ({
 					</div>
 					<div className={styles.right}>
 						<div className={styles.assigneeInput}>
-							<h2>Choose assignee</h2>
+							<h2>{taskData ? 'Edit assignee ' : 'Choose assignee'}</h2>
 							<EmailInput
 								isLoading={false}
 								matches={state.matches}
@@ -240,7 +269,7 @@ export const CreateTaskView = ({
 						</div>
 						<div className={styles.stepContainer}>
 							<div className={styles.addSteps}>
-								<h2>Add steps</h2>
+								<h2>{taskData ? 'Edit steps' : 'Add steps'}</h2>
 								<div className={styles.stepInputDiv}>
 									<IntroInput
 										type="text"
@@ -274,9 +303,9 @@ export const CreateTaskView = ({
 							Overall completion: {state.progress}%
 						</h3>
 						<IntroButton
-							message="Add Task"
-							onClick={createTask}
-							disabled={!!!state.inputValues.name || !state.assigneeId}
+							onClick={taskData ? editTask : createTask}
+							message={taskData ? "Edit Task" : "Add Task"}
+							disabled={!!!state.inputValues.title || !state.assigneeId}
 						/>
 					</div>
 				</div>

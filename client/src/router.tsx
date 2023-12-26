@@ -14,7 +14,7 @@ export const ROUTES = {
 	SIGN_IN: '/auth/sign-in',
 	SIGN_UP: '/auth/sign-up',
 	BOARD: (boardId: number) => `/boards/${boardId}`,
-	WORKSPACE: (workspaceId: number) => `workspaces/${workspaceId}`
+	WORKSPACE: (workspaceId: number) => `/workspaces/${workspaceId}`
 }
 
 const router = createHashRouter([

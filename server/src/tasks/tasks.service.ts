@@ -274,16 +274,61 @@ export class TasksService {
             },
             distinct: ['id'],
         }));
+        
         if (isTaskTitleTaken) {
             throw new Error('Task title is taken!');
         }
+
+        const stepsToEdit = [];
+        const stepsToCreate = [];
+
+        body.payload.steps.forEach((task) => {
+            if (task.id) {
+                stepsToEdit.push(task);
+                return;
+            }
+
+            stepsToCreate.push(task);
+        });
+
+        const stepIdsToKeep = stepsToEdit.map((step) => step.id);
+        await this.stepsService.deleteManyNotIn(
+            body.taskData.id,
+            stepIdsToKeep,
+        );
+
+        await this.stepsService.updateMany(stepsToEdit);
+        await this.stepsService.createMany(stepsToCreate, body.taskData.id);
+
+        delete body.payload.steps;
+
+        //update progress
+        const totalSteps = await this.prismaService.step.count({
+            where: {
+                taskId: body.taskData.id,
+            },
+        });
+
+        const completeSteps = await this.prismaService.step.count({
+            where: {
+                AND: [{ taskId: body.taskData.id }, { isComplete: true }],
+            },
+        });
+
+        const progress = Math.round((completeSteps / totalSteps) * 100) || 0;
+
+        await unlink(body.taskData.attachmentImgPath);
 
         //update the task
         await this.prismaService.task.update({
             where: {
                 id: body.taskData.id,
             },
-            data: body.payload,
+            data: {
+                ...body.payload,
+                progress,
+                attachmentImgPath: null,
+            },
         });
     }
 

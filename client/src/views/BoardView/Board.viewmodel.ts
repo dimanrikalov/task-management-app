@@ -50,6 +50,7 @@ interface IBoardViewModelState {
 	isChatOpen: boolean;
 	workspaceUsers: IUser[];
 	selectedColumnId: number;
+	selectedTask: ITask | null;
 	boardData: IBoardData | null;
 	isCreateTaskModalOpen: boolean;
 	isDeleteBoardModalOpen: boolean;
@@ -62,6 +63,8 @@ interface IBoardViewModelOperations {
 	callForRefresh(): void;
 	toggleIsChatOpen(): void;
 	onDragEnd(result: any): void;
+	closeCreateTaskModal(): void;
+	taskClickHandler(task: ITask): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
 	addWorkspaceColleague(colleague: IUser): void;
@@ -81,6 +84,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
+	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
@@ -98,7 +102,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					method: METHODS.GET,
 					endpoint: BOARD_ENDPOINTS.DETAILS(boardId),
 				})) as IBoardData;
-				console.log(boardData);
 
 				//add workspace owner to the users with access to the workspace, and filter out the currently logged user
 				const workspaceUsers = [
@@ -254,6 +257,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			return;
 		}
 
+		const startingBoardState = boardData;
+
 		// make the api request without calling for refresh
 		try {
 			if (type === 'column') {
@@ -378,7 +383,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				}
 
 				//make request
-				await request({
+				const res = await request({
 					accessToken,
 					method: METHODS.PUT,
 					endpoint: TASK_ENDPOINTS.MOVE,
@@ -388,10 +393,25 @@ export const useBoardViewModel = (): ViewModelReturnType<
 						destinationColumnId: Number(destinationDroppableId),
 					},
 				});
+
+				if (res.errorMessage) {
+					throw new Error(res.errorMessage);
+				}
 			}
 		} catch (err: any) {
+			setBoardData(startingBoardState)
 			console.log(err.messsage);
 		}
+	};
+
+	const taskClickHandler = (task: ITask) => {
+		setSelectedTask(task);
+		toggleIsCreateTaskModalOpen(-1);
+	};
+
+	const closeCreateTaskModal = () => {
+		setSelectedTask(null);
+		toggleIsCreateTaskModalOpen(-1);
 	};
 
 	return {
@@ -400,6 +420,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			boardData,
 			isLoading,
 			isChatOpen,
+			selectedTask,
 			workspaceUsers,
 			selectedColumnId,
 			isCreateTaskModalOpen,
@@ -411,7 +432,9 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			onDragEnd,
 			deleteBoard,
 			callForRefresh,
+			taskClickHandler,
 			toggleIsChatOpen,
+			closeCreateTaskModal,
 			addWorkspaceColleague,
 			removeWorkspaceColleague,
 			toggleIsCreateTaskModalOpen,

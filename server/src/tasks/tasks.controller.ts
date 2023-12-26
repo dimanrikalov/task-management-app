@@ -27,28 +27,8 @@ export class TasksController {
     constructor(private readonly tasksService: TasksService) {}
 
     @Post()
-    @UseInterceptors(FileInterceptor('profileImg'))
-    async create(
-        @Res() res: Response,
-        @Body() body: CreateTaskDto,
-        @UploadedFile() file: any,
-    ) {
+    async create(@Res() res: Response, @Body() body: CreateTaskDto) {
         try {
-            if (file) {
-                const uploadDir = process.env.TASK_IMGS_URL;
-
-                if (!fs.existsSync(uploadDir)) {
-                    fs.mkdirSync(uploadDir, { recursive: true });
-                }
-
-                const fileName = `task-img-${uuid()}`;
-                const filePath = join(uploadDir, fileName);
-
-                fs.writeFileSync(filePath, file.buffer);
-
-                body.attachmentImgPath = filePath;
-            }
-            console.log(body.attachmentImgPath);
             const taskId = await this.tasksService.create(body);
             return res.status(200).json({
                 taskId,
@@ -123,12 +103,12 @@ export class TasksController {
         }
     }
 
-    @Put()
-    async edit(@Res() res: Response, @Body() body: ModifyTaskDto) {
+    @Put('/move')
+    async move(@Res() res: Response, @Body() body: MoveTaskDto) {
         try {
-            await this.tasksService.edit(body);
+            await this.tasksService.move(body);
             return res.status(200).json({
-                message: 'Task modified successfully!',
+                message: 'Task moved successfully!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -138,12 +118,12 @@ export class TasksController {
         }
     }
 
-    @Put('/move')
-    async move(@Res() res: Response, @Body() body: MoveTaskDto) {
+    @Put('/:taskId')
+    async edit(@Res() res: Response, @Body() body: ModifyTaskDto) {
         try {
-            await this.tasksService.move(body);
+            await this.tasksService.edit(body);
             return res.status(200).json({
-                message: 'Task moved successfully!',
+                message: 'Task modified successfully!',
             });
         } catch (err: any) {
             console.log(err.message);

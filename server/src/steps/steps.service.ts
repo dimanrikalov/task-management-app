@@ -3,6 +3,7 @@ import { EditStepDto } from './dtos/editStep.dto';
 import { DeleteStepDto } from './dtos/deleteStep.dto';
 import { CreateStepDto } from './dtos/createStep.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { IEditStep } from 'src/tasks/dtos/modifyTask.dto';
 
 export type IStep = {
     isComplete: boolean;
@@ -60,6 +61,20 @@ export class StepsService {
         await this.prismaService.step.createMany({
             data,
         });
+    }
+
+    async updateMany(stepsData: IEditStep[]) {
+        console.log(stepsData);
+        await Promise.all(
+            stepsData.map(async (step) => {
+                await this.prismaService.step.update({
+                    where: {
+                        id: step.id,
+                    },
+                    data: step,
+                });
+            }),
+        );
     }
 
     async edit(body: EditStepDto) {
@@ -135,6 +150,21 @@ export class StepsService {
         await this.prismaService.step.deleteMany({
             where: {
                 taskId,
+            },
+        });
+    }
+
+    async deleteManyNotIn(taskId: number, stepIds: number[]) {
+        await this.prismaService.step.deleteMany({
+            where: {
+                AND: [
+                    { taskId },
+                    {
+                        id: {
+                            notIn: stepIds,
+                        },
+                    },
+                ],
             },
         });
     }

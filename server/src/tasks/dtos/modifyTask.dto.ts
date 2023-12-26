@@ -7,8 +7,13 @@ import {
     IsOptional,
 } from 'class-validator';
 import { Column, Task } from '@prisma/client';
+import { IStep } from 'src/steps/steps.service';
 import { IBoard } from 'src/boards/boards.interfaces';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
+
+export interface IEditStep extends IStep {
+    id: number;
+}
 
 class ModifyTaskPayloadDto {
     @IsString()
@@ -62,6 +67,9 @@ class ModifyTaskPayloadDto {
     @Min(1)
     @Max(3)
     priority: number | null;
+
+    @IsOptional()
+    steps: IEditStep[];
 }
 
 export class ModifyTaskDto {

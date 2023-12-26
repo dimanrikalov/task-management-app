@@ -10,6 +10,7 @@ interface IColumnProps {
 	title: string;
 	tasks: ITask[];
 	users: IUser[];
+	onTaskClick(task: ITask): void;
 	onClick(columnId: number): void;
 }
 
@@ -18,8 +19,9 @@ export const Column = ({
 	index,
 	users,
 	title,
-	onClick,
 	tasks,
+	onClick,
+	onTaskClick,
 }: IColumnProps) => {
 	return (
 		<Draggable
@@ -52,7 +54,7 @@ export const Column = ({
 												task={task}
 												index={index}
 												key={task.id.toString()}
-												onClick={() => onClick(id)}
+												onClick={() => onTaskClick(task)}
 												assigneeImgPath={
 													users.find(
 														(user) =>

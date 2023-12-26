@@ -47,7 +47,7 @@
 }
 
 .rightSide {
-	gap: 16px;
+	gap: 6px;
 	display: flex;
 	justify-content: space-between;
 }
