@@ -48,9 +48,11 @@ interface IBoardViewModelState {
 	userData: IUser;
 	isLoading: boolean;
 	isChatOpen: boolean;
+	errorMessage: string;
 	workspaceUsers: IUser[];
 	selectedColumnId: number;
 	selectedTask: ITask | null;
+	errorMessageOpacity: number;
 	boardData: IBoardData | null;
 	isCreateTaskModalOpen: boolean;
 	isDeleteBoardModalOpen: boolean;
@@ -83,12 +85,14 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const boardId = Number(pathname.split('/').pop());
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
+	const [errorMessageOpacity, setErrorMessageOpacity] = useState<number>(0);
 	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
@@ -157,6 +161,19 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		if (!refreshBoard) return;
 		fetchBoardData();
 	}, [refreshBoard]);
+
+	//make the error message fade out
+	useEffect(() => {
+		if (!errorMessage) {
+			setErrorMessageOpacity(0);
+		};
+
+		const interval = setInterval(() => {
+			setErrorMessageOpacity(0);
+		}, 5000);
+
+		return () => clearInterval(interval);
+	}, [errorMessage, errorMessageOpacity]);
 
 	const goBack = () => {
 		navigate(-1);
@@ -451,6 +468,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				};
 			});
 		} catch (err: any) {
+			setErrorMessageOpacity(1);
+			setErrorMessage(err.message);
 			console.log(err.message);
 		}
 	};
@@ -480,9 +499,11 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			isLoading,
 			boardData,
 			isChatOpen,
+			errorMessage,
 			selectedTask,
 			workspaceUsers,
 			selectedColumnId,
+			errorMessageOpacity,
 			isCreateTaskModalOpen,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,

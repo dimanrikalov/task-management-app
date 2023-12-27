@@ -107,6 +107,7 @@
 	height: 100%;
 	border: none;
 	display: flex;
+	padding: 21px;
 	font-size: 21px;
 	cursor: pointer;
 	border-radius: 16px;
@@ -117,4 +118,8 @@
 
 .addColumn:hover {
 	border-color: var(--blue-main);
+}
+
+.bold {
+	font-weight: 600;
 }

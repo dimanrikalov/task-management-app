@@ -14,6 +14,7 @@ import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
+import { ErrorNotification } from '@/components/ErrorNotification/ErrorNotification';
 
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
@@ -81,7 +82,13 @@ export const BoardView = () => {
 					</Modal>
 				)
 			}
-
+			<ErrorNotification
+				opacity={state.errorMessageOpacity}
+				errorMessage={
+					state.errorMessage === 'Column name is taken!' ? `${state.errorMessage} Make sure to rename "New column" if it exists.`
+						: state.errorMessage
+				}
+			/>
 			<div className={styles.background}>
 				<Chat
 					isChatOpen={state.isChatOpen}
@@ -174,7 +181,6 @@ export const BoardView = () => {
 												className={styles.addColumnBtn}
 											>
 												<p>Add column</p>
-												<h6>Every column must be named before adding a new one</h6>
 											</button>
 										</div>
 									</div>
