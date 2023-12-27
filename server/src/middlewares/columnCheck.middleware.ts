@@ -8,12 +8,14 @@ export class ColumnCheckMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: NextFunction) {
         try {
-            if (!req.body.columnId) {
+            const columnId = Number(req.params[0]?.split('/')[0]);
+
+            if (!req.body.columnId && !columnId) {
                 throw new Error('Column ID is required!');
             }
             const column = await this.prismaService.column.findFirst({
                 where: {
-                    id: req.body.columnId,
+                    id: columnId || req.body.columnId,
                 },
             });
             if (!column) {

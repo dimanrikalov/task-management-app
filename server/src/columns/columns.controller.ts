@@ -5,7 +5,6 @@ import { CreateColumnDto } from './dtos/createColumn.dto';
 import { RenameColumnDto } from './dtos/renameColumn.dto';
 import { DeleteColumnDto } from './dtos/deleteColumn.dto';
 import { Body, Controller, Delete, Res, Post, Put } from '@nestjs/common';
-import { BaseColumnsDto } from './dtos/base.dto';
 
 @Controller('columns')
 export class ColumnsController {
@@ -14,8 +13,9 @@ export class ColumnsController {
     @Post()
     async create(@Res() res: Response, @Body() body: CreateColumnDto) {
         try {
-            await this.columnsService.create(body);
+            const columnId = await this.columnsService.create(body);
             return res.status(200).json({
+                columnId,
                 message: 'New column added successfully!',
             });
         } catch (err: any) {
@@ -40,12 +40,12 @@ export class ColumnsController {
         }
     }
 
-    @Put('/rename')
-    async rename(@Res() res: Response, @Body() body: RenameColumnDto) {
+    @Put('/move')
+    async move(@Res() res: Response, @Body() body: MoveColumnDto) {
         try {
-            await this.columnsService.rename(body);
+            await this.columnsService.move(body);
             return res.status(200).json({
-                message: 'Column renamed succesfully!',
+                message: 'Column moved successfully!',
             });
         } catch (err: any) {
             console.log(err.message);
@@ -55,12 +55,12 @@ export class ColumnsController {
         }
     }
 
-    @Put('/move')
-    async move(@Res() res: Response, @Body() body: MoveColumnDto) {
+    @Put('/:columnId/rename')
+    async rename(@Res() res: Response, @Body() body: RenameColumnDto) {
         try {
-            await this.columnsService.move(body);
+            await this.columnsService.rename(body);
             return res.status(200).json({
-                message: 'Column moved successfully!',
+                message: 'Column renamed succesfully!',
             });
         } catch (err: any) {
             console.log(err.message);

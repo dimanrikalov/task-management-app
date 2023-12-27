@@ -42,7 +42,7 @@ export class ColumnsService {
         });
 
         //create the column
-        await this.prismaService.column.create({
+        const { id } = await this.prismaService.column.create({
             data: {
                 name: body.name,
                 boardId: body.boardData.id,
@@ -56,6 +56,8 @@ export class ColumnsService {
             message: 'New column added.',
             affectedBoardId: body.boardData.id,
         });
+
+        return id;
     }
 
     async delete(body: DeleteColumnDto) {

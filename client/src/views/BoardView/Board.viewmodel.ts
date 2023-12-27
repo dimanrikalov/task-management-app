@@ -14,7 +14,7 @@ import { EDIT_COLLEAGUE_METHOD } from '../WorkspaceView/Workspace.viewmodel';
 import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 
-interface IColumn {
+export interface IColumn {
 	id: number;
 	name: string;
 	tasks: ITask[];
@@ -59,6 +59,7 @@ interface IBoardViewModelState {
 
 interface IBoardViewModelOperations {
 	goBack(): void;
+	addColumn(): void;
 	deleteBoard(): void;
 	callForRefresh(): void;
 	toggleIsChatOpen(): void;
@@ -70,6 +71,7 @@ interface IBoardViewModelOperations {
 	addWorkspaceColleague(colleague: IUser): void;
 	removeWorkspaceColleague(colleague: IUser): void;
 	toggleIsCreateTaskModalOpen(columnId: number): void;
+	updateColumnData(columnId: number, columnName: string): void;
 }
 
 export const useBoardViewModel = (): ViewModelReturnType<
@@ -399,7 +401,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				}
 			}
 		} catch (err: any) {
-			setBoardData(startingBoardState)
+			setBoardData(startingBoardState);
 			console.log(err.messsage);
 		}
 	};
@@ -414,11 +416,69 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		toggleIsCreateTaskModalOpen(-1);
 	};
 
+	const addColumn = async () => {
+		if (!boardData) return;
+		try {
+			const res = await request({
+				body: {
+					name: 'New column',
+					boardId: boardData.id,
+				},
+				accessToken,
+				method: METHODS.POST,
+				endpoint: COLUMN_ENDPOINTS.BASE,
+			});
+
+			if (res.errorMessage) {
+				throw new Error(res.errorMessage);
+			}
+
+			setBoardData((prev) => {
+				if (!prev) return null;
+
+				return {
+					...prev,
+					columns: [
+						...prev.columns,
+						{
+							tasks: [],
+							id: res.columnId,
+							boardId: prev.id,
+							name: 'New column',
+							position: prev.columns.length - 1,
+						},
+					],
+				};
+			});
+		} catch (err: any) {
+			console.log(err.message);
+		}
+	};
+
+	const updateColumnData = (columnId: number, columnName: string) => {
+		setBoardData((prev) => {
+			if (!prev) return null;
+
+			const columns = prev.columns.map((col) => {
+				if (col.id === columnId) {
+					col.name = columnName;
+				}
+
+				return col;
+			});
+
+			return {
+				...prev,
+				columns: [...columns],
+			};
+		});
+	};
+
 	return {
 		state: {
 			userData,
-			boardData,
 			isLoading,
+			boardData,
 			isChatOpen,
 			selectedTask,
 			workspaceUsers,
@@ -429,10 +489,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		},
 		operations: {
 			goBack,
+			addColumn,
 			onDragEnd,
 			deleteBoard,
 			callForRefresh,
 			taskClickHandler,
+			updateColumnData,
 			toggleIsChatOpen,
 			closeCreateTaskModal,
 			addWorkspaceColleague,

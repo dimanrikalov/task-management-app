@@ -18,6 +18,7 @@
 
 .title {
 	width: 100%;
+	padding: 3.25px;
 	font-size: 21px;
 	text-align: center;
 }
@@ -34,4 +35,35 @@
 
 .addTask {
 	width: 100%;
+}
+
+.changeNameContainer {
+	gap: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.submitBtn {
+	height: 38px;
+	cursor: pointer;
+	min-width: 38px;
+	border-radius: 0.5em;
+	transition: 200ms ease-in-out;
+	border: 2px solid var(--grey-main);
+}
+
+.icon {
+	color: grey;
+	font-size: 18px;
+	transition: 200ms ease-in-out;
+}
+
+.submitBtn:hover {
+	border-color: var(--blue-main);
+	background-color: var(--blue-main);
+}
+
+.submitBtn:hover .icon {
+	color: var(--white-main);
 }

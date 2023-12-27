@@ -159,6 +159,7 @@ export const BoardView = () => {
 													title={column.name}
 													tasks={column.tasks}
 													onTaskClick={operations.taskClickHandler}
+													updateColumn={operations.updateColumnData}
 													onClick={operations.toggleIsCreateTaskModalOpen}
 													users={[...state.workspaceUsers, ...(state.boardData?.boardUsers || [])]}
 												/>
@@ -167,6 +168,15 @@ export const BoardView = () => {
 
 										{provider.placeholder}
 
+										<div className={styles.addColumn}>
+											<button
+												onClick={operations.addColumn}
+												className={styles.addColumnBtn}
+											>
+												<p>Add column</p>
+												<h6>Every column must be named before adding a new one</h6>
+											</button>
+										</div>
 									</div>
 								)
 							}
