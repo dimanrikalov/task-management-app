@@ -5,6 +5,7 @@ import { BoardsGateway } from './boards.gateway';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { DeleteBoardDto } from './dtos/deleteboard.dto';
+import { RenameBoardDto } from './dtos/renameBoard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetBoardDetails } from './dtos/getBoardDetails.dto';
 import { ColumnsService } from 'src/columns/columns.service';
@@ -381,6 +382,19 @@ export class BoardsService {
         });
 
         return board;
+    }
+
+    async rename(body: RenameBoardDto) {
+        await this.prismaService.board.update({
+            where: {
+                id: body.boardData.id,
+            },
+            data: {
+                ...body.boardData,
+                name: body.newName,
+            },
+        });
+        console.log('there');
     }
 
     async delete(body: DeleteBoardDto) {

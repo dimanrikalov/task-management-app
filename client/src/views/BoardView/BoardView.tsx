@@ -1,6 +1,7 @@
 import { ROUTES } from '@/router';
 import classNames from 'classnames';
 import styles from './board.module.css';
+import { FaEdit } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
 import { Navigate } from 'react-router-dom';
 import { Chat } from '@/components/Chat/Chat';
@@ -10,11 +11,12 @@ import { useBoardViewModel } from './Board.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { CreateTaskView } from '../CreateTaskView/CreateTask.view';
+import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
+import { ErrorNotification } from '@/components/ErrorNotification/ErrorNotification';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
-import { ErrorNotification } from '@/components/ErrorNotification/ErrorNotification';
 
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
@@ -115,7 +117,28 @@ export const BoardView = () => {
 
 							<BackButton onClick={operations.goBack} />
 
-							<h3>{state.boardData.name}</h3>
+							{
+								state.isInputModeOn ?
+
+									<form
+										className={styles.changeNameContainer}
+										onSubmit={operations.handleBoardNameChange}
+									>
+										<IntroInput
+											type='text'
+											name='board-name-input'
+											value={state.boardNameInput}
+											placeholder='Enter board name'
+											onChange={operations.handleBoardNameInputChange}
+										/>
+										<button className={styles.submitBtn}>
+											<FaEdit className={styles.icon} />
+										</button>
+									</form>
+									:
+
+									<h3 onDoubleClick={operations.toggleIsInputModeOn}>{state.boardData.name}</h3>
+							}
 						</div>
 						<div className={styles.operationsContainer}>
 							<IntroButton
@@ -167,6 +190,7 @@ export const BoardView = () => {
 													tasks={column.tasks}
 													onTaskClick={operations.taskClickHandler}
 													updateColumn={operations.updateColumnData}
+													showErrorMessage={operations.showErrorMessage}
 													onClick={operations.toggleIsCreateTaskModalOpen}
 													users={[...state.workspaceUsers, ...(state.boardData?.boardUsers || [])]}
 												/>

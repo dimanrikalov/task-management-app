@@ -3,6 +3,7 @@ import { BoardsService } from './boards.service';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { DeleteBoardDto } from './dtos/deleteboard.dto';
+import { RenameBoardDto } from './dtos/renameBoard.dto';
 import { GetBoardDetails } from './dtos/getBoardDetails.dto';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
 import { Res, Get, Body, Post, Delete, Controller, Put } from '@nestjs/common';
@@ -62,6 +63,21 @@ export class BoardsController {
             return res.status(200).json(data);
         } catch (err: any) {
             return res.status(400).json({ errorMessage: err.message });
+        }
+    }
+
+    @Put('/:boardId/rename')
+    async renameBoard(@Res() res: Response, @Body() body: RenameBoardDto) {
+        try {
+            await this.boardsService.rename(body);
+            return res.status(200).json({
+                message: 'Board renamed successfully!',
+            });
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
         }
     }
 

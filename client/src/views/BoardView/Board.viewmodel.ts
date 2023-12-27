@@ -49,6 +49,8 @@ interface IBoardViewModelState {
 	isLoading: boolean;
 	isChatOpen: boolean;
 	errorMessage: string;
+	isInputModeOn: boolean;
+	boardNameInput: string;
 	workspaceUsers: IUser[];
 	selectedColumnId: number;
 	selectedTask: ITask | null;
@@ -65,15 +67,19 @@ interface IBoardViewModelOperations {
 	deleteBoard(): void;
 	callForRefresh(): void;
 	toggleIsChatOpen(): void;
+	toggleIsInputModeOn(): void;
 	onDragEnd(result: any): void;
 	closeCreateTaskModal(): void;
 	taskClickHandler(task: ITask): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
+	showErrorMessage(errorMessage: string): void;
 	addWorkspaceColleague(colleague: IUser): void;
 	removeWorkspaceColleague(colleague: IUser): void;
 	toggleIsCreateTaskModalOpen(columnId: number): void;
 	updateColumnData(columnId: number, columnName: string): void;
+	handleBoardNameChange(e: React.FormEvent<HTMLFormElement>): void;
+	handleBoardNameInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const useBoardViewModel = (): ViewModelReturnType<
@@ -87,7 +93,9 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
+	const [boardNameInput, setBoardNameInput] = useState<string>('');
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
+	const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
@@ -153,6 +161,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				setWorkspaceUsers(workspaceUsers);
 				setRefreshBoard(false);
 			} catch (err: any) {
+				setErrorMessage(err.message);
+				setErrorMessageOpacity(1);
 				console.log(err.message);
 			}
 			setIsLoading(false);
@@ -166,7 +176,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	useEffect(() => {
 		if (!errorMessage) {
 			setErrorMessageOpacity(0);
-		};
+		}
 
 		const interval = setInterval(() => {
 			setErrorMessageOpacity(0);
@@ -177,6 +187,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 
 	const goBack = () => {
 		navigate(-1);
+	};
+
+	const handleBoardNameInputChange = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
+		setBoardNameInput(e.target.value);
 	};
 
 	const toggleIsChatOpen = () => {
@@ -200,6 +216,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		setIsEditBoardUsersModalOpen((prev) => !prev);
 	};
 
+	const toggleIsInputModeOn = () => {
+		if (!boardData) return;
+		setIsInputModeOn((prev) => !prev);
+		setBoardNameInput(boardData.name);
+	};
+
 	const editBoardColleague = async (
 		colleague: IUser,
 		method: EDIT_COLLEAGUE_METHOD
@@ -216,6 +238,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				endpoint: BOARD_ENDPOINTS.COLLEAGUES(boardData.id),
 			});
 		} catch (err: any) {
+			setErrorMessage(err.message);
+			setErrorMessageOpacity(1);
 			console.log(err.message);
 		}
 	};
@@ -239,6 +263,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			});
 			navigate(-1);
 		} catch (err: any) {
+			setErrorMessage(err.message);
+			setErrorMessageOpacity(1);
 			console.log(err.message);
 		}
 	};
@@ -418,6 +444,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				}
 			}
 		} catch (err: any) {
+			setErrorMessage(err.message);
+			setErrorMessageOpacity(1);
 			setBoardData(startingBoardState);
 			console.log(err.messsage);
 		}
@@ -431,6 +459,11 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const closeCreateTaskModal = () => {
 		setSelectedTask(null);
 		toggleIsCreateTaskModalOpen(-1);
+	};
+
+	const showErrorMessage = (errorMessage: string) => {
+		setErrorMessage(errorMessage);
+		setErrorMessageOpacity(1);
 	};
 
 	const addColumn = async () => {
@@ -493,6 +526,48 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		});
 	};
 
+	const handleBoardNameChange = async (
+		e: React.FormEvent<HTMLFormElement>
+	) => {
+		e.preventDefault();
+		if (!boardData) return;
+
+		if (boardData.name === boardNameInput) {
+			setIsInputModeOn(false);
+			return;
+		}
+
+		try {
+			const data = await request({
+				accessToken,
+				method: METHODS.PUT,
+				endpoint: BOARD_ENDPOINTS.RENAME(boardData.id),
+				body: {
+					newName: boardNameInput.trim(),
+				},
+			});
+
+			if (data.errorMessage) {
+				throw new Error(data.errorMessage);
+			}
+
+			setBoardData((prev) => {
+				if (!prev) return null;
+
+				return {
+					...prev,
+					name: boardNameInput,
+				};
+			});
+
+		} catch (err: any) {
+			setErrorMessageOpacity(1);
+			setErrorMessage(err.message);
+			console.log(err.message);
+		}
+		setIsInputModeOn(false);
+	};
+
 	return {
 		state: {
 			userData,
@@ -501,6 +576,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			isChatOpen,
 			errorMessage,
 			selectedTask,
+			isInputModeOn,
+			boardNameInput,
 			workspaceUsers,
 			selectedColumnId,
 			errorMessageOpacity,
@@ -514,12 +591,16 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			onDragEnd,
 			deleteBoard,
 			callForRefresh,
+			showErrorMessage,
 			taskClickHandler,
 			updateColumnData,
 			toggleIsChatOpen,
+			toggleIsInputModeOn,
 			closeCreateTaskModal,
+			handleBoardNameChange,
 			addWorkspaceColleague,
 			removeWorkspaceColleague,
+			handleBoardNameInputChange,
 			toggleIsCreateTaskModalOpen,
 			toggleIsDeleteBoardModalOpen,
 			toggleIsEditBoardUsersModalOpen,

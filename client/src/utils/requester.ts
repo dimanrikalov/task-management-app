@@ -52,6 +52,7 @@ export const MESSAGE_ENDPOINTS = {
 export const BOARD_ENDPOINTS = {
 	BASE: `${BASE_URL}/boards`,
 	BOARD: (boardId: number) => `${BASE_URL}/boards/${boardId}`,
+	RENAME: (boardId: number) => `${BASE_URL}/boards/${boardId}/rename`,
 	DETAILS: (boardId: number) => `${BASE_URL}/boards/${boardId}/details`,
 	COLLEAGUES: (boardId: number) => `${BASE_URL}/boards/${boardId}/colleagues`,
 };

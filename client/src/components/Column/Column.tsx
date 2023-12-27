@@ -18,6 +18,7 @@ interface IColumnProps {
 	users: IUser[];
 	onTaskClick(task: ITask): void;
 	onClick(columnId: number): void;
+	showErrorMessage(errorMessage: string): void;
 	updateColumn(columnId: number, columnName: string): void;
 }
 
@@ -30,6 +31,7 @@ export const Column = ({
 	onClick,
 	onTaskClick,
 	updateColumn,
+	showErrorMessage,
 }: IColumnProps) => {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isInputModeOn, setIsInputModeOn] = useState(false);
@@ -63,7 +65,7 @@ export const Column = ({
 				method: METHODS.PUT,
 				endpoint: COLUMN_ENDPOINTS.RENAME(id),
 				body: {
-					newName: inputValue
+					newName: inputValue.trim()
 				}
 			})
 
@@ -73,8 +75,8 @@ export const Column = ({
 
 			updateColumn(id, inputValue);
 		} catch (err: any) {
+			showErrorMessage(err.message);
 			updateColumn(id, nameBeforeChange);
-			console.log(err.message);
 		}
 
 		toggleIsInputModeOn();

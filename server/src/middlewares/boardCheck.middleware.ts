@@ -79,6 +79,7 @@ export class BoardCheckMiddleware implements NestMiddleware {
             req.body.workspaceData = workspace;
             req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
             req.body.userHasAccessToWorkspace = userHasAccessToWorkspace;
+
             next();
         } catch (err: any) {
             return res.status(401).json({ errorMessage: err.message });
