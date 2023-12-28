@@ -47,6 +47,11 @@ export const Column = ({
 		setInputValue(title);
 	}, [isInputModeOn]);
 
+	useEffect(() => {
+		if (showDeleteBtn) return;
+		setIsInputModeOn(false);
+	}, [showDeleteBtn]);
+
 	const toggleSetShowDeleteBtn = () => {
 		setShowDeleteBtn(prev => !prev);
 	}
