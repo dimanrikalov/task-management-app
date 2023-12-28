@@ -1,3 +1,4 @@
+import { FaEdit } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './workspace.module.css';
 import { TiDocumentAdd } from 'react-icons/ti';
@@ -87,7 +88,27 @@ export const WorkspaceView = () => {
 				<div className={styles.header}>
 					<div className={styles.left}>
 						<BackButton onClick={operations.backBtnHandler} />
-						<h2>{state.workspaceData?.name}</h2>
+						{
+							state.isInputModeOn ?
+								<form
+									className={styles.changeNameContainer}
+									onSubmit={operations.handleWorkspaceNameChange}
+								>
+									<IntroInput
+										type='text'
+										name='workspace-name-input'
+										value={state.workspaceNameInput}
+										placeholder='Enter workspace name'
+										onChange={operations.handleWorkspaceNameInputChange}
+									/>
+									<button className={styles.submitBtn}>
+										<FaEdit className={styles.icon} />
+									</button>
+								</form>
+
+								:
+								<h2 onDoubleClick={operations.toggleIsInputModeOn}>{state.workspaceData.name}</h2>
+						}
 					</div>
 					{
 						state.workspaceData.name.toLowerCase().trim() !== 'personal workspace' &&

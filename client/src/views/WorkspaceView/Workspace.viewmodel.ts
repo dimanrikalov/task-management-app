@@ -27,6 +27,8 @@ interface IWorkspaceViewModelState {
 	inputValue: string;
 	userData: IUserData;
 	modals: IModalStates;
+	isInputModeOn: boolean;
+	workspaceNameInput: string;
 	filteredBoards: IDetailedBoard[];
 	workspaceData: IDetailedWorkspace | null;
 }
@@ -34,11 +36,18 @@ interface IWorkspaceViewModelState {
 interface IWorkspaceViewModelOperations {
 	backBtnHandler(): void;
 	deleteWorkspace(): void;
+	toggleIsInputModeOn(): void;
 	toggleModal(key: string): void;
 	goToBoard(boardId: number): void;
 	addWorkspaceColleague(colleague: IUser): void;
 	removeWorkspaceColleague(colleague: IUser): void;
 	inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>): void;
+	handleWorkspaceNameInputChange(
+		e: React.ChangeEvent<HTMLInputElement>
+	): void;
+	handleWorkspaceNameChange(
+		e: React.FormEvent<HTMLFormElement>
+	): Promise<void>;
 }
 
 export const useWorkspaceViewModel = (): ViewModelReturnType<
@@ -52,8 +61,10 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	const [inputValue, setInputValue] = useState('');
 	const workspaceId = Number(pathname.split('/').pop());
 	const [refreshWorkspace, setRefreshWorkspace] = useState(true);
+	const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
 	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const { userData, accessToken } = useOutletContext<IOutletContext>();
+	const [workspaceNameInput, setWorkspaceNameInput] = useState<string>('');
 	const [filteredBoards, setFilteredBoards] = useState<IDetailedBoard[]>([]);
 	const [modals, setModals] = useState<IModalStates>({
 		[MODAL_STATES_KEYS.CREATE_BOARD]: false,
@@ -185,13 +196,67 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 		}
 	};
 
+	const handleWorkspaceNameInputChange = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
+		setWorkspaceNameInput(e.target.value);
+	};
+
+	const toggleIsInputModeOn = () => {
+		if (!workspaceData) return;
+		setIsInputModeOn((prev) => !prev);
+		setWorkspaceNameInput(workspaceData.name);
+	};
+
+	const handleWorkspaceNameChange = async (
+		e: React.FormEvent<HTMLFormElement>
+	) => {
+		e.preventDefault();
+		if (!workspaceData) return;
+
+		if (workspaceData.name === workspaceNameInput) {
+			setIsInputModeOn(false);
+			return;
+		}
+
+		try {
+			const data = await request({
+				accessToken,
+				method: METHODS.PUT,
+				endpoint: WORKSPACE_ENDPOINTS.RENAME(workspaceData.id),
+				body: {
+					newName: workspaceNameInput.trim(),
+				},
+			});
+
+			if (data.errorMessage) {
+				throw new Error(data.errorMessage);
+			}
+
+			setWorkspaceData((prev) => {
+				if (!prev) return null;
+
+				return {
+					...prev,
+					name: workspaceNameInput,
+				};
+			});
+		} catch (err: any) {
+			console.log(err.message);
+			setErrorMessage(err.message);
+		}
+		setIsInputModeOn(false);
+	};
+
 	return {
 		state: {
 			modals,
 			userData,
 			inputValue,
 			workspaceData,
+			isInputModeOn,
 			filteredBoards,
+			workspaceNameInput,
 		},
 		operations: {
 			goToBoard,
@@ -199,8 +264,11 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			backBtnHandler,
 			deleteWorkspace,
 			inputChangeHandler,
+			toggleIsInputModeOn,
 			addWorkspaceColleague,
 			removeWorkspaceColleague,
+			handleWorkspaceNameChange,
+			handleWorkspaceNameInputChange,
 		},
 	};
 };

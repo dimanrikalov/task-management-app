@@ -111,7 +111,6 @@ export const BoardView = () => {
 
 							{
 								state.isInputModeOn ?
-
 									<form
 										className={styles.changeNameContainer}
 										onSubmit={operations.handleBoardNameChange}
@@ -128,7 +127,6 @@ export const BoardView = () => {
 										</button>
 									</form>
 									:
-
 									<h3 onDoubleClick={operations.toggleIsInputModeOn}>{state.boardData.name}</h3>
 							}
 						</div>

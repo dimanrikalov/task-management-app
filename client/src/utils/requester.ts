@@ -38,11 +38,13 @@ export const USER_ENDPOINTS = {
 
 export const WORKSPACE_ENDPOINTS = {
 	BASE: `${BASE_URL}/workspaces`,
-	WORKSPACE: (workspaceId: number) => `${BASE_URL}/workspaces/${workspaceId}`,
+	RENAME: (workspaceId: number) =>
+		`${BASE_URL}/workspaces/${workspaceId}/rename`,
 	DETAILS: (workspaceId: number) =>
 		`${BASE_URL}/workspaces/${workspaceId}/details`,
 	COLLEAGUES: (workspaceId: number) =>
 		`${BASE_URL}/workspaces/${workspaceId}/colleagues`,
+	WORKSPACE: (workspaceId: number) => `${BASE_URL}/workspaces/${workspaceId}`,
 };
 
 export const MESSAGE_ENDPOINTS = {

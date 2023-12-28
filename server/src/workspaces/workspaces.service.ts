@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { BoardsService } from 'src/boards/boards.service';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
+import { RenameWorkspaceDto } from './dtos/renameWorkspace.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { GetWorkspaceDetails } from './dtos/getWorkspaceDetails.dto';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
@@ -188,6 +189,22 @@ export class WorkspacesService {
         });
 
         return workspace;
+    }
+
+    async rename(body: RenameWorkspaceDto) {
+        if (body.workspaceData.name === 'Personal Workspace') {
+            throw new Error('You cannot rename your Personal Workspace!');
+        }
+
+        await this.prismaService.workspace.update({
+            where: {
+                id: body.workspaceData.id,
+            },
+            data: {
+                ...body.workspaceData,
+                name: body.newName,
+            },
+        });
     }
 
     async delete(body: DeleteWorkspaceDto) {

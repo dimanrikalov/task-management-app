@@ -2,10 +2,11 @@ import { Response } from 'express';
 import { BaseWorkspaceDto } from './dtos/base.dto';
 import { WorkspacesService } from './workspaces.service';
 import { DeleteWorkspaceDto } from './dtos/deleteWorkspace.dto';
+import { RenameWorkspaceDto } from './dtos/renameWorkspace.dto';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { GetWorkspaceDetails } from './dtos/getWorkspaceDetails.dto';
-import { Res, Get, Body, Post, Delete, Controller } from '@nestjs/common';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
+import { Res, Get, Body, Post, Delete, Controller, Put } from '@nestjs/common';
 
 @Controller('workspaces')
 export class WorkspacesController {
@@ -75,6 +76,24 @@ export class WorkspacesController {
             return res.status(200).json(data);
         } catch (err: any) {
             return res.status(400).json({ errorMessage: err.message });
+        }
+    }
+
+    @Put('/:workspaceId/rename')
+    async renameWorkspace(
+        @Res() res: Response,
+        @Body() body: RenameWorkspaceDto,
+    ) {
+        try {
+            await this.workspacesService.rename(body);
+            return res.status(200).json({
+                message: 'Workspace renamed successfully!',
+            });
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
         }
     }
 
