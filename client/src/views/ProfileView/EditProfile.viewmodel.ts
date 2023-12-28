@@ -86,12 +86,15 @@ export const useProfileViewModel = (): ViewModelReturnType<
 			navigate(ROUTES.HOME); // cause refetching of user data through the guard
 		} catch (err: any) {
 			console.log(err.message);
-			setInputValues({
-				password: '',
-				lastName: '',
-				firstName: '',
-				profileImg: null,
-			});
+			setInputValues((prev) => ({
+				...prev,
+				[inputField]:
+					inputField === INPUT_FIELDS.PROFILE_IMG ? null : '',
+			}));
+			if (inputField === INPUT_FIELDS.PROFILE_IMG) {
+				setProfileImgPath(null);
+			}
+			
 			setErrorMessage(err.message);
 		}
 	};

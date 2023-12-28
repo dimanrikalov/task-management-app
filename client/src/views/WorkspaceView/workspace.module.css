@@ -112,6 +112,10 @@
 	transition: 200ms ease-in-out;
 }
 
+.workspaceName {
+	padding-top: 4px;
+}
+
 .submitBtn:hover {
 	border-color: var(--blue-main);
 	background-color: var(--blue-main);

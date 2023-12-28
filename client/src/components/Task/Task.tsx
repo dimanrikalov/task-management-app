@@ -62,7 +62,7 @@ export const Task = ({ task, index, onClick, assigneeImgPath }: ITaskProps) => {
 										snapshot.isDragging && styles.invert
 									)}
 								/>
-								<h5>{task.progress}%</h5>
+								<h5 className={styles.progress}>{task.progress}%</h5>
 							</div>
 							<div className={styles.userImg}>
 								<img alt="profile-img" src={assigneeImgPath} />

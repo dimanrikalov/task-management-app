@@ -127,7 +127,11 @@ export const BoardView = () => {
 										</button>
 									</form>
 									:
-									<h3 onDoubleClick={operations.toggleIsInputModeOn}>{state.boardData.name}</h3>
+									<h3
+										className={styles.boardName}
+										onDoubleClick={operations.toggleIsInputModeOn}>
+										{state.boardData.name}
+									</h3>
 							}
 						</div>
 						<div className={styles.operationsContainer}>

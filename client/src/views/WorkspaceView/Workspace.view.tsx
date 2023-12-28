@@ -107,7 +107,7 @@ export const WorkspaceView = () => {
 								</form>
 
 								:
-								<h2 onDoubleClick={operations.toggleIsInputModeOn}>{state.workspaceData.name}</h2>
+								<h2 className={styles.workspaceName} onDoubleClick={operations.toggleIsInputModeOn}>{state.workspaceData.name}</h2>
 						}
 					</div>
 					{
