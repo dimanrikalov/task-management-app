@@ -26,20 +26,6 @@ export class ColumnsController {
         }
     }
 
-    @Delete()
-    async delete(@Res() res: Response, @Body() body: DeleteColumnDto) {
-        try {
-            await this.columnsService.delete(body);
-            return res.status(200).json({
-                message: 'Column deleted successfully!',
-            });
-        } catch (err: any) {
-            res.status(400).json({
-                errorMessage: err.message,
-            });
-        }
-    }
-
     @Put('/move')
     async move(@Res() res: Response, @Body() body: MoveColumnDto) {
         try {
@@ -65,6 +51,20 @@ export class ColumnsController {
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
+    @Delete('/:columnId')
+    async delete(@Res() res: Response, @Body() body: DeleteColumnDto) {
+        try {
+            await this.columnsService.delete(body);
+            return res.status(200).json({
+                message: 'Column deleted successfully!',
+            });
+        } catch (err: any) {
+            res.status(400).json({
                 errorMessage: err.message,
             });
         }

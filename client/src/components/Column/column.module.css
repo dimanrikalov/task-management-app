@@ -67,3 +67,33 @@
 .submitBtn:hover .icon {
 	color: var(--white-main);
 }
+
+.deleteBtn {
+	height: 38px;
+	min-width: 38px;
+	cursor: pointer;
+	border-radius: 0.5em;
+	transition: 200ms ease-in-out;
+	border: 2px solid var(--grey-main);
+}
+
+.deleteBtn:hover {
+	border-color: red;
+	background-color: red;
+}
+
+.deleteBtn:hover .icon {
+	color: white;
+}
+
+.confirmBtn {
+	width: 100%;
+	font-size: 16px;
+	padding: 7px 0px;
+	border-radius: 0.5em;
+	border: 2px solid red;
+	background-color: red;
+	color: var(--white-main);
+	cursor: pointer !important;
+	transition: 200ms ease-in-out;
+}

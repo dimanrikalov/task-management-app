@@ -21,6 +21,7 @@ export const STEP_ENDPOINTS = {
 export const COLUMN_ENDPOINTS = {
 	BASE: `${BASE_URL}/columns`,
 	MOVE: `${BASE_URL}/columns/move`,
+	EDIT: (columnId: number) => `${BASE_URL}/columns/${columnId}`,
 	RENAME: (columnId: number) => `${BASE_URL}/columns/${columnId}/rename`,
 };
 

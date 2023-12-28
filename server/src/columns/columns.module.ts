@@ -36,7 +36,6 @@ export class ColumnsModule implements NestModule {
             .apply(AuthMiddleware, ColumnCheckMiddleware, BoardCheckMiddleware)
             .forRoutes(
                 { path: 'columns/*', method: RequestMethod.ALL },
-                { path: 'columns', method: RequestMethod.DELETE },
             );
     }
 }

@@ -4,6 +4,7 @@ import styles from './board.module.css';
 import { FaEdit } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
 import { Navigate } from 'react-router-dom';
+import { FcAddColumn } from "react-icons/fc";
 import { Chat } from '@/components/Chat/Chat';
 import { Modal } from '@/components/Modal/Modal';
 import { Column } from '@/components/Column/Column';
@@ -184,6 +185,7 @@ export const BoardView = () => {
 													tasks={column.tasks}
 													onTaskClick={operations.taskClickHandler}
 													updateColumn={operations.updateColumnData}
+													callForRefresh={operations.callForRefresh}
 													onClick={operations.toggleIsCreateTaskModalOpen}
 													users={[...state.workspaceUsers, ...(state.boardData?.boardUsers || [])]}
 												/>
@@ -197,7 +199,7 @@ export const BoardView = () => {
 												onClick={operations.addColumn}
 												className={styles.addColumnBtn}
 											>
-												<p>Add column</p>
+												<FcAddColumn size={92} />
 											</button>
 										</div>
 									</div>
