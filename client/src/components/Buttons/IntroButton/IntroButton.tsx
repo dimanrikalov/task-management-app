@@ -3,14 +3,34 @@ import styles from './introButton.module.css';
 
 interface IIntroButtonProps {
     message: string;
-    disabled?: boolean;
-    reverse?: boolean;
     onClick?(): void;
+    reverse?: boolean;
+    disabled?: boolean;
+    backgroundColor?: string;
+    disableHoverEffects?: boolean;
 }
 
-
-export const IntroButton = ({ message, disabled = false, onClick = () => { }, reverse = false }: IIntroButtonProps) => {
-    return <button disabled={disabled} className={classNames(styles.button, disabled && styles.disabled, reverse && styles.reverse)} onClick={onClick}>
-        {message}
-    </button>
-}
+export const IntroButton = ({
+    message,
+    backgroundColor,
+    reverse = false,
+    disabled = false,
+    onClick = () => { },
+    disableHoverEffects = false,
+}: IIntroButtonProps) => {
+    return (
+        <button
+            onClick={onClick}
+            disabled={disabled}
+            style={{ backgroundColor }}
+            className={classNames(
+                styles.button,
+                reverse && styles.reverse,
+                disabled && styles.disabled,
+                disableHoverEffects && styles.disableHoverEffects
+            )}
+        >
+            {message}
+        </button>
+    );
+};

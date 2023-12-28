@@ -32,3 +32,9 @@
 	background-color: grey;
 	color: var(--white-main);
 }
+
+
+.disableHoverEffects {
+	pointer-events: none;
+	cursor: pointer !important;
+}

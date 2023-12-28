@@ -41,8 +41,10 @@ export const CreateTaskView = ({
 	}
 
 	const editTask = async () => {
+		if (!taskData) return;
+
 		try {
-			await operations.editTask(taskData!.id);
+			await operations.editTask(taskData.id);
 			toggleIsCreateTaskModalOpen();
 			callForRefresh();
 		} catch (err: any) {
@@ -50,6 +52,20 @@ export const CreateTaskView = ({
 			operations.setErrorMessage(err.message);
 		}
 	}
+
+	const deleteTask = async () => {
+		if (!taskData) return;
+
+		try {
+			await operations.deleteTask(taskData.id);
+			toggleIsCreateTaskModalOpen();
+			callForRefresh();
+		} catch (err: any) {
+			console.log(err.message);
+			operations.setErrorMessage(err.message);
+		}
+	}
+
 	//set submit handler based on if there is taskData or not
 
 	useEffect(() => {
@@ -287,6 +303,7 @@ export const CreateTaskView = ({
 							<ListContainer
 								title=""
 								mode="steps"
+								noMarginBottom={true}
 								disableDeletionFor={[]}
 								colleagues={state.steps}
 								removeUser={operations.removeStep}
@@ -301,6 +318,27 @@ export const CreateTaskView = ({
 							message={taskData ? "Edit Task" : "Add Task"}
 							disabled={!!!state.inputValues.title || !state.assigneeId}
 						/>
+						{
+							taskData &&
+							<>
+								{state.showConfirmButton ?
+									<button
+										onClick={deleteTask}
+										className={styles.deleteTaskBtn}
+										onMouseOut={operations.toggleConfirmationBtn}
+									>
+										Confirm Deletion
+									</button>
+									:
+									<button
+										className={styles.deleteTaskBtn}
+										onClick={operations.toggleConfirmationBtn}
+									>
+										Delete Task
+									</button>
+								}
+							</>
+						}
 					</div>
 				</div>
 			</div>

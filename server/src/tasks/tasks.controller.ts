@@ -18,6 +18,7 @@ import { TasksService } from './tasks.service';
 import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
+import { DeleteTasksDto } from './dtos/deleteTask.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { validateJWTToken } from 'src/jwt/validateJWTToken';
 import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
@@ -88,8 +89,8 @@ export class TasksController {
         }
     }
 
-    @Delete()
-    async delete(@Res() res: Response, @Body() body: ModifyTaskDto) {
+    @Delete('/:taskId')
+    async delete(@Res() res: Response, @Body() body: DeleteTasksDto) {
         try {
             await this.tasksService.delete(body);
             return res.status(200).json({

@@ -6,7 +6,7 @@ import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
 import { StepsService } from 'src/steps/steps.service';
-import { extractJWTData } from 'src/jwt/extractJWTData';
+import { DeleteTasksDto } from './dtos/deleteTask.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
 
@@ -191,9 +191,20 @@ export class TasksService {
         });
     }
 
-    async delete(body: ModifyTaskDto) {
+    async delete(body: DeleteTasksDto) {
         //delete the steps
         await this.stepsService.deleteMany(body.taskData.id);
+
+        //delete task image if it exists
+        if (fs.existsSync(body.taskData.attachmentImgPath)) {
+            try {
+                // Delete the existing file
+                await unlink(body.taskData.attachmentImgPath);
+                console.log('File deleted successfully');
+            } catch (error) {
+                console.error('Error deleting file:', error);
+            }
+        }
 
         //delete the task
         await this.prismaService.task.delete({
@@ -274,7 +285,7 @@ export class TasksService {
             },
             distinct: ['id'],
         }));
-        
+
         if (isTaskTitleTaken) {
             throw new Error('Task title is taken!');
         }
@@ -301,27 +312,27 @@ export class TasksService {
         await this.stepsService.createMany(stepsToCreate, body.taskData.id);
 
         delete body.payload.steps;
-        
+
         //update progress
         const totalSteps = await this.prismaService.step.count({
             where: {
                 taskId: body.taskData.id,
             },
         });
-        
+
         const completeSteps = await this.prismaService.step.count({
             where: {
                 AND: [{ taskId: body.taskData.id }, { isComplete: true }],
             },
         });
-        
-        const progress = Math.round((completeSteps / totalSteps) * 100) || 0;
-        
-        //remove image if the task has and add it with next request
-        if(body.taskData.attachmentImgPath) {
-            await unlink(body.taskData.attachmentImgPath);
 
+        const progress = Math.round((completeSteps / totalSteps) * 100) || 0;
+
+        //remove image if the task has one and add it with next request
+        if (body.taskData.attachmentImgPath) {
+            await unlink(body.taskData.attachmentImgPath);
         }
+
         //update the task
         await this.prismaService.task.update({
             where: {

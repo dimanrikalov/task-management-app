@@ -36,18 +36,21 @@ interface ICreateTaskViewModelState {
 	progress: number;
 	inputValues: IInputState;
 	assigneeId: number | null;
+	showConfirmButton: boolean;
 	taskImagePath: string | null;
 }
 
 interface ICreateTaskViewModelOperations {
 	addStep(): void;
 	clearTaskImage(): void;
+	toggleConfirmationBtn(): void;
 	loadTaskData(task: ITask): void;
 	selectAssignee(user: IUser): void;
 	removeStep(description: string): void;
 	setErrorMessage(message: string): void;
 	editTask(taskId: number): Promise<void>;
 	toggleStatus(description: string): void;
+	deleteTask(taskId: number): Promise<void>;
 	createTask(columnId: number): Promise<void>;
 	changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
 	handleInputChange(
@@ -83,6 +86,7 @@ export const useCreateTaskViewModel = (
 	const [assigneeId, setAssigneeId] = useState<number | null>(null);
 	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [taskImagePath, setTaskImagePath] = useState<string | null>(null);
+	const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
 
 	useEffect(() => {
 		const assignee = matches.find(
@@ -222,7 +226,7 @@ export const useCreateTaskViewModel = (
 
 	const clearTaskImage = () => {
 		setInputValues((prev) => ({ ...prev, image: null }));
-		setTaskImagePath('');
+		setTaskImagePath(null);
 	};
 
 	const addStep = () => {
@@ -342,9 +346,9 @@ export const useCreateTaskViewModel = (
 		};
 
 		const res = await request({
-			body: { payload: body },
 			accessToken,
 			method: METHODS.PUT,
+			body: { payload: body },
 			endpoint: TASK_ENDPOINTS.EDIT(taskId),
 		});
 
@@ -370,6 +374,22 @@ export const useCreateTaskViewModel = (
 		}
 	};
 
+	const toggleConfirmationBtn = () => {
+		setShowConfirmButton((prev) => !prev);
+	};
+
+	const deleteTask = async (taskId: number) => {
+		const res = await request({
+			accessToken,
+			method: METHODS.DELETE,
+			endpoint: TASK_ENDPOINTS.EDIT(taskId),
+		});
+
+		if (res.errorMessage) {
+			throw new Error(res.errorMessage);
+		}
+	};
+
 	return {
 		state: {
 			steps,
@@ -378,11 +398,13 @@ export const useCreateTaskViewModel = (
 			assigneeId,
 			inputValues,
 			taskImagePath,
+			showConfirmButton,
 		},
 		operations: {
 			addStep,
 			editTask,
 			removeStep,
+			deleteTask,
 			createTask,
 			loadTaskData,
 			toggleStatus,
@@ -391,6 +413,7 @@ export const useCreateTaskViewModel = (
 			setErrorMessage,
 			changeTaskImage,
 			handleInputChange,
+			toggleConfirmationBtn,
 		},
 	};
 };

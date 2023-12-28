@@ -37,9 +37,8 @@ export class TasksModule implements NestModule {
             ) //apply only to endpoints that modify an already existing task
             .forRoutes(
                 { path: 'tasks', method: RequestMethod.PUT },
-                { path: 'tasks', method: RequestMethod.DELETE },
                 { path: 'tasks/move', method: RequestMethod.PUT },
-                { path: 'tasks/:taskId', method: RequestMethod.PUT },
+                { path: 'tasks/:taskId', method: RequestMethod.ALL },
             );
     }
 }

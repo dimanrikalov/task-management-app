@@ -146,13 +146,15 @@ select:focus,
 	font-size: 38px;
 	cursor: pointer;
 	border-radius: 9px;
+	border: 1px solid red;
 	transition: 200ms ease-in-out;
 }
 
-.submitBtn {
-	color: var(--white-main);
-	background-color: green;
+.imgOperationBtn:hover {
+	color: red;
+	background-color: white;
 }
+
 .resetBtn {
 	color: var(--white-main);
 	background-color: red;
@@ -275,6 +277,23 @@ select:focus,
 .progress {
 	align-self: center;
 	font-size: 24px;
+}
+
+.deleteTaskBtn {
+	padding: 8px;
+	font-size: 16px;
+	cursor: pointer;
+	border-radius: 0.5em;
+	background-color: red;
+	border: 1px solid red;
+	color: var(--white-main);
+	transition: 200ms ease-in-out;
+}
+
+.deleteTaskBtn:hover {
+	color: red;
+	border-color: red;
+	background-color: var(--white-main);
 }
 
 @media screen and (max-width: 1170px) {

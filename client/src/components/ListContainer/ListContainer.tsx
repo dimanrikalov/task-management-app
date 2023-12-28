@@ -9,6 +9,7 @@ type TListMode = 'users' | 'steps';
 interface IListContainerProps {
 	title: string;
 	mode: TListMode;
+	noMarginBottom?: boolean;
 	disableDeletionFor: number[];
 	colleagues: IUser[] | IStep[];
 	toggleStatus?(colleague: string): void;
@@ -22,9 +23,13 @@ export const ListContainer = ({
 	toggleStatus,
 	mode = 'users',
 	disableDeletionFor,
+	noMarginBottom = false,
 }: IListContainerProps) => {
 	return (
-		<div className={styles.listContainer}>
+		<div
+			className={styles.listContainer}
+			style={{ marginBottom: noMarginBottom ? 0 : 32 }}
+		>
 			<h2>{title}</h2>
 			<div className={styles.listWrapper}>
 				<div className={styles.list}>
