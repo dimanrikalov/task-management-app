@@ -43,6 +43,36 @@ export class TasksController {
         }
     }
 
+    @Put('/move')
+    async move(@Res() res: Response, @Body() body: MoveTaskDto) {
+        try {
+            await this.tasksService.move(body);
+            return res.status(200).json({
+                message: 'Task moved successfully!',
+            });
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
+    @Put('/:taskId')
+    async edit(@Res() res: Response, @Body() body: ModifyTaskDto) {
+        try {
+            await this.tasksService.edit(body);
+            return res.status(200).json({
+                message: 'Task modified successfully!',
+            });
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
     @Put('/:taskId/upload-image')
     @UseInterceptors(FileInterceptor('taskImg'))
     async uploadTaskImage(
@@ -95,36 +125,6 @@ export class TasksController {
             await this.tasksService.delete(body);
             return res.status(200).json({
                 message: 'Task deleted successfully!',
-            });
-        } catch (err: any) {
-            console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message,
-            });
-        }
-    }
-
-    @Put('/move')
-    async move(@Res() res: Response, @Body() body: MoveTaskDto) {
-        try {
-            await this.tasksService.move(body);
-            return res.status(200).json({
-                message: 'Task moved successfully!',
-            });
-        } catch (err: any) {
-            console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message,
-            });
-        }
-    }
-
-    @Put('/:taskId')
-    async edit(@Res() res: Response, @Body() body: ModifyTaskDto) {
-        try {
-            await this.tasksService.edit(body);
-            return res.status(200).json({
-                message: 'Task modified successfully!',
             });
         } catch (err: any) {
             console.log(err.message);
