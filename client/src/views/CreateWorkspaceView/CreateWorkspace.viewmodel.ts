@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import { ROUTES } from '@/router';
+import { useContext, useState } from 'react';
 import { IOutletContext } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
@@ -10,7 +11,6 @@ interface ICreateWorkspaceState {
 	userData: IUser;
 	inputValue: string;
 	colleagues: IUser[];
-	errorMessage: string;
 }
 
 interface ICreateWorkspaceOperations {
@@ -26,9 +26,9 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 > => {
 	const navigate = useNavigate();
 	const [inputValue, setInputValue] = useState('');
-	const [errorMessage, setErrorMessage] = useState('');
 	const { userData } = useOutletContext<IOutletContext>();
 	const { accessToken } = useOutletContext<IOutletContext>();
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [colleagues, setColleagues] = useState<IUser[]>([
 		{ ...userData, email: 'Me' },
 	]);
@@ -98,7 +98,6 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 			userData,
 			inputValue,
 			colleagues,
-			errorMessage,
 		},
 		operations: {
 			createWorkspace,

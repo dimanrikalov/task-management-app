@@ -1,6 +1,5 @@
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createWorkspace.module.css';
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { useCreateWorkspaceViewModel } from './CreateWorkspace.viewmodel';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
@@ -38,13 +37,6 @@ export const CreateWorkspaceView = ({
 							Name your <span>workspace</span>
 						</h2>
 						<form className={styles.createForm} onSubmit={operations.createWorkspace}>
-							{
-								state.errorMessage &&
-								<ErrorMessage
-									fontSize={16}
-									message={state.errorMessage}
-								/>
-							}
 							<IntroInput
 								type="text"
 								name="workspace-name"

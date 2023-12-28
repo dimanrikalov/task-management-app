@@ -7,7 +7,6 @@ import { ITask } from '@/components/Task/Task';
 import styles from './createTaskView.module.css';
 import { useCreateTaskViewModel } from './CreateTask.viewmodel';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { ListContainer } from '@/components/ListContainer/ListContainer';
@@ -36,8 +35,8 @@ export const CreateTaskView = ({
 			toggleIsCreateTaskModalOpen();
 			callForRefresh();
 		} catch (err: any) {
-			operations.setErrorMessage(err.message);
 			console.log(err.message);
+			operations.setErrorMessage(err.message);
 		}
 	}
 
@@ -91,12 +90,6 @@ export const CreateTaskView = ({
 
 						<div className={styles.stepOne}>
 							<h2>{taskData ? 'Edit task name' : 'Name your task'}</h2>
-
-							<ErrorMessage
-								fontSize={16}
-								message={state.errorMessage || ''}
-							/>
-
 							<IntroInput
 								name="title"
 								type="text"
@@ -121,8 +114,8 @@ export const CreateTaskView = ({
 
 					<div className={styles.middle}>
 						<label
-							className={styles.imgInput}
 							htmlFor={'image'}
+							className={styles.imgInput}
 						>
 							<div className={styles.imgContainer}>
 								{

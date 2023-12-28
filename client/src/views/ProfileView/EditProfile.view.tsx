@@ -3,9 +3,9 @@ import { RxCross2 } from 'react-icons/rx';
 import styles from './editProfile.module.css';
 import { Modal } from '@/components/Modal/Modal';
 import { FaCheck, FaXmark } from 'react-icons/fa6';
+import { useProfileViewModel } from './EditProfile.viewmodel';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
-import { NOTIFICATION_TYPE, useProfileViewModel } from './EditProfile.viewmodel';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 interface IEditProfileView {
 	closeBtnHandler(): void;
@@ -37,16 +37,8 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 						className={styles.closeBtn}
 						onClick={closeBtnHandler}
 					/>
-					<div className={styles.header}>
-						{
-							state.notification.message &&
-							<div className={classNames(styles.notificationMsg,
-								state.notification.type === NOTIFICATION_TYPE.ERROR && styles.error)}
-							>
-								<p>{state.notification.message}</p>
-							</div>
-						}
-					</div>
+					{/* adds some spacing on the top side */}
+					<div className={styles.header}></div>
 					<div className={styles.main}>
 						<div className={styles.leftSide}>
 							<h3>Edit profile image</h3>

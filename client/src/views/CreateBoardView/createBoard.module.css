@@ -64,11 +64,6 @@
 	margin-bottom: 32px;
 }
 
-.errorMessageContainer {
-	width: 100%;
-	min-height: 38px;
-}
-
 .rightSide {
 	position: relative;
 	width: 45%;

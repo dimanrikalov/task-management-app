@@ -1,13 +1,14 @@
-import { FaEdit } from "react-icons/fa";
+import { FaEdit } from 'react-icons/fa';
 import styles from './column.module.css';
 import { ITask, Task } from '../Task/Task';
-import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { IOutletContext } from '@/guards/authGuard';
+import { useContext, useEffect, useState } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
 
 interface IColumnProps {
@@ -18,7 +19,6 @@ interface IColumnProps {
 	users: IUser[];
 	onTaskClick(task: ITask): void;
 	onClick(columnId: number): void;
-	showErrorMessage(errorMessage: string): void;
 	updateColumn(columnId: number, columnName: string): void;
 }
 
@@ -31,11 +31,12 @@ export const Column = ({
 	onClick,
 	onTaskClick,
 	updateColumn,
-	showErrorMessage,
 }: IColumnProps) => {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isInputModeOn, setIsInputModeOn] = useState(false);
 	const { accessToken } = useOutletContext<IOutletContext>();
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
+
 	useEffect(() => {
 		if (!isInputModeOn) return;
 
@@ -75,7 +76,7 @@ export const Column = ({
 
 			updateColumn(id, inputValue);
 		} catch (err: any) {
-			showErrorMessage(err.message);
+			setErrorMessage(err.message);
 			updateColumn(id, nameBeforeChange);
 		}
 

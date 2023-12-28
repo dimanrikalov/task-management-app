@@ -394,7 +394,6 @@ export class BoardsService {
                 name: body.newName,
             },
         });
-        console.log('there');
     }
 
     async delete(body: DeleteBoardDto) {

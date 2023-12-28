@@ -5,9 +5,10 @@ import {
 	WORKSPACE_ENDPOINTS,
 } from '@/utils/requester';
 import { ROUTES } from '@/router';
-import { useState, useEffect } from 'react';
 import { IOutletContext } from '@/guards/authGuard';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
@@ -40,7 +41,6 @@ export interface IDetailedWorkspace {
 }
 
 interface ICreateBoardViewModelState {
-	errorMessage: string;
 	boardColleagues: IUser[];
 	inputValues: IInputStates;
 	workspacesData: IDetailedWorkspace[];
@@ -63,7 +63,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	const navigate = useNavigate();
 	const [selectedWorkspace, setSelectedWorkspace] =
 		useState<IDetailedWorkspace | null>(null);
-	const [errorMessage, setErrorMessage] = useState<string>('');
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [boardColleagues, setBoardColleagues] = useState<IUser[]>([]);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [workspacesData, setWorkspacesData] = useState<IDetailedWorkspace[]>(
@@ -133,6 +133,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 			} catch (err: any) {
 				console.log(err.message);
 				setSelectedWorkspace(null);
+				setErrorMessage(err.message);
 			}
 		};
 
@@ -153,7 +154,6 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	const createBoard = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		console.log(selectedWorkspace);
-		setErrorMessage('');
 
 		if (!selectedWorkspace) {
 			setErrorMessage('Workspace is required!');
@@ -214,7 +214,6 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	return {
 		state: {
 			inputValues,
-			errorMessage,
 			workspacesData,
 			boardColleagues,
 			selectedWorkspace,

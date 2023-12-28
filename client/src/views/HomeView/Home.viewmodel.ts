@@ -7,9 +7,10 @@ import {
 } from '@/utils/requester';
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 export enum ENTRIES_TYPES {
@@ -113,12 +114,47 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		completedTasksCount: -1,
 	});
 	const date = new Date().toLocaleDateString('en-US', options);
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 
 	useEffect(() => {
-		fetchUserStats(accessToken);
-		fetchEntries(accessToken, ENTRIES_TYPES.BOARDS);
-		fetchEntries(accessToken, ENTRIES_TYPES.WORKSPACES);
+		const fetchUserStats = async () => {
+			try {
+				const data = await request({
+					accessToken,
+					method: METHODS.GET,
+					endpoint: USER_ENDPOINTS.STATS,
+				});
+				setUserStats(data);
+				console.log(data);
+			} catch (err: any) {
+				console.log(err.message);
+				setErrorMessage(err.message);
+			}
+		};
+
+		const fetchEntries = async (entries: ENTRIES_TYPES) => {
+			try {
+				const data = await request({
+					accessToken,
+					method: METHODS.GET,
+					endpoint:
+						entries === ENTRIES_TYPES.BOARDS
+							? BOARD_ENDPOINTS.BASE
+							: WORKSPACE_ENDPOINTS.BASE,
+				});
+
+				setLists((prev) => ({ ...prev, [entries]: data }));
+				console.log(data);
+			} catch (err: any) {
+				console.log(err.message);
+				setErrorMessage(err.message);
+			}
+		};
+
+		fetchUserStats();
+		fetchEntries(ENTRIES_TYPES.BOARDS);
+		fetchEntries(ENTRIES_TYPES.WORKSPACES);
 	}, [accessToken]);
 
 	useEffect(() => {
@@ -189,41 +225,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
 			...prev,
 			[e.target.name]: e.target.value,
 		}));
-	};
-
-	const fetchUserStats = async (accessToken: string) => {
-		try {
-			const data = await request({
-				accessToken,
-				method: METHODS.GET,
-				endpoint: USER_ENDPOINTS.STATS,
-			});
-			setUserStats(data);
-			console.log(data);
-		} catch (err: any) {
-			console.log(err.message);
-		}
-	};
-
-	const fetchEntries = async (
-		accessToken: string,
-		entries: ENTRIES_TYPES
-	) => {
-		try {
-			const data = await request({
-				accessToken,
-				method: METHODS.GET,
-				endpoint:
-					entries === ENTRIES_TYPES.BOARDS
-						? BOARD_ENDPOINTS.BASE
-						: WORKSPACE_ENDPOINTS.BASE,
-			});
-
-			setLists((prev) => ({ ...prev, [entries]: data }));
-			console.log(data);
-		} catch (err: any) {
-			console.log(err.message);
-		}
 	};
 
 	return {

@@ -1,13 +1,14 @@
 import classNames from 'classnames';
 import styles from './chat.module.css';
 import { VscSend } from "react-icons/vsc";
-import { useEffect, useState } from 'react';
 import { Message } from '../Message/Message';
 import { IOutletContext } from '@/guards/authGuard';
 import { BackButton } from '../BackButton/BackButton';
+import { useContext, useEffect, useState } from 'react';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { useLocation, useOutletContext } from 'react-router-dom';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { MESSAGE_ENDPOINTS, METHODS, request } from '@/utils/requester';
 
 export interface IMessage {
@@ -32,6 +33,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 	const { accessToken } = useOutletContext<IOutletContext>();
 	const boardId = Number(useLocation().pathname.split('/').pop());
 	const [chatMessages, setChatMessages] = useState<IMessage[]>([]);
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [refetchMessages, setRefetchMessages] = useState<boolean>(true);
 
 	useEffect(() => {
@@ -55,6 +57,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 				setChatMessages(messages);
 			} catch (err: any) {
 				console.log(err.message);
+				setErrorMessage(err.message);
 			}
 			setIsLoading(false);
 		}
@@ -82,6 +85,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 			setRefetchMessages(true);
 		} catch (err: any) {
 			console.log(err.message);
+			setErrorMessage(err.message);
 		}
 	}
 

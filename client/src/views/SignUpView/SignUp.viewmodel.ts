@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import { ROUTES } from '@/router';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 interface IInputFields {
@@ -12,7 +13,6 @@ interface IInputFields {
 	[key: string]: string; // Add this index signature
 }
 interface ISignUpViewModelState {
-	errorMessage: string;
 	inputFields: IInputFields;
 }
 
@@ -34,8 +34,8 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 		password: '',
 		firstName: '',
 	});
-	const [errorMessage, setErrorMessage] = useState('');
 
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setInputFields((prevInputFields) => ({
@@ -78,7 +78,6 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 	return {
 		state: {
 			inputFields,
-			errorMessage,
 		},
 		operations: {
 			signUp,

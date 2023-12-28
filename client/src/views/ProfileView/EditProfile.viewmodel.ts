@@ -1,28 +1,19 @@
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
-
-export enum NOTIFICATION_TYPE {
-	ERROR = 'error',
-	MESSAGE = 'message',
-}
 
 enum INPUT_FIELDS {
 	PASSWORD = 'password',
 	LAST_NAME = 'lastName',
 	FIRST_NAME = 'firstName',
 	PROFILE_IMG = 'profileImg',
-}
-
-interface INotification {
-	message: string;
-	type: NOTIFICATION_TYPE;
 }
 
 interface IInputValues {
@@ -35,7 +26,6 @@ interface IInputValues {
 interface IEditProfileViewModelState {
 	userData: IUserData;
 	inputValues: IInputValues;
-	notification: INotification;
 	isDeletionModalOpen: boolean;
 	profileImgPath: string | null;
 }
@@ -54,13 +44,10 @@ export const useProfileViewModel = (): ViewModelReturnType<
 	IEditProfileViewModelOperations
 > => {
 	const navigate = useNavigate();
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
 	const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
-	const [notification, setNotification] = useState<INotification>({
-		message: '',
-		type: NOTIFICATION_TYPE.MESSAGE,
-	});
 	const [inputValues, setInputValues] = useState<IInputValues>({
 		lastName: '',
 		password: '',
@@ -105,10 +92,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 				firstName: '',
 				profileImg: null,
 			});
-			setNotification({
-				message: err.message,
-				type: NOTIFICATION_TYPE.ERROR,
-			});
+			setErrorMessage(err.message);
 		}
 	};
 
@@ -167,11 +151,8 @@ export const useProfileViewModel = (): ViewModelReturnType<
 			deleteTokens();
 			navigate(ROUTES.HOME); // force refetching of user through the guard
 		} catch (err: any) {
+			setErrorMessage(err.message);
 			setIsDeletionModalOpen(false);
-			setNotification({
-				message: err.message,
-				type: NOTIFICATION_TYPE.ERROR,
-			});
 		}
 	};
 
@@ -208,7 +189,6 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		state: {
 			userData,
 			inputValues,
-			notification,
 			profileImgPath,
 			isDeletionModalOpen,
 		},

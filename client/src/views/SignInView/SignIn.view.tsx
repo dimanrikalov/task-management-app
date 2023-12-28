@@ -5,7 +5,6 @@ import { FaEnvelope } from "react-icons/fa";
 import { FaEnvelopeOpen } from "react-icons/fa";
 import { useSignInViewmodel } from './SignIn.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 
@@ -25,13 +24,6 @@ export const SignInView = () => {
 					<div className={styles.titleContainer}>
 						<h1>Taskify</h1>
 						<h2>Sign in</h2>
-						<div className={styles.errorContainer}>
-							<ErrorMessage
-								fontSize={16}
-								message={state.errorMessage}
-
-							/>
-						</div>
 					</div>
 					<form className={styles.form} onSubmit={operations.signIn}>
 						<IntroInput

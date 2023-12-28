@@ -3,7 +3,6 @@ import styles from './signUp.module.css';
 import { FaUsers } from "react-icons/fa6";
 import { useSignUpViewModel } from './SignUp.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { FaEnvelope, FaEnvelopeOpen, FaLock, FaUnlock } from 'react-icons/fa';
@@ -21,12 +20,6 @@ export const SignUpView = () => {
 					<div className={styles.titleContainer}>
 						<h1>Taskify</h1>
 						<h2>Sign up</h2>
-						<div className={styles.errorContainer}>
-							<ErrorMessage
-								message={state.errorMessage}
-								fontSize={16}
-							/>
-						</div>
 					</div>
 					<form className={styles.form} onSubmit={operations.signUp}>
 						<div className={styles.nameInputContainer}>

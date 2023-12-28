@@ -38,18 +38,6 @@
 	align-items: flex-start;
 }
 
-.notificationMsg {
-	padding: 6px 12px;
-	border-radius: 9px;
-	color: var(--white-main);
-	background-color: var(--blue-main);
-}
-
-.error {
-	color: red;
-	background-color: var(--error-background);
-}
-
 .main {
 	display: flex;
 	justify-content: space-between;

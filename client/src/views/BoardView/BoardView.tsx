@@ -14,7 +14,6 @@ import { CreateTaskView } from '../CreateTaskView/CreateTask.view';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
-import { ErrorNotification } from '@/components/ErrorNotification/ErrorNotification';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 
@@ -84,13 +83,6 @@ export const BoardView = () => {
 					</Modal>
 				)
 			}
-			<ErrorNotification
-				opacity={state.errorMessageOpacity}
-				errorMessage={
-					state.errorMessage === 'Column name is taken!' ? `${state.errorMessage} Make sure to rename "New column" if it exists.`
-						: state.errorMessage
-				}
-			/>
 			<div className={styles.background}>
 				<Chat
 					isChatOpen={state.isChatOpen}
@@ -190,7 +182,6 @@ export const BoardView = () => {
 													tasks={column.tasks}
 													onTaskClick={operations.taskClickHandler}
 													updateColumn={operations.updateColumnData}
-													showErrorMessage={operations.showErrorMessage}
 													onClick={operations.toggleIsCreateTaskModalOpen}
 													users={[...state.workspaceUsers, ...(state.boardData?.boardUsers || [])]}
 												/>

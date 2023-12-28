@@ -3,8 +3,9 @@ import {
 	IDetailedWorkspace,
 } from '../CreateBoardView/CreateBoard.viewmodel';
 import { ROUTES } from '@/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
@@ -51,6 +52,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	const [inputValue, setInputValue] = useState('');
 	const workspaceId = Number(pathname.split('/').pop());
 	const [refreshWorkspace, setRefreshWorkspace] = useState(true);
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const { userData, accessToken } = useOutletContext<IOutletContext>();
 	const [filteredBoards, setFilteredBoards] = useState<IDetailedBoard[]>([]);
 	const [modals, setModals] = useState<IModalStates>({
@@ -109,6 +111,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 				setRefreshWorkspace(false);
 			} catch (err: any) {
 				console.log(err.message);
+				setErrorMessage(err.message);
 			}
 		};
 
@@ -156,6 +159,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
 			console.log(err.message);
+			setErrorMessage(err.message);
 		}
 	};
 
@@ -177,6 +181,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			});
 		} catch (err: any) {
 			console.log(err.message);
+			setErrorMessage(err.message);
 		}
 	};
 

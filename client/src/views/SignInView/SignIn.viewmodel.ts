@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import { ROUTES } from '@/router';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 interface IInputFields {
@@ -10,7 +11,6 @@ interface IInputFields {
 }
 
 interface ISignInViewmodelState {
-	errorMessage: string;
 	inputFields: IInputFields;
 }
 
@@ -26,7 +26,7 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 	ISignInViewmodelOperations
 > => {
 	const navigate = useNavigate();
-	const [errorMessage, setErrorMessage] = useState('');
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [inputFields, setInputFields] = useState<IInputFields>({
 		email: '',
 		password: '',
@@ -69,13 +69,15 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 
 			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
-			setErrorMessage(err.message);
 			console.log(err.message);
+			setErrorMessage(err.message);
 		}
 	};
 
 	return {
-		state: { errorMessage, inputFields },
+		state: {
+			inputFields,
+		},
 		operations: {
 			signIn,
 			goToSignUpView,

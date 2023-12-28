@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createBoard.module.css';
 import { useCreateBoardViewModel } from './CreateBoard.viewmodel';
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { WorkspaceInput } from '@/components/WorkspaceInput/WorkspaceInput';
@@ -53,15 +52,6 @@ export const CreateBoardView = ({
 					<div className={styles.inputContainer}>
 						<h2>Choose a workspace</h2>
 						<form className={styles.createForm} >
-							<div className={styles.errorMessageContainer}>
-								{
-									state.errorMessage &&
-									<ErrorMessage
-										fontSize={16}
-										message={state.errorMessage}
-									/>
-								}
-							</div>
 							<WorkspaceInput
 								disabled={!!inputValue}
 								onChange={operations.handleInputChange}

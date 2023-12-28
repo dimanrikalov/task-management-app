@@ -5,9 +5,10 @@ import {
 	BOARD_ENDPOINTS,
 	COLUMN_ENDPOINTS,
 } from '@/utils/requester';
-import { useEffect, useState } from 'react';
 import { ITask } from '@/components/Task/Task';
 import { IOutletContext } from '@/guards/authGuard';
+import { useContext, useEffect, useState } from 'react';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { EDIT_COLLEAGUE_METHOD } from '../WorkspaceView/Workspace.viewmodel';
@@ -48,13 +49,11 @@ interface IBoardViewModelState {
 	userData: IUser;
 	isLoading: boolean;
 	isChatOpen: boolean;
-	errorMessage: string;
 	isInputModeOn: boolean;
 	boardNameInput: string;
 	workspaceUsers: IUser[];
 	selectedColumnId: number;
 	selectedTask: ITask | null;
-	errorMessageOpacity: number;
 	boardData: IBoardData | null;
 	isCreateTaskModalOpen: boolean;
 	isDeleteBoardModalOpen: boolean;
@@ -73,7 +72,6 @@ interface IBoardViewModelOperations {
 	taskClickHandler(task: ITask): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
-	showErrorMessage(errorMessage: string): void;
 	addWorkspaceColleague(colleague: IUser): void;
 	removeWorkspaceColleague(colleague: IUser): void;
 	toggleIsCreateTaskModalOpen(columnId: number): void;
@@ -91,16 +89,15 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const boardId = Number(pathname.split('/').pop());
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
 	const [boardNameInput, setBoardNameInput] = useState<string>('');
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
-	const [errorMessageOpacity, setErrorMessageOpacity] = useState<number>(0);
 	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
@@ -161,9 +158,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				setWorkspaceUsers(workspaceUsers);
 				setRefreshBoard(false);
 			} catch (err: any) {
-				setErrorMessage(err.message);
-				setErrorMessageOpacity(1);
 				console.log(err.message);
+				setErrorMessage(err.message);
 			}
 			setIsLoading(false);
 		};
@@ -171,19 +167,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		if (!refreshBoard) return;
 		fetchBoardData();
 	}, [refreshBoard]);
-
-	//make the error message fade out
-	useEffect(() => {
-		if (!errorMessage) {
-			setErrorMessageOpacity(0);
-		}
-
-		const interval = setInterval(() => {
-			setErrorMessageOpacity(0);
-		}, 5000);
-
-		return () => clearInterval(interval);
-	}, [errorMessage, errorMessageOpacity]);
 
 	const goBack = () => {
 		navigate(-1);
@@ -238,9 +221,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				endpoint: BOARD_ENDPOINTS.COLLEAGUES(boardData.id),
 			});
 		} catch (err: any) {
-			setErrorMessage(err.message);
-			setErrorMessageOpacity(1);
 			console.log(err.message);
+			setErrorMessage(err.message);
 		}
 	};
 
@@ -263,9 +245,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			});
 			navigate(-1);
 		} catch (err: any) {
-			setErrorMessage(err.message);
-			setErrorMessageOpacity(1);
 			console.log(err.message);
+			setErrorMessage(err.message);
 		}
 	};
 
@@ -444,10 +425,9 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				}
 			}
 		} catch (err: any) {
-			setErrorMessage(err.message);
-			setErrorMessageOpacity(1);
-			setBoardData(startingBoardState);
 			console.log(err.messsage);
+			setErrorMessage(err.message);
+			setBoardData(startingBoardState);
 		}
 	};
 
@@ -459,11 +439,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const closeCreateTaskModal = () => {
 		setSelectedTask(null);
 		toggleIsCreateTaskModalOpen(-1);
-	};
-
-	const showErrorMessage = (errorMessage: string) => {
-		setErrorMessage(errorMessage);
-		setErrorMessageOpacity(1);
 	};
 
 	const addColumn = async () => {
@@ -501,9 +476,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				};
 			});
 		} catch (err: any) {
-			setErrorMessageOpacity(1);
-			setErrorMessage(err.message);
 			console.log(err.message);
+			setErrorMessage(err.message);
 		}
 	};
 
@@ -559,11 +533,9 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					name: boardNameInput,
 				};
 			});
-
 		} catch (err: any) {
-			setErrorMessageOpacity(1);
-			setErrorMessage(err.message);
 			console.log(err.message);
+			setErrorMessage(err.message);
 		}
 		setIsInputModeOn(false);
 	};
@@ -574,13 +546,11 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			isLoading,
 			boardData,
 			isChatOpen,
-			errorMessage,
 			selectedTask,
 			isInputModeOn,
 			boardNameInput,
 			workspaceUsers,
 			selectedColumnId,
-			errorMessageOpacity,
 			isCreateTaskModalOpen,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,
@@ -591,7 +561,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			onDragEnd,
 			deleteBoard,
 			callForRefresh,
-			showErrorMessage,
 			taskClickHandler,
 			updateColumnData,
 			toggleIsChatOpen,

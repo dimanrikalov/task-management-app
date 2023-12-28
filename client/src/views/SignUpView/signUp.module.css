@@ -56,14 +56,6 @@
 	color: var(--white-main);
 }
 
-.errorContainer {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 86px;
-	width: 100%;
-}
-
 .form {
 	display: flex;
 	flex-direction: column;

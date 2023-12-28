@@ -1,8 +1,9 @@
 import { ITask } from '@/components/Task/Task';
-import { useOutletContext } from 'react-router-dom';
 import { IOutletContext } from '@/guards/authGuard';
+import { useOutletContext } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
 import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
@@ -33,7 +34,6 @@ interface ICreateTaskViewModelState {
 	steps: IStep[];
 	matches: IUser[];
 	progress: number;
-	errorMessage: string;
 	inputValues: IInputState;
 	assigneeId: number | null;
 	taskImagePath: string | null;
@@ -45,10 +45,10 @@ interface ICreateTaskViewModelOperations {
 	loadTaskData(task: ITask): void;
 	selectAssignee(user: IUser): void;
 	removeStep(description: string): void;
+	setErrorMessage(message: string): void;
 	editTask(taskId: number): Promise<void>;
 	toggleStatus(description: string): void;
 	createTask(columnId: number): Promise<void>;
-	setErrorMessage: Dispatch<SetStateAction<string>>;
 	changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
 	handleInputChange(
 		e: React.ChangeEvent<
@@ -80,8 +80,8 @@ export const useCreateTaskViewModel = (
 	const [progress, setProgress] = useState<number>(0);
 	const { accessToken } = useOutletContext<IOutletContext>();
 	const [matches, setMatches] = useState<IUser[]>(boardUsers);
-	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [assigneeId, setAssigneeId] = useState<number | null>(null);
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [taskImagePath, setTaskImagePath] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -348,7 +348,7 @@ export const useCreateTaskViewModel = (
 			endpoint: TASK_ENDPOINTS.EDIT(taskId),
 		});
 
-		if(res.errorMessage) {
+		if (res.errorMessage) {
 			throw new Error(res.errorMessage);
 		}
 
@@ -377,7 +377,6 @@ export const useCreateTaskViewModel = (
 			progress,
 			assigneeId,
 			inputValues,
-			errorMessage,
 			taskImagePath,
 		},
 		operations: {

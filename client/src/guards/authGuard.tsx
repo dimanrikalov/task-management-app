@@ -1,7 +1,8 @@
 import { ROUTES } from '@/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
+import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 
@@ -29,6 +30,7 @@ export const AuthGuard = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [tokens, setTokens] = useState<ITokens>(extractTokens());
 	const [userData, setUserData] = useState<IUserData | null>(null);
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 
 	useEffect(() => {
 		const refreshTokens = async () => {
@@ -79,15 +81,24 @@ export const AuthGuard = () => {
 				setIsLoading(false);
 			} catch (err: any) {
 				console.log(err.message);
-				if (err.message === 'Invalid refresh token!') {
-					deleteTokens();
-					setIsLoading(false);
-					return;
-				} else if (err.message === 'Unauthorized!') {
-					setIsLoading(false);
-					navigate(ROUTES.SIGN_IN)
-					return;
+
+				switch (err.message) {
+					case 'Invalid refresh token!':
+						err.message = 'Invalid session. Please sign in again!';
+						deleteTokens();
+						setIsLoading(false);
+						break;
+					case 'Unauthorized':
+						err.message = 'You do not have access to this resource or action!';
+						setIsLoading(false);
+						navigate(ROUTES.SIGN_IN)
+						break;
+					case 'Failed to fetch':
+						err.message = 'Cannot connect to server. Please try again later!';
+						break;
 				}
+
+				setErrorMessage(err.message);
 			}
 		}
 
