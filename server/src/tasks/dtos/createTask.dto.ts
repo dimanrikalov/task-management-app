@@ -13,6 +13,7 @@ import { BaseStepsDto } from 'src/steps/dtos/base.dto';
 
 export class CreateTaskDto extends BaseTasksDto {
     @IsNumber()
+    @Min(1)
     assigneeId: number;
 
     @IsString()
@@ -23,48 +24,47 @@ export class CreateTaskDto extends BaseTasksDto {
     @IsOptional()
     @IsString()
     @MaxLength(1024) // not sure what is the maximum length of a string that can be saved in a text
-    description: string;
+    description?: string;
 
     @IsOptional()
     @IsString()
-    @MaxLength(1024)
-    attachmentImgPath: string;
+    attachmentImgPath?: string;
 
     @IsOptional()
     @IsNumber()
     @Min(0)
-    estimatedHours: number;
-
-    @IsOptional()
-    @IsNumber()
-    @Min(0)
-    @Max(59)
-    estimatedMinutes: number;
-
-    @IsOptional()
-    @IsNumber()
-    @Min(0)
-    hoursSpent: number;
+    estimatedHours?: number;
 
     @IsOptional()
     @IsNumber()
     @Min(0)
     @Max(59)
-    minutesSpent: number;
+    estimatedMinutes?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    hoursSpent?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    @Max(59)
+    minutesSpent?: number;
 
     @IsOptional()
     @IsNumber()
     @Min(1) // low medium high
     @Max(3)
-    priority: number;
+    priority?: number;
 
     @IsOptional()
     @IsNumber()
     @Min(1)
     @Max(5)
-    effort: number;
+    effort?: number;
 
     @IsOptional()
     @IsArray()
-    steps: BaseStepsDto[];
+    steps?: BaseStepsDto[];
 }

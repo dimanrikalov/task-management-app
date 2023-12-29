@@ -1,0 +1,308 @@
+.backgroundWrapper {
+	width: 90%;
+	height: 85%;
+	padding: 8px;
+	max-width: 1300px;
+	position: relative;
+	border-radius: 16px;
+	background-color: var(--white-main);
+}
+
+.background {
+	gap: 46px;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	overflow-y: auto;
+	flex-direction: column;
+	padding: 32px 46px 32px 46px;
+}
+
+.header {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.closeBtn {
+	color: grey;
+	font-size: 36px;
+	cursor: pointer;
+}
+
+.body {
+	display: flex;
+	justify-content: space-between;
+}
+
+.bold {
+	font-weight: 600;
+}
+
+.left,
+.right,
+.middle {
+	width: 30%;
+}
+
+/* left part */
+
+.left {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+.stepOne,
+.stepTwo {
+	gap: 16px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+select,
+.textArea,
+.numberInput {
+	resize: none;
+	height: 100%;
+	padding: 9px;
+	font-size: 16px;
+	border-radius: 9px;
+	background-color: whitesmoke;
+	transition: 200ms ease-in-out;
+	border: 2px solid var(--grey-main);
+}
+
+select:focus,
+.textArea:focus,
+.numberInput:focus {
+	border: 2px solid var(--blue-main);
+}
+
+/* middle part */
+
+.middle {
+	gap: 32px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.imgContainer {
+	width: 100%;
+	height: 256px;
+	display: flex;
+	overflow: hidden;
+	align-items: center;
+	border-radius: 12px;
+	justify-content: center;
+	background-color: whitesmoke;
+	border: 2px solid var(--blue-main);
+}
+
+.addTaskImgMessage {
+	color: grey;
+	text-align: center;
+}
+
+.previewImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.imgInput {
+	width: 100%;
+	border: none;
+	display: flex;
+	cursor: pointer;
+	align-items: center;
+	flex-direction: column;
+}
+
+.fileInput {
+	display: none;
+}
+
+.imgBtn {
+	width: 100%;
+	border: none;
+	background: none;
+}
+
+.imgOperationsContainer {
+	gap: 32px;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+
+.imgOperationBtn {
+	width: 100%;
+	padding: 8px;
+	font-size: 38px;
+	cursor: pointer;
+	border-radius: 9px;
+	border: 1px solid red;
+	transition: 200ms ease-in-out;
+}
+
+.imgOperationBtn:hover {
+	color: red;
+	background-color: white;
+}
+
+.resetBtn {
+	color: var(--white-main);
+	background-color: red;
+}
+
+.disabled:first-of-type,
+.disabled:last-of-type {
+	cursor: default;
+	border-color: grey;
+	cursor: not-allowed;
+	background-color: grey;
+}
+
+.disabled:first-of-type:hover,
+.disabled:last-of-type:hover {
+	color: white;
+	border-color: grey;
+	background-color: grey;
+}
+
+.priority,
+.effort {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.select {
+	width: 50%;
+	padding: 6px;
+	cursor: pointer;
+	font-size: 16px;
+	border-radius: 9px;
+	text-align: center;
+}
+
+.timeEstimation {
+	gap: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.timeEstimation .rightSide {
+	gap: 9px;
+	display: flex;
+}
+
+.inputDiv {
+	gap: 6px;
+	display: flex;
+	align-items: center;
+}
+
+.inputDiv > input {
+	width: 64px;
+	height: 36px;
+	font-size: 16px;
+	border-radius: 9px;
+	text-align: center;
+}
+
+/* right part */
+.right {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.stepContainer {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.addSteps {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.stepInputDiv {
+	gap: 24px;
+	display: flex;
+	align-items: center;
+}
+
+.stepInputDiv > input {
+	flex: 8;
+}
+
+.addStepBtn {
+	width: 38px;
+	height: 38px;
+	cursor: pointer;
+	padding: 3px 3px;
+	border-radius: 9px;
+	color: var(--white-main);
+	transition: 200ms ease-in-out;
+	border: 2px solid var(--blue-main);
+	background-color: var(--blue-main);
+}
+
+.addStepBtn:hover {
+	color: var(--blue-main);
+	background-color: var(--white-main);
+}
+
+.assigneeInput {
+	gap: 16px;
+	display: flex;
+	flex-direction: column;
+}
+
+.fieldTitle {
+	font-size: 18px;
+}
+
+.progress {
+	align-self: center;
+	font-size: 24px;
+}
+
+.deleteTaskBtn {
+	padding: 8px;
+	font-size: 16px;
+	cursor: pointer;
+	border-radius: 0.5em;
+	background-color: red;
+	border: 1px solid red;
+	color: var(--white-main);
+	transition: 200ms ease-in-out;
+}
+
+.deleteTaskBtn:hover {
+	color: red;
+	border-color: red;
+	background-color: var(--white-main);
+}
+
+@media screen and (max-width: 1170px) {
+	.timeEstimation {
+		gap: 6px;
+		flex-direction: column;
+	}
+	.timeEstimation .rightSide {
+		width: 100%;
+		justify-content: space-evenly;
+	}
+}

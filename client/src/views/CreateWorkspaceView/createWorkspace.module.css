@@ -1,0 +1,72 @@
+.backgroundWrapper {
+	position: relative;
+	background-color: var(--white-main);
+	border-radius: 16px;
+	padding: 8px;
+	width: 90%;
+	height: 90%;
+	max-width: 980px;
+	max-height: 680px;
+}
+
+.background {
+	display: flex;
+	justify-content: space-between;
+	padding: 72px 54px 54px 54px;
+	gap: 64px;
+	align-items: center;
+	overflow-y: auto;
+	width: 100%;
+	height: 100%;
+}
+
+.closeBtn {
+	top: 16px;
+	right: 24px;
+	color: grey;
+	font-size: 32px;
+	cursor: pointer;
+	position: absolute;
+}
+
+.leftSide {
+	width: 45%;
+	max-width: 420px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.introMessage {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.bold {
+	font-weight: 600;
+}
+
+.inputContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+	width: 350px;
+}
+
+.createForm {
+	display: flex;
+	flex-direction: column;
+	padding: 0px 64px 0px 0px;
+	gap: 16px;
+	margin-bottom: 32px;
+}
+
+.rightSide {
+	width: 45%;
+	max-width: 280px;
+	height: 100%;
+	padding-top: 32px;
+}

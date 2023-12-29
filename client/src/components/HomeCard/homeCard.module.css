@@ -1,0 +1,77 @@
+.btn {
+	border: none;
+	border-radius: 16px;
+	cursor: pointer;
+	overflow: hidden;
+	background-color: var(--white-main);
+	transition: 200ms ease-in-out;
+	width: 100%;
+	box-shadow: -1px 1px 9px 0px rgba(0,0,0,0.2);
+	-webkit-box-shadow: -1px 1px 9px 0px rgba(0,0,0,0.2);
+	-moz-box-shadow: -1px 1px 9px 0px rgba(0,0,0,0.2);
+}
+
+.board-btn {
+	min-height: 170px;
+	min-width: 320px;
+}
+
+.workspace-btn {
+	min-width: 240px;
+}
+
+.btn:hover {
+	background-color: var(--blue-main);
+	.title,
+	.icon,
+	.userCount,
+	.subtitle {
+		color: var(--white-main);
+	}
+}
+
+.background {
+	height: 100%;
+	width: 100%;
+	padding: 24px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.header {
+	display: flex;
+	align-self: flex-start;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.title {
+	color: var(--blue-main);
+	font-weight: 600;
+	font-size: 28px;
+	text-align: start;
+	transition: 200ms ease-in-out;
+}
+
+.subtitle {
+	font-size: 16px;
+	letter-spacing: 0.2px;
+	transition: 200ms ease-in-out;
+}
+
+.userCount {
+	font-size: 24px;
+	font-weight: 500;
+	align-self: flex-end;
+	display: flex;
+	align-items: center;
+	transition: 200ms ease-in-out;
+}
+
+.icon {
+	font-size: 32px;
+	color: var(--blue-main);
+	transition: 200ms ease-in-out;
+}

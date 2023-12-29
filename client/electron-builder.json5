@@ -5,9 +5,9 @@
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "YourAppID",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "Taskify",
   "directories": {
-    "output": "release/${version}"
+    "output": "release/Taskify"
   },
   "files": [
     "dist",
@@ -17,7 +17,8 @@
     "target": [
       "dmg"
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "artifactName": "${productName}-Mac-${version}-Installer.${ext}",
+    "icon": "public/icon.icns"
   },
   "win": {
     "target": [
@@ -28,7 +29,8 @@
         ]
       }
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    "artifactName": "${productName}-Windows-${version}-Setup.${ext}",
+    "icon": "public/icon.ico"
   },
   "nsis": {
     "oneClick": false,

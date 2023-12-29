@@ -1,0 +1,40 @@
+.button {
+	width: 100%;
+	padding: 8px;
+	cursor: pointer;
+	font-size: 16px;
+	border-radius: 0.5em;
+	color: var(--white-main);
+	transition: 200ms ease-in-out;
+	background: var(--blue-main);
+	border: 1px solid var(--white-main);
+}
+
+.disabled {
+	cursor: not-allowed;
+	border-color: grey;
+	background-color: grey;
+}
+
+.reverse {
+	background-color: var(--white-main);
+	color: var(--blue-main);
+}
+
+.button:hover {
+	color: var(--blue-main);
+	border: 1px solid var(--blue-main);
+	background-color: var(--white-main);
+}
+
+.disabled:hover {
+	border-color: grey;
+	background-color: grey;
+	color: var(--white-main);
+}
+
+
+.disableHoverEffects {
+	pointer-events: none;
+	cursor: pointer !important;
+}

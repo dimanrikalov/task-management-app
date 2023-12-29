@@ -1,3 +1,9 @@
+import {
+    Module,
+    NestModule,
+    RequestMethod,
+    MiddlewareConsumer,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TasksService } from 'src/tasks/tasks.service';
@@ -12,27 +18,31 @@ import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { WorkspacesGateway } from 'src/workspaces/workspaces.gateway';
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 
 @Module({
-    imports: [PrismaModule],
-    controllers: [UsersController],
     providers: [
         UsersService,
-        WorkspacesService,
-        WorkspacesGateway,
-        BoardsService,
-        BoardsGateway,
-        ColumnsService,
-        MessagesService,
         TasksService,
         TasksGateway,
-        ColumnsGateway,
         StepsService,
+        BoardsService,
+        BoardsGateway,
+        ColumnsGateway,
+        ColumnsService,
+        MessagesService,
+        WorkspacesService,
+        WorkspacesGateway,
     ],
+    imports: [PrismaModule],
+    controllers: [UsersController],
 })
 export class UsersModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('users/edit');
+        consumer //exclude sign-in, sign-up refresh endpoints
+            .apply(AuthMiddleware)
+            .forRoutes('user', 'users/stats', 'users/edit*', 'users/delete', {
+                path: 'users',
+                method: RequestMethod.POST,
+            });
     }
 }

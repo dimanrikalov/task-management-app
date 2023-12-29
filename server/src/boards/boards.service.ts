@@ -1,11 +1,17 @@
+import * as fs from 'fs';
+import { join } from 'path';
 import { Injectable } from '@nestjs/common';
 import { BoardsGateway } from './boards.gateway';
+import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { DeleteBoardDto } from './dtos/deleteboard.dto';
+import { RenameBoardDto } from './dtos/renameBoard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetBoardDetails } from './dtos/getBoardDetails.dto';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
+import { GetWorkspaceDetails } from 'src/workspaces/dtos/getWorkspaceDetails.dto';
 
 @Injectable()
 export class BoardsService {
@@ -16,7 +22,319 @@ export class BoardsService {
         private readonly messagesService: MessagesService,
     ) {}
 
+    async getWorkpaceByIdLocal(body: GetWorkspaceDetails) {
+        const workspaceBoards = await this.prismaService.board.findMany({
+            where: {
+                workspaceId: body.workspaceData.id,
+            },
+        });
+        const workspaceUsersResult =
+            await this.prismaService.user_Workspace.findMany({
+                where: {
+                    workspaceId: body.workspaceData.id,
+                },
+                select: {
+                    User: {
+                        select: {
+                            id: true,
+                            email: true,
+                            profileImagePath: true,
+                        },
+                    },
+                },
+            });
+
+        const workspaceUsers = workspaceUsersResult.map((user) => {
+            const imageBuffer = fs.readFileSync(user.User.profileImagePath);
+
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+            return {
+                ...user.User,
+                profileImagePath: imageBinary,
+            };
+        });
+        const workspaceOwner = await this.prismaService.user.findUnique({
+            where: {
+                id: body.workspaceData.ownerId,
+            },
+            select: {
+                id: true,
+                email: true,
+                profileImagePath: true,
+            },
+        });
+
+        workspaceOwner.profileImagePath = Buffer.from(
+            fs.readFileSync(join(workspaceOwner.profileImagePath)),
+        ).toString('base64');
+
+        const data = {
+            ...body.workspaceData,
+            boards: workspaceBoards,
+            workspaceUsers,
+            workspaceOwner,
+        };
+
+        delete data.ownerId;
+
+        return data;
+    }
+
+    async getUserBoards(body: BaseUsersDto) {
+        const boards = await this.prismaService.board.findMany({
+            where: {
+                OR: [
+                    {
+                        // Boards related to workspaces where the user has access
+                        Workspace: {
+                            User_Workspace: {
+                                some: {
+                                    userId: body.userData.id,
+                                },
+                            },
+                        },
+                    },
+                    {
+                        // Boards where the user is the workspace creator
+                        Workspace: {
+                            ownerId: body.userData.id,
+                        },
+                    },
+                    {
+                        // Boards where the user has direct access
+                        User_Board: {
+                            some: {
+                                userId: body.userData.id,
+                            },
+                        },
+                    },
+                ],
+            },
+            select: {
+                id: true,
+                name: true,
+                Workspace: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+            distinct: ['id'],
+        });
+
+        return await Promise.all(
+            boards.map(async (board) => {
+                const usersWithBoardAccess =
+                    await this.prismaService.user.count({
+                        where: {
+                            OR: [
+                                {
+                                    User_Board: {
+                                        some: {
+                                            boardId: board.id,
+                                        },
+                                    },
+                                },
+                                {
+                                    User_Workspace: {
+                                        some: {
+                                            AND: [
+                                                {
+                                                    workspaceId:
+                                                        board.Workspace.id,
+                                                },
+                                                { userId: body.userData.id },
+                                            ],
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    });
+
+                const res = {
+                    ...board,
+                    usersCount: usersWithBoardAccess + 1,
+                    workspaceName: board.Workspace.name,
+                };
+
+                delete res.Workspace;
+
+                return res;
+            }),
+        );
+    }
+
+    async getBoardById(body: GetBoardDetails) {
+        const board = body.boardData;
+        const boardId = body.boardData.id;
+
+        const boardColumns = await this.prismaService.column.findMany({
+            where: {
+                boardId,
+            },
+            orderBy: {
+                position: 'asc',
+            },
+        });
+
+        const boardTasks = await this.prismaService.task.findMany({
+            where: {
+                columnId: {
+                    in: boardColumns.map((column) => column.id),
+                },
+            },
+        });
+
+        const boardSteps = await this.prismaService.step.findMany({
+            where: {
+                taskId: {
+                    in: boardTasks.map((task) => task.id),
+                },
+            },
+        });
+
+        const tasks = boardTasks.map((task) => {
+            const steps = boardSteps.filter((step) => step.taskId === task.id);
+            if (task.attachmentImgPath) {
+                const imageBuffer = fs.readFileSync(task.attachmentImgPath);
+                const imageBinary = Buffer.from(imageBuffer).toString('base64');
+                return { ...task, attachmentImgPath: imageBinary, steps };
+            }
+
+            return { ...task, steps };
+        });
+
+        const columns = boardColumns.map((column) => {
+            const columnTasks = tasks
+                .filter((task) => task.columnId === column.id)
+                .sort((task_a, task_b) => task_a.position - task_b.position);
+
+            return { ...column, tasks: columnTasks };
+        });
+
+        const boardUsersResult = await this.prismaService.user_Board.findMany({
+            where: {
+                boardId: body.boardData.id,
+            },
+            select: {
+                User: {
+                    select: {
+                        id: true,
+                        email: true,
+                        profileImagePath: true,
+                    },
+                },
+            },
+        });
+
+        const boardUsers = boardUsersResult.map((user) => {
+            const imageBuffer = fs.readFileSync(user.User.profileImagePath);
+
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+            return {
+                ...user.User,
+                profileImagePath: imageBinary,
+            };
+        });
+        console.log(boardUsers);
+        const workspace = await this.getWorkpaceByIdLocal({
+            userData: body.userData,
+            workspaceData: body.workspaceData,
+        });
+
+        return {
+            ...board,
+            columns,
+            workspace,
+            boardUsers,
+        };
+    }
+
     async create(body: CreateBoardDto) {
+        if (
+            body.colleagues &&
+            body.colleagues.length > 0 &&
+            body.workspaceData.name.toLowerCase().trim() ===
+                'personal workspace'
+        ) {
+            throw new Error(
+                'You cannot add colleagues to boards belonging to your Personal Workspace!',
+            );
+        }
+
+        // Handle the case where no colleagues array is passed
+        body.colleagues = body.colleagues || [];
+
+        //if the user somehow decides to add themself
+        if (body.colleagues.includes(body.userData.id)) {
+            throw new Error('You cannot add yourself as a colleague!');
+        }
+        //if the user tries to add 'Deleted User'
+        if (body.colleagues.includes(0)) {
+            throw new Error(
+                'Invalid colleague ID(s)! Double check and try again!',
+            );
+        }
+        //if the user tries to add the workspace owner
+        if (body.colleagues.includes(body.workspaceData.ownerId)) {
+            throw new Error(
+                'You cannot add the workspace creator to a board from the workspace!',
+            );
+        }
+
+        //check if colleague users actually exist
+        const colleagues = await this.prismaService.user.findMany({
+            where: {
+                id: {
+                    in: body.colleagues,
+                },
+            },
+        });
+
+        if (colleagues.length < body.colleagues.length) {
+            throw new Error(
+                'Invalid colleague ID(s)! Double check and try again!',
+            );
+        }
+
+        const validColleagueIds = colleagues.map((colleague) => colleague.id);
+
+        //find all users that dont have user_workspace entry with same workspace ID
+        const usersWithoutWorkspaceAccess =
+            await this.prismaService.user.findMany({
+                where: {
+                    AND: [
+                        {
+                            NOT: {
+                                User_Workspace: {
+                                    some: {
+                                        workspaceId: body.workspaceData.id,
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            id: {
+                                in: validColleagueIds,
+                            },
+                        },
+                    ],
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (usersWithoutWorkspaceAccess.length < validColleagueIds.length) {
+            throw new Error(
+                'You cannot add users with workspace access to the board!',
+            );
+        }
+
         const board = await this.prismaService.board.create({
             data: {
                 name: body.name,
@@ -45,50 +363,36 @@ export class BoardsService {
             ],
         });
 
-        body.colleagues = body.colleagues || [];
-
-        //filter out any user with access to the workspace including the workspace owner
-        const userIdsWithoutWorkspaceAccess = await Promise.all(
-            body.colleagues.map(async (colleagueId) => {
-                const userWithWorkspaceAccess =
-                    await this.prismaService.user_Workspace.findFirst({
-                        where: {
-                            AND: [
-                                { userId: colleagueId },
-                                { workspaceId: body.workspaceData.id },
-                            ],
-                        },
-                    });
-
-                if (
-                    !userWithWorkspaceAccess &&
-                    colleagueId !== body.workspaceData.ownerId
-                ) {
-                    return colleagueId;
-                }
-            }),
-        );
-
-        const filteredUserIdsWithoutAccess =
-            userIdsWithoutWorkspaceAccess.filter((id) => id !== undefined);
-
         //add colleagues to board
-        Promise.all(
-            filteredUserIdsWithoutAccess.map(
-                async (colleagueId) =>
-                    await this.prismaService.user_Board.create({
-                        data: {
-                            userId: colleagueId,
-                            boardId: board.id,
-                        },
-                    }),
-            ),
+        await Promise.all(
+            usersWithoutWorkspaceAccess.map(async (colleague) => {
+                await this.prismaService.user_Board.create({
+                    data: {
+                        userId: colleague.id,
+                        boardId: board.id,
+                    },
+                });
+            }),
         );
 
         //emit an event for created board
         this.boardsGateway.handleBoardCreated({
             affectedUserIds: body.colleagues,
-            message: 'New board was created.',
+            message: 'New board was created!',
+        });
+
+        return board;
+    }
+
+    async rename(body: RenameBoardDto) {
+        await this.prismaService.board.update({
+            where: {
+                id: body.boardData.id,
+            },
+            data: {
+                ...body.boardData,
+                name: body.newName,
+            },
         });
     }
 
@@ -98,26 +402,26 @@ export class BoardsService {
             body.userData.id === body.workspaceData.ownerId;
 
         if (!userIsWorkspaceOwner) {
-            throw new Error('You must own the workspace to delete this board.');
+            throw new Error('You must own the workspace to delete this board!');
         }
 
         //delete the relationship entries concerning the board to be deleted
         await this.prismaService.user_Board.deleteMany({
             where: {
-                boardId: body.boardId,
+                boardId: body.boardData.id,
             },
         });
 
         //deletes all columns, tasks and steps cascadingly
-        await this.columnsService.deleteMany(body.boardId);
+        await this.columnsService.deleteMany(body.boardData.id);
 
         //delete all chat messages
-        await this.messagesService.deleteAll(body.boardId);
+        await this.messagesService.deleteAll(body.boardData.id);
 
         //delete the board
         await this.prismaService.board.delete({
             where: {
-                id: body.boardId,
+                id: body.boardData.id,
             },
         });
     }
@@ -130,15 +434,15 @@ export class BoardsService {
         });
 
         //delete all columns from all boards
-        Promise.all(
-            boards.map((board) => async () => {
+        await Promise.all(
+            boards.map(async (board) => {
                 await this.columnsService.deleteMany(board.id);
             }),
         );
 
         //remove any user_boards relationship with the deleted boards
-        Promise.all(
-            boards.map((board) => async () => {
+        await Promise.all(
+            boards.map(async (board) => {
                 await this.prismaService.user_Board.deleteMany({
                     where: {
                         boardId: board.id,
@@ -156,22 +460,30 @@ export class BoardsService {
     }
 
     async addColleague(body: EditBoardColleagueDto) {
+        const colleagueId = Number(body.colleagueId);
         if (
-            body.workspaceData.name.toLowerCase() ===
-            'Personal Workspace'.toLowerCase()
+            body.workspaceData.name.toLowerCase().trim() ===
+            'personal workspace'
         ) {
-            throw new Error('You cannot add colleagues to personal boards.');
+            throw new Error('You cannot add colleagues to personal boards!');
         }
 
         //check the user to be added (it must not be the user themself, a user with access to the workspace where the board is, or the owner)
+        if (colleagueId === 0) {
+            // 'Deleted User' id
+            throw new Error('Invalid colleague ID!');
+        }
+
+        const userIsAddingThemself = colleagueId === body.userData.id;
+
         const colleagueIsWorkspaceOwner =
-            body.workspaceData.ownerId === body.colleagueId;
+            body.workspaceData.ownerId === colleagueId;
 
         const colleagueIsPartOfWorkspace =
             await this.prismaService.user_Workspace.findFirst({
                 where: {
                     AND: [
-                        { userId: body.colleagueId },
+                        { userId: colleagueId },
                         { workspaceId: body.workspaceData.id },
                     ],
                 },
@@ -181,13 +493,11 @@ export class BoardsService {
             await this.prismaService.user_Board.findFirst({
                 where: {
                     AND: [
-                        { userId: body.colleagueId },
+                        { userId: colleagueId },
                         { boardId: body.boardData.id },
                     ],
                 },
             });
-
-        const userIsAddingThemself = body.colleagueId === body.userData.id;
 
         if (
             userIsAddingThemself ||
@@ -195,77 +505,78 @@ export class BoardsService {
             colleagueIsWorkspaceOwner ||
             colleagueIsPartOfWorkspace
         ) {
-            throw new Error('User already has access to the workspace!');
+            throw new Error('User already has access to the board!');
         }
 
         await this.prismaService.user_Board.create({
             data: {
-                userId: body.colleagueId,
+                userId: colleagueId,
                 boardId: body.boardData.id,
             },
         });
 
         //trigger a socket event
         this.boardsGateway.handleUserAddedToBoard({
-            message: 'You have been added to a board.',
+            message: 'You have been added to a board!',
             affectedUserId: body.colleagueId,
         });
     }
 
     async removeColleague(body: EditBoardColleagueDto) {
+        const colleagueId = Number(body.colleagueId);
+
         if (
-            body.workspaceData.name.toLowerCase() ===
-            'Personal Workspace'.toLowerCase()
+            body.workspaceData.name.toLowerCase().trim() ===
+            'personal workspace'
         ) {
             throw new Error(
-                'You cannot remove colleagues from personal boards.',
+                'You cannot remove colleagues from personal boards!',
             );
         }
 
-        const colleagueIsWorkspaceOwner =
-            body.workspaceData.ownerId === body.colleagueId;
+        if (colleagueId === 0) {
+            throw new Error('Invalid colleague ID!');
+        }
+        if (colleagueId === body.userData.id) {
+            throw new Error('You cannot remove yourself from the board!');
+        }
+        if (body.workspaceData.ownerId === colleagueId) {
+            throw new Error(
+                'You cannot remove the workspace owner from a board that is part of the same workspace!',
+            );
+        }
 
         const colleagueIsPartOfWorkspace =
             await this.prismaService.user_Workspace.findFirst({
                 where: {
                     AND: [
-                        { userId: body.colleagueId },
+                        { userId: colleagueId },
                         { workspaceId: body.workspaceData.id },
                     ],
                 },
             });
+        if (colleagueIsPartOfWorkspace) {
+            throw new Error(
+                'You cannot remove a user with access to the workspace from the board!',
+            );
+        }
 
         const colleagueIsPartOfBoard =
             await this.prismaService.user_Board.findFirst({
                 where: {
                     AND: [
-                        { userId: body.colleagueId },
+                        { userId: colleagueId },
                         { boardId: body.boardData.id },
                     ],
                 },
             });
-
-        const userIsRemovingThemself = body.colleagueId === body.userData.id;
-
-        if (userIsRemovingThemself) {
-            throw new Error('You cannot remove yourself from the board!');
-        }
-        if (colleagueIsWorkspaceOwner || colleagueIsPartOfWorkspace) {
-            throw new Error(
-                'You cannot remove a user with access to the workspace from the board!',
-            );
-        }
         if (!colleagueIsPartOfBoard) {
             throw new Error('User is not part of the board!');
         }
 
-        //cannot use delete with 'AND'
         await this.prismaService.user_Board.deleteMany({
             where: {
-                AND: [
-                    { userId: body.colleagueId },
-                    { boardId: body.boardData.id },
-                ],
+                AND: [{ userId: colleagueId }, { boardId: body.boardData.id }],
             },
         });
 

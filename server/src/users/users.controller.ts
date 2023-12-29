@@ -7,31 +7,83 @@ import {
     Body,
     Delete,
     Controller,
+    UseInterceptors,
 } from '@nestjs/common';
+import * as fs from 'fs';
+import { join } from 'path';
+import { v4 as uuid } from 'uuid';
 import { Request, Response } from 'express';
 import { BaseUsersDto } from './dtos/base.dto';
 import { UsersService } from './users.service';
+import { FindUserDto } from './dtos/findUser.dto';
 import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { extractJWTData } from 'src/jwt/extractJWTData';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { EditProfleImgDto } from './dtos/editProfleImg.dto';
+import { validateJWTToken } from 'src/jwt/validateJWTToken';
+import { Headers, UploadedFile } from '@nestjs/common/decorators';
 
-@Controller('users')
+@Controller('')
 export class UsersController {
-    constructor(
-        private readonly usersService: UsersService,
-        private readonly workspacesService: WorkspacesService,
-    ) {}
-    @Get('/')
-    async getUsers() {
-        return this.usersService.getAll();
+    constructor(private readonly usersService: UsersService) {}
+
+    @Get('/user')
+    async getUser(@Res() res: Response, @Body() body: BaseUsersDto) {
+        try {
+            const userData = await this.usersService.getUserById(
+                body.userData.id,
+            );
+
+            const imageBuffer = fs.readFileSync(userData.profileImagePath);
+
+            const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+            return res
+                .status(200)
+                .json({ ...userData, profileImg: imageBinary });
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(401).json({
+                errorMessage: err.message,
+            });
+        }
     }
 
-    @Post('/sign-up')
+    @Post('/users')
+    async getUsers(@Res() res: Response, @Body() body: FindUserDto) {
+        try {
+            const users = await this.usersService.getAll(body);
+            res.status(200).json(users);
+        } catch (err: any) {
+            console.log(err.message);
+            res.status(401).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
+    @Get('/users/stats')
+    async getUserStatsById(
+        @Res() res: Response,
+        @Body() { userData }: BaseUsersDto,
+    ) {
+        try {
+            const stats = await this.usersService.getUserStats(userData.id);
+            return res.status(200).json(stats);
+        } catch (err: any) {
+            console.log(err.message);
+            return res.status(400).json({ errorMessage: err.message });
+        }
+    }
+
+    @Post('/users/sign-up')
     async createUser(@Res() res: Response, @Body() userBody: CreateUserDto) {
         try {
             await this.usersService.signUp(userBody);
-            return await this.loginUser(res, userBody);
+            await this.usersService.signIn(res, userBody);
+            return res.status(200).json({ message: 'Signed-up successfully!' });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -40,19 +92,11 @@ export class UsersController {
         }
     }
 
-    @Post('/sign-in')
+    @Post('/users/sign-in')
     async loginUser(@Res() res: Response, @Body() userBody: LoginUserDto) {
         try {
-            const response = await this.usersService.signIn(userBody);
-            //set the refreshToken as a cookie
-            res.cookie('refreshToken', response.refreshToken, {
-                httpOnly: true,
-                secure: true,
-                maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
-            });
-
-            //set the accessToken as response
-            return res.json({ accessToken: response.accessToken });
+            await this.usersService.signIn(res, userBody);
+            res.status(200).json({ message: 'Signed-in successfully!' });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -61,7 +105,7 @@ export class UsersController {
         }
     }
 
-    @Put('/edit')
+    @Put('/users/edit')
     async updateUser(@Res() res: Response, @Body() userBody: EditUserDto) {
         try {
             await this.usersService.update(userBody);
@@ -75,12 +119,71 @@ export class UsersController {
         }
     }
 
-    @Post('/refresh')
-    async refreshUserToken(@Req() req: Request, @Res() res: Response) {
+    @Post('/users/edit/profile-img')
+    @UseInterceptors(FileInterceptor('profileImg'))
+    async updateUserProfileImg(
+        @Res() res: Response,
+        @Headers() headers: any,
+        @UploadedFile() file: any,
+    ) {
+        try {
+            const token = headers.authorization.split(' ')[1];
+            if (!token || !validateJWTToken(token)) {
+                throw new Error('Unauthorized access!');
+            }
+
+            if (!file) {
+                throw new Error('New profile image is required!');
+            }
+
+            const uploadDir = process.env.PROFILE_IMGS_URL;
+
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+
+            const fileName = `profile-img-${uuid()}`;
+            const filePath = join(uploadDir, fileName);
+
+            fs.writeFileSync(filePath, file.buffer);
+
+            const body: EditProfleImgDto = {
+                token,
+                profileImagePath: filePath,
+            };
+
+            await this.usersService.updateProfileImg(body);
+            return res.status(200).json({
+                message: 'User image updated successfully!',
+            });
+        } catch (err: any) {
+            return res.status(400).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
+    @Get('/users/refresh')
+    async refreshUserTokens(@Req() req: Request, @Res() res: Response) {
         try {
             const refreshToken = req.cookies['refreshToken'];
-            const accessToken = this.usersService.refreshToken(refreshToken);
-            return res.status(200).json({ accessToken });
+
+            const body = extractJWTData(refreshToken);
+
+            const { newAccessToken, newRefreshToken } =
+                this.usersService.refreshTokens({
+                    refreshToken,
+                    payload: { userData: body },
+                });
+            res.cookie('accessToken', newAccessToken, {
+                maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
+            });
+            res.cookie('refreshToken', newRefreshToken, {
+                maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
+            });
+            return res
+                .status(200)
+                .json({ message: 'Tokens refreshed successfully!' });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
@@ -89,13 +192,12 @@ export class UsersController {
         }
     }
 
-    @Delete('/delete')
+    @Delete('/users/delete')
     async deleteUser(@Res() res: Response, @Body() body: BaseUsersDto) {
         try {
-            await this.workspacesService.deleteMany(body.userData.id);
-            await this.usersService.delete(body.userData.id);
+            await this.usersService.delete(body);
             return res.status(200).json({
-                message: 'User deleted successfully.',
+                message: 'User deleted successfully!',
             });
         } catch (err: any) {
             console.log(err.message);

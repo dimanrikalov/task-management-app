@@ -1,0 +1,37 @@
+.background {
+	gap: 32px;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.topFlex,
+.bottomFlex,
+.backgroundFlex {
+}
+
+.top {
+	gap: 16px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+@media screen and (max-height: 480px) {
+	.backgroundFlex {
+		flex-direction: row;
+	}
+
+	.top {
+		width: 280px;
+	}
+
+	.topFlex,
+	.bottomFlex {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}

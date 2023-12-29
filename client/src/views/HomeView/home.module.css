@@ -1,0 +1,25 @@
+.background {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background-color: var(--white-secondary);
+	display: flex;
+}
+
+.mainContainer {
+	width: 100%;
+	overflow-x: auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 16px;
+	gap: 56px;
+	transition: 200ms ease-in-out;
+}
+
+.operationsContainer {
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+}

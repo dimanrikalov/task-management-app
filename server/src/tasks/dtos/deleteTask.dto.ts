@@ -1,6 +1,6 @@
-import { Task } from '@prisma/client';
-import { BaseTasksDto } from './base.dto';
+import { Task } from "@prisma/client";
+import { BaseTasksDto } from "./base.dto";
 
-export class DeleteTaskDto extends BaseTasksDto {
-    taskData: Task;
+export class DeleteTasksDto extends BaseTasksDto {
+    taskData: Task
 }

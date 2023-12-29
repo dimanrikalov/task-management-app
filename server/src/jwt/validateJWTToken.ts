@@ -5,6 +5,7 @@ export const validateJWTToken = (token: string) => {
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         return true;
     } catch (err: any) {
+        console.log(err.message);
         return false;
     }
 };

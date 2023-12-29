@@ -1,0 +1,98 @@
+.background {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--blue-main);
+	min-height: 540px;
+}
+
+.signInContainer {
+	border-radius: 1em;
+	overflow: hidden;
+	padding: 18px 64px 32px 64px;
+	width: 70%;
+	max-width: 1120px;
+	min-height: 540px;
+	height: 70%;
+	background-color: var(--white-main);
+	display: flex;
+	justify-content: space-between;
+	box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
+	-webkit-box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
+	-moz-box-shadow: -1px 1px 25px 0px rgba(0,0,0,0.25);
+}
+
+.rightSide {
+	position: relative;
+	width: 100%;
+	max-width: 420px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100%;
+	gap: 16px;
+	justify-content: center;
+	min-width: 400px;
+}
+
+.positionBackButton {
+	position: absolute;
+	top: 32px;
+	left: 32px;
+}
+
+.titleContainer {
+	display: flex;
+	flex-direction: column;
+	width: 70%;
+	align-items: center;
+	gap: 16px;
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+	width: 70%;
+	gap: 16px;
+	margin-bottom: 32px;
+}
+
+.dontHaveAnAccount {
+	text-align: center;
+	color: grey;
+}
+
+.dontHaveAnAccount span {
+	color: var(--blue-main);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.leftSide {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: white;
+	width: 400px;
+}
+
+.leftSide img {
+	width: 100%;
+}
+
+@media screen and (max-width: 1125px) {
+	.rightSide {
+		max-width: unset;
+		width: 100%;
+	}
+	.titleContainer,
+	.form {
+		max-width: 340px;
+	}
+	.leftSide {
+		display: none;
+	}
+}

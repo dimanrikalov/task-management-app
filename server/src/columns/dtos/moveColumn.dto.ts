@@ -1,10 +1,15 @@
-import { IsNumber } from 'class-validator';
-import { BaseColumnsDto } from './base.dto';
+import { Column } from '@prisma/client';
+import { IsNumber, IsObject } from 'class-validator';
+import { IBoard } from 'src/boards/boards.interfaces';
 
-export class MoveColumnDto extends BaseColumnsDto {
-    @IsNumber()
-    columnId: number;
+export class MoveColumnDto {
+    @IsObject()
+    columnData: Column;
+
+    @IsObject()
+    boardData: IBoard;
 
     @IsNumber()
-    newPosition: number;
+    destinationPosition: number;
 }
+

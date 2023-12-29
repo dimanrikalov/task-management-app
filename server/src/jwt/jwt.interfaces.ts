@@ -1,8 +1,5 @@
 export interface IJWTPayload {
     id: number;
-    email: string;
-    first_name: string;
-    last_name: string;
     iat?: number;
     exp?: number;
 }
@@ -20,4 +17,9 @@ export type TRefreshTokenResponse = ISuccessfulResponse | IFailedResponse;
 export interface IGenerateTokens {
     accessToken: string;
     refreshToken: string;
+}
+
+export interface IRefreshTokenPayload {
+    id: number;
+    exp: number;
 }
