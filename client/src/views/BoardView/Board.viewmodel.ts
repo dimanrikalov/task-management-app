@@ -5,16 +5,16 @@ import {
 	BOARD_ENDPOINTS,
 	COLUMN_ENDPOINTS,
 } from '@/utils/requester';
+import { IUserData } from '@/app/userSlice';
 import { useEffect, useState } from 'react';
 import { ITask } from '@/components/Task/Task';
-import { IOutletContext } from '@/guards/authGuard';
+import { setErrorMessageAsync } from '@/app/errorSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { EDIT_COLLEAGUE_METHOD } from '../WorkspaceView/Workspace.viewmodel';
 import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
-import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
-import { useAppDispatch } from '@/app/hooks';
-import { setErrorMessageAsync } from '@/app/errorSlice';
 
 export interface IColumn {
 	id: number;
@@ -98,9 +98,11 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
-	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
+	const { data: userData, accessToken } = useAppSelector(
+		(state) => state.user
+	) as { data: IUserData; accessToken: string };
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
 		useState(false);
 

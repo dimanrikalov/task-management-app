@@ -73,15 +73,13 @@ export const BoardView = () => {
 			{
 				state.isCreateTaskModalOpen &&
 				(
-					<Modal>
-						<CreateTaskView
-							taskData={state.selectedTask}
-							columnId={state.selectedColumnId}
-							boardUsers={state.boardData.boardUsers}
-							callForRefresh={operations.callForRefresh}
-							toggleIsCreateTaskModalOpen={operations.closeCreateTaskModal}
-						/>
-					</Modal>
+					<CreateTaskView
+						taskData={state.selectedTask}
+						columnId={state.selectedColumnId}
+						boardUsers={state.boardData.boardUsers}
+						callForRefresh={operations.callForRefresh}
+						toggleIsCreateTaskModalOpen={operations.closeCreateTaskModal}
+					/>
 				)
 			}
 			<div className={styles.background}>
