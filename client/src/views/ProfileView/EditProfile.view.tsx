@@ -7,14 +7,12 @@ import { useProfileViewModel } from './EditProfile.viewmodel';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
-interface IEditProfileView {
-	closeBtnHandler(): void;
-}
-export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
+
+export const EditProfileView = () => {
 	const { state, operations } = useProfileViewModel();
 
 	return (
-		<>
+		<Modal>
 			{state.isDeletionModalOpen && (
 				<Modal>
 					<div className={styles.modalBackground}>
@@ -35,7 +33,7 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 				<div className={styles.background}>
 					<RxCross2
 						className={styles.closeBtn}
-						onClick={closeBtnHandler}
+						onClick={operations.toggleIsEditProfileModalOpen}
 					/>
 					{/* adds some spacing on the top side */}
 					<div className={styles.header}></div>
@@ -62,8 +60,8 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 									type="file"
 									id="imgInput"
 									className={styles.fileInput}
-									disabled={!!state.inputValues.profileImg}
 									onChange={operations.changeProfileImage}
+									disabled={!!state.inputValues.profileImg}
 									accept="image/png, image/jpg, image/gif, image/jpeg"
 								/>
 								<div className={styles.imgOperationsContainer}>
@@ -98,11 +96,15 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 
 							<div className={styles.formContainer}>
 								<h3>Edit password</h3>
-								<form name='password' className={styles.form} onSubmit={operations.updateUserData}>
+								<form
+									name='password'
+									className={styles.form}
+									onSubmit={operations.updateUserData}
+								>
 									<IntroInput
 										name="password"
-										placeholder="New password"
 										type="password"
+										placeholder="New password"
 										value={state.inputValues.password}
 										onChange={operations.inputChangeHandler}
 									/>
@@ -113,11 +115,15 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 						<div className={styles.rightSide}>
 							<div className={styles.formContainer}>
 								<h3>Edit first name</h3>
-								<form name='firstName' className={styles.form} onSubmit={operations.updateUserData}>
+								<form
+									name='firstName'
+									className={styles.form}
+									onSubmit={operations.updateUserData}
+								>
 									<IntroInput
+										type="text"
 										name="firstName"
 										placeholder="New first name"
-										type="text"
 										value={state.inputValues.firstName}
 										onChange={operations.inputChangeHandler}
 									/>
@@ -129,11 +135,15 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 
 							<div className={styles.formContainer}>
 								<h3>Edit last name</h3>
-								<form name='lastName' className={styles.form} onSubmit={operations.updateUserData}>
+								<form
+									name='lastName'
+									className={styles.form}
+									onSubmit={operations.updateUserData}
+								>
 									<IntroInput
+										type="text"
 										name="lastName"
 										placeholder="New last name"
-										type="text"
 										value={state.inputValues.lastName}
 										onChange={operations.inputChangeHandler}
 									/>
@@ -149,6 +159,6 @@ export const EditProfileView = ({ closeBtnHandler }: IEditProfileView) => {
 					</div>
 				</div>
 			</div>
-		</>
+		</Modal>
 	);
 };

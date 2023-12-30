@@ -4,16 +4,17 @@ import {
 } from '../CreateBoardView/CreateBoard.viewmodel';
 import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/app/hooks';
+import { IUserData } from '@/app/userSlice';
 import { setErrorMessageAsync } from '@/app/errorSlice';
-import { IOutletContext, IUserData } from '@/guards/authGuard';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
-import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import { toggleCreateBoardModal } from '@/app/modalsSlice';
+import { setWorkspaceName } from '@/app/inputValuesSlice';
 
 export enum MODAL_STATES_KEYS {
-	CREATE_BOARD = 'createBoardIsOpen',
 	EDIT_COLLEAGUES = 'editColleaguesIsOpen',
 	DELETE_WORKSPACE = 'deleteWorkspaceIsOpen',
 }
@@ -40,6 +41,7 @@ interface IWorkspaceViewModelOperations {
 	toggleIsInputModeOn(): void;
 	toggleModal(key: string): void;
 	goToBoard(boardId: number): void;
+	toggleIsCreateBoardModalOpen(): void;
 	addWorkspaceColleague(colleague: IUser): void;
 	removeWorkspaceColleague(colleague: IUser): void;
 	inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>): void;
@@ -64,11 +66,12 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	const workspaceId = Number(pathname.split('/').pop());
 	const [refreshWorkspace, setRefreshWorkspace] = useState(true);
 	const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
-	const { userData, accessToken } = useOutletContext<IOutletContext>();
 	const [workspaceNameInput, setWorkspaceNameInput] = useState<string>('');
 	const [filteredBoards, setFilteredBoards] = useState<IDetailedBoard[]>([]);
+	const { data: userData, accessToken } = useAppSelector(
+		(state) => state.user
+	) as { data: IUserData; accessToken: string };
 	const [modals, setModals] = useState<IModalStates>({
-		[MODAL_STATES_KEYS.CREATE_BOARD]: false,
 		[MODAL_STATES_KEYS.EDIT_COLLEAGUES]: false,
 		[MODAL_STATES_KEYS.DELETE_WORKSPACE]: false,
 	});
@@ -142,6 +145,12 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 
 	const toggleModal = (key: MODAL_STATES_KEYS) => {
 		setModals((prev) => ({ ...prev, [key]: !prev[key] }));
+	};
+
+	const toggleIsCreateBoardModalOpen = () => {
+		if (!workspaceData) return;
+		dispatch(toggleCreateBoardModal());
+		dispatch(setWorkspaceName({ workspaceName: workspaceData.name }));
 	};
 
 	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -269,6 +278,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			addWorkspaceColleague,
 			removeWorkspaceColleague,
 			handleWorkspaceNameChange,
+			toggleIsCreateBoardModalOpen,
 			handleWorkspaceNameInputChange,
 		},
 	};

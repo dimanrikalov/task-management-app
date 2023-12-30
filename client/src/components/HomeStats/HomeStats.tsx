@@ -1,12 +1,10 @@
 import { BsCheckLg } from 'react-icons/bs';
 import styles from './homeStats.module.css';
 import { useEffect, useState } from 'react';
-import { useAppDispatch } from '@/app/hooks';
 import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
-import { IOutletContext } from '@/guards/authGuard';
-import { useOutletContext } from 'react-router-dom';
 import { setErrorMessageAsync } from '@/app/errorSlice';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
@@ -40,7 +38,7 @@ const Stat = ({ isLoading, stat }: IStatProps) => {
 export const HomeStats = () => {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const { accessToken } = useOutletContext<IOutletContext>();
+    const { accessToken } = useAppSelector(state => state.user);
     const [userStats, setUserStats] = useState<IUserStats>({
         boardsCount: -1,
         messagesCount: -1,

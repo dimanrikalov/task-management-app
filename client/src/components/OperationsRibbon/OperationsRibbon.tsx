@@ -1,35 +1,48 @@
+import {
+	toggleCreateBoardModal,
+	toggleEditProfileModal,
+	toggleCreateWorkspaceModal,
+} from '@/app/modalsSlice';
+import { useAppDispatch } from '@/app/hooks';
 import { MdLibraryAdd } from 'react-icons/md';
 import { HiDocumentAdd } from 'react-icons/hi';
 import styles from './operationsRibbon.module.css';
+import { setWorkspaceName } from '@/app/inputValuesSlice';
 import { FaChevronLeft, FaUserEdit } from 'react-icons/fa';
 
-interface IOperationsRibbonProps {
-	createBoardBtnHandler(): void;
-	editProfileBtnHandler(): void;
-	createWorkspaceBtnHandler(): void;
-}
+export const OperationsRibbon = () => {
+	const dispatch = useAppDispatch();
 
-export const OperationsRibbon = ({
-	createBoardBtnHandler,
-	editProfileBtnHandler,
-	createWorkspaceBtnHandler,
-}: IOperationsRibbonProps) => {
+
+	const toggleisWorkspaceModalOpen = () => {
+		dispatch(toggleCreateWorkspaceModal());
+	}
+
+	const toggleIsCreateBoardModalOpen = () => {
+		dispatch(toggleCreateBoardModal());
+		dispatch(setWorkspaceName({ workspaceName: '' }));
+	}
+
+	const toggleIsEditProfileModalOpen = () => {
+		dispatch(toggleEditProfileModal());
+	}
+
 	return (
 		<div className={styles.background}>
 			<MdLibraryAdd
 				size={24}
 				className={styles.icon}
-				onClick={createWorkspaceBtnHandler}
+				onClick={toggleisWorkspaceModalOpen}
 			/>
 			<HiDocumentAdd
 				size={24}
 				className={styles.icon}
-				onClick={createBoardBtnHandler}
+				onClick={toggleIsCreateBoardModalOpen}
 			/>
 			<FaUserEdit
 				size={24}
 				className={styles.icon}
-				onClick={editProfileBtnHandler}
+				onClick={toggleIsEditProfileModalOpen}
 			/>
 			<FaChevronLeft size={24} className={styles.icon} />
 		</div>

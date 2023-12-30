@@ -1,11 +1,9 @@
 import classNames from 'classnames';
-import { useAppDispatch } from '@/app/hooks';
 import React, { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import styles from './addColleagueInput.module.css';
-import { IOutletContext } from '@/guards/authGuard';
 import { EmailInput } from '../EmailInput/EmailInput';
 import { setErrorMessageAsync } from '@/app/errorSlice';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ListContainer } from '../ListContainer/ListContainer';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 
@@ -41,7 +39,7 @@ export const AddColleagueInput = ({
 	const [inputValue, setInputValue] = useState('');
 	const [matches, setMatches] = useState<IUser[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const { accessToken } = useOutletContext<IOutletContext>();
+	const { accessToken } = useAppSelector(state => state.user);
 
 	useEffect(() => {
 		const fetchUsers = async () => {

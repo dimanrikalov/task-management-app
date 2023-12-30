@@ -6,10 +6,11 @@ import {
 } from '@/utils/requester';
 import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/app/hooks';
-import { IOutletContext } from '@/guards/authGuard';
+import { IUserData } from '@/app/userSlice';
+import { useNavigate } from 'react-router-dom';
 import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { toggleCreateBoardModal } from '@/app/modalsSlice';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
@@ -45,10 +46,12 @@ interface ICreateBoardViewModelState {
 	boardColleagues: IUser[];
 	inputValues: IInputStates;
 	workspacesData: IDetailedWorkspace[];
+	isWorkspaceNameInputDisabled: boolean;
 	selectedWorkspace: IDetailedWorkspace | null;
 }
 
 interface ICreateBoardViewModelOperations {
+	toggleIsCreateBoardModalOpen(): void;
 	addBoardColleague(colleague: IUser): void;
 	removeBoardColleague(colleague: IUser): void;
 	selectWorkspace(workspace: IDetailedWorkspace): void;
@@ -63,17 +66,34 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 > => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const [selectedWorkspace, setSelectedWorkspace] =
-		useState<IDetailedWorkspace | null>(null);
-	const [boardColleagues, setBoardColleagues] = useState<IUser[]>([]);
-	const { accessToken, userData } = useOutletContext<IOutletContext>();
-	const [workspacesData, setWorkspacesData] = useState<IDetailedWorkspace[]>(
-		[]
-	);
+	const { workspaceName } = useAppSelector((state) => state.inputValues);
+	const [isWorkspaceNameInputDisabled, setIsWorkspaceNameInputDisabled] =
+		useState<boolean>(false);
 	const [inputValues, setInputValues] = useState<IInputStates>({
 		[INPUT_STATES_KEYS.BOARD_NAME]: '',
 		[INPUT_STATES_KEYS.WORKSPACE_NAME]: '',
 	});
+	const [selectedWorkspace, setSelectedWorkspace] =
+		useState<IDetailedWorkspace | null>(null);
+	const { data: userData, accessToken } = useAppSelector(
+		(state) => state.user
+	) as {
+		data: IUserData;
+		accessToken: string;
+	};
+	const [boardColleagues, setBoardColleagues] = useState<IUser[]>([]);
+	const [workspacesData, setWorkspacesData] = useState<IDetailedWorkspace[]>(
+		[]
+	);
+
+	useEffect(() => {
+		if (!workspaceName) return;
+		setInputValues((prev) => ({
+			...prev,
+			workspaceName,
+		}));
+		setIsWorkspaceNameInputDisabled(true);
+	}, [workspaceName]);
 
 	useEffect(() => {
 		const fetchWorkspaces = async () => {
@@ -216,12 +236,17 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 		setInputValues((prev) => ({ ...prev, workspaceName: workspace.name }));
 	};
 
+	const toggleIsCreateBoardModalOpen = () => {
+		dispatch(toggleCreateBoardModal());
+	};
+
 	return {
 		state: {
 			inputValues,
 			workspacesData,
 			boardColleagues,
 			selectedWorkspace,
+			isWorkspaceNameInputDisabled,
 		},
 		operations: {
 			createBoard,
@@ -230,6 +255,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 			handleInputChange,
 			addBoardColleague,
 			removeBoardColleague,
+			toggleIsCreateBoardModalOpen,
 		},
 	};
 };

@@ -5,7 +5,6 @@ import { TiDocumentAdd } from 'react-icons/ti';
 import { Modal } from '@/components/Modal/Modal';
 import { BoardCard } from '@/components/BoardCard/BoardCard';
 import { BackButton } from '@/components/BackButton/BackButton';
-import { CreateBoardView } from '../CreateBoardView/CreateBoard.view';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
@@ -22,21 +21,6 @@ export const WorkspaceView = () => {
 
 	return (
 		<>
-			{
-				state.modals.createBoardIsOpen && (
-					<Modal
-						children={
-							<CreateBoardView
-								inputValue={state.workspaceData.name}
-								closeBtnHandler={
-									() =>
-										operations.toggleModal(MODAL_STATES_KEYS.CREATE_BOARD)
-								}
-							/>
-						}
-					/>
-				)
-			}
 			{
 				state.modals.editColleaguesIsOpen && (
 					<Modal
@@ -147,9 +131,7 @@ export const WorkspaceView = () => {
 				<div className={styles.boardsContainer}>
 					<button
 						className={styles.addButton}
-						onClick={
-							() => operations.toggleModal(MODAL_STATES_KEYS.CREATE_BOARD)
-						}
+						onClick={operations.toggleIsCreateBoardModalOpen}
 					>
 						<TiDocumentAdd className={styles.icon} />
 					</button>

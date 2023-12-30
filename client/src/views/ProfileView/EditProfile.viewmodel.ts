@@ -1,12 +1,13 @@
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
+import { IUserData } from '@/app/userSlice';
 import { useEffect, useState } from 'react';
-import { IOutletContext, IUserData } from '@/guards/authGuard';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { setErrorMessageAsync } from '@/app/errorSlice';
+import { toggleEditProfileModal } from '@/app/modalsSlice';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
-import { useAppDispatch } from '@/app/hooks';
-import { setErrorMessageAsync } from '@/app/errorSlice';
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
 
@@ -35,6 +36,7 @@ interface IEditProfileViewModelOperations {
 	deleteUser(): void;
 	clearProfileImg(): void;
 	toggleIsDeletionModalOpen(): void;
+	toggleIsEditProfileModalOpen(): void;
 	updateUserData(e: React.FormEvent): void;
 	inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 	changeProfileImage(e: React.ChangeEvent<HTMLInputElement>): void;
@@ -46,8 +48,10 @@ export const useProfileViewModel = (): ViewModelReturnType<
 > => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
+	const { data: userData, accessToken } = useAppSelector(
+		(state) => state.user
+	) as { data: IUserData; accessToken: string };
 	const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
 	const [inputValues, setInputValues] = useState<IInputValues>({
 		lastName: '',
@@ -189,6 +193,10 @@ export const useProfileViewModel = (): ViewModelReturnType<
 		setIsDeletionModalOpen((prev) => !prev);
 	};
 
+	const toggleIsEditProfileModalOpen = () => {
+		dispatch(toggleEditProfileModal());
+	};
+
 	return {
 		state: {
 			userData,
@@ -203,6 +211,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 			inputChangeHandler,
 			changeProfileImage,
 			toggleIsDeletionModalOpen,
+			toggleIsEditProfileModalOpen,
 		},
 	};
 };

@@ -1,9 +1,11 @@
-import { ROUTES } from '@/router';
 import { useState } from 'react';
+import { ROUTES } from '@/router';
 import { useDispatch } from 'react-redux';
-import { IOutletContext } from '@/guards/authGuard';
+import { IUserData } from '@/app/userSlice';
+import { useAppSelector } from '@/app/hooks';
+import { useNavigate } from 'react-router-dom';
 import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { toggleCreateWorkspaceModal } from '@/app/modalsSlice';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
@@ -15,6 +17,7 @@ interface ICreateWorkspaceState {
 }
 
 interface ICreateWorkspaceOperations {
+	toggleIsCreateWorkspaceModalOpen(): void;
 	addToColleaguesToAdd(colleague: IUser): void;
 	removeFromColleaguesToAdd(colleague: IUser): void;
 	createWorkspace(e: React.FormEvent<HTMLFormElement>): void;
@@ -28,8 +31,9 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [inputValue, setInputValue] = useState('');
-	const { userData } = useOutletContext<IOutletContext>();
-	const { accessToken } = useOutletContext<IOutletContext>();
+	const { data: userData, accessToken } = useAppSelector(
+		(state) => state.user
+	) as { data: IUserData; accessToken: string };
 	const [colleagues, setColleagues] = useState<IUser[]>([
 		{ ...userData, email: 'Me' },
 	]);
@@ -96,6 +100,10 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 		]);
 	};
 
+	const toggleIsCreateWorkspaceModalOpen = () => {
+		dispatch(toggleCreateWorkspaceModal());
+	};
+
 	return {
 		state: {
 			userData,
@@ -107,6 +115,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 			handleInputChange,
 			addToColleaguesToAdd,
 			removeFromColleaguesToAdd,
+			toggleIsCreateWorkspaceModalOpen,
 		},
 	};
 };

@@ -7,10 +7,10 @@ import {
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/app/hooks';
+import { IUserData } from '@/app/userSlice';
+import { useNavigate } from 'react-router-dom';
 import { setErrorMessageAsync } from '@/app/errorSlice';
-import { IOutletContext, IUserData } from '@/guards/authGuard';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 export enum ENTRIES_TYPES {
@@ -27,12 +27,6 @@ export enum MODALS_STATE_KEYS {
 export interface ISearchInputs {
 	searchBoards: string;
 	searchWorkspaces: string;
-}
-
-interface IModalsState {
-	createBoardIsOpen: boolean;
-	editProfileIsOpen: boolean;
-	createWorkspaceIsOpen: boolean;
 }
 
 export interface IHomeBoardEntry {
@@ -58,7 +52,6 @@ interface IUseHomeViewmodelState {
 	date: string;
 	userData: IUserData;
 	filteredLists: ILists;
-	modalsState: IModalsState;
 	searchInputs: ISearchInputs;
 }
 
@@ -71,7 +64,6 @@ const options: Intl.DateTimeFormatOptions = {
 
 interface IUserHomeViewmodelOperations {
 	logout(): void;
-	toggleModal(key: MODALS_STATE_KEYS): void;
 	handleFilterInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -80,6 +72,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 	IUserHomeViewmodelOperations
 > => {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 	const [lists, setLists] = useState<ILists>({
 		boards: [],
 		workspaces: [],
@@ -92,15 +85,11 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		searchBoards: '',
 		searchWorkspaces: '',
 	});
-	const [modalsState, setModalsState] = useState<IModalsState>({
-		createBoardIsOpen: false,
-		editProfileIsOpen: false,
-		createWorkspaceIsOpen: false,
-	});
 
-	const dispatch = useAppDispatch();
 	const date = new Date().toLocaleDateString('en-US', options);
-	const { accessToken, userData } = useOutletContext<IOutletContext>();
+	const { data: userData, accessToken } = useAppSelector(
+		(state) => state.user
+	) as { data: IUserData; accessToken: string };
 
 	useEffect(() => {
 		const fetchEntries = async (entries: ENTRIES_TYPES) => {
@@ -180,13 +169,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		navigate(ROUTES.HOME);
 	};
 
-	const toggleModal = (key: MODALS_STATE_KEYS) => {
-		setModalsState((prev) => ({
-			...prev,
-			[key]: !prev[key],
-		}));
-	};
-
 	const handleFilterInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>
 	) => {
@@ -200,13 +182,11 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		state: {
 			date,
 			userData,
-			modalsState,
 			searchInputs,
 			filteredLists,
 		},
 		operations: {
 			logout,
-			toggleModal,
 			handleFilterInputChange,
 		},
 	};
