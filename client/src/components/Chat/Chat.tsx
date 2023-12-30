@@ -1,14 +1,14 @@
 import classNames from 'classnames';
 import styles from './chat.module.css';
 import { VscSend } from "react-icons/vsc";
+import { IUserData } from '@/app/userSlice';
 import { useEffect, useState } from 'react';
 import { Message } from '../Message/Message';
-import { useAppDispatch } from '@/app/hooks';
-import { IOutletContext } from '@/guards/authGuard';
+import { useLocation } from 'react-router-dom';
 import { BackButton } from '../BackButton/BackButton';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
-import { useLocation, useOutletContext } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { MESSAGE_ENDPOINTS, METHODS, request } from '@/utils/requester';
 
@@ -30,12 +30,13 @@ interface IChatProps {
 export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState('');
-	const { userData } = useOutletContext<IOutletContext>();
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const { accessToken } = useOutletContext<IOutletContext>();
 	const boardId = Number(useLocation().pathname.split('/').pop());
 	const [chatMessages, setChatMessages] = useState<IMessage[]>([]);
 	const [refetchMessages, setRefetchMessages] = useState<boolean>(true);
+	const { data: userData, accessToken } = useAppSelector(
+		(state) => state.user
+	) as { data: IUserData; accessToken: string };
 
 	useEffect(() => {
 		setIsLoading(true);

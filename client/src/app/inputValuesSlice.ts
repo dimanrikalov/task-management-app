@@ -16,9 +16,14 @@ const inputValuesState = createSlice({
 			...state,
 			workspaceName: action.payload.workspaceName,
 		}),
+		clearWorkspaceName: (state) => ({
+			...state,
+			workspaceName: '',
+		}),
 	},
 });
 
-export const { setWorkspaceName } = inputValuesState.actions;
+export const { setWorkspaceName, clearWorkspaceName } =
+	inputValuesState.actions;
 
 export default inputValuesState.reducer;

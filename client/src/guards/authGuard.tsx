@@ -24,6 +24,7 @@ export const AuthGuard = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const user = useAppSelector(state => state.user);
 	const modalStates = useAppSelector(state => state.modals);
+	const taskModal = useAppSelector(state => state.taskModal);
 	const [tokens, setTokens] = useState<ITokens>(extractTokens());
 	useEffect(() => {
 		const refreshTokens = async () => {
@@ -112,13 +113,9 @@ export const AuthGuard = () => {
 	if (!user.data) {
 		return <Navigate to={ROUTES.SIGN_IN} />
 	}
-
-	// const context: IOutletContext = {
-	// 	userData,
-	// 	accessToken: tokens.accessToken,
-	// }
+	
 	return <>
-		{/* <CreateTaskView /> */}
+		{taskModal.isModalOpen && <CreateTaskView />}
 		{modalStates.showEditProfileModal && <EditProfileView />}
 		{modalStates.showCreateBoardModal && <CreateBoardView />}
 		{modalStates.showCreateWorkspaceModal && <CreateWorkspaceView />}

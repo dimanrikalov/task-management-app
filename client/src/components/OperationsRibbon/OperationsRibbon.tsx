@@ -7,8 +7,8 @@ import { useAppDispatch } from '@/app/hooks';
 import { MdLibraryAdd } from 'react-icons/md';
 import { HiDocumentAdd } from 'react-icons/hi';
 import styles from './operationsRibbon.module.css';
-import { setWorkspaceName } from '@/app/inputValuesSlice';
 import { FaChevronLeft, FaUserEdit } from 'react-icons/fa';
+import { clearWorkspaceName } from '@/app/inputValuesSlice';
 
 export const OperationsRibbon = () => {
 	const dispatch = useAppDispatch();
@@ -20,7 +20,7 @@ export const OperationsRibbon = () => {
 
 	const toggleIsCreateBoardModalOpen = () => {
 		dispatch(toggleCreateBoardModal());
-		dispatch(setWorkspaceName({ workspaceName: '' }));
+		dispatch(clearWorkspaceName());
 	}
 
 	const toggleIsEditProfileModalOpen = () => {

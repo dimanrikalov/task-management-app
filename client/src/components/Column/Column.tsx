@@ -1,17 +1,15 @@
 import { FaEdit } from 'react-icons/fa';
 import styles from './column.module.css';
 import { ITask, Task } from '../Task/Task';
+import { useEffect, useState } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
-import { useOutletContext } from 'react-router-dom';
-import { IOutletContext } from '@/guards/authGuard';
-import { useContext, useEffect, useState } from 'react';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
-import { useAppDispatch } from '@/app/hooks';
-import { setErrorMessageAsync } from '@/app/errorSlice';
 
 interface IColumnProps {
 	id: number;
@@ -39,7 +37,7 @@ export const Column = ({
 	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isInputModeOn, setIsInputModeOn] = useState(false);
-	const { accessToken } = useOutletContext<IOutletContext>();
+	const { accessToken } = useAppSelector((state) => state.user);
 	const [showDeleteBtn, setShowDeleteBtn] = useState<boolean>(false);
 
 	useEffect(() => {

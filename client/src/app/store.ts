@@ -1,6 +1,7 @@
 import userReducer from './userSlice';
 import errorReducer from './errorSlice';
 import modalsReducer from './modalsSlice';
+import taskModalReducer from './taskModalSlice';
 import inputValuesReducer from './inputValuesSlice';
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
@@ -9,6 +10,7 @@ export const store = configureStore({
 		user: userReducer,
 		error: errorReducer,
 		modals: modalsReducer,
+		taskModal: taskModalReducer,
 		inputValues: inputValuesReducer,
 		// Add other reducers as needed
 	},
