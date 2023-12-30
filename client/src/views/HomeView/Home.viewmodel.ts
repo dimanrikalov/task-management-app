@@ -6,10 +6,11 @@ import {
 } from '@/utils/requester';
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppDispatch } from '@/app/hooks';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 export enum ENTRIES_TYPES {
@@ -97,8 +98,8 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		createWorkspaceIsOpen: false,
 	});
 
+	const dispatch = useAppDispatch();
 	const date = new Date().toLocaleDateString('en-US', options);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 
 	useEffect(() => {
@@ -117,7 +118,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 				console.log(data);
 			} catch (err: any) {
 				console.log(err.message);
-				setErrorMessage(err.message);
+				dispatch(setErrorMessageAsync(err.message));
 			}
 		};
 

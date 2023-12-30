@@ -5,15 +5,16 @@ import {
 	BOARD_ENDPOINTS,
 	COLUMN_ENDPOINTS,
 } from '@/utils/requester';
+import { useEffect, useState } from 'react';
 import { ITask } from '@/components/Task/Task';
 import { IOutletContext } from '@/guards/authGuard';
-import { useContext, useEffect, useState } from 'react';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { EDIT_COLLEAGUE_METHOD } from '../WorkspaceView/Workspace.viewmodel';
 import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import { useAppDispatch } from '@/app/hooks';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 
 export interface IColumn {
 	id: number;
@@ -85,6 +86,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	IBoardViewModelOperations
 > => {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 	const { pathname } = useLocation();
 	const boardId = Number(pathname.split('/').pop());
 	const [isChatOpen, setIsChatOpen] = useState(false);
@@ -93,7 +95,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const [boardNameInput, setBoardNameInput] = useState<string>('');
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
@@ -159,7 +160,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 				setRefreshBoard(false);
 			} catch (err: any) {
 				console.log(err.message);
-				setErrorMessage(err.message);
+				dispatch(setErrorMessageAsync(err.message));
 			}
 			setIsLoading(false);
 		};
@@ -222,7 +223,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	};
 
@@ -246,7 +247,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			navigate(-1);
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	};
 
@@ -426,7 +427,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			}
 		} catch (err: any) {
 			console.log(err.messsage);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 			setBoardData(startingBoardState);
 		}
 	};
@@ -477,7 +478,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	};
 
@@ -535,7 +536,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 		setIsInputModeOn(false);
 	};

@@ -1,11 +1,12 @@
+import { useState, useEffect } from 'react';
+import { useAppDispatch } from '@/app/hooks';
 import { ITask } from '@/components/Task/Task';
 import { IOutletContext } from '@/guards/authGuard';
 import { useOutletContext } from 'react-router-dom';
-import { useState, useEffect, useContext } from 'react';
 import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 
 export interface IStep {
 	isComplete: boolean;
@@ -79,12 +80,12 @@ export const useCreateTaskViewModel = (
 		estimatedHours: '',
 		estimatedMinutes: '',
 	});
+	const dispatch = useAppDispatch();
 	const [steps, setSteps] = useState<IStep[]>([]);
 	const [progress, setProgress] = useState<number>(0);
 	const { accessToken } = useOutletContext<IOutletContext>();
 	const [matches, setMatches] = useState<IUser[]>(boardUsers);
 	const [assigneeId, setAssigneeId] = useState<number | null>(null);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [taskImagePath, setTaskImagePath] = useState<string | null>(null);
 	const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
 
@@ -410,7 +411,8 @@ export const useCreateTaskViewModel = (
 			toggleStatus,
 			selectAssignee,
 			clearTaskImage,
-			setErrorMessage,
+			setErrorMessage: (message: string) =>
+				dispatch(setErrorMessageAsync(message)),
 			changeTaskImage,
 			handleInputChange,
 			toggleConfirmationBtn,

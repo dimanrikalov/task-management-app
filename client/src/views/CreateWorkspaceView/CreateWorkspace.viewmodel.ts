@@ -1,8 +1,9 @@
 import { ROUTES } from '@/router';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { IOutletContext } from '@/guards/authGuard';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
@@ -25,10 +26,10 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 	ICreateWorkspaceOperations
 > => {
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const [inputValue, setInputValue] = useState('');
 	const { userData } = useOutletContext<IOutletContext>();
 	const { accessToken } = useOutletContext<IOutletContext>();
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [colleagues, setColleagues] = useState<IUser[]>([
 		{ ...userData, email: 'Me' },
 	]);
@@ -41,13 +42,15 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 		e.preventDefault();
 
 		if (!inputValue) {
-			setErrorMessage('A workspace name is required!');
+			dispatch(setErrorMessageAsync('A workspace name is required!'));
 			return;
 		}
 
 		if (inputValue.length < 4) {
-			setErrorMessage(
-				'Workspace name must be at least 4 characters long!'
+			dispatch(
+				setErrorMessageAsync(
+					'Workspace name must be at least 4 characters long!'
+				)
 			);
 		}
 
@@ -79,7 +82,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 			navigate(ROUTES.WORKSPACE(data.workspaceId));
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	};
 

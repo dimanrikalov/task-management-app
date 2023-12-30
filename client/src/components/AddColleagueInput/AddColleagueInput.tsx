@@ -1,12 +1,13 @@
 import classNames from 'classnames';
+import { useAppDispatch } from '@/app/hooks';
+import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import styles from './addColleagueInput.module.css';
 import { IOutletContext } from '@/guards/authGuard';
 import { EmailInput } from '../EmailInput/EmailInput';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 import { ListContainer } from '../ListContainer/ListContainer';
-import React, { useContext, useEffect, useState } from 'react';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 
 export interface IUser {
 	id: number;
@@ -36,11 +37,11 @@ export const AddColleagueInput = ({
 	removeColleagueHandler,
 	disableDeletionFor = [],
 }: IAddColleagueInputProps) => {
+	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState('');
 	const [matches, setMatches] = useState<IUser[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const { accessToken } = useOutletContext<IOutletContext>();
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 
 	useEffect(() => {
 		const fetchUsers = async () => {
@@ -68,7 +69,7 @@ export const AddColleagueInput = ({
 				setMatches(matchesData);
 			} catch (err: any) {
 				console.log(err.message);
-				setErrorMessage(err.message);
+				dispatch(setErrorMessageAsync(err.message));
 			}
 			setIsLoading(false);
 		};

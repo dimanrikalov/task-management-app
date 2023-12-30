@@ -1,11 +1,12 @@
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+import { useAppDispatch } from '@/app/hooks';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
 
@@ -44,7 +45,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 	IEditProfileViewModelOperations
 > => {
 	const navigate = useNavigate();
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
+	const dispatch = useAppDispatch();
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
 	const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
@@ -94,8 +95,8 @@ export const useProfileViewModel = (): ViewModelReturnType<
 			if (inputField === INPUT_FIELDS.PROFILE_IMG) {
 				setProfileImgPath(null);
 			}
-			
-			setErrorMessage(err.message);
+
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	};
 
@@ -154,7 +155,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 			deleteTokens();
 			navigate(ROUTES.HOME); // force refetching of user through the guard
 		} catch (err: any) {
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 			setIsDeletionModalOpen(false);
 		}
 	};

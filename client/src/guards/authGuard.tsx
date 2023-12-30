@@ -1,8 +1,9 @@
 import { ROUTES } from '@/router';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppDispatch } from '@/app/hooks';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 
@@ -27,10 +28,10 @@ export interface IOutletContext {
 
 export const AuthGuard = () => {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 	const [isLoading, setIsLoading] = useState(true);
 	const [tokens, setTokens] = useState<ITokens>(extractTokens());
 	const [userData, setUserData] = useState<IUserData | null>(null);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 
 	useEffect(() => {
 		const refreshTokens = async () => {
@@ -98,7 +99,7 @@ export const AuthGuard = () => {
 						break;
 				}
 
-				setErrorMessage(err.message);
+				dispatch(setErrorMessageAsync(err.message));
 			}
 		}
 

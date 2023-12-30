@@ -9,8 +9,9 @@ import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
+import { useAppDispatch } from '@/app/hooks';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 
 interface IColumnProps {
 	id: number;
@@ -35,11 +36,11 @@ export const Column = ({
 	updateColumn,
 	callForRefresh,
 }: IColumnProps) => {
+	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isInputModeOn, setIsInputModeOn] = useState(false);
 	const { accessToken } = useOutletContext<IOutletContext>();
 	const [showDeleteBtn, setShowDeleteBtn] = useState<boolean>(false);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 
 	useEffect(() => {
 		if (!isInputModeOn) return;
@@ -89,8 +90,8 @@ export const Column = ({
 
 			updateColumn(id, inputValue);
 		} catch (err: any) {
-			setErrorMessage(err.message);
 			updateColumn(id, nameBeforeChange);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 
 		toggleIsInputModeOn();
@@ -111,7 +112,7 @@ export const Column = ({
 			callForRefresh();
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	}
 

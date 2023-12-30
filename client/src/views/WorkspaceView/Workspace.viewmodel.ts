@@ -3,9 +3,10 @@ import {
 	IDetailedWorkspace,
 } from '../CreateBoardView/CreateBoard.viewmodel';
 import { ROUTES } from '@/router';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppDispatch } from '@/app/hooks';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 import { IOutletContext, IUserData } from '@/guards/authGuard';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
@@ -55,6 +56,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	IWorkspaceViewModelOperations
 > => {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 	const { pathname } = useLocation();
 	const [workspaceData, setWorkspaceData] =
 		useState<IDetailedWorkspace | null>(null);
@@ -62,7 +64,6 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 	const workspaceId = Number(pathname.split('/').pop());
 	const [refreshWorkspace, setRefreshWorkspace] = useState(true);
 	const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const { userData, accessToken } = useOutletContext<IOutletContext>();
 	const [workspaceNameInput, setWorkspaceNameInput] = useState<string>('');
 	const [filteredBoards, setFilteredBoards] = useState<IDetailedBoard[]>([]);
@@ -122,7 +123,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 				setRefreshWorkspace(false);
 			} catch (err: any) {
 				console.log(err.message);
-				setErrorMessage(err.message);
+				dispatch(setErrorMessageAsync(err.message));
 			}
 		};
 
@@ -170,7 +171,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	};
 
@@ -192,7 +193,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	};
 
@@ -243,7 +244,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 		setIsInputModeOn(false);
 	};

@@ -1,13 +1,14 @@
 import { BsCheckLg } from 'react-icons/bs';
 import styles from './homeStats.module.css';
+import { useEffect, useState } from 'react';
+import { useAppDispatch } from '@/app/hooks';
 import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
 import { IOutletContext } from '@/guards/authGuard';
 import { useOutletContext } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
 
 interface IUserStats {
@@ -28,7 +29,7 @@ const Stat = ({ isLoading, stat }: IStatProps) => {
         <div className={styles.value}>
             {
                 isLoading ?
-                    <LoadingOverlay size={42} color="#fff" />
+                    <LoadingOverlay size={42} color='#fff' />
                     :
                     <h3>{stat}</h3>
             }
@@ -37,9 +38,9 @@ const Stat = ({ isLoading, stat }: IStatProps) => {
 }
 
 export const HomeStats = () => {
+    const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const { accessToken } = useOutletContext<IOutletContext>();
-    const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
     const [userStats, setUserStats] = useState<IUserStats>({
         boardsCount: -1,
         messagesCount: -1,
@@ -60,7 +61,7 @@ export const HomeStats = () => {
                 setUserStats(data);
             } catch (err: any) {
                 console.log(err.message);
-                setErrorMessage(err.message);
+                dispatch(setErrorMessageAsync(err.message));
             }
             setIsLoading(false);
         };

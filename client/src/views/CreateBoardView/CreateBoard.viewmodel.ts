@@ -5,10 +5,11 @@ import {
 	WORKSPACE_ENDPOINTS,
 } from '@/utils/requester';
 import { ROUTES } from '@/router';
+import { useState, useEffect } from 'react';
+import { useAppDispatch } from '@/app/hooks';
 import { IOutletContext } from '@/guards/authGuard';
-import { useState, useEffect, useContext } from 'react';
+import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
@@ -61,9 +62,9 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	ICreateBoardViewModelOperations
 > => {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 	const [selectedWorkspace, setSelectedWorkspace] =
 		useState<IDetailedWorkspace | null>(null);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [boardColleagues, setBoardColleagues] = useState<IUser[]>([]);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 	const [workspacesData, setWorkspacesData] = useState<IDetailedWorkspace[]>(
@@ -133,7 +134,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 			} catch (err: any) {
 				console.log(err.message);
 				setSelectedWorkspace(null);
-				setErrorMessage(err.message);
+				dispatch(setErrorMessageAsync(err.message));
 			}
 		};
 
@@ -156,17 +157,21 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 		console.log(selectedWorkspace);
 
 		if (!selectedWorkspace) {
-			setErrorMessage('Workspace is required!');
+			dispatch(setErrorMessageAsync('Workspace is required!'));
 			return;
 		}
 
 		if (!inputValues.boardName) {
-			setErrorMessage('Board name is required!');
+			dispatch(setErrorMessageAsync('Board name is required!'));
 			return;
 		}
 
 		if (inputValues.boardName.length < 2) {
-			setErrorMessage('Board name must be at least 2 characters long!');
+			dispatch(
+				setErrorMessageAsync(
+					'Board name must be at least 2 characters long!'
+				)
+			);
 			return;
 		}
 
@@ -193,7 +198,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 			navigate(ROUTES.BOARD(data.boardId));
 		} catch (err: any) {
 			console.log(err.message);
-			setErrorMessage(err.message);
+			dispatch(setErrorMessageAsync(err.message));
 		}
 	};
 

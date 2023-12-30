@@ -1,13 +1,14 @@
-import { useContext } from 'react';
+
+import { useAppSelector } from '@/app/hooks';
 import styles from './errorNotification.module.css';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
+
 
 export const ErrorNotification = () => {
-    const { error, showErrorMsg } = useContext<IErrorContext>(ErrorContext);
+    const { error } = useAppSelector(state => state);
 
     return (
-        <div className={styles.background} style={{ opacity: Number(showErrorMsg) }}>
-            <h4>{error}</h4>
+        <div className={styles.background} style={{ opacity: Number(error.showMsg) }}>
+            <h4>{error.message}</h4>
         </div>
     )
 }
