@@ -28,21 +28,13 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 	ISignUpViewModelOperations
 > => {
 	const navigate = useNavigate();
+	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const [inputFields, setInputFields] = useState<IInputFields>({
 		email: '',
 		lastName: '',
 		password: '',
 		firstName: '',
 	});
-
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setInputFields((prevInputFields) => ({
-			...prevInputFields,
-			[name]: value,
-		}));
-	};
 
 	const goToInitialView = () => {
 		navigate(ROUTES.HOME);
@@ -52,25 +44,39 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 		navigate(ROUTES.SIGN_IN);
 	};
 
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setInputFields((prevInputFields) => ({
+			...prevInputFields,
+			[name]: value,
+		}));
+	};
+
 	const signUp = async (e: React.FormEvent) => {
 		e.preventDefault();
+
 		try {
+			if (Object.values(inputFields).some((value) => value === '')) {
+				throw new Error('All fields are required!');
+			}
+
 			const data = await request({
 				body: inputFields,
 				method: METHODS.POST,
 				endpoint: USER_ENDPOINTS.SIGN_UP,
 			});
 
+			//case where the request fails on Dto level
 			if (data.statusCode === 400) {
 				throw new Error(data.message[0]);
 			}
+			//case where the endpoint actually throws an exception
 			if (data.errorMessage) {
 				throw new Error(data.errorMessage);
 			}
 
 			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
-			console.log(err.message);
 			setErrorMessage(err.message);
 		}
 	};

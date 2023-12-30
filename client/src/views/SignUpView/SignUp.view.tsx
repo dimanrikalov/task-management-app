@@ -21,25 +21,28 @@ export const SignUpView = () => {
 						<h1>Taskify</h1>
 						<h2>Sign up</h2>
 					</div>
-					<form className={styles.form} onSubmit={operations.signUp}>
+					<form
+						className={styles.form}
+						onSubmit={operations.signUp}
+					>
 						<div className={styles.nameInputContainer}>
 							<IntroInput
-								name={'firstName'}
-								placeholder={'Name'}
 								type={'text'}
+								Icon={FaUser}
+								name={'firstName'}
+								ToggleIcon={FaUser}
+								placeholder={'Name'}
 								value={state.inputFields.firstName}
 								onChange={operations.handleInputChange}
-								Icon={FaUser}
-								ToggleIcon={FaUser}
 							/>
 							<IntroInput
-								name={'lastName'}
-								placeholder={'Surname'}
 								type={'text'}
+								Icon={FaUsers}
+								name={'lastName'}
+								ToggleIcon={FaUsers}
+								placeholder={'Surname'}
 								value={state.inputFields.lastName}
 								onChange={operations.handleInputChange}
-								Icon={FaUsers}
-								ToggleIcon={FaUsers}
 							/>
 						</div>
 						<IntroInput
@@ -53,11 +56,11 @@ export const SignUpView = () => {
 
 						/>
 						<IntroInput
+							Icon={FaUnlock}
 							name={'password'}
 							type={'password'}
-							Icon={FaUnlock}
-							placeholder={'Password'}
 							ToggleIcon={FaLock}
+							placeholder={'Password'}
 							value={state.inputFields.password}
 							onChange={operations.handleInputChange}
 						/>
@@ -65,11 +68,16 @@ export const SignUpView = () => {
 					</form>
 					<p className={styles.haveAnAccount}>
 						Already have an account?{' '}
-						<span onClick={operations.goToSignInView}>Sign in</span>
+						<span onClick={operations.goToSignInView}>
+							Sign in
+						</span>
 					</p>
 				</div>
 				<div className={styles.rightSide}>
-					<img src="/imgs/sign-up-img-compressed.webp" alt="sign-up-img" />
+					<img
+						alt="sign-up-img"
+						src="/imgs/sign-up-img-compressed.webp"
+					/>
 				</div>
 			</div>
 		</div>

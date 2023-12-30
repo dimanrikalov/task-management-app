@@ -1,9 +1,13 @@
+import {
+    Injectable,
+    ConflictException,
+    NotFoundException,
+} from '@nestjs/common';
 import * as fs from 'fs';
 import { promisify } from 'util';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { IUser } from './users.interfaces';
-import { Injectable } from '@nestjs/common';
 import { BaseUsersDto } from './dtos/base.dto';
 import { EditUserDto } from './dtos/editUser.dto';
 import { FindUserDto } from './dtos/findUser.dto';
@@ -60,7 +64,7 @@ export class UsersService {
             },
         });
 
-        return matches.map(match => {
+        return matches.map((match) => {
             const imageBuffer = fs.readFileSync(match.profileImagePath);
 
             const imageBinary = Buffer.from(imageBuffer).toString('base64');
@@ -69,7 +73,7 @@ export class UsersService {
                 ...match,
                 profileImagePath: imageBinary,
             };
-        })
+        });
     }
 
     async getUserById(userId: number) {
@@ -164,7 +168,7 @@ export class UsersService {
     async signUp(body: CreateUserDto): Promise<void> {
         const isEmailTaken = await this.findUserByEmail(body.email);
         if (isEmailTaken) {
-            throw new Error('Email is already taken!');
+            throw new ConflictException('Email is already taken!');
         }
 
         // Hash the password before saving it
@@ -198,17 +202,20 @@ export class UsersService {
         const user = await this.findUserByEmail(body.email);
 
         if (!user) {
-            throw new Error('Wrong email or password!');
+            console.log('here');
+            throw new NotFoundException('Wrong email or password!');
         }
 
-        //user will not be able to login as Deleted_User as the email property does not have '@' and the LoginUserDto will prevent from reaching this service
+        /* user will not be able to login as Deleted_User as the email
+        property does not have '@' and the LoginUserDto will prevent from 
+        reaching this service */
 
         const isValidPassword = await bcrypt.compare(
             body.password,
             user.password,
         );
         if (!isValidPassword) {
-            throw new Error('Wrong email or password!');
+            throw new NotFoundException('Wrong email or password!');
         }
 
         //create authorization token + refresh token

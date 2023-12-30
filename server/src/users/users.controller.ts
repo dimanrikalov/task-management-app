@@ -85,10 +85,8 @@ export class UsersController {
             await this.usersService.signIn(res, userBody);
             return res.status(200).json({ message: 'Signed-up successfully!' });
         } catch (err: any) {
-            console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message,
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode).json({ errorMessage });
         }
     }
 
@@ -98,10 +96,8 @@ export class UsersController {
             await this.usersService.signIn(res, userBody);
             res.status(200).json({ message: 'Signed-in successfully!' });
         } catch (err: any) {
-            console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message,
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode).json({ errorMessage });
         }
     }
 

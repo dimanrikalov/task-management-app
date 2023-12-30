@@ -14,12 +14,12 @@ interface IIntroInputProps {
 	name: string;
 	type: string;
 	value: string;
+	onLoad?(): any; //fix
 	disabled?: boolean;
 	placeholder: string;
 	Icon?: React.FC<IIconProps>;
 	ToggleIcon?: React.FC<IToggleIconProps>;
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
-	onLoad?():any; //fix
 }
 
 export const IntroInput = ({
@@ -55,9 +55,9 @@ export const IntroInput = ({
 					)}
 			</div>
 			<input
-				tabIndex={-1}
 				type={type}
 				name={name}
+				// tabIndex={-1}
 				value={value}
 				onLoad={onLoad}
 				disabled={disabled}

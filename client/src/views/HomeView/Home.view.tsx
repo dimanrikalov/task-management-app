@@ -49,7 +49,7 @@ export const HomeView = () => {
 						logout={operations.logout}
 						lastName={state.userData.lastName}
 						firstName={state.userData.firstName}
-						profileImgPath = {state.userData.profileImagePath}
+						profileImgPath={state.userData.profileImagePath}
 					/>
 					<div className={styles.operationsContainer}>
 						<OperationsRibbon

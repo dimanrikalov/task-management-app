@@ -32,6 +32,14 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 		password: '',
 	});
 
+	const goToSignUpView = () => {
+		navigate(ROUTES.SIGN_UP);
+	};
+
+	const goToInitialView = () => {
+		navigate(ROUTES.HOME);
+	};
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setInputFields((prevInputFields) => ({
@@ -40,17 +48,14 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 		}));
 	};
 
-	const goToInitialView = () => {
-		navigate(ROUTES.HOME);
-	};
-
-	const goToSignUpView = () => {
-		navigate(ROUTES.SIGN_UP);
-	};
-
 	const signIn = async (e: React.FormEvent) => {
 		e.preventDefault();
+
 		try {
+			if (Object.values(inputFields).some((value) => value === '')) {
+				throw new Error('All fields are required!');
+			}
+
 			const data = await request({
 				method: METHODS.POST,
 				endpoint: USER_ENDPOINTS.SIGN_IN,
@@ -60,16 +65,17 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 				},
 			});
 
+			//case where the request fails on Dto level
 			if (data.statusCode === 400) {
 				throw new Error(data.message[0]);
 			}
+			//case where the endpoint actually throws an exception
 			if (data.errorMessage) {
 				throw new Error(data.errorMessage);
 			}
 
 			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
-			console.log(err.message);
 			setErrorMessage(err.message);
 		}
 	};

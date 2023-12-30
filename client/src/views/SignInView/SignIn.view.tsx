@@ -25,7 +25,10 @@ export const SignInView = () => {
 						<h1>Taskify</h1>
 						<h2>Sign in</h2>
 					</div>
-					<form className={styles.form} onSubmit={operations.signIn}>
+					<form
+						className={styles.form}
+						onSubmit={operations.signIn}
+					>
 						<IntroInput
 							name={'email'}
 							type={'email'}
@@ -40,8 +43,8 @@ export const SignInView = () => {
 							name={'password'}
 							type={'password'}
 							Icon={FaUnlock}
-							placeholder={'Password'}
 							ToggleIcon={FaLock}
+							placeholder={'Password'}
 							value={state.inputFields.password}
 							onChange={operations.handleInputChange}
 						/>

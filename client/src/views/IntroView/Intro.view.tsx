@@ -4,6 +4,7 @@ import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 
 export const IntroView = () => {
 	const { operations } = useIntroViewModel();
+
 	return (
 		<div className={styles.background}>
 			<div className={styles.leftSide}>
@@ -32,9 +33,9 @@ export const IntroView = () => {
 			</div>
 			<div className={styles.rightSide}>
 				<img
+					alt="greeting-img"
 					className={styles.img}
 					src="/imgs/intro-img-compressed.webp"
-					alt="greeting-img"
 				/>
 			</div>
 		</div>

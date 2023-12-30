@@ -60,7 +60,7 @@ export const BOARD_ENDPOINTS = {
 	COLLEAGUES: (boardId: number) => `${BASE_URL}/boards/${boardId}/colleagues`,
 };
 
-interface IFetcherProps {
+interface IRequestParams {
 	body?: FormData | object;
 	method?: METHODS;
 	endpoint: string;
@@ -72,7 +72,7 @@ export const request = async ({
 	method,
 	endpoint,
 	accessToken,
-}: IFetcherProps) => {
+}: IRequestParams) => {
 	const headers = new Headers();
 	headers.set('Authorization', `Bearer ${accessToken}`);
 
