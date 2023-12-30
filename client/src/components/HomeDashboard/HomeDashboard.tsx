@@ -1,5 +1,4 @@
 import {
-	IUserStats,
 	ISearchInputs,
 	ENTRIES_TYPES,
 	IHomeBoardEntry,
@@ -11,7 +10,6 @@ import { HomeStats } from '../HomeStats/HomeStats';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 
 interface IHomeGridStatsProps {
-	userStats: IUserStats;
 	boards: IHomeBoardEntry[];
 	searchInputs: ISearchInputs;
 	workspaces: IHomeWorkspaceEntry[];
@@ -20,7 +18,6 @@ interface IHomeGridStatsProps {
 
 export const HomeDashboard = ({
 	boards,
-	userStats,
 	workspaces,
 	searchInputs,
 	filterHandler,
@@ -66,7 +63,7 @@ export const HomeDashboard = ({
 					/>
 				</div>
 
-				<HomeStats userStats={userStats} />
+				<HomeStats />
 			</div>
 		</div>
 	);

@@ -1,7 +1,6 @@
 import {
 	request,
 	METHODS,
-	USER_ENDPOINTS,
 	BOARD_ENDPOINTS,
 	WORKSPACE_ENDPOINTS,
 } from '@/utils/requester';
@@ -54,19 +53,10 @@ interface ILists {
 	workspaces: IHomeWorkspaceEntry[];
 }
 
-export interface IUserStats {
-	boardsCount: number;
-	messagesCount: number;
-	workspacesCount: number;
-	pendingTasksCount: number;
-	completedTasksCount: number;
-}
-
 interface IUseHomeViewmodelState {
 	date: string;
 	userData: IUserData;
 	filteredLists: ILists;
-	userStats: IUserStats;
 	modalsState: IModalsState;
 	searchInputs: ISearchInputs;
 }
@@ -106,33 +96,12 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		editProfileIsOpen: false,
 		createWorkspaceIsOpen: false,
 	});
-	const [userStats, setUserStats] = useState<IUserStats>({
-		boardsCount: -1,
-		messagesCount: -1,
-		workspacesCount: -1,
-		pendingTasksCount: -1,
-		completedTasksCount: -1,
-	});
+
 	const date = new Date().toLocaleDateString('en-US', options);
 	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 	const { accessToken, userData } = useOutletContext<IOutletContext>();
 
 	useEffect(() => {
-		const fetchUserStats = async () => {
-			try {
-				const data = await request({
-					accessToken,
-					method: METHODS.GET,
-					endpoint: USER_ENDPOINTS.STATS,
-				});
-				setUserStats(data);
-				console.log(data);
-			} catch (err: any) {
-				console.log(err.message);
-				setErrorMessage(err.message);
-			}
-		};
-
 		const fetchEntries = async (entries: ENTRIES_TYPES) => {
 			try {
 				const data = await request({
@@ -152,7 +121,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
 			}
 		};
 
-		fetchUserStats();
 		fetchEntries(ENTRIES_TYPES.BOARDS);
 		fetchEntries(ENTRIES_TYPES.WORKSPACES);
 	}, [accessToken]);
@@ -231,7 +199,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		state: {
 			date,
 			userData,
-			userStats,
 			modalsState,
 			searchInputs,
 			filteredLists,

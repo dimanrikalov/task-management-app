@@ -65,7 +65,6 @@ export const HomeView = () => {
 						/>
 					</div>
 					<HomeDashboard
-						userStats={state.userStats}
 						searchInputs={state.searchInputs}
 						boards={state.filteredLists.boards}
 						workspaces={state.filteredLists.workspaces}
