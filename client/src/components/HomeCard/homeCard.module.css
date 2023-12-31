@@ -12,11 +12,12 @@
 }
 
 .board-btn {
-	min-height: 170px;
+	min-height: 140px;
 	min-width: 320px;
 }
 
 .workspace-btn {
+	height: 100%;
 	min-width: 240px;
 }
 

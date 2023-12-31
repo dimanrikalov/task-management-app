@@ -10,6 +10,7 @@ import { HomeStats } from '../HomeStats/HomeStats';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 
 interface IHomeGridStatsProps {
+	isLoading: boolean;
 	boards: IHomeBoardEntry[];
 	searchInputs: ISearchInputs;
 	workspaces: IHomeWorkspaceEntry[];
@@ -18,6 +19,7 @@ interface IHomeGridStatsProps {
 
 export const HomeDashboard = ({
 	boards,
+	isLoading,
 	workspaces,
 	searchInputs,
 	filterHandler,
@@ -40,6 +42,7 @@ export const HomeDashboard = ({
 					</div>
 					<HomeList
 						entries={boards}
+						isLoading={isLoading}
 						type={ENTRIES_TYPES.BOARDS}
 					/>
 				</div>
@@ -59,6 +62,7 @@ export const HomeDashboard = ({
 					</div>
 					<HomeList
 						entries={workspaces}
+						isLoading={isLoading}
 						type={ENTRIES_TYPES.WORKSPACES}
 					/>
 				</div>

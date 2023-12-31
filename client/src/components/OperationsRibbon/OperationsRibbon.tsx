@@ -44,7 +44,9 @@ export const OperationsRibbon = () => {
 				className={styles.icon}
 				onClick={toggleIsEditProfileModalOpen}
 			/>
-			<FaChevronLeft size={24} className={styles.icon} />
+			<FaChevronLeft size={24}
+				className={styles.icon}
+			/>
 		</div>
 	);
 };

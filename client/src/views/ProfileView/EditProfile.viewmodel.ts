@@ -7,6 +7,7 @@ import { setErrorMessageAsync } from '@/app/errorSlice';
 import { toggleEditProfileModal } from '@/app/modalsSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
+import { setNotificationMessageAsync } from '@/app/notificationSlice';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
@@ -88,6 +89,7 @@ export const useProfileViewModel = (): ViewModelReturnType<
 
 			setProfileImgPath(null);
 			setInputValues((prev) => ({ ...prev, profileImg: null }));
+			dispatch(setNotificationMessageAsync('Update successful!'));
 			navigate(ROUTES.HOME); // cause refetching of user data through the guard
 		} catch (err: any) {
 			console.log(err.message);

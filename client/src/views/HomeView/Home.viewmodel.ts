@@ -50,6 +50,7 @@ interface ILists {
 
 interface IUseHomeViewmodelState {
 	date: string;
+	isLoading: boolean;
 	userData: IUserData;
 	filteredLists: ILists;
 	searchInputs: ISearchInputs;
@@ -77,6 +78,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		boards: [],
 		workspaces: [],
 	});
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [filteredLists, setFilteredLists] = useState<ILists>({
 		boards: [],
 		workspaces: [],
@@ -111,8 +113,10 @@ export const useHomeViewModel = (): ViewModelReturnType<
 			}
 		};
 
+		setIsLoading(true);
 		fetchEntries(ENTRIES_TYPES.BOARDS);
 		fetchEntries(ENTRIES_TYPES.WORKSPACES);
+		setIsLoading(false);
 	}, [accessToken]);
 
 	useEffect(() => {
@@ -182,6 +186,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		state: {
 			date,
 			userData,
+			isLoading,
 			searchInputs,
 			filteredLists,
 		},

@@ -28,7 +28,9 @@ export const HomeCard = ({
 			)}
 			onClick={onClick}
 		>
-			<div className={styles.background}>
+			<div className={styles.background}
+				style={{ height: '100%' }}
+			>
 				<div className={styles.header}>
 					<h2 className={styles.title}>{title}</h2>
 					<h4 className={styles.subtitle}>{subtitle}</h4>
