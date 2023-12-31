@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
+import { setCallForRefresh, toggleIsModalOpen } from '@/app/taskModalSlice';
 
 export interface IStep {
 	isComplete: boolean;
@@ -33,6 +34,7 @@ interface ICreateTaskViewModelState {
 	steps: IStep[];
 	matches: IUser[];
 	progress: number;
+	taskData: ITask | null;
 	inputValues: IInputState;
 	assigneeId: number | null;
 	showConfirmButton: boolean;
@@ -45,12 +47,13 @@ interface ICreateTaskViewModelOperations {
 	toggleConfirmationBtn(): void;
 	loadTaskData(task: ITask): void;
 	selectAssignee(user: IUser): void;
+	toggleIsCreateTaskModalOpen(): void;
 	removeStep(description: string): void;
 	setErrorMessage(message: string): void;
-	editTask(taskId: number): Promise<void>;
+	editTask(): Promise<void>;
 	toggleStatus(description: string): void;
-	deleteTask(taskId: number): Promise<void>;
-	createTask(columnId: number): Promise<void>;
+	deleteTask(): Promise<void>;
+	createTask(): Promise<void>;
 	changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
 	handleInputChange(
 		e: React.ChangeEvent<
@@ -59,9 +62,7 @@ interface ICreateTaskViewModelOperations {
 	): void;
 }
 
-export const useCreateTaskViewModel = (
-	boardUsers: IUser[]
-): ViewModelReturnType<
+export const useCreateTaskViewModel = (): ViewModelReturnType<
 	ICreateTaskViewModelState,
 	ICreateTaskViewModelOperations
 > => {
@@ -81,11 +82,21 @@ export const useCreateTaskViewModel = (
 	const dispatch = useAppDispatch();
 	const [steps, setSteps] = useState<IStep[]>([]);
 	const [progress, setProgress] = useState<number>(0);
+	const {
+		boardUsers,
+		selectedColumnId,
+		selectedTask: taskData,
+	} = useAppSelector((state) => state.taskModal);
 	const [matches, setMatches] = useState<IUser[]>(boardUsers);
 	const { accessToken } = useAppSelector((state) => state.user);
 	const [assigneeId, setAssigneeId] = useState<number | null>(null);
 	const [taskImagePath, setTaskImagePath] = useState<string | null>(null);
 	const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (!taskData) return;
+		loadTaskData(taskData);
+	}, []);
 
 	useEffect(() => {
 		const assignee = matches.find(
@@ -133,16 +144,6 @@ export const useCreateTaskViewModel = (
 		setProgress(Math.round((completedCount / steps.length) * 100) || 0);
 	}, [steps]);
 
-	useEffect(() => {
-		if (!assigneeId) return;
-		const email = boardUsers.find((user) => user.id === assigneeId)?.email;
-		if (!email) return;
-		setInputValues((prev) => ({
-			...prev,
-			email,
-		}));
-	}, [assigneeId]);
-
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValues((prev) => ({
 			...prev,
@@ -153,27 +154,33 @@ export const useCreateTaskViewModel = (
 	const loadTaskData = (task: ITask) => {
 		if (!task) return;
 
+		// Sort task.steps by id
+		const sortedSteps = task.steps
+			? [...(task.steps as IEditStep[])].sort((a, b) => a.id - b.id)
+			: [];
+
 		Object.entries(task).forEach(([key, value]) => {
 			setInputValues((prev) => ({
 				...prev,
 				[key]: value,
 			}));
 		});
+
 		const image = generateFileFromBase64(
 			task.attachmentImgPath,
 			'image/png',
 			'task-img'
 		);
+
 		setInputValues((prev) => ({
 			...prev,
 			image,
+			email: boardUsers.find((user) => user.id === task.assigneeId)
+				?.email!,
 		}));
-		setSteps(
-			(task.steps as IEditStep[]).sort(
-				(task1, task2) => task1.id - task2.id
-			)
-		);
-		setAssigneeId(task.assigneeId);
+
+		// Set the sorted steps
+		setSteps(sortedSteps);
 
 		if (task.attachmentImgPath) {
 			setTaskImagePath(`data:image/png;base64,${task.attachmentImgPath}`);
@@ -257,142 +264,181 @@ export const useCreateTaskViewModel = (
 		);
 	};
 
-	const createTask = async (columnId: number) => {
-		if (!columnId) {
-			throw new Error('Invalid column!');
-		}
-
-		if (!assigneeId) {
-			throw new Error('Assignee is required!');
-		}
-
-		if (!inputValues.title) {
-			throw new Error('Task name is required!');
-		}
-
-		if (inputValues.title.length < 2) {
-			throw new Error('Task name must be at least 2 characters long!');
-		}
-
-		//create the task
-		const body = {
-			steps,
-			columnId,
-			assigneeId,
-			title: inputValues.title,
-			description: inputValues.description,
-			effort: Number(inputValues.effort) || 1,
-			priority: Number(inputValues.priority) || 1,
-			hoursSpent: Number(inputValues.hoursSpent) || 0,
-			minutesSpent: Number(inputValues.minutesSpent) || 0,
-			estimatedHours: Number(inputValues.estimatedHours) || 0,
-			estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
-		};
-
-		const data = await request({
-			body,
-			accessToken,
-			method: METHODS.POST,
-			endpoint: TASK_ENDPOINTS.BASE,
-		});
-
-		//set task image optionally
-		if (inputValues.image) {
-			const payload = new FormData();
-			payload.append('taskImg', inputValues.image, 'task-img');
-
-			const imageUploadData = await request({
-				accessToken,
-				body: payload,
-				method: METHODS.PUT,
-				endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.taskId),
-			});
-
-			if (imageUploadData.errorMessage) {
-				throw new Error(imageUploadData.errorMessage);
-			}
-		}
-	};
-
-	const editTask = async (taskId: number) => {
-		if (!taskId) {
-			throw new Error('Invalid task!');
-		}
-
-		if (!assigneeId) {
-			throw new Error('Assignee is required!');
-		}
-
-		if (!inputValues.title) {
-			throw new Error('Task name is required!');
-		}
-
-		if (inputValues.title.length < 2) {
-			throw new Error('Task name must be at least 2 characters long!');
-		}
-
-		const body = {
-			steps,
-			assigneeId,
-			title: inputValues.title,
-			description: inputValues.description,
-			effort: Number(inputValues.effort) || 1,
-			priority: Number(inputValues.priority) || 1,
-			hoursSpent: Number(inputValues.hoursSpent) || 0,
-			minutesSpent: Number(inputValues.minutesSpent) || 0,
-			estimatedHours: Number(inputValues.estimatedHours) || 0,
-			estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
-		};
-
-		const res = await request({
-			accessToken,
-			method: METHODS.PUT,
-			body: { payload: body },
-			endpoint: TASK_ENDPOINTS.EDIT(taskId),
-		});
-
-		if (res.errorMessage) {
-			throw new Error(res.errorMessage);
-		}
-
-		//set task image optionally
-		if (inputValues.image) {
-			const payload = new FormData();
-			payload.append('taskImg', inputValues.image, 'task-img');
-
-			const imageUploadData = await request({
-				accessToken,
-				body: payload,
-				method: METHODS.PUT,
-				endpoint: TASK_ENDPOINTS.UPLOAD_IMG(taskId),
-			});
-
-			if (imageUploadData.errorMessage) {
-				throw new Error(imageUploadData.errorMessage);
-			}
-		}
-	};
-
 	const toggleConfirmationBtn = () => {
 		setShowConfirmButton((prev) => !prev);
 	};
 
-	const deleteTask = async (taskId: number) => {
-		const res = await request({
-			accessToken,
-			method: METHODS.DELETE,
-			endpoint: TASK_ENDPOINTS.EDIT(taskId),
-		});
+	const toggleIsCreateTaskModalOpen = () => {
+		dispatch(toggleIsModalOpen());
+	};
 
-		if (res.errorMessage) {
-			throw new Error(res.errorMessage);
+	const createTask = async () => {
+		try {
+			if (!selectedColumnId) {
+				throw new Error('Invalid column!');
+			}
+
+			if (!assigneeId) {
+				throw new Error('Assignee is required!');
+			}
+
+			if (!inputValues.title) {
+				throw new Error('Task name is required!');
+			}
+
+			if (inputValues.title.length < 2) {
+				throw new Error(
+					'Task name must be at least 2 characters long!'
+				);
+			}
+
+			//create the task
+			const body = {
+				steps,
+				assigneeId,
+				title: inputValues.title,
+				columnId: selectedColumnId,
+				description: inputValues.description,
+				effort: Number(inputValues.effort) || 1,
+				priority: Number(inputValues.priority) || 1,
+				hoursSpent: Number(inputValues.hoursSpent) || 0,
+				minutesSpent: Number(inputValues.minutesSpent) || 0,
+				estimatedHours: Number(inputValues.estimatedHours) || 0,
+				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
+			};
+
+			const data = await request({
+				body,
+				accessToken,
+				method: METHODS.POST,
+				endpoint: TASK_ENDPOINTS.BASE,
+			});
+
+			//set task image optionally
+			if (inputValues.image) {
+				const payload = new FormData();
+				payload.append('taskImg', inputValues.image, 'task-img');
+
+				const imageUploadData = await request({
+					accessToken,
+					body: payload,
+					method: METHODS.PUT,
+					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.taskId),
+				});
+
+				if (imageUploadData.errorMessage) {
+					throw new Error(imageUploadData.errorMessage);
+				}
+			}
+			toggleIsCreateTaskModalOpen();
+			dispatch(setCallForRefresh({ callForRefresh: true }));
+		} catch (err: any) {
+			console.log(err.message);
+			setErrorMessage(err.message);
 		}
+	};
+
+	const editTask = async () => {
+		if (!taskData) return;
+
+		try {
+			if (!taskData.id) {
+				throw new Error('Invalid task!');
+			}
+
+			if (!assigneeId) {
+				throw new Error('Assignee is required!');
+			}
+
+			if (!inputValues.title) {
+				throw new Error('Task name is required!');
+			}
+
+			if (inputValues.title.length < 2) {
+				throw new Error(
+					'Task name must be at least 2 characters long!'
+				);
+			}
+
+			const body = {
+				steps,
+				assigneeId,
+				title: inputValues.title,
+				description: inputValues.description,
+				effort: Number(inputValues.effort) || 1,
+				priority: Number(inputValues.priority) || 1,
+				hoursSpent: Number(inputValues.hoursSpent) || 0,
+				minutesSpent: Number(inputValues.minutesSpent) || 0,
+				estimatedHours: Number(inputValues.estimatedHours) || 0,
+				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
+			};
+
+			const res = await request({
+				accessToken,
+				method: METHODS.PUT,
+				body: { payload: body },
+				endpoint: TASK_ENDPOINTS.EDIT(taskData.id),
+			});
+
+			if (res.errorMessage) {
+				throw new Error(res.errorMessage);
+			}
+
+			//set task image optionally
+			if (inputValues.image) {
+				const payload = new FormData();
+				payload.append('taskImg', inputValues.image, 'task-img');
+
+				const imageUploadData = await request({
+					accessToken,
+					body: payload,
+					method: METHODS.PUT,
+					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(taskData.id),
+				});
+
+				if (imageUploadData.errorMessage) {
+					throw new Error(imageUploadData.errorMessage);
+				}
+			}
+			toggleIsCreateTaskModalOpen();
+			dispatch(setCallForRefresh({ callForRefresh: true }));
+		} catch (err: any) {
+			console.log(err.message);
+			setErrorMessage(err.message);
+		}
+	};
+
+	const deleteTask = async () => {
+		if (!taskData) return;
+
+		try {
+			const res = await request({
+				accessToken,
+				method: METHODS.DELETE,
+				endpoint: TASK_ENDPOINTS.EDIT(taskData.id),
+			});
+
+			if (res.errorMessage) {
+				throw new Error(res.errorMessage);
+			}
+
+			toggleIsCreateTaskModalOpen();
+			dispatch(setCallForRefresh({ callForRefresh: true }));
+		} catch (err: any) {
+			console.log(err.message);
+			setErrorMessage(err.message);
+		}
+	};
+
+	const setErrorMessage = (message: string) => {
+		dispatch(setErrorMessageAsync(message));
 	};
 
 	return {
 		state: {
 			steps,
 			matches,
+			taskData,
 			progress,
 			assigneeId,
 			inputValues,
@@ -409,11 +455,11 @@ export const useCreateTaskViewModel = (
 			toggleStatus,
 			selectAssignee,
 			clearTaskImage,
-			setErrorMessage: (message: string) =>
-				dispatch(setErrorMessageAsync(message)),
+			setErrorMessage,
 			changeTaskImage,
 			handleInputChange,
 			toggleConfirmationBtn,
+			toggleIsCreateTaskModalOpen,
 		},
 	};
 };

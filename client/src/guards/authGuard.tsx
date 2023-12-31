@@ -2,11 +2,11 @@ import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
 import { setUserData } from '@/app/userSlice';
 import { setErrorMessageAsync } from '@/app/errorSlice';
+import { CreateTaskView } from '@/views/TaskView/Task.view';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { EditProfileView } from '@/views/ProfileView/EditProfile.view';
-import { CreateTaskView } from '@/views/CreateTaskView/CreateTask.view';
 import { CreateBoardView } from '@/views/CreateBoardView/CreateBoard.view';
 import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
@@ -113,7 +113,7 @@ export const AuthGuard = () => {
 	if (!user.data) {
 		return <Navigate to={ROUTES.SIGN_IN} />
 	}
-	
+
 	return <>
 		{taskModal.isModalOpen && <CreateTaskView />}
 		{modalStates.showEditProfileModal && <EditProfileView />}

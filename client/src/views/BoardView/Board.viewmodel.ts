@@ -5,9 +5,14 @@ import {
 	BOARD_ENDPOINTS,
 	COLUMN_ENDPOINTS,
 } from '@/utils/requester';
+import {
+	setBoardUsers,
+	setCallForRefresh,
+	resetTaskModalData,
+} from '@/app/taskModalSlice';
 import { IUserData } from '@/app/userSlice';
-import { useEffect, useState } from 'react';
 import { ITask } from '@/components/Task/Task';
+import { useEffect, useRef, useState } from 'react';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
@@ -53,10 +58,7 @@ interface IBoardViewModelState {
 	isInputModeOn: boolean;
 	boardNameInput: string;
 	workspaceUsers: IUser[];
-	selectedColumnId: number;
-	selectedTask: ITask | null;
 	boardData: IBoardData | null;
-	isCreateTaskModalOpen: boolean;
 	isDeleteBoardModalOpen: boolean;
 	isEditBoardUsersModalOpen: boolean;
 }
@@ -65,17 +67,13 @@ interface IBoardViewModelOperations {
 	goBack(): void;
 	addColumn(): void;
 	deleteBoard(): void;
-	callForRefresh(): void;
 	toggleIsChatOpen(): void;
 	toggleIsInputModeOn(): void;
 	onDragEnd(result: any): void;
-	closeCreateTaskModal(): void;
-	taskClickHandler(task: ITask): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
 	addWorkspaceColleague(colleague: IUser): void;
 	removeWorkspaceColleague(colleague: IUser): void;
-	toggleIsCreateTaskModalOpen(columnId: number): void;
 	updateColumnData(columnId: number, columnName: string): void;
 	handleBoardNameChange(e: React.FormEvent<HTMLFormElement>): void;
 	handleBoardNameInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
@@ -88,18 +86,16 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const { pathname } = useLocation();
+	const isNavigatingRef = useRef(false);
 	const boardId = Number(pathname.split('/').pop());
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [refreshBoard, setRefreshBoard] = useState<boolean>(true);
 	const [boardNameInput, setBoardNameInput] = useState<string>('');
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
-	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
-	const [selectedColumnId, setSelectedColumnId] = useState<number>(-1);
-	const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
+	const { callForRefresh } = useAppSelector((state) => state.taskModal);
 	const { data: userData, accessToken } = useAppSelector(
 		(state) => state.user
 	) as { data: IUserData; accessToken: string };
@@ -110,7 +106,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		const fetchBoardData = async () => {
 			try {
 				setIsLoading(true);
-
 				const newBoardData = (await request({
 					accessToken,
 					method: METHODS.GET,
@@ -158,8 +153,14 @@ export const useBoardViewModel = (): ViewModelReturnType<
 					...newBoardData,
 					boardUsers: [...workspaceUsers, ...boardUsers],
 				});
+				dispatch(
+					setBoardUsers({
+						boardUsers: [...workspaceUsers, ...boardUsers],
+					})
+				);
+
 				setWorkspaceUsers(workspaceUsers);
-				setRefreshBoard(false);
+				dispatch(setCallForRefresh({ callForRefresh: false }));
 			} catch (err: any) {
 				console.log(err.message);
 				dispatch(setErrorMessageAsync(err.message));
@@ -167,12 +168,14 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			setIsLoading(false);
 		};
 
-		if (!refreshBoard) return;
+		if (!callForRefresh || isNavigatingRef.current) return;
 		fetchBoardData();
-	}, [refreshBoard]);
+	}, [callForRefresh]);
 
 	const goBack = () => {
+		isNavigatingRef.current = true;
 		navigate(-1);
+		dispatch(resetTaskModalData());
 	};
 
 	const handleBoardNameInputChange = (
@@ -183,15 +186,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 
 	const toggleIsChatOpen = () => {
 		setIsChatOpen((prev) => !prev);
-	};
-
-	const toggleIsCreateTaskModalOpen = (columnId: number) => {
-		setIsCreateTaskModalOpen((prev) => {
-			if (!prev === true) {
-				setSelectedColumnId(columnId);
-			}
-			return !prev;
-		});
 	};
 
 	const toggleIsDeleteBoardModalOpen = () => {
@@ -231,12 +225,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 
 	const addWorkspaceColleague = async (colleague: IUser) => {
 		await editBoardColleague(colleague, METHODS.POST);
-		setRefreshBoard(true);
+		dispatch(setCallForRefresh({ callForRefresh: true }));
 	};
 
 	const removeWorkspaceColleague = async (colleague: IUser) => {
 		await editBoardColleague(colleague, METHODS.DELETE);
-		setRefreshBoard(true);
+		dispatch(setCallForRefresh({ callForRefresh: true }));
 	};
 
 	const deleteBoard = async () => {
@@ -251,10 +245,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			console.log(err.message);
 			dispatch(setErrorMessageAsync(err.message));
 		}
-	};
-
-	const callForRefresh = () => {
-		setRefreshBoard(true);
 	};
 
 	const onDragEnd = async (result: IResult) => {
@@ -434,16 +424,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		}
 	};
 
-	const taskClickHandler = (task: ITask) => {
-		setSelectedTask(task);
-		toggleIsCreateTaskModalOpen(-1);
-	};
-
-	const closeCreateTaskModal = () => {
-		setSelectedTask(null);
-		toggleIsCreateTaskModalOpen(-1);
-	};
-
 	const addColumn = async () => {
 		if (!boardData) return;
 		try {
@@ -549,12 +529,9 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			isLoading,
 			boardData,
 			isChatOpen,
-			selectedTask,
 			isInputModeOn,
 			boardNameInput,
 			workspaceUsers,
-			selectedColumnId,
-			isCreateTaskModalOpen,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,
 		},
@@ -563,17 +540,13 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			addColumn,
 			onDragEnd,
 			deleteBoard,
-			callForRefresh,
-			taskClickHandler,
 			updateColumnData,
 			toggleIsChatOpen,
 			toggleIsInputModeOn,
-			closeCreateTaskModal,
 			handleBoardNameChange,
 			addWorkspaceColleague,
 			removeWorkspaceColleague,
 			handleBoardNameInputChange,
-			toggleIsCreateTaskModalOpen,
 			toggleIsDeleteBoardModalOpen,
 			toggleIsEditBoardUsersModalOpen,
 		},

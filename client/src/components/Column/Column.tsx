@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
+import { clearTaskModalData, setCallForRefresh, setSelectedColumnId, setSelectedTask, toggleIsModalOpen } from '@/app/taskModalSlice';
 
 interface IColumnProps {
 	id: number;
@@ -17,9 +18,6 @@ interface IColumnProps {
 	title: string;
 	tasks: ITask[];
 	users: IUser[];
-	callForRefresh(): void;
-	onTaskClick(task: ITask): void;
-	onClick(columnId: number): void;
 	updateColumn(columnId: number, columnName: string): void;
 }
 
@@ -29,10 +27,7 @@ export const Column = ({
 	users,
 	title,
 	tasks,
-	onClick,
-	onTaskClick,
 	updateColumn,
-	callForRefresh,
 }: IColumnProps) => {
 	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState<string>('');
@@ -107,13 +102,24 @@ export const Column = ({
 				throw new Error(res.errorMessage);
 			}
 
-			callForRefresh();
+			dispatch(setCallForRefresh({ callForRefresh: true }))
 		} catch (err: any) {
 			console.log(err.message);
 			dispatch(setErrorMessageAsync(err.message));
 		}
 	}
 
+	const taskClickHandler = (task: ITask) => {
+		dispatch(setSelectedTask({ selectedTask: task }));
+		dispatch(setSelectedColumnId({ selectedColumnId: -1 }));
+		dispatch(toggleIsModalOpen());
+	};
+
+	const onClick = () => {
+		dispatch(clearTaskModalData());
+		dispatch(setSelectedColumnId({ selectedColumnId: id }));
+		dispatch(toggleIsModalOpen());
+	}
 
 	return (
 		<Draggable
@@ -191,7 +197,7 @@ export const Column = ({
 												task={task}
 												index={index}
 												key={task.id.toString()}
-												onClick={() => onTaskClick(task)}
+												onClick={() => taskClickHandler(task)}
 												assigneeImgPath={
 													users.find(
 														(user) =>
@@ -209,8 +215,8 @@ export const Column = ({
 					<div className={styles.addTask}>
 						<IntroButton
 							reverse={true}
+							onClick={onClick}
 							message={'Add task'}
-							onClick={() => onClick(id)}
 						/>
 					</div>
 				</div>

@@ -11,7 +11,6 @@ import { Column } from '@/components/Column/Column';
 import { useBoardViewModel } from './Board.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { CreateTaskView } from '../CreateTaskView/CreateTask.view';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
@@ -68,18 +67,6 @@ export const BoardView = () => {
 							/>
 						</div>
 					</Modal>
-				)
-			}
-			{
-				state.isCreateTaskModalOpen &&
-				(
-					<CreateTaskView
-						taskData={state.selectedTask}
-						columnId={state.selectedColumnId}
-						boardUsers={state.boardData.boardUsers}
-						callForRefresh={operations.callForRefresh}
-						toggleIsCreateTaskModalOpen={operations.closeCreateTaskModal}
-					/>
 				)
 			}
 			<div className={styles.background}>
@@ -181,10 +168,7 @@ export const BoardView = () => {
 													key={column.id}
 													title={column.name}
 													tasks={column.tasks}
-													onTaskClick={operations.taskClickHandler}
 													updateColumn={operations.updateColumnData}
-													callForRefresh={operations.callForRefresh}
-													onClick={operations.toggleIsCreateTaskModalOpen}
 													users={[...state.workspaceUsers, ...(state.boardData?.boardUsers || [])]}
 												/>
 											)

@@ -2,7 +2,7 @@ import styles from './listContainer.module.css';
 import { UserEntry } from '../UserEntry/UserEntry';
 import { StepEntry } from '../StepEntry/StepEntry';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
-import { IStep } from '@/views/CreateTaskView/CreateTask.viewmodel';
+import { IStep } from '@/views/TaskView/Task.viewmodel';
 
 type TListMode = 'users' | 'steps';
 

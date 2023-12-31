@@ -1,95 +1,35 @@
-import { useEffect } from 'react';
 import classNames from 'classnames';
 import { IoAdd } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { FaXmark } from 'react-icons/fa6';
-import { ITask } from '@/components/Task/Task';
-import styles from './createTaskView.module.css';
+import styles from './TaskView.module.css';
 import { Modal } from '@/components/Modal/Modal';
-import { useCreateTaskViewModel } from './CreateTask.viewmodel';
+import { useCreateTaskViewModel } from './Task.viewmodel';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
-import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { ListContainer } from '@/components/ListContainer/ListContainer';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 
-interface ICreateTaskViewProps {
-	columnId: number;
-	boardUsers: IUser[],
-	callForRefresh(): void;
-	taskData?: ITask | null;
-	toggleIsCreateTaskModalOpen(): void;
-}
+export const CreateTaskView = () => {
+	const { state, operations } = useCreateTaskViewModel();
 
-export const CreateTaskView = ({
-	columnId,
-	taskData,
-	boardUsers,
-	callForRefresh,
-	toggleIsCreateTaskModalOpen,
-}: ICreateTaskViewProps) => {
-	const { state, operations } = useCreateTaskViewModel(boardUsers);
-
-	const createTask = async () => {
-		try {
-			await operations.createTask(columnId);
-			toggleIsCreateTaskModalOpen();
-			callForRefresh();
-		} catch (err: any) {
-			console.log(err.message);
-			operations.setErrorMessage(err.message);
-		}
-	}
-
-	const editTask = async () => {
-		if (!taskData) return;
-
-		try {
-			await operations.editTask(taskData.id);
-			toggleIsCreateTaskModalOpen();
-			callForRefresh();
-		} catch (err: any) {
-			console.log(err.message);
-			operations.setErrorMessage(err.message);
-		}
-	}
-
-	const deleteTask = async () => {
-		if (!taskData) return;
-
-		try {
-			await operations.deleteTask(taskData.id);
-			toggleIsCreateTaskModalOpen();
-			callForRefresh();
-		} catch (err: any) {
-			console.log(err.message);
-			operations.setErrorMessage(err.message);
-		}
-	}
-
-	//set submit handler based on if there is taskData or not
-
-	useEffect(() => {
-		if (!taskData) return;
-		operations.loadTaskData(taskData);
-	}, []);
 
 	return (
 		<Modal>
 			<div className={styles.backgroundWrapper}>
 				<div className={styles.background}>
 					<div className={styles.header}>
-						<h1>Let's {taskData ? 'edit' : 'create'} a Task</h1>
+						<h1>Let's {state.taskData ? 'edit' : 'create'} a Task</h1>
 						<RxCross2
 							className={styles.closeBtn}
-							onClick={toggleIsCreateTaskModalOpen}
+							onClick={operations.toggleIsCreateTaskModalOpen}
 						/>
 					</div>
 
 					<div className={styles.body}>
 						<div className={styles.left}>
 							{
-								taskData ?
+								state.taskData ?
 									<p>
 										It is only normal that a <span className={styles.bold}>task</span>
 										{' '} changes its properties throughout the lifecycle of a {' '}
@@ -107,7 +47,7 @@ export const CreateTaskView = ({
 							}
 
 							<div className={styles.stepOne}>
-								<h2>{taskData ? 'Edit task name' : 'Name your task'}</h2>
+								<h2>{state.taskData ? 'Edit task name' : 'Name your task'}</h2>
 								<IntroInput
 									name="title"
 									type="text"
@@ -118,7 +58,7 @@ export const CreateTaskView = ({
 							</div>
 
 							<div className={styles.stepTwo}>
-								<h2>{taskData ? 'Edit description' : 'Add description'}</h2>
+								<h2>{state.taskData ? 'Edit description' : 'Add description'}</h2>
 								<textarea
 									rows={10}
 									name="description"
@@ -270,7 +210,7 @@ export const CreateTaskView = ({
 						</div>
 						<div className={styles.right}>
 							<div className={styles.assigneeInput}>
-								<h2>{taskData ? 'Edit assignee ' : 'Choose assignee'}</h2>
+								<h2>{state.taskData ? 'Edit assignee ' : 'Choose assignee'}</h2>
 								<EmailInput
 									isLoading={false}
 									matches={state.matches}
@@ -281,7 +221,7 @@ export const CreateTaskView = ({
 							</div>
 							<div className={styles.stepContainer}>
 								<div className={styles.addSteps}>
-									<h2>{taskData ? 'Edit steps' : 'Add steps'}</h2>
+									<h2>{state.taskData ? 'Edit steps' : 'Add steps'}</h2>
 									<div className={styles.stepInputDiv}>
 										<IntroInput
 											type="text"
@@ -316,16 +256,16 @@ export const CreateTaskView = ({
 								Overall completion: {state.progress}%
 							</h3>
 							<IntroButton
-								onClick={taskData ? editTask : createTask}
-								message={taskData ? "Edit Task" : "Add Task"}
+								onClick={state.taskData ? operations.editTask : operations.createTask}
+								message={state.taskData ? "Edit Task" : "Add Task"}
 								disabled={!!!state.inputValues.title || !state.assigneeId}
 							/>
 							{
-								taskData &&
+								state.taskData &&
 								<>
 									{state.showConfirmButton ?
 										<button
-											onClick={deleteTask}
+											onClick={operations.deleteTask}
 											className={styles.deleteTaskBtn}
 											onMouseOut={operations.toggleConfirmationBtn}
 										>

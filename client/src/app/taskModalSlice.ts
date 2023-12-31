@@ -3,41 +3,41 @@ import { ITask } from '@/components/Task/Task';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 interface ITaskModalState {
-	columnId: number;
+	selectedColumnId: number;
 	boardUsers: IUser[];
 	isModalOpen: boolean;
-	taskData: ITask | null;
+	selectedTask: ITask | null;
 	callForRefresh: boolean;
 }
 
 const initialState: ITaskModalState = {
-	columnId: -1,
-	taskData: null,
+	selectedColumnId: -1,
+	selectedTask: null,
 	boardUsers: [],
 	isModalOpen: false,
-	callForRefresh: false,
+	callForRefresh: true,
 };
 
 const taskModalSlice = createSlice({
 	name: 'task-modal-slice',
 	initialState,
 	reducers: {
-		toggleModal: (state) => ({
+		resetTaskModalData: () => initialState,
+		clearTaskModalData: (state) => ({
+			...initialState,
+			boardUsers: state.boardUsers,
+		}),
+		toggleIsModalOpen: (state) => ({
 			...state,
 			isModalOpen: !state.isModalOpen,
 		}),
-		clearTaskModalData: () => initialState,
-		toggleIsModalOpen: (state) => ({
-			...state,
-			isModalOpen: state.isModalOpen,
-		}),
 		setSelectedTask: (state, action) => ({
 			...state,
-			taskData: action.payload.taskData,
+			selectedTask: action.payload.selectedTask,
 		}),
-		setSelectedColumn: (state, action) => ({
+		setSelectedColumnId: (state, action) => ({
 			...state,
-			columnId: action.payload.columnId,
+			selectedColumnId: action.payload.selectedColumnId,
 		}),
 		setBoardUsers: (state, action) => ({
 			...state,
@@ -51,13 +51,13 @@ const taskModalSlice = createSlice({
 });
 
 export const {
-	toggleModal,
 	setBoardUsers,
 	setSelectedTask,
 	toggleIsModalOpen,
-	setSelectedColumn,
 	setCallForRefresh,
+	resetTaskModalData,
 	clearTaskModalData,
+	setSelectedColumnId,
 } = taskModalSlice.actions;
 
 export default taskModalSlice.reducer;

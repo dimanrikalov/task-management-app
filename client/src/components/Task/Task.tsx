@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import styles from './task.module.css';
 import { FaCheck } from 'react-icons/fa';
 import { Draggable } from 'react-beautiful-dnd';
-import { IStep } from '@/views/CreateTaskView/CreateTask.viewmodel';
+import { IStep } from '@/views/TaskView/Task.viewmodel';
 
 enum PRIORITY {
 	'Low',
