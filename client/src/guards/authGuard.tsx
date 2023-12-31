@@ -2,14 +2,15 @@ import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
 import { setUserData } from '@/app/userSlice';
 import { setErrorMessageAsync } from '@/app/errorSlice';
+import { resetTaskModalData } from '@/app/taskModalSlice';
 import { CreateTaskView } from '@/views/TaskView/Task.view';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { EditProfileView } from '@/views/ProfileView/EditProfile.view';
 import { CreateBoardView } from '@/views/CreateBoardView/CreateBoard.view';
 import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { CreateWorkspaceView } from '@/views/CreateWorkspaceView/CreateWorkspace.view';
 
 export interface ITokens {
@@ -17,15 +18,21 @@ export interface ITokens {
 	refreshToken: string;
 }
 
-
 export const AuthGuard = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
+	const url = useLocation().pathname;
 	const [isLoading, setIsLoading] = useState(true);
 	const user = useAppSelector(state => state.user);
 	const modalStates = useAppSelector(state => state.modals);
 	const taskModal = useAppSelector(state => state.taskModal);
 	const [tokens, setTokens] = useState<ITokens>(extractTokens());
+
+	//solves the board loading bug
+	useEffect(() => {
+		dispatch(resetTaskModalData());
+	}, [url]);
+
 	useEffect(() => {
 		const refreshTokens = async () => {
 			const data = await request({
@@ -105,7 +112,6 @@ export const AuthGuard = () => {
 		authenticate();
 	}, [tokens]);
 
-
 	if (isLoading) {
 		return <LoadingOverlay />
 	}
@@ -114,12 +120,13 @@ export const AuthGuard = () => {
 		return <Navigate to={ROUTES.SIGN_IN} />
 	}
 
-	return <>
-		{taskModal.isModalOpen && <CreateTaskView />}
-		{modalStates.showEditProfileModal && <EditProfileView />}
-		{modalStates.showCreateBoardModal && <CreateBoardView />}
-		{modalStates.showCreateWorkspaceModal && <CreateWorkspaceView />}
-
-		<Outlet />
-	</>
+	return (
+		<>
+			{taskModal.isModalOpen && <CreateTaskView />}
+			{modalStates.showEditProfileModal && <EditProfileView />}
+			{modalStates.showCreateBoardModal && <CreateBoardView />}
+			{modalStates.showCreateWorkspaceModal && <CreateWorkspaceView />}
+			<Outlet />
+		</>
+	)
 }

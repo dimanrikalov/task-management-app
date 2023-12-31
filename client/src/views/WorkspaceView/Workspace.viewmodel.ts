@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react';
 import { IUserData } from '@/app/userSlice';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { setWorkspaceName } from '@/app/inputValuesSlice';
-import { resetTaskModalData } from '@/app/taskModalSlice';
 import { toggleCreateBoardModal } from '@/app/modalsSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
@@ -76,11 +75,6 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 		[MODAL_STATES_KEYS.EDIT_COLLEAGUES]: false,
 		[MODAL_STATES_KEYS.DELETE_WORKSPACE]: false,
 	});
-
-	//solves the board loading bug
-	useEffect(() => {
-		dispatch(resetTaskModalData());
-	}, []);
 
 	//search filter
 	useEffect(() => {
