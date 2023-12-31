@@ -16,6 +16,10 @@ const modalsSlice = createSlice({
 	name: 'modals-slice',
 	initialState,
 	reducers: {
+		resetAllWithoutEditProfile: (state) => ({
+			...initialState,
+			showEditProfileModal: state.showEditProfileModal,
+		}),
 		toggleEditProfileModal: (state) => {
 			state.showEditProfileModal = !state.showEditProfileModal;
 		},
@@ -31,6 +35,7 @@ const modalsSlice = createSlice({
 export const {
 	toggleCreateBoardModal,
 	toggleEditProfileModal,
+	resetAllWithoutEditProfile,
 	toggleCreateWorkspaceModal,
 } = modalsSlice.actions;
 

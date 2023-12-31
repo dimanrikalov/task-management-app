@@ -121,12 +121,15 @@ export const BoardView = () => {
 							}
 						</div>
 						<div className={styles.operationsContainer}>
-							<IntroButton
-								message="Edit Users"
-								onClick={
-									operations.toggleIsEditBoardUsersModalOpen
-								}
-							/>
+							{
+								state.boardData.workspace.name !== 'Personal Workspace' &&
+								<IntroButton
+									message="Edit Users"
+									onClick={
+										operations.toggleIsEditBoardUsersModalOpen
+									}
+								/>
+							}
 							<IntroButton
 								message="View Graph"
 							/>

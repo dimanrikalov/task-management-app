@@ -5,6 +5,7 @@ import { setErrorMessageAsync } from '@/app/errorSlice';
 import { resetTaskModalData } from '@/app/taskModalSlice';
 import { CreateTaskView } from '@/views/TaskView/Task.view';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { resetAllWithoutEditProfile } from '@/app/modalsSlice';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { EditProfileView } from '@/views/ProfileView/EditProfile.view';
 import { CreateBoardView } from '@/views/CreateBoardView/CreateBoard.view';
@@ -26,14 +27,16 @@ export const AuthGuard = () => {
 	const user = useAppSelector(state => state.user);
 	const modalStates = useAppSelector(state => state.modals);
 	const taskModal = useAppSelector(state => state.taskModal);
-	const [tokens, setTokens] = useState<ITokens>(extractTokens());
 
 	//solves the board loading bug
 	useEffect(() => {
 		dispatch(resetTaskModalData());
+		dispatch(resetAllWithoutEditProfile());
 	}, [url]);
 
 	useEffect(() => {
+		const tokens = extractTokens();
+		console.log(url);
 		const refreshTokens = async () => {
 			const data = await request({
 				method: METHODS.GET,
@@ -44,7 +47,6 @@ export const AuthGuard = () => {
 				console.log(data.errorMessage);
 				throw new Error('Invalid refresh token!');
 			}
-			setTokens(extractTokens());
 		}
 
 		const getUserData = async () => {
@@ -77,10 +79,12 @@ export const AuthGuard = () => {
 					}
 
 					await refreshTokens();
+					setIsLoading(false);
 					return;
 				}
 				else if (!isAccessTokenValid(tokens.accessToken)) {
 					await refreshTokens();
+					setIsLoading(false);
 					return;
 				}
 
@@ -110,7 +114,7 @@ export const AuthGuard = () => {
 		}
 
 		authenticate();
-	}, [tokens]);
+	}, [url]);
 
 	if (isLoading) {
 		return <LoadingOverlay />

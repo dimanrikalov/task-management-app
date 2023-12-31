@@ -242,10 +242,10 @@ export const useBoardViewModel = (): ViewModelReturnType<
 
 	const onDragEnd = async (result: IResult) => {
 		const {
-			draggableId: rawDraggableId,
+			type,
 			source,
 			destination,
-			type,
+			draggableId: rawDraggableId,
 		} = result;
 
 		if (!boardData) {
