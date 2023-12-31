@@ -23,9 +23,14 @@ export const HomeHeader = ({
         </div>
         <div className={styles.userData}>
             <div className={styles.profileImgContainer}>
-               <img src={profileImgPath} alt="profile-img" />
+                <img
+                    alt="profile-img"
+                    src={profileImgPath}
+                />
             </div>
-            <p className={styles.fullName}>{`${firstName} ${lastName}`}</p>
+            <p className={styles.fullName}>
+                {`${firstName} ${lastName}`}
+            </p>
             <TbLogout2
                 onClick={logout}
                 className={styles.logout}

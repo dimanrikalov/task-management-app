@@ -6,13 +6,14 @@ import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
 import { IUserData } from '@/app/userSlice';
 import { setErrorMessageAsync } from '@/app/errorSlice';
+import { setWorkspaceName } from '@/app/inputValuesSlice';
+import { resetTaskModalData } from '@/app/taskModalSlice';
+import { toggleCreateBoardModal } from '@/app/modalsSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
-import { toggleCreateBoardModal } from '@/app/modalsSlice';
-import { setWorkspaceName } from '@/app/inputValuesSlice';
 
 export enum MODAL_STATES_KEYS {
 	EDIT_COLLEAGUES = 'editColleaguesIsOpen',
@@ -75,6 +76,11 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 		[MODAL_STATES_KEYS.EDIT_COLLEAGUES]: false,
 		[MODAL_STATES_KEYS.DELETE_WORKSPACE]: false,
 	});
+
+	//solves the board loading bug
+	useEffect(() => {
+		dispatch(resetTaskModalData());
+	}, []);
 
 	//search filter
 	useEffect(() => {

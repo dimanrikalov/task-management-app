@@ -5,18 +5,14 @@ import {
 	BOARD_ENDPOINTS,
 	COLUMN_ENDPOINTS,
 } from '@/utils/requester';
-import {
-	setBoardUsers,
-	setCallForRefresh,
-	resetTaskModalData,
-} from '@/app/taskModalSlice';
 import { IUserData } from '@/app/userSlice';
+import { useEffect, useState } from 'react';
 import { ITask } from '@/components/Task/Task';
-import { useEffect, useRef, useState } from 'react';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+import { setBoardUsers, setCallForRefresh } from '@/app/taskModalSlice';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { EDIT_COLLEAGUE_METHOD } from '../WorkspaceView/Workspace.viewmodel';
 import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
@@ -86,7 +82,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const { pathname } = useLocation();
-	const isNavigatingRef = useRef(false);
 	const boardId = Number(pathname.split('/').pop());
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -168,14 +163,12 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			setIsLoading(false);
 		};
 
-		if (!callForRefresh || isNavigatingRef.current) return;
+		if (!callForRefresh) return;
 		fetchBoardData();
 	}, [callForRefresh]);
 
 	const goBack = () => {
-		isNavigatingRef.current = true;
 		navigate(-1);
-		dispatch(resetTaskModalData());
 	};
 
 	const handleBoardNameInputChange = (

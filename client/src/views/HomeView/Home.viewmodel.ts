@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import { IUserData } from '@/app/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { setErrorMessageAsync } from '@/app/errorSlice';
+import { resetTaskModalData } from '@/app/taskModalSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
@@ -85,6 +86,11 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		searchBoards: '',
 		searchWorkspaces: '',
 	});
+
+	//solves the board loading bug
+	useEffect(() => {
+		dispatch(resetTaskModalData());
+	}, []);
 
 	const date = new Date().toLocaleDateString('en-US', options);
 	const { data: userData, accessToken } = useAppSelector(
