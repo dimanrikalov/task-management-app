@@ -40,7 +40,7 @@ export const AddColleagueInput = ({
 	const [matches, setMatches] = useState<IUser[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const { accessToken } = useAppSelector(state => state.user);
-
+	
 	useEffect(() => {
 		const fetchUsers = async () => {
 			setIsLoading(true);

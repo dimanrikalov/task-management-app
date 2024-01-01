@@ -3,6 +3,7 @@ import styles from './column.module.css';
 import { ITask, Task } from '../Task/Task';
 import { useEffect, useState } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
+import { useEditBoard } from '@/hooks/useEditBoard';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
@@ -18,7 +19,6 @@ interface IColumnProps {
 	title: string;
 	tasks: ITask[];
 	users: IUser[];
-	updateColumn(columnId: number, columnName: string): void;
 }
 
 export const Column = ({
@@ -27,14 +27,13 @@ export const Column = ({
 	users,
 	title,
 	tasks,
-	updateColumn,
 }: IColumnProps) => {
 	const dispatch = useAppDispatch();
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isInputModeOn, setIsInputModeOn] = useState(false);
 	const { accessToken } = useAppSelector((state) => state.user);
 	const [showDeleteBtn, setShowDeleteBtn] = useState<boolean>(false);
-
+	const { updateColumnData } = useEditBoard();
 	useEffect(() => {
 		if (!isInputModeOn) return;
 
@@ -81,9 +80,9 @@ export const Column = ({
 				throw new Error(res.errorMessage);
 			}
 
-			updateColumn(id, inputValue);
+			updateColumnData(id, inputValue);
 		} catch (err: any) {
-			updateColumn(id, nameBeforeChange);
+			updateColumnData(id, nameBeforeChange);
 			dispatch(setErrorMessageAsync(err.message));
 		}
 

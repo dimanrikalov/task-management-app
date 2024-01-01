@@ -3,8 +3,12 @@
 }
 
 .value {
-	font-size: 32px;
+	width: 42px;
+	height: 42px;
+	display: flex;
 	font-weight: 600;
+	align-items: center;
+	justify-content: center;
 }
 
 .icon {

@@ -2,12 +2,12 @@ import {
     ENTRIES_TYPES,
     IHomeBoardEntry,
     IHomeWorkspaceEntry
-} from "@/views/HomeView/Home.viewmodel"
-import classNames from "classnames";
-import { useNavigate } from "react-router-dom";
-import { HomeCard } from "../HomeCard/HomeCard"
+} from '@/views/HomeView/Home.viewmodel'
+import classNames from 'classnames';
+import { useNavigate } from 'react-router-dom';
+import { HomeCard } from '../HomeCard/HomeCard'
 import styles from '../HomeDashboard/homeDashboard.module.css';
-import { LoadingOverlay } from "../LoadingOverlay/LoadingOverlay";
+import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 
 type TEntries = IHomeWorkspaceEntry[] | IHomeBoardEntry[];
 
@@ -35,38 +35,35 @@ export const HomeList = ({ entries, isLoading, type }: IHomeListProps) => {
                 styles.list,
                 type === ENTRIES_TYPES.BOARDS &&
                 styles.boardsContainer
-            )}
-        >
+            )}>
             {
                 isLoading ?
-                    <div
-                        className={type === ENTRIES_TYPES.BOARDS ?
-                            styles.noBoards : styles.noWorkspaces}
-                    >
+                    <div className={styles.noEntriesContainer}>
                         <LoadingOverlay />
                     </div>
                     :
-                    entries.length > 0 ?
-                        entries.map((entry) =>
-                            <HomeCard
-                                key={entry.id}
-                                title={entry.name}
-                                userCount={entry.usersCount}
-                                subtitle={extractSubtitle(entry)}
-                                isBoardBtn={type === ENTRIES_TYPES.BOARDS}
-                                onClick={() => navigate(`/${type}/${entry.id}`)}
-                                isWorkspaceBtn={type === ENTRIES_TYPES.WORKSPACES}
-                            />
-                        ) :
-                        <h1
-                            className={
-                                type === ENTRIES_TYPES.BOARDS ?
-                                    styles.noBoards : styles.noWorkspaces
-                            }
-                        >
-                            {`You don't have access to any ${type} yet...`}
-                        </h1>
+                    (
+                        entries.length > 0 ?
+                            entries.map((entry) =>
+                                <HomeCard
+                                    key={entry.id}
+                                    title={entry.name}
+                                    userCount={entry.usersCount}
+                                    subtitle={extractSubtitle(entry)}
+                                    isBoardBtn={type === ENTRIES_TYPES.BOARDS}
+                                    onClick={() => navigate(`/${type}/${entry.id}`)}
+                                    isWorkspaceBtn={type === ENTRIES_TYPES.WORKSPACES}
+                                />
+                            ) :
+                            <div className={styles.noEntriesContainer}>
+                                <div className={styles.noEntries}>
+                                    <h1 className={styles.noEntriesMsg}>
+                                        {`No ${type} to show yet...`}
+                                    </h1>
+                                </div>
+                            </div>
+                    )
             }
-        </div>
+        </div >
     )
 }

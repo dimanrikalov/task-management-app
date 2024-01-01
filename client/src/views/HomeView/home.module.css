@@ -1,25 +1,25 @@
 .background {
-	position: relative;
 	width: 100%;
 	height: 100%;
-	background-color: var(--white-secondary);
 	display: flex;
+	position: relative;
+	background-color: var(--white-secondary);
 }
 
 .mainContainer {
-	width: 100%;
-	overflow-x: auto;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	padding: 16px;
 	gap: 56px;
+	width: 100%;
+	display: flex;
+	padding: 16px;
+	overflow-x: auto;
+	flex-direction: column;
 	transition: 200ms ease-in-out;
+	justify-content: space-between;
 }
 
 .operationsContainer {
-   position: relative;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
+	display: flex;
+	position: relative;
+	flex-direction: column;
+	justify-content: center;
 }

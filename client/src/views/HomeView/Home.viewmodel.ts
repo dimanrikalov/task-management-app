@@ -106,7 +106,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
 				});
 
 				setLists((prev) => ({ ...prev, [entries]: data }));
-				console.log(data);
 			} catch (err: any) {
 				console.log(err.message);
 				dispatch(setErrorMessageAsync(err.message));
@@ -116,7 +115,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		setIsLoading(true);
 		fetchEntries(ENTRIES_TYPES.BOARDS);
 		fetchEntries(ENTRIES_TYPES.WORKSPACES);
-		setIsLoading(false);
 	}, [accessToken]);
 
 	useEffect(() => {
@@ -124,7 +122,13 @@ export const useHomeViewModel = (): ViewModelReturnType<
 			boards: [...lists.boards],
 			workspaces: [...lists.workspaces],
 		}));
+
+		//delaying so that no entries message doesnt display before completing the fetch process
+		const timeoout = setTimeout(() => {
+			setIsLoading(false);
+		}, 30);
 		console.log(lists);
+		return () => clearTimeout(timeoout);
 	}, [lists]);
 
 	//filter out entries based on search inputs
@@ -176,9 +180,10 @@ export const useHomeViewModel = (): ViewModelReturnType<
 	const handleFilterInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>
 	) => {
-		setSearchInputs((prev) => ({
-			...prev,
-			[e.target.name]: e.target.value,
+		const { name, value } = e.target;
+		setSearchInputs((prevInputFields) => ({
+			...prevInputFields,
+			[name]: value,
 		}));
 	};
 

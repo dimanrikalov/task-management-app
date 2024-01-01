@@ -32,7 +32,7 @@ function createWindow() {
 		},
 		width: 1330,
 		height: 810,
-		minHeight: 445,
+		minHeight: 485,
 		minWidth: 856,
 	});
 

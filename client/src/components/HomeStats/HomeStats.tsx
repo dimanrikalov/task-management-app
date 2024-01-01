@@ -24,13 +24,11 @@ interface IStatProps {
 
 const Stat = ({ isLoading, stat }: IStatProps) => {
     return (
-        <div className={styles.value}>
-            {
-                isLoading ?
-                    <LoadingOverlay size={42} color='#fff' />
-                    :
-                    <h3>{stat}</h3>
-            }
+        <div className={styles.value}>{isLoading ?
+            <LoadingOverlay size={42} color='#fff' />
+            :
+            <h1>{stat}</h1>
+        }
         </div>
     )
 }

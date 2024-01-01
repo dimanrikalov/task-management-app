@@ -24,7 +24,7 @@ export const BoardView = () => {
 		return <LoadingOverlay />
 	}
 
-	if (!state.boardData || !state.workspaceUsers) {
+	if (!state.boardData || !state.usersWithBoardAccess) {
 		return <Navigate to={ROUTES.DASHBOARD} />
 	}
 
@@ -43,9 +43,9 @@ export const BoardView = () => {
 								enableFlex={true}
 								title="Board users"
 								colleagues={state.boardData.boardUsers}
-								addColleagueHandler={operations.addWorkspaceColleague}
-								removeColleagueHandler={operations.removeWorkspaceColleague}
-								disableDeletionFor={state.workspaceUsers.map(user => user.id)}
+								addColleagueHandler={operations.addBoardColleague}
+								removeColleagueHandler={operations.removeBoardColleague}
+								disableDeletionFor={state.usersWithBoardAccess.map(user => user.id)}
 							/>
 						</div>
 					</Modal>
@@ -171,8 +171,7 @@ export const BoardView = () => {
 													key={column.id}
 													title={column.name}
 													tasks={column.tasks}
-													updateColumn={operations.updateColumnData}
-													users={[...state.workspaceUsers, ...(state.boardData?.boardUsers || [])]}
+													users={[...state.usersWithBoardAccess, ...(state.boardData?.boardUsers || [])]}
 												/>
 											)
 										}

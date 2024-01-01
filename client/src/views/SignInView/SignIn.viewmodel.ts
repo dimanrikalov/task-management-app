@@ -58,12 +58,9 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 			}
 
 			const data = await request({
+				body: inputFields,
 				method: METHODS.POST,
 				endpoint: USER_ENDPOINTS.SIGN_IN,
-				body: {
-					email: inputFields.email,
-					password: inputFields.password,
-				},
 			});
 
 			//case where the request fails on Dto level

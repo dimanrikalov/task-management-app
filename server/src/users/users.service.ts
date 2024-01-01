@@ -202,7 +202,6 @@ export class UsersService {
         const user = await this.findUserByEmail(body.email);
 
         if (!user) {
-            console.log('here');
             throw new NotFoundException('Wrong email or password!');
         }
 
