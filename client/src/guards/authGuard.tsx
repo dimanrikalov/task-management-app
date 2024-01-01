@@ -23,8 +23,8 @@ export const AuthGuard = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const url = useLocation().pathname;
-	const [isLoading, setIsLoading] = useState(true);
 	const user = useAppSelector(state => state.user);
+	const [isLoading, setIsLoading] = useState(true);
 	const modalStates = useAppSelector(state => state.modals);
 	const taskModal = useAppSelector(state => state.taskModal);
 
@@ -36,7 +36,7 @@ export const AuthGuard = () => {
 
 	useEffect(() => {
 		const tokens = extractTokens();
-		console.log(url);
+
 		const refreshTokens = async () => {
 			const data = await request({
 				method: METHODS.GET,

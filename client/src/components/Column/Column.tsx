@@ -1,3 +1,9 @@
+import {
+	setSelectedTask,
+	toggleIsModalOpen,
+	clearTaskModalData,
+	setSelectedColumnId,
+} from '@/app/taskModalSlice';
 import { FaEdit } from 'react-icons/fa';
 import styles from './column.module.css';
 import { ITask, Task } from '../Task/Task';
@@ -5,13 +11,13 @@ import { useEffect, useState } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
 import { useEditBoard } from '@/hooks/useEditBoard';
 import { setErrorMessageAsync } from '@/app/errorSlice';
+import { useBoardContext } from '@/contexts/board.context';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
-import { clearTaskModalData, setCallForRefresh, setSelectedColumnId, setSelectedTask, toggleIsModalOpen } from '@/app/taskModalSlice';
 
 interface IColumnProps {
 	id: number;
@@ -29,11 +35,13 @@ export const Column = ({
 	tasks,
 }: IColumnProps) => {
 	const dispatch = useAppDispatch();
+	const { setBoardData } = useBoardContext();
+	const { updateColumnData } = useEditBoard();
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isInputModeOn, setIsInputModeOn] = useState(false);
 	const { accessToken } = useAppSelector((state) => state.user);
 	const [showDeleteBtn, setShowDeleteBtn] = useState<boolean>(false);
-	const { updateColumnData } = useEditBoard();
+
 	useEffect(() => {
 		if (!isInputModeOn) return;
 
@@ -101,7 +109,14 @@ export const Column = ({
 				throw new Error(res.errorMessage);
 			}
 
-			dispatch(setCallForRefresh({ callForRefresh: true }))
+			setBoardData((prev) => {
+				if (!prev) return null;
+
+				return {
+					...prev,
+					columns: prev.columns.filter(col => col.id !== id)
+				}
+			})
 		} catch (err: any) {
 			console.log(err.message);
 			dispatch(setErrorMessageAsync(err.message));
@@ -197,12 +212,10 @@ export const Column = ({
 												index={index}
 												key={task.id.toString()}
 												onClick={() => taskClickHandler(task)}
-												assigneeImgPath={
-													users.find(
-														(user) =>
-															user.id ===
-															task.assigneeId
-													)?.profileImagePath!
+												assigneeImgPath={users.find((user) =>
+													user.id ===
+													task.assigneeId
+												)?.profileImagePath!
 												}
 											/>
 										))}

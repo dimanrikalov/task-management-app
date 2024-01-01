@@ -51,10 +51,23 @@ export class UsersController {
         }
     }
 
+    @Get('/users')
+    async getAllUsers(@Res() res: Response) {
+        try {
+            const users = await this.usersService.getAllUsers();
+            res.status(200).json(users);
+        } catch (err: any) {
+            console.log(err.message);
+            res.status(401).json({
+                errorMessage: err.message,
+            });
+        }
+    }
+
     @Post('/users')
     async getUsers(@Res() res: Response, @Body() body: FindUserDto) {
         try {
-            const users = await this.usersService.getAll(body);
+            const users = await this.usersService.getAllOtherUsers(body);
             res.status(200).json(users);
         } catch (err: any) {
             console.log(err.message);

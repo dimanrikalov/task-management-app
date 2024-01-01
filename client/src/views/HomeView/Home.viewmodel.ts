@@ -1,16 +1,15 @@
 import {
-	request,
-	METHODS,
-	BOARD_ENDPOINTS,
-	WORKSPACE_ENDPOINTS,
-} from '@/utils/requester';
+	ILists,
+	IHomeBoardEntry,
+	useFetchHomeLists,
+	IHomeWorkspaceEntry,
+} from '@/hooks/useFetchHomeLists';
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
 import { useState, useEffect } from 'react';
 import { IUserData } from '@/app/userSlice';
+import { useAppSelector } from '@/app/hooks';
 import { useNavigate } from 'react-router-dom';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 export enum ENTRIES_TYPES {
@@ -27,25 +26,6 @@ export enum MODALS_STATE_KEYS {
 export interface ISearchInputs {
 	searchBoards: string;
 	searchWorkspaces: string;
-}
-
-export interface IHomeBoardEntry {
-	id: number;
-	name: string;
-	usersCount: number;
-	workspaceName: string;
-}
-
-export interface IHomeWorkspaceEntry {
-	id: number;
-	name: string;
-	ownerName: string;
-	usersCount: number;
-}
-
-interface ILists {
-	boards: IHomeBoardEntry[];
-	workspaces: IHomeWorkspaceEntry[];
 }
 
 interface IUseHomeViewmodelState {
@@ -73,12 +53,8 @@ export const useHomeViewModel = (): ViewModelReturnType<
 	IUserHomeViewmodelOperations
 > => {
 	const navigate = useNavigate();
-	const dispatch = useAppDispatch();
-	const [lists, setLists] = useState<ILists>({
-		boards: [],
-		workspaces: [],
-	});
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const { lists, isLoading } = useFetchHomeLists();
+	const date = new Date().toLocaleDateString('en-US', options);
 	const [filteredLists, setFilteredLists] = useState<ILists>({
 		boards: [],
 		workspaces: [],
@@ -87,48 +63,15 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		searchBoards: '',
 		searchWorkspaces: '',
 	});
-
-	const date = new Date().toLocaleDateString('en-US', options);
-	const { data: userData, accessToken } = useAppSelector(
-		(state) => state.user
-	) as { data: IUserData; accessToken: string };
-
-	useEffect(() => {
-		const fetchEntries = async (entries: ENTRIES_TYPES) => {
-			try {
-				const data = await request({
-					accessToken,
-					method: METHODS.GET,
-					endpoint:
-						entries === ENTRIES_TYPES.BOARDS
-							? BOARD_ENDPOINTS.BASE
-							: WORKSPACE_ENDPOINTS.BASE,
-				});
-
-				setLists((prev) => ({ ...prev, [entries]: data }));
-			} catch (err: any) {
-				console.log(err.message);
-				dispatch(setErrorMessageAsync(err.message));
-			}
-		};
-
-		setIsLoading(true);
-		fetchEntries(ENTRIES_TYPES.BOARDS);
-		fetchEntries(ENTRIES_TYPES.WORKSPACES);
-	}, [accessToken]);
+	const { data: userData } = useAppSelector((state) => state.user) as {
+		data: IUserData;
+	};
 
 	useEffect(() => {
 		setFilteredLists(() => ({
 			boards: [...lists.boards],
 			workspaces: [...lists.workspaces],
 		}));
-
-		//delaying so that no entries message doesnt display before completing the fetch process
-		const timeoout = setTimeout(() => {
-			setIsLoading(false);
-		}, 30);
-		console.log(lists);
-		return () => clearTimeout(timeoout);
 	}, [lists]);
 
 	//filter out entries based on search inputs

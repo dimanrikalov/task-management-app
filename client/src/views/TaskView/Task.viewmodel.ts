@@ -44,16 +44,16 @@ interface ICreateTaskViewModelState {
 interface ICreateTaskViewModelOperations {
 	addStep(): void;
 	clearTaskImage(): void;
+	editTask(): Promise<void>;
+	deleteTask(): Promise<void>;
+	createTask(): Promise<void>;
 	toggleConfirmationBtn(): void;
 	loadTaskData(task: ITask): void;
 	selectAssignee(user: IUser): void;
 	toggleIsCreateTaskModalOpen(): void;
 	removeStep(description: string): void;
 	setErrorMessage(message: string): void;
-	editTask(): Promise<void>;
 	toggleStatus(description: string): void;
-	deleteTask(): Promise<void>;
-	createTask(): Promise<void>;
 	changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
 	handleInputChange(
 		e: React.ChangeEvent<
@@ -110,7 +110,6 @@ export const useCreateTaskViewModel = (): ViewModelReturnType<
 			setMatches([]);
 			return;
 		}
-
 		setAssigneeId(null);
 		setMatches(
 			boardUsers.filter((user) =>
@@ -175,8 +174,9 @@ export const useCreateTaskViewModel = (): ViewModelReturnType<
 		setInputValues((prev) => ({
 			...prev,
 			image,
-			email: boardUsers.find((user) => user.id === task.assigneeId)
-				?.email!,
+			email:
+				boardUsers.find((user) => user.id === task.assigneeId)?.email ||
+				'',
 		}));
 
 		// Set the sorted steps

@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { toggleCreateBoardModal } from '@/app/modalsSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { IDetailedWorkspace } from '@/contexts/workspace.context';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
@@ -32,14 +33,6 @@ export interface IDetailedBoard {
 	id: number;
 	name: string;
 	workspaceId: number;
-}
-
-export interface IDetailedWorkspace {
-	id: number;
-	name: string;
-	workspaceOwner: IUser;
-	workspaceUsers: IUser[];
-	boards: IDetailedBoard[];
 }
 
 interface ICreateBoardViewModelState {

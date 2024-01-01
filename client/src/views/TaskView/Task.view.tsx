@@ -3,6 +3,7 @@ import { IoAdd } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { FaXmark } from 'react-icons/fa6';
 import styles from './TaskView.module.css';
+import { FcAddImage } from 'react-icons/fc';
 import { Modal } from '@/components/Modal/Modal';
 import { useCreateTaskViewModel } from './Task.viewmodel';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
@@ -84,9 +85,7 @@ export const CreateTaskView = () => {
 												className={styles.previewImage}
 											/>
 											:
-											<h3 className={styles.addTaskImgMessage}>
-												Click here to add a task image
-											</h3>
+											<FcAddImage size={92} />
 									}
 								</div>
 							</label>

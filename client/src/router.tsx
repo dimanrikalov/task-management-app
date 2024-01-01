@@ -8,6 +8,7 @@ import { SignInView } from './views/SignInView/SignIn.view';
 import { BoardContextProvider } from './contexts/board.context';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { WorkspaceView } from './views/WorkspaceView/Workspace.view';
+import { WorkspaceContextProvider } from './contexts/workspace.context';
 
 export const ROUTES = {
 	HOME: '/',
@@ -32,7 +33,10 @@ const router = createHashRouter([
 		path: '/',
 		element: <AuthGuard />,
 		children: [
-			{ path: '/dashboard', element: <HomeView /> },
+			{
+				path: '/dashboard',
+				element: <HomeView />
+			},
 			{
 				path: '/boards/:id',
 				element:
@@ -40,7 +44,13 @@ const router = createHashRouter([
 						<BoardView />
 					</BoardContextProvider>
 			},
-			{ path: '/workspaces/:id', element: <WorkspaceView /> },
+			{
+				path: '/workspaces/:id',
+				element:
+					<WorkspaceContextProvider>
+						<WorkspaceView />
+					</WorkspaceContextProvider>
+			},
 		]
 	}
 ]);

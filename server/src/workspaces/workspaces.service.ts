@@ -196,6 +196,12 @@ export class WorkspacesService {
             throw new Error('You cannot rename your Personal Workspace!');
         }
 
+        if (body.newName === 'Personal Workspace') {
+            throw new Error(
+                'There can only be one Personal Workspace per user!',
+            );
+        }
+
         await this.prismaService.workspace.update({
             where: {
                 id: body.workspaceData.id,

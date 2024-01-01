@@ -4,10 +4,10 @@ import { useLocation } from 'react-router-dom';
 import { ITask } from '@/components/Task/Task';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { IDetailedWorkspace } from '@/contexts/workspace.context';
 import { BOARD_ENDPOINTS, METHODS, request } from '@/utils/requester';
 import { setBoardUsers, setCallForRefresh } from '@/app/taskModalSlice';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
-import { IDetailedWorkspace } from '@/views/CreateBoardView/CreateBoard.viewmodel';
 
 export interface IColumn {
 	id: number;
@@ -34,14 +34,12 @@ export const useFetchBoardData = () => {
 		(state) => state.user
 	) as { data: IUserData; accessToken: string };
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [usersWithBoardAccess, setUsersWithBoardAccess] = useState<IUser[]>(
-		[]
-	);
+	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const { callForRefresh } = useAppSelector((state) => state.taskModal);
+
 	useEffect(() => {
 		const fetchBoardData = async () => {
-			console.log('FETCHING BOARD DATA...');
 			try {
 				setIsLoading(true);
 				const newBoardData = (await request({
@@ -97,7 +95,7 @@ export const useFetchBoardData = () => {
 					})
 				);
 
-				setUsersWithBoardAccess(workspaceUsers);
+				setWorkspaceUsers(workspaceUsers);
 				dispatch(setCallForRefresh({ callForRefresh: false }));
 			} catch (err: any) {
 				console.log(err.message);
@@ -114,6 +112,6 @@ export const useFetchBoardData = () => {
 		isLoading,
 		boardData,
 		setBoardData,
-		usersWithBoardAccess,
+		workspaceUsers,
 	};
 };

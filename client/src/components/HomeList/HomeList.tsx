@@ -1,13 +1,10 @@
-import {
-    ENTRIES_TYPES,
-    IHomeBoardEntry,
-    IHomeWorkspaceEntry
-} from '@/views/HomeView/Home.viewmodel'
 import classNames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 import { HomeCard } from '../HomeCard/HomeCard'
 import styles from '../HomeDashboard/homeDashboard.module.css';
+import { ENTRIES_TYPES } from '@/views/HomeView/Home.viewmodel'
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
+import { IHomeBoardEntry, IHomeWorkspaceEntry } from '@/hooks/useFetchHomeLists';
 
 type TEntries = IHomeWorkspaceEntry[] | IHomeBoardEntry[];
 

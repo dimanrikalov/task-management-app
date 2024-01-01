@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { setBoardUsers } from '@/app/taskModalSlice';
 import { setErrorMessageAsync } from '@/app/errorSlice';
-import { setCallForRefresh } from '@/app/taskModalSlice';
 import { useBoardContext } from '@/contexts/board.context';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { BOARD_ENDPOINTS, METHODS, request } from '@/utils/requester';
@@ -9,7 +9,7 @@ import { EDIT_COLLEAGUE_METHOD } from '@/views/WorkspaceView/Workspace.viewmodel
 
 export const useEditBoardColleagues = () => {
 	const dispatch = useAppDispatch();
-	const { boardData } = useBoardContext();
+	const { boardData, setBoardData } = useBoardContext();
 	const { accessToken } = useAppSelector((state) => state.user);
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
 		useState(false);
@@ -22,11 +22,11 @@ export const useEditBoardColleagues = () => {
 		colleague: IUser,
 		method: EDIT_COLLEAGUE_METHOD
 	) => {
-		if (!boardData) {
-			console.log('No board data!');
-			return;
-		}
 		try {
+			if (!boardData) {
+				throw new Error('No board data!');
+			}
+
 			await request({
 				method,
 				accessToken,
@@ -40,13 +40,43 @@ export const useEditBoardColleagues = () => {
 	};
 
 	const addBoardColleague = async (colleague: IUser) => {
+		if (!boardData) return;
 		await editBoardColleague(colleague, METHODS.POST);
-		dispatch(setCallForRefresh({ callForRefresh: true }));
+		setBoardData((prev) => {
+			if (!prev) return null;
+
+			return {
+				...prev,
+				boardUsers: [...prev.boardUsers, colleague],
+			};
+		});
+		dispatch(
+			setBoardUsers({ boardUsers: [...boardData.boardUsers, colleague] })
+		);
 	};
 
 	const removeBoardColleague = async (colleague: IUser) => {
+		if (!boardData) return;
 		await editBoardColleague(colleague, METHODS.DELETE);
-		dispatch(setCallForRefresh({ callForRefresh: true }));
+		setBoardData((prev) => {
+			if (!prev) return null;
+
+			return {
+				...prev,
+				boardUsers: [
+					...prev.boardUsers.filter((col) => col.id !== colleague.id),
+				],
+			};
+		});
+		dispatch(
+			setBoardUsers({
+				boardUsers: [
+					...boardData.boardUsers.filter(
+						(col) => col.id !== colleague.id
+					),
+				],
+			})
+		);
 	};
 
 	return {

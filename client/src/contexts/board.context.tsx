@@ -1,31 +1,27 @@
 import { createContext, useContext } from "react";
-import { IBoardData, useFetchBoardData } from "@/hooks/useFetchBoardData";
 import { IUser } from "@/components/AddColleagueInput/AddColleagueInput";
+import { IBoardData, useFetchBoardData } from "@/hooks/useFetchBoardData";
 
 interface IBoardContext {
     isLoading: boolean;
-    boardData: IBoardData | null,
-    usersWithBoardAccess: IUser[]
-    setBoardData: React.Dispatch<React.SetStateAction<IBoardData | null>>
+    workspaceUsers: IUser[];
+    boardData: IBoardData | null;
+    setWorkspaceUsers: React.Dispatch<React.SetStateAction<IUser[]>>;
+    setBoardData: React.Dispatch<React.SetStateAction<IBoardData | null>>;
 }
 
 const BoardContext = createContext<any>(null);
 
 export const useBoardContext = () => useContext<IBoardContext>(BoardContext);
 
-export const BoardContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { boardData, isLoading, usersWithBoardAccess, setBoardData } = useFetchBoardData();
+export const BoardContextProvider:
+    React.FC<{ children: React.ReactNode }> =
+    ({ children }) => {
+        const data = useFetchBoardData();
 
-    const value = {
-        isLoading,
-        boardData,
-        setBoardData,
-        usersWithBoardAccess
+        return (
+            <BoardContext.Provider value={data}>
+                {children}
+            </BoardContext.Provider>
+        );
     }
-
-    return (
-        <BoardContext.Provider value={value}>
-            {children}
-        </BoardContext.Provider>
-    );
-}

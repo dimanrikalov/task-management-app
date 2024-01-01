@@ -1,7 +1,7 @@
+import { FcFile } from 'react-icons/fc';
 import { FaEdit } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './workspace.module.css';
-import { TiDocumentAdd } from 'react-icons/ti';
 import { Modal } from '@/components/Modal/Modal';
 import { BoardCard } from '@/components/BoardCard/BoardCard';
 import { BackButton } from '@/components/BackButton/BackButton';
@@ -15,8 +15,13 @@ import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfir
 export const WorkspaceView = () => {
 	const { state, operations } = useWorkspaceViewModel();
 
-	if (!state.workspaceData) {
+	if (state.isLoading) {
 		return <LoadingOverlay />
+	}
+
+	if (!state.workspaceData) {
+		operations.backBtnHandler();
+		return null;
 	}
 
 	return (
@@ -91,7 +96,10 @@ export const WorkspaceView = () => {
 								</form>
 
 								:
-								<h2 className={styles.workspaceName} onDoubleClick={operations.toggleIsInputModeOn}>{state.workspaceData.name}</h2>
+								<h2
+									className={styles.workspaceName}
+									onDoubleClick={operations.toggleIsInputModeOn}>{state.workspaceData.name}
+								</h2>
 						}
 					</div>
 					{
@@ -133,7 +141,7 @@ export const WorkspaceView = () => {
 						className={styles.addButton}
 						onClick={operations.toggleIsCreateBoardModalOpen}
 					>
-						<TiDocumentAdd className={styles.icon} />
+						<FcFile className={styles.icon} />
 					</button>
 					{
 						state.filteredBoards.map((board) =>

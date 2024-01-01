@@ -5,10 +5,11 @@ import { useOnDragEnd } from '@/hooks/useOnDragEnd';
 import { useEditBoard } from '@/hooks/useEditBoard';
 import { useRenameBoard } from '@/hooks/useRenameBoard';
 import { useBoardContext } from '@/contexts/board.context';
+import { useFetchAllUsers } from '@/hooks/useFetchAllUsers';
+import { IDetailedWorkspace } from '@/contexts/workspace.context';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { useEditBoardColleagues } from '@/hooks/useEditBoardColleagues';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
-import { IDetailedWorkspace } from '../CreateBoardView/CreateBoard.viewmodel';
 
 export interface IColumn {
 	id: number;
@@ -41,12 +42,13 @@ export interface IResult {
 }
 
 interface IBoardViewModelState {
+	allUsers: IUser[];
 	isLoading: boolean;
 	isChatOpen: boolean;
 	isInputModeOn: boolean;
 	boardNameInput: string;
+	workspaceUsers: IUser[];
 	boardData: IBoardData | null;
-	usersWithBoardAccess: IUser[];
 	isDeleteBoardModalOpen: boolean;
 	isEditBoardUsersModalOpen: boolean;
 }
@@ -87,7 +89,8 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const { onDragEnd } = useOnDragEnd();
 	const { addColumn, deleteBoard } = useEditBoard();
 	const [isChatOpen, setIsChatOpen] = useState(false);
-	const { boardData, isLoading, usersWithBoardAccess } = useBoardContext();
+	const { boardData, isLoading, workspaceUsers } = useBoardContext();
+	const { allUsers, isLoading: isLoadingAllUsers } = useFetchAllUsers();
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 
 	const goBack = () => {
@@ -104,14 +107,15 @@ export const useBoardViewModel = (): ViewModelReturnType<
 
 	return {
 		state: {
-			isLoading,
+			allUsers,
 			boardData,
 			isChatOpen,
 			isInputModeOn,
 			boardNameInput,
-			usersWithBoardAccess,
+			workspaceUsers,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,
+			isLoading: isLoading || isLoadingAllUsers,
 		},
 		operations: {
 			goBack,

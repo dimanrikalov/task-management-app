@@ -24,7 +24,7 @@ export const BoardView = () => {
 		return <LoadingOverlay />
 	}
 
-	if (!state.boardData || !state.usersWithBoardAccess) {
+	if (!state.boardData || !state.workspaceUsers) {
 		return <Navigate to={ROUTES.DASHBOARD} />
 	}
 
@@ -45,7 +45,7 @@ export const BoardView = () => {
 								colleagues={state.boardData.boardUsers}
 								addColleagueHandler={operations.addBoardColleague}
 								removeColleagueHandler={operations.removeBoardColleague}
-								disableDeletionFor={state.usersWithBoardAccess.map(user => user.id)}
+								disableDeletionFor={state.workspaceUsers.map(user => user.id)}
 							/>
 						</div>
 					</Modal>
@@ -171,7 +171,7 @@ export const BoardView = () => {
 													key={column.id}
 													title={column.name}
 													tasks={column.tasks}
-													users={[...state.usersWithBoardAccess, ...(state.boardData?.boardUsers || [])]}
+													users={state.allUsers}
 												/>
 											)
 										}
