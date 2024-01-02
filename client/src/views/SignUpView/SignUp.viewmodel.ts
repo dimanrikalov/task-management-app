@@ -67,10 +67,6 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 				endpoint: USER_ENDPOINTS.SIGN_UP,
 			});
 
-			//case where the request fails on Dto level
-			if (data.statusCode === 400) {
-				throw new Error(data.message[0]);
-			}
 			//case where the endpoint actually throws an exception
 			if (data.errorMessage) {
 				throw new Error(data.errorMessage);

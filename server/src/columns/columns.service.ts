@@ -69,6 +69,19 @@ export class ColumnsService {
             throw new Error('You cannot delete the default table columns!');
         }
 
+        const columnsInBoardCount = await this.prismaService.column.count({
+            where: {
+                boardId: body.boardData.id,
+            },
+        });
+
+        //move the column to the last position
+        await this.move({
+            boardData: body.boardData,
+            columnData: body.columnData,
+            destinationPosition: columnsInBoardCount - 1,
+        });
+
         //the task deletion is cascading
         await this.tasksService.deleteMany(body.columnData.id);
         await this.prismaService.column.delete({

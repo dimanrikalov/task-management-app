@@ -33,12 +33,12 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 		password: '',
 	});
 
-	const goToSignUpView = () => {
-		navigate(ROUTES.SIGN_UP);
-	};
-
 	const goToInitialView = () => {
 		navigate(ROUTES.HOME);
+	};
+
+	const goToSignUpView = () => {
+		navigate(ROUTES.SIGN_UP);
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,10 +63,6 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 				endpoint: USER_ENDPOINTS.SIGN_IN,
 			});
 
-			//case where the request fails on Dto level
-			if (data.statusCode === 400) {
-				throw new Error(data.message[0]);
-			}
 			//case where the endpoint actually throws an exception
 			if (data.errorMessage) {
 				throw new Error(data.errorMessage);

@@ -73,12 +73,6 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 				endpoint: WORKSPACE_ENDPOINTS.BASE,
 			});
 
-			if (data.statusCode === 400) {
-				if (data.message.length) {
-					throw new Error(data.message[0]);
-				}
-			}
-
 			if (data.errorMessage) {
 				throw new Error(data.errorMessage);
 			}

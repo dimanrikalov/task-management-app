@@ -9,6 +9,8 @@ import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 
+export const defaultNewColumnName = 'new_column_name';
+
 export const useEditBoard = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
@@ -18,10 +20,18 @@ export const useEditBoard = () => {
 	const addColumn = async () => {
 		if (!boardData) return;
 		try {
+			const isColumnWithDefaultNamePresent = boardData?.columns.some(
+				(col) => col.name === defaultNewColumnName
+			);
+			if (isColumnWithDefaultNamePresent) {
+				throw new Error(
+					'Please name the previously created column first!'
+				);
+			}
 			const res = await request({
 				body: {
-					name: 'new_column',
 					boardId: boardData.id,
+					name: defaultNewColumnName,
 				},
 				accessToken,
 				method: METHODS.POST,
@@ -43,7 +53,7 @@ export const useEditBoard = () => {
 							tasks: [],
 							id: res.columnId,
 							boardId: prev.id,
-							name: 'new_column',
+							name: defaultNewColumnName,
 							position: prev.columns.length - 1,
 						},
 					],

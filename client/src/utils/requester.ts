@@ -93,5 +93,12 @@ export const request = async ({
 
 	const res = await fetch(endpoint, request);
 
-	return await res.json();
+	const data = await res.json();
+
+	//case where the request fails on Dto level
+	if (data.statusCode === 400) {
+		throw new Error(data.message[0]);
+	}
+
+	return data;
 };
