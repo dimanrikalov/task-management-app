@@ -9,6 +9,7 @@ import styles from './column.module.css';
 import { ITask, Task } from '../Task/Task';
 import { useEffect, useState } from 'react';
 import { MdDeleteOutline } from "react-icons/md";
+import { useEditBoard } from '@/hooks/useEditBoard';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
@@ -17,9 +18,9 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
-import { defaultNewColumnName, useEditBoard } from '@/hooks/useEditBoard';
 
 const defaultColumnNames = ['to do', 'doing', 'done'];
+const defaultNewColumnName = import.meta.env.VITE_DEFAULT_COLUMN_NAME as string;
 
 interface IColumnProps {
 	id: number;
@@ -247,17 +248,13 @@ export const Column = ({
 							</>
 						)}
 					</Droppable>
-					{
-						title !== defaultNewColumnName && (
-							<div className={styles.addTask}>
-								<IntroButton
-									reverse={true}
-									onClick={onClick}
-									message={'Add task'}
-								/>
-							</div>
-						)
-					}
+					<div className={styles.addTask}>
+						<IntroButton
+							reverse={true}
+							onClick={onClick}
+							message={'Add task'}
+						/>
+					</div>
 				</div>
 			)}
 		</Draggable>

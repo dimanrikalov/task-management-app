@@ -9,7 +9,7 @@ import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 
-export const defaultNewColumnName = 'new_column_name';
+const defaultNewColumnName = import.meta.env.VITE_DEFAULT_COLUMN_NAME as string;
 
 export const useEditBoard = () => {
 	const navigate = useNavigate();
@@ -28,6 +28,7 @@ export const useEditBoard = () => {
 					'Please name the previously created column first!'
 				);
 			}
+
 			const res = await request({
 				body: {
 					boardId: boardData.id,
