@@ -2,13 +2,9 @@ import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
 import { setUserData } from '@/app/userSlice';
 import { setErrorMessageAsync } from '@/app/errorSlice';
-import { resetTaskModalData } from '@/app/taskModalSlice';
-import { CreateTaskView } from '@/views/TaskView/Task.view';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { resetAllWithoutEditProfile } from '@/app/modalsSlice';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { EditProfileView } from '@/views/ProfileView/EditProfile.view';
-import { TaskModalContextProvider } from '@/contexts/taskModal.context';
 import { CreateBoardView } from '@/views/CreateBoardView/CreateBoard.view';
 import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
@@ -27,13 +23,6 @@ export const AuthGuard = () => {
 	const user = useAppSelector(state => state.user);
 	const [isLoading, setIsLoading] = useState(true);
 	const modalStates = useAppSelector(state => state.modals);
-	const taskModal = useAppSelector(state => state.taskModal);
-
-	//solves the board loading bug
-	useEffect(() => {
-		dispatch(resetTaskModalData());
-		dispatch(resetAllWithoutEditProfile());
-	}, [url]);
 
 	useEffect(() => {
 		const tokens = extractTokens();
@@ -127,11 +116,6 @@ export const AuthGuard = () => {
 
 	return (
 		<>
-			{taskModal.isModalOpen &&
-				<TaskModalContextProvider>
-					<CreateTaskView />
-				</TaskModalContextProvider>
-			}
 			{modalStates.showEditProfileModal && <EditProfileView />}
 			{modalStates.showCreateBoardModal && <CreateBoardView />}
 			{modalStates.showCreateWorkspaceModal && <CreateWorkspaceView />}

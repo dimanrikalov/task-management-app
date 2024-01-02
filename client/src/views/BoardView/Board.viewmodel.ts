@@ -48,6 +48,7 @@ interface IBoardViewModelState {
 	isInputModeOn: boolean;
 	boardNameInput: string;
 	workspaceUsers: IUser[];
+	isTaskModalOpen: boolean;
 	boardData: IBoardData | null;
 	isDeleteBoardModalOpen: boolean;
 	isEditBoardUsersModalOpen: boolean;
@@ -60,6 +61,7 @@ interface IBoardViewModelOperations {
 	toggleIsChatOpen(): void;
 	toggleIsInputModeOn(): void;
 	onDragEnd(result: any): void;
+	toggleIsTaskModalOpen(): void;
 	toggleIsDeleteBoardModalOpen(): void;
 	toggleIsEditBoardUsersModalOpen(): void;
 	addBoardColleague(colleague: IUser): void;
@@ -89,7 +91,14 @@ export const useBoardViewModel = (): ViewModelReturnType<
 	const { onDragEnd } = useOnDragEnd();
 	const { addColumn, deleteBoard } = useEditBoard();
 	const [isChatOpen, setIsChatOpen] = useState(false);
-	const { boardData, isLoading, workspaceUsers } = useBoardContext();
+
+	const {
+		boardData,
+		isLoading,
+		workspaceUsers,
+		isTaskModalOpen,
+		toggleIsTaskModalOpen,
+	} = useBoardContext();
 	const { allUsers, isLoading: isLoadingAllUsers } = useFetchAllUsers();
 	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 
@@ -113,6 +122,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			isInputModeOn,
 			boardNameInput,
 			workspaceUsers,
+			isTaskModalOpen,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,
 			isLoading: isLoading || isLoadingAllUsers,
@@ -127,6 +137,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			toggleIsInputModeOn,
 			removeBoardColleague,
 			handleBoardNameChange,
+			toggleIsTaskModalOpen,
 			handleBoardNameInputChange,
 			toggleIsDeleteBoardModalOpen,
 			toggleIsEditBoardUsersModalOpen,

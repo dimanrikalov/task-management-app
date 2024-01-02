@@ -1,8 +1,8 @@
 import { IStep } from './useStepsOperations';
 import { setErrorMessageAsync } from '@/app/errorSlice';
+import { useBoardContext } from '@/contexts/board.context';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
-import { setCallForRefresh, toggleIsModalOpen } from '@/app/taskModalSlice';
 import { IInputState, useTaskModalContext } from '@/contexts/taskModal.context';
 
 interface IUseTaskOperationArgs {
@@ -14,19 +14,17 @@ export const useTaskOperations = ({
 	steps,
 	inputValues,
 }: IUseTaskOperationArgs) => {
+	const {
+		callForRefresh,
+		selectedColumnId,
+		toggleIsTaskModalOpen,
+		selectedTask: taskData,
+	} = useBoardContext();
 	const dispatch = useAppDispatch();
 	const { assigneeId } = useTaskModalContext();
 	const { accessToken } = useAppSelector((state) => state.user);
-	const { selectedTask: taskData, selectedColumnId } = useAppSelector(
-		(state) => state.taskModal
-	);
-
 	const setErrorMessage = (message: string) => {
 		dispatch(setErrorMessageAsync(message));
-	};
-
-	const toggleIsCreateTaskModalOpen = () => {
-		dispatch(toggleIsModalOpen());
 	};
 
 	const createTask = async () => {
@@ -87,8 +85,8 @@ export const useTaskOperations = ({
 					throw new Error(imageUploadData.errorMessage);
 				}
 			}
-			toggleIsCreateTaskModalOpen();
-			dispatch(setCallForRefresh({ callForRefresh: true }));
+			toggleIsTaskModalOpen();
+			callForRefresh();
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);
@@ -157,8 +155,8 @@ export const useTaskOperations = ({
 					throw new Error(imageUploadData.errorMessage);
 				}
 			}
-			toggleIsCreateTaskModalOpen();
-			dispatch(setCallForRefresh({ callForRefresh: true }));
+			toggleIsTaskModalOpen();
+			callForRefresh();
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);
@@ -179,8 +177,8 @@ export const useTaskOperations = ({
 				throw new Error(res.errorMessage);
 			}
 
-			toggleIsCreateTaskModalOpen();
-			dispatch(setCallForRefresh({ callForRefresh: true }));
+			toggleIsTaskModalOpen();
+			callForRefresh();
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);
@@ -192,6 +190,6 @@ export const useTaskOperations = ({
 		createTask,
 		deleteTask,
 		setErrorMessage,
-		toggleIsCreateTaskModalOpen,
+		toggleIsTaskModalOpen,
 	};
 };

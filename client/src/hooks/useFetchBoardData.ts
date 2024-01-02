@@ -6,7 +6,6 @@ import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { IDetailedWorkspace } from '@/contexts/workspace.context';
 import { BOARD_ENDPOINTS, METHODS, request } from '@/utils/requester';
-import { setBoardUsers, setCallForRefresh } from '@/app/taskModalSlice';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 export interface IColumn {
@@ -33,10 +32,10 @@ export const useFetchBoardData = () => {
 	const { data: userData, accessToken } = useAppSelector(
 		(state) => state.user
 	) as { data: IUserData; accessToken: string };
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
-	const { callForRefresh } = useAppSelector((state) => state.taskModal);
+	const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
 
 	useEffect(() => {
 		const fetchBoardData = async () => {
@@ -89,14 +88,9 @@ export const useFetchBoardData = () => {
 					...newBoardData,
 					boardUsers: [...workspaceUsers, ...boardUsers],
 				});
-				dispatch(
-					setBoardUsers({
-						boardUsers: [...workspaceUsers, ...boardUsers],
-					})
-				);
 
 				setWorkspaceUsers(workspaceUsers);
-				dispatch(setCallForRefresh({ callForRefresh: false }));
+				setShouldRefresh(false);
 			} catch (err: any) {
 				console.log(err.message);
 				dispatch(setErrorMessageAsync(err.message));
@@ -104,14 +98,19 @@ export const useFetchBoardData = () => {
 			setIsLoading(false);
 		};
 
-		if (!callForRefresh) return;
+		if (!shouldRefresh) return;
 		fetchBoardData();
-	}, [callForRefresh]);
+	}, [shouldRefresh]);
+
+	const callForRefresh = () => {
+		setShouldRefresh(true);
+	};
 
 	return {
 		isLoading,
 		boardData,
 		setBoardData,
 		workspaceUsers,
+		callForRefresh,
 	};
 };

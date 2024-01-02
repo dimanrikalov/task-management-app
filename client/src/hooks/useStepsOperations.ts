@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useBoardContext } from '@/contexts/board.context';
 import { useTaskModalContext } from '@/contexts/taskModal.context';
 
 export interface IStep {
@@ -11,9 +12,10 @@ export interface IEditStep extends IStep {
 }
 
 export const useStepsOperations = () => {
-	const [steps, setSteps] = useState<IStep[]>([]);
+	const { selectedTask } = useBoardContext();
 	const [progress, setProgress] = useState<number>(0);
 	const { inputValues, setInputValues } = useTaskModalContext();
+	const [steps, setSteps] = useState<IStep[]>(selectedTask?.steps || []);
 
 	useEffect(() => {
 		const completedCount = steps.reduce(

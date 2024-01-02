@@ -4,8 +4,8 @@ import {
 	useStepsOperations,
 } from '@/hooks/useStepsOperations';
 import { useState, useEffect } from 'react';
-import { useAppSelector } from '@/app/hooks';
 import { ITask } from '@/components/Task/Task';
+import { useBoardContext } from '@/contexts/board.context';
 import { useTaskOperations } from '@/hooks/useTaskOperations';
 import { generateFileFromBase64 } from '@/utils/convertImages';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
@@ -14,18 +14,18 @@ import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { useTaskAssigneeOperations } from '@/hooks/useTaskAssigneeOperations';
 import { IInputState, useTaskModalContext } from '@/contexts/taskModal.context';
 
-interface ICreateTaskViewModelState {
+interface ICreateTaskOperationsState {
 	steps: IStep[];
 	matches: IUser[];
 	progress: number;
-	taskData: ITask | null;
+	selectedTask: ITask | null;
 	inputValues: IInputState;
 	assigneeId: number | null;
 	showConfirmButton: boolean;
 	taskImagePath: string | null;
 }
 
-interface ICreateTaskViewModelOperations {
+interface ICreateTaskOperations {
 	addStep(): void;
 	clearTaskImage(): void;
 	editTask(): Promise<void>;
@@ -34,7 +34,6 @@ interface ICreateTaskViewModelOperations {
 	toggleConfirmationBtn(): void;
 	loadTaskData(task: ITask): void;
 	selectAssignee(user: IUser): void;
-	toggleIsCreateTaskModalOpen(): void;
 	removeStep(description: string): void;
 	setErrorMessage(message: string): void;
 	toggleStatus(description: string): void;
@@ -46,9 +45,9 @@ interface ICreateTaskViewModelOperations {
 	): void;
 }
 
-export const useCreateTaskViewModel = (): ViewModelReturnType<
-	ICreateTaskViewModelState,
-	ICreateTaskViewModelOperations
+export const useCreateTaskOperations = (): ViewModelReturnType<
+	ICreateTaskOperationsState,
+	ICreateTaskOperations
 > => {
 	const {
 		matches,
@@ -59,24 +58,17 @@ export const useCreateTaskViewModel = (): ViewModelReturnType<
 	} = useTaskModalContext();
 	const { steps, setSteps, addStep, removeStep, progress, toggleStatus } =
 		useStepsOperations();
-	const {
-		editTask,
-		createTask,
-		deleteTask,
-		setErrorMessage,
-		toggleIsCreateTaskModalOpen,
-	} = useTaskOperations({ inputValues, steps });
 	const { selectAssignee } = useTaskAssigneeOperations();
+	const { workspaceUsers, selectedTask } = useBoardContext();
+	const { editTask, createTask, deleteTask, setErrorMessage } =
+		useTaskOperations({ inputValues, steps });
 	const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
-	const { boardUsers, selectedTask: taskData } = useAppSelector(
-		(state) => state.taskModal
-	);
 	const { taskImagePath, clearTaskImage, changeTaskImage, setTaskImagePath } =
 		useTaskImageOperations();
 
 	useEffect(() => {
-		if (!taskData) return;
-		loadTaskData(taskData);
+		if (!selectedTask) return;
+		loadTaskData(selectedTask);
 	}, []);
 
 	const toggleConfirmationBtn = () => {
@@ -108,8 +100,8 @@ export const useCreateTaskViewModel = (): ViewModelReturnType<
 			...prev,
 			image,
 			email:
-				boardUsers.find((user) => user.id === task.assigneeId)?.email ||
-				'',
+				workspaceUsers.find((user) => user.id === task.assigneeId)
+					?.email || '',
 		}));
 
 		// Set the sorted steps
@@ -127,10 +119,10 @@ export const useCreateTaskViewModel = (): ViewModelReturnType<
 		state: {
 			steps,
 			matches,
-			taskData,
 			progress,
 			assigneeId,
 			inputValues,
+			selectedTask,
 			taskImagePath,
 			showConfirmButton,
 		},
@@ -148,7 +140,6 @@ export const useCreateTaskViewModel = (): ViewModelReturnType<
 			changeTaskImage,
 			handleInputChange,
 			toggleConfirmationBtn,
-			toggleIsCreateTaskModalOpen,
 		},
 	};
 };

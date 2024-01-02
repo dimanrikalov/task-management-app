@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import styles from './task.module.css';
 import { FaCheck } from 'react-icons/fa';
 import { Draggable } from 'react-beautiful-dnd';
-import { IStep } from '@/views/TaskView/Task.viewmodel';
+import { IStep } from '@/hooks/useStepsOperations';
 
 enum PRIORITY {
 	'Low',
@@ -15,10 +15,17 @@ export interface ITask {
 	index: number;
 	steps: IStep[];
 	title: string;
+	effort: number;
 	progress: number;
 	position: number;
 	assigneeId: number;
+	image: File | null;
+	hoursSpent: number;
 	priority: PRIORITY;
+	description: string;
+	minutesSpent: number;
+	estimatedHours: number;
+	estimatedMinutes: number;
 	attachmentImgPath: string;
 }
 

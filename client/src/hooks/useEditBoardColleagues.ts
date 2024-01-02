@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { setBoardUsers } from '@/app/taskModalSlice';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
@@ -50,9 +49,6 @@ export const useEditBoardColleagues = () => {
 				boardUsers: [...prev.boardUsers, colleague],
 			};
 		});
-		dispatch(
-			setBoardUsers({ boardUsers: [...boardData.boardUsers, colleague] })
-		);
 	};
 
 	const removeBoardColleague = async (colleague: IUser) => {
@@ -68,15 +64,6 @@ export const useEditBoardColleagues = () => {
 				],
 			};
 		});
-		dispatch(
-			setBoardUsers({
-				boardUsers: [
-					...boardData.boardUsers.filter(
-						(col) => col.id !== colleague.id
-					),
-				],
-			})
-		);
 	};
 
 	return {

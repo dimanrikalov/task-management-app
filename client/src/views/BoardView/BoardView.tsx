@@ -12,8 +12,10 @@ import { useBoardViewModel } from './Board.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { TaskModalContextProvider } from '@/contexts/taskModal.context';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
+import { CreateTaskView } from '../../components/CreateTaskModal/CreateTaskModal';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 
@@ -30,6 +32,12 @@ export const BoardView = () => {
 
 	return (
 		<>
+			{
+				state.isTaskModalOpen &&
+				<TaskModalContextProvider>
+					<CreateTaskView />
+				</TaskModalContextProvider>
+			}
 			{
 				state.isEditBoardUsersModalOpen &&
 				(

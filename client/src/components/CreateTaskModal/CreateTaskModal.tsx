@@ -2,34 +2,39 @@ import classNames from 'classnames';
 import { IoAdd } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { FaXmark } from 'react-icons/fa6';
-import styles from './TaskView.module.css';
 import { FcAddImage } from 'react-icons/fc';
 import { Modal } from '@/components/Modal/Modal';
-import { useCreateTaskViewModel } from './Task.viewmodel';
+import styles from './createTaskModal.module.css';
+import { useBoardContext } from '@/contexts/board.context';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { ListContainer } from '@/components/ListContainer/ListContainer';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { useCreateTaskOperations } from '../../hooks/CreateTaskOperations';
 
 export const CreateTaskView = () => {
-	const { state, operations } = useCreateTaskViewModel();
+	const { selectedTask, toggleIsTaskModalOpen } = useBoardContext();
+	const { state, operations } = useCreateTaskOperations();
 
 	return (
 		<Modal>
 			<div className={styles.backgroundWrapper}>
 				<div className={styles.background}>
 					<div className={styles.header}>
-						<h1>Let's {state.taskData ? 'edit' : 'create'} a Task</h1>
+						<h1>Let's {selectedTask ? 'edit' : 'create'} a Task</h1>
+						{/* <h1>Let's {state.taskData ? 'edit' : 'create'} a Task</h1> */}
 						<RxCross2
 							className={styles.closeBtn}
-							onClick={operations.toggleIsCreateTaskModalOpen}
+							onClick={toggleIsTaskModalOpen}
+						// onClick={operations.toggleIsCreateTaskModalOpen}
 						/>
 					</div>
 
 					<div className={styles.body}>
 						<div className={styles.left}>
 							{
-								state.taskData ?
+								selectedTask ?
+									// state.taskData ?
 									<p>
 										It is only normal that a <span className={styles.bold}>task</span>
 										{' '} changes its properties throughout the lifecycle of a {' '}
@@ -47,7 +52,8 @@ export const CreateTaskView = () => {
 							}
 
 							<div className={styles.stepOne}>
-								<h2>{state.taskData ? 'Edit task name' : 'Name your task'}</h2>
+								<h2>{selectedTask ? 'Edit task name' : 'Name your task'}</h2>
+								{/* <h2>{state.taskData ? 'Edit task name' : 'Name your task'}</h2> */}
 								<IntroInput
 									name="title"
 									type="text"
@@ -58,7 +64,8 @@ export const CreateTaskView = () => {
 							</div>
 
 							<div className={styles.stepTwo}>
-								<h2>{state.taskData ? 'Edit description' : 'Add description'}</h2>
+								<h2>{selectedTask ? 'Edit description' : 'Add description'}</h2>
+								{/* <h2>{state.taskData ? 'Edit description' : 'Add description'}</h2> */}
 								<textarea
 									rows={10}
 									name="description"
@@ -119,8 +126,8 @@ export const CreateTaskView = () => {
 								<select
 									name='priority'
 									className={styles.select}
-									onChange={operations.handleInputChange}
 									value={state.inputValues.priority}
+									onChange={operations.handleInputChange}
 								>
 									<option value={'1'}>Low</option>
 									<option value={'2'}>Medium</option>
@@ -208,7 +215,8 @@ export const CreateTaskView = () => {
 						</div>
 						<div className={styles.right}>
 							<div className={styles.assigneeInput}>
-								<h2>{state.taskData ? 'Edit assignee ' : 'Choose assignee'}</h2>
+								<h2>{selectedTask ? 'Edit assignee ' : 'Choose assignee'}</h2>
+								{/* <h2>{state.taskData ? 'Edit assignee ' : 'Choose assignee'}</h2> */}
 								<EmailInput
 									isLoading={false}
 									matches={state.matches}
@@ -219,7 +227,8 @@ export const CreateTaskView = () => {
 							</div>
 							<div className={styles.stepContainer}>
 								<div className={styles.addSteps}>
-									<h2>{state.taskData ? 'Edit steps' : 'Add steps'}</h2>
+									<h2>{selectedTask ? 'Edit steps' : 'Add steps'}</h2>
+									{/* <h2>{state.taskData ? 'Edit steps' : 'Add steps'}</h2> */}
 									<div className={styles.stepInputDiv}>
 										<IntroInput
 											type="text"
@@ -254,12 +263,15 @@ export const CreateTaskView = () => {
 								Overall completion: {state.progress}%
 							</h3>
 							<IntroButton
-								onClick={state.taskData ? operations.editTask : operations.createTask}
-								message={state.taskData ? "Edit Task" : "Add Task"}
+								message={selectedTask ? "Edit Task" : "Add Task"}
+								onClick={selectedTask ? operations.editTask : operations.createTask}
+								// onClick={state.taskData ? operations.editTask : operations.createTask}
+								// message={state.taskData ? "Edit Task" : "Add Task"}
 								disabled={!!!state.inputValues.title || !state.assigneeId}
 							/>
 							{
-								state.taskData &&
+								selectedTask &&
+								// state.taskData &&
 								<>
 									{state.showConfirmButton ?
 										<button

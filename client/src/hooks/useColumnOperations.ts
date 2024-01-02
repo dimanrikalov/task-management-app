@@ -1,9 +1,3 @@
-import {
-	setSelectedTask,
-	toggleIsModalOpen,
-	clearTaskModalData,
-	setSelectedColumnId,
-} from '@/app/taskModalSlice';
 import { useEffect, useState } from 'react';
 import { useEditBoard } from './useEditBoard';
 import { ITask } from '@/components/Task/Task';
@@ -26,9 +20,16 @@ export const useColumnOperations = ({
 }: IUseColumnOperationsArgs) => {
 	const dispatch = useAppDispatch();
 	const { updateColumnData } = useEditBoard();
-	const { boardData, setBoardData } = useBoardContext();
+	const {
+		boardData,
+		setBoardData,
+		setSelectedTask,
+		setSelectedColumnId,
+		toggleIsTaskModalOpen,
+	} = useBoardContext();
 	const [inputValue, setInputValue] = useState<string>('');
 	const { accessToken } = useAppSelector((state) => state.user);
+
 	const [showDeleteBtn, setShowDeleteBtn] = useState<boolean>(false);
 	const [isInputModeOn, setIsInputModeOn] = useState(
 		title === defaultNewColumnName
@@ -141,15 +142,15 @@ export const useColumnOperations = ({
 	};
 
 	const taskClickHandler = (task: ITask) => {
-		dispatch(setSelectedTask({ selectedTask: task }));
-		dispatch(setSelectedColumnId({ selectedColumnId: -1 }));
-		dispatch(toggleIsModalOpen());
+		setSelectedTask(task);
+		toggleIsTaskModalOpen();
+		setSelectedColumnId(null);
 	};
 
 	const onClick = () => {
-		dispatch(clearTaskModalData());
-		dispatch(setSelectedColumnId({ selectedColumnId: id }));
-		dispatch(toggleIsModalOpen());
+		setSelectedTask(null);
+		setSelectedColumnId(id);
+		toggleIsTaskModalOpen();
 	};
 
 	return {

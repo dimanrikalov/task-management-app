@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { useAppSelector } from '@/app/hooks';
+import { useBoardContext } from '@/contexts/board.context';
 import { useTaskModalContext } from '@/contexts/taskModal.context';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 export const useTaskAssigneeOperations = () => {
-	//get matches
-	const { boardUsers } = useAppSelector((state) => state.taskModal);
+	const { workspaceUsers } = useBoardContext();
 	const { inputValues, setInputValues, matches, setMatches, setAssigneeId } =
 		useTaskModalContext();
 
@@ -23,7 +22,7 @@ export const useTaskAssigneeOperations = () => {
 		}
 		setAssigneeId(null);
 		setMatches(
-			boardUsers.filter((user) =>
+			workspaceUsers.filter((user) =>
 				user.email
 					.trim()
 					.toLowerCase()

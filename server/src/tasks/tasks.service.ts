@@ -192,6 +192,21 @@ export class TasksService {
     }
 
     async delete(body: DeleteTasksDto) {
+        const { boardData, columnData, taskData } = body;
+        const tasksCount = await this.prismaService.task.count({
+            where: {
+                columnId: columnData.id,
+            },
+        });
+
+        //move the task to last place
+        await this.move({
+            taskData,
+            boardData,
+            destinationColumnId: columnData.id,
+            destinationPosition: tasksCount - 1,
+        });
+
         //delete the steps
         await this.stepsService.deleteMany(body.taskData.id);
 
@@ -212,28 +227,6 @@ export class TasksService {
                 id: body.taskData.id,
             },
         });
-
-        //move all other tasks after the deleted task from the column with 1 position
-        const columnTasks = await this.prismaService.task.findMany({
-            where: {
-                columnId: body.columnData.id,
-            },
-        });
-
-        await Promise.all(
-            columnTasks
-                .filter((task) => task.position > body.taskData.position)
-                .map(async (task) => {
-                    await this.prismaService.task.update({
-                        where: {
-                            id: task.id,
-                        },
-                        data: {
-                            position: task.position - 1,
-                        },
-                    });
-                }),
-        );
     }
 
     async deleteMany(columnId: number) {
