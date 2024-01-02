@@ -20,7 +20,7 @@ export const useEditBoard = () => {
 		try {
 			const res = await request({
 				body: {
-					name: 'New column',
+					name: 'new_column',
 					boardId: boardData.id,
 				},
 				accessToken,
@@ -43,7 +43,7 @@ export const useEditBoard = () => {
 							tasks: [],
 							id: res.columnId,
 							boardId: prev.id,
-							name: 'New column',
+							name: 'new_column',
 							position: prev.columns.length - 1,
 						},
 					],

@@ -19,6 +19,8 @@ import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
 
+const defaultColumnName = 'new_column';
+
 interface IColumnProps {
 	id: number;
 	index: number;
@@ -38,20 +40,16 @@ export const Column = ({
 	const { setBoardData } = useBoardContext();
 	const { updateColumnData } = useEditBoard();
 	const [inputValue, setInputValue] = useState<string>('');
-	const [isInputModeOn, setIsInputModeOn] = useState(false);
 	const { accessToken } = useAppSelector((state) => state.user);
 	const [showDeleteBtn, setShowDeleteBtn] = useState<boolean>(false);
+	const [isInputModeOn, setIsInputModeOn] = useState(title === defaultColumnName);
 
 	useEffect(() => {
-		if (!isInputModeOn) return;
-
+		if (!isInputModeOn ||
+			title === defaultColumnName
+		) return;
 		setInputValue(title);
 	}, [isInputModeOn]);
-
-	useEffect(() => {
-		if (showDeleteBtn) return;
-		setIsInputModeOn(false);
-	}, [showDeleteBtn]);
 
 	const toggleSetShowDeleteBtn = () => {
 		setShowDeleteBtn(prev => !prev);
@@ -62,31 +60,40 @@ export const Column = ({
 	}
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInputValue(e.target.value);
+		setInputValue(e.target.value.trim());
 	}
 
 	const handleColumnNameChange = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		if (inputValue === title) {
+		if (inputValue === '' && title === defaultColumnName) {
+			dispatch(setErrorMessageAsync('Column name is required!'));
+			return;
+		}
+		if (inputValue === title && title === defaultColumnName) {
+			dispatch(setErrorMessageAsync('Please use another name!'));
+			return;
+		}
+		if (inputValue === '' || inputValue === title) {
 			toggleIsInputModeOn();
 			return;
 		};
 
 		const nameBeforeChange = title;
+
 		try {
 			const res = await request({
 				accessToken,
 				method: METHODS.PUT,
+				body: { newName: inputValue.trim() },
 				endpoint: COLUMN_ENDPOINTS.RENAME(id),
-				body: {
-					newName: inputValue.trim()
-				}
 			})
 
 			if (res.errorMessage) {
 				throw new Error(res.errorMessage);
 			}
+
+			console.log('here');
 
 			updateColumnData(id, inputValue);
 		} catch (err: any) {
