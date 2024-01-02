@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { resetAllWithoutEditProfile } from '@/app/modalsSlice';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { EditProfileView } from '@/views/ProfileView/EditProfile.view';
+import { TaskModalContextProvider } from '@/contexts/taskModal.context';
 import { CreateBoardView } from '@/views/CreateBoardView/CreateBoard.view';
 import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
@@ -126,7 +127,11 @@ export const AuthGuard = () => {
 
 	return (
 		<>
-			{taskModal.isModalOpen && <CreateTaskView />}
+			{taskModal.isModalOpen &&
+				<TaskModalContextProvider>
+					<CreateTaskView />
+				</TaskModalContextProvider>
+			}
 			{modalStates.showEditProfileModal && <EditProfileView />}
 			{modalStates.showCreateBoardModal && <CreateBoardView />}
 			{modalStates.showCreateWorkspaceModal && <CreateWorkspaceView />}

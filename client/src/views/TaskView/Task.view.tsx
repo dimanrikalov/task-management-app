@@ -14,7 +14,6 @@ import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 export const CreateTaskView = () => {
 	const { state, operations } = useCreateTaskViewModel();
 
-
 	return (
 		<Modal>
 			<div className={styles.backgroundWrapper}>
