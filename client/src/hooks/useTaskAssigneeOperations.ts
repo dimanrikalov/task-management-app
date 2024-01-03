@@ -4,7 +4,8 @@ import { useTaskModalContext } from '@/contexts/taskModal.context';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 export const useTaskAssigneeOperations = () => {
-	const { workspaceUsers } = useBoardContext();
+	const { boardData } = useBoardContext();
+	const boardUsers = boardData?.boardUsers || [];
 	const { inputValues, setInputValues, matches, setMatches, setAssigneeId } =
 		useTaskModalContext();
 
@@ -22,7 +23,7 @@ export const useTaskAssigneeOperations = () => {
 		}
 		setAssigneeId(null);
 		setMatches(
-			workspaceUsers.filter((user) =>
+			boardUsers.filter((user) =>
 				user.email
 					.trim()
 					.toLowerCase()

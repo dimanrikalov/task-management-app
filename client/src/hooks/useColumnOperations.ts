@@ -126,13 +126,29 @@ export const useColumnOperations = ({
 				throw new Error(res.errorMessage);
 			}
 
-			//filter out the column inside the local state to reflect successful deletion
+			//local state change
 			setBoardData((prev) => {
 				if (!prev) return null;
 
+				const columnToDeleteIndex = prev.columns.findIndex(
+					(col) => col.id === id
+				);
+
+				const updatedColumns = prev.columns.map((col, i) => {
+					if (i > columnToDeleteIndex) {
+						return {
+							...col,
+							position: col.position - 1,
+						};
+					}
+
+					return col;
+				});
+				updatedColumns.splice(columnToDeleteIndex, 1);
+
 				return {
 					...prev,
-					columns: prev.columns.filter((col) => col.id !== id),
+					columns: updatedColumns,
 				};
 			});
 		} catch (err: any) {

@@ -30,9 +30,9 @@ export class TasksController {
     @Post()
     async create(@Res() res: Response, @Body() body: CreateTaskDto) {
         try {
-            const taskId = await this.tasksService.create(body);
+            const task = await this.tasksService.create(body);
             return res.status(200).json({
-                taskId,
+                task,
                 message: 'Task created successfully!',
             });
         } catch (err: any) {
@@ -61,8 +61,9 @@ export class TasksController {
     @Put('/:taskId')
     async edit(@Res() res: Response, @Body() body: ModifyTaskDto) {
         try {
-            await this.tasksService.edit(body);
+            const task = await this.tasksService.edit(body);
             return res.status(200).json({
+                task,
                 message: 'Task modified successfully!',
             });
         } catch (err: any) {

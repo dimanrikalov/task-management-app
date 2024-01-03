@@ -46,18 +46,20 @@ export const useEditBoard = () => {
 			setBoardData((prev) => {
 				if (!prev) return null;
 
+				const columns = [
+					...prev.columns,
+					{
+						tasks: [],
+						id: res.columnId,
+						boardId: prev.id,
+						name: defaultNewColumnName,
+						position: prev.columns.length,
+					},
+				];
+
 				return {
 					...prev,
-					columns: [
-						...prev.columns,
-						{
-							tasks: [],
-							id: res.columnId,
-							boardId: prev.id,
-							name: defaultNewColumnName,
-							position: prev.columns.length - 1,
-						},
-					],
+					columns,
 				};
 			});
 		} catch (err: any) {
@@ -78,10 +80,7 @@ export const useEditBoard = () => {
 				return col;
 			});
 
-			return {
-				...prev,
-				columns: [...columns],
-			};
+			return { ...prev, columns: [...columns] };
 		});
 	};
 

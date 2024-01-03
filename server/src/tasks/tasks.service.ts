@@ -165,7 +165,7 @@ export class TasksService {
             affectedBoardId: body.boardData.id,
         });
 
-        return task.id;
+        return task;
     }
 
     async uploadTaskImg(body: UploadTaskImgDto) {
@@ -174,7 +174,6 @@ export class TasksService {
             try {
                 // Delete the existing file
                 await unlink(body.task.attachmentImgPath);
-                console.log('File deleted successfully');
             } catch (error) {
                 console.error('Error deleting file:', error);
             }
@@ -215,7 +214,6 @@ export class TasksService {
             try {
                 // Delete the existing file
                 await unlink(body.taskData.attachmentImgPath);
-                console.log('File deleted successfully');
             } catch (error) {
                 console.error('Error deleting file:', error);
             }
@@ -327,7 +325,7 @@ export class TasksService {
         }
 
         //update the task
-        await this.prismaService.task.update({
+        const task = await this.prismaService.task.update({
             where: {
                 id: body.taskData.id,
             },
@@ -337,6 +335,8 @@ export class TasksService {
                 attachmentImgPath: null,
             },
         });
+
+        return task;
     }
 
     async move(body: MoveTaskDto) {

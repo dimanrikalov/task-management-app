@@ -1,6 +1,7 @@
 import { IStep } from './useStepsOperations';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
+import { convertImageToBase64 } from '@/utils/convertImages';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
 import { IInputState, useTaskModalContext } from '@/contexts/taskModal.context';
@@ -15,7 +16,7 @@ export const useTaskOperations = ({
 	inputValues,
 }: IUseTaskOperationArgs) => {
 	const {
-		callForRefresh,
+		setBoardData,
 		selectedColumnId,
 		toggleIsTaskModalOpen,
 		selectedTask: taskData,
@@ -69,6 +70,11 @@ export const useTaskOperations = ({
 				endpoint: TASK_ENDPOINTS.BASE,
 			});
 
+			//check for handled errors
+			if (data.errorMessage) {
+				throw new Error(data.errorMessage);
+			}
+
 			//set task image optionally
 			if (inputValues.image) {
 				const payload = new FormData();
@@ -78,15 +84,60 @@ export const useTaskOperations = ({
 					accessToken,
 					body: payload,
 					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.taskId),
+					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.task.id),
 				});
 
 				if (imageUploadData.errorMessage) {
 					throw new Error(imageUploadData.errorMessage);
 				}
+
+				// Convert the image to base64
+				const base64String = await convertImageToBase64(
+					inputValues.image
+				);
+
+				setBoardData((prev) => {
+					if (!prev) return null;
+					const columnToUpdate = {
+						...prev.columns.find(
+							(col) => col.id === selectedColumnId
+						)!,
+					};
+
+					const columns = [...prev.columns];
+					columnToUpdate.tasks.push({
+						...data.task,
+						attachmentImgPath: base64String,
+					});
+
+					columns.splice(columnToUpdate.position, 1, columnToUpdate);
+
+					return {
+						...prev,
+						columns,
+					};
+				});
+			} else {
+				setBoardData((prev) => {
+					if (!prev) return null;
+					const columnToUpdate = {
+						...prev.columns.find(
+							(col) => col.id === selectedColumnId
+						)!,
+					};
+
+					columnToUpdate.tasks.push(data.task);
+					const columns = [...prev.columns];
+
+					columns.splice(columnToUpdate.position, 1, columnToUpdate);
+
+					return {
+						...prev,
+						columns,
+					};
+				});
 			}
 			toggleIsTaskModalOpen();
-			callForRefresh();
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);
@@ -154,9 +205,49 @@ export const useTaskOperations = ({
 				if (imageUploadData.errorMessage) {
 					throw new Error(imageUploadData.errorMessage);
 				}
+
+				const base64String = await convertImageToBase64(
+					inputValues.image
+				);
+
+				setBoardData((prev) => {
+					if (!prev) return null;
+
+					const columns = prev.columns.map((col) => {
+						if (col.tasks.some((task) => task.id === taskData.id)) {
+							const updatedTasks = col.tasks.map((task) =>
+								task.id === taskData.id
+									? {
+											...res.task,
+											attachmentImgPath: base64String,
+									  }
+									: task
+							);
+							return { ...col, tasks: updatedTasks };
+						}
+						return col;
+					});
+
+					return { ...prev, columns };
+				});
+			} else {
+				setBoardData((prev) => {
+					if (!prev) return null;
+
+					const columns = prev.columns.map((col) => {
+						if (col.tasks.some((task) => task.id === taskData.id)) {
+							const updatedTasks = col.tasks.map((task) =>
+								task.id === taskData.id ? { ...res.task } : task
+							);
+							return { ...col, tasks: updatedTasks };
+						}
+						return col;
+					});
+
+					return { ...prev, columns };
+				});
 			}
 			toggleIsTaskModalOpen();
-			callForRefresh();
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);
@@ -177,8 +268,26 @@ export const useTaskOperations = ({
 				throw new Error(res.errorMessage);
 			}
 
+			setBoardData((prev) => {
+				if (!prev) return null;
+
+				const columns = prev.columns.map((col) => {
+					if (col.tasks.some((task) => task.id === taskData.id)) {
+						const updatedTasks = col.tasks.filter(
+							(task) => task.id !== taskData.id
+						);
+						return { ...col, tasks: updatedTasks };
+					}
+					return col;
+				});
+
+				return {
+					...prev,
+					columns,
+				};
+			});
+
 			toggleIsTaskModalOpen();
-			callForRefresh();
 		} catch (err: any) {
 			console.log(err.message);
 			setErrorMessage(err.message);

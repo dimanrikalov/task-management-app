@@ -33,9 +33,9 @@ export const useFetchBoardData = () => {
 		(state) => state.user
 	) as { data: IUserData; accessToken: string };
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
-	const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
 
 	useEffect(() => {
 		const fetchBoardData = async () => {

@@ -15,9 +15,9 @@ import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { TaskModalContextProvider } from '@/contexts/taskModal.context';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
-import { CreateTaskView } from '../../components/CreateTaskModal/CreateTaskModal';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
+import { TaskOperationsModal } from '../../components/TaskOperationsModal/TaskOperationsModal';
 
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
@@ -35,7 +35,7 @@ export const BoardView = () => {
 			{
 				state.isTaskModalOpen &&
 				<TaskModalContextProvider>
-					<CreateTaskView />
+					<TaskOperationsModal />
 				</TaskModalContextProvider>
 			}
 			{
@@ -172,16 +172,21 @@ export const BoardView = () => {
 									>
 
 										{
-											state.boardData?.columns.map((column, index) =>
-												<Column
-													index={index}
-													id={column.id}
-													key={column.id}
-													title={column.name}
-													tasks={column.tasks}
-													users={state.allUsers}
-												/>
-											)
+											state.boardData?.columns
+												.sort(
+													(col1, col2) =>
+														col1.position - col2.position
+												)
+												.map((column, index) =>
+													<Column
+														index={index}
+														id={column.id}
+														key={column.id}
+														title={column.name}
+														tasks={column.tasks}
+														users={state.allUsers}
+													/>
+												)
 										}
 
 										{provider.placeholder}

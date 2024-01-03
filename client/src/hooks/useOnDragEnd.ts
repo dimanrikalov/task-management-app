@@ -50,30 +50,44 @@ export const useOnDragEnd = () => {
 			if (type === 'column') {
 				//make optimistic update
 
-				const selectedColumnIndex = boardData.columns.findIndex(
+				const selectedColumn = boardData.columns.find(
 					(col) => col.id === Number(draggableId)
-				);
+				)!;
 
-				const updatedColumns = [...boardData.columns];
-				const [selectedColumn] = updatedColumns.splice(
-					selectedColumnIndex,
-					1
-				);
-				updatedColumns.splice(destination.index, 0, selectedColumn);
+				const updatedColumns = boardData.columns.map((col) => {
+					if (col.id === selectedColumn.id) {
+						return { ...col, position: destination.index };
+					}
+
+					if (destination.index > selectedColumn.position) {
+						if (
+							col.position > selectedColumn.position &&
+							col.position <= destination.index
+						) {
+							return { ...col, position: col.position - 1 };
+						}
+					} else {
+						if (
+							col.position >= destination.index &&
+							col.position < selectedColumn.position
+						) {
+							return { ...col, position: col.position + 1 };
+						}
+					}
+
+					return col;
+				});
 
 				setBoardData((prev) => {
 					if (!prev) {
 						return null;
 					}
 
-					return {
-						...prev,
-						columns: updatedColumns,
-					};
+					return { ...prev, columns: updatedColumns };
 				});
 
 				//make request
-				await request({
+				const res = await request({
 					accessToken,
 					method: METHODS.PUT,
 					endpoint: COLUMN_ENDPOINTS.MOVE,
@@ -82,6 +96,10 @@ export const useOnDragEnd = () => {
 						destinationPosition: destination.index,
 					},
 				});
+
+				if (res.errorMessage) {
+					throw new Error(res.errorMessage);
+				}
 			} else {
 				//make optimistic update
 
@@ -112,26 +130,17 @@ export const useOnDragEnd = () => {
 
 						const updatedColumns = prev.columns.map((col) => {
 							if (col.id === Number(sourceDroppableId)) {
-								return {
-									...col,
-									tasks: srcColumnTasks,
-								};
+								return { ...col, tasks: srcColumnTasks };
 							}
 
 							if (col.id === Number(destinationDroppableId)) {
-								return {
-									...col,
-									tasks: destColumnTasks,
-								};
+								return { ...col, tasks: destColumnTasks };
 							}
 
 							return col;
 						});
 
-						return {
-							...prev,
-							columns: updatedColumns,
-						};
+						return { ...prev, columns: updatedColumns };
 					});
 				} else {
 					//case where task is changing only its position in the same column
@@ -161,10 +170,7 @@ export const useOnDragEnd = () => {
 							return col;
 						});
 
-						return {
-							...prev,
-							columns: updatedColumns,
-						};
+						return { ...prev, columns: updatedColumns };
 					});
 				}
 
@@ -185,7 +191,7 @@ export const useOnDragEnd = () => {
 				}
 			}
 		} catch (err: any) {
-			console.log(err.messsage);
+			console.log(err.message);
 			dispatch(setErrorMessageAsync(err.message));
 			setBoardData(startingBoardState);
 		}

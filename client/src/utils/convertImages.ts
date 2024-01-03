@@ -18,3 +18,29 @@ export function generateFileFromBase64(
 	const blob = base64ToBlob(base64String, contentType);
 	return new File([blob], fileName, { type: contentType });
 }
+
+export async function convertImageToBase64(image: File): Promise<string> {
+	return new Promise<string>((resolve, reject) => {
+		const reader = new FileReader();
+
+		reader.onload = (e) => {
+			const arrayBuffer = e.target?.result as ArrayBuffer;
+
+			// Convert ArrayBuffer to binary string
+			const binaryString = Array.from(new Uint8Array(arrayBuffer))
+				.map((byte) => String.fromCharCode(byte))
+				.join('');
+
+			// Convert binary string to base64
+			const base64String = btoa(binaryString);
+
+			resolve(base64String);
+		};
+
+		reader.onerror = (error) => {
+			reject(error);
+		};
+
+		reader.readAsArrayBuffer(image);
+	});
+}

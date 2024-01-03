@@ -49,12 +49,13 @@ export const TaskModalContextProvider:
             estimatedMinutes: '',
         });
 
-        const { workspaceUsers } = useBoardContext();
-        const [matches, setMatches] = useState<IUser[]>(workspaceUsers);
+        const { boardData } = useBoardContext();
+        const boardUsers = boardData?.boardUsers || [];
+        const [matches, setMatches] = useState<IUser[]>([]);
 
         useEffect(() => {
             if (!selectedTask) return;
-            const email = workspaceUsers.
+            const email = boardUsers.
                 find(user => user.id === selectedTask.assigneeId)?.email || ''
             const image = selectedTask.attachmentImgPath ?
                 generateFileFromBase64(selectedTask.attachmentImgPath,

@@ -4,7 +4,7 @@ import { RxCross2 } from 'react-icons/rx';
 import { FaXmark } from 'react-icons/fa6';
 import { FcAddImage } from 'react-icons/fc';
 import { Modal } from '@/components/Modal/Modal';
-import styles from './createTaskModal.module.css';
+import styles from './taskOperationsModal.module.css';
 import { useBoardContext } from '@/contexts/board.context';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
@@ -12,9 +12,9 @@ import { ListContainer } from '@/components/ListContainer/ListContainer';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { useCreateTaskOperations } from '../../hooks/CreateTaskOperations';
 
-export const CreateTaskView = () => {
-	const { selectedTask, toggleIsTaskModalOpen } = useBoardContext();
+export const TaskOperationsModal = () => {
 	const { state, operations } = useCreateTaskOperations();
+	const { selectedTask, toggleIsTaskModalOpen } = useBoardContext();
 
 	return (
 		<Modal>
@@ -22,11 +22,9 @@ export const CreateTaskView = () => {
 				<div className={styles.background}>
 					<div className={styles.header}>
 						<h1>Let's {selectedTask ? 'edit' : 'create'} a Task</h1>
-						{/* <h1>Let's {state.taskData ? 'edit' : 'create'} a Task</h1> */}
 						<RxCross2
 							className={styles.closeBtn}
 							onClick={toggleIsTaskModalOpen}
-						// onClick={operations.toggleIsCreateTaskModalOpen}
 						/>
 					</div>
 
@@ -34,7 +32,6 @@ export const CreateTaskView = () => {
 						<div className={styles.left}>
 							{
 								selectedTask ?
-									// state.taskData ?
 									<p>
 										It is only normal that a <span className={styles.bold}>task</span>
 										{' '} changes its properties throughout the lifecycle of a {' '}
@@ -53,7 +50,6 @@ export const CreateTaskView = () => {
 
 							<div className={styles.stepOne}>
 								<h2>{selectedTask ? 'Edit task name' : 'Name your task'}</h2>
-								{/* <h2>{state.taskData ? 'Edit task name' : 'Name your task'}</h2> */}
 								<IntroInput
 									name="title"
 									type="text"
@@ -65,7 +61,6 @@ export const CreateTaskView = () => {
 
 							<div className={styles.stepTwo}>
 								<h2>{selectedTask ? 'Edit description' : 'Add description'}</h2>
-								{/* <h2>{state.taskData ? 'Edit description' : 'Add description'}</h2> */}
 								<textarea
 									rows={10}
 									name="description"
@@ -216,7 +211,6 @@ export const CreateTaskView = () => {
 						<div className={styles.right}>
 							<div className={styles.assigneeInput}>
 								<h2>{selectedTask ? 'Edit assignee ' : 'Choose assignee'}</h2>
-								{/* <h2>{state.taskData ? 'Edit assignee ' : 'Choose assignee'}</h2> */}
 								<EmailInput
 									isLoading={false}
 									matches={state.matches}
@@ -228,7 +222,6 @@ export const CreateTaskView = () => {
 							<div className={styles.stepContainer}>
 								<div className={styles.addSteps}>
 									<h2>{selectedTask ? 'Edit steps' : 'Add steps'}</h2>
-									{/* <h2>{state.taskData ? 'Edit steps' : 'Add steps'}</h2> */}
 									<div className={styles.stepInputDiv}>
 										<IntroInput
 											type="text"
@@ -264,14 +257,11 @@ export const CreateTaskView = () => {
 							</h3>
 							<IntroButton
 								message={selectedTask ? "Edit Task" : "Add Task"}
-								onClick={selectedTask ? operations.editTask : operations.createTask}
-								// onClick={state.taskData ? operations.editTask : operations.createTask}
-								// message={state.taskData ? "Edit Task" : "Add Task"}
 								disabled={!!!state.inputValues.title || !state.assigneeId}
+								onClick={selectedTask ? operations.editTask : operations.createTask}
 							/>
 							{
 								selectedTask &&
-								// state.taskData &&
 								<>
 									{state.showConfirmButton ?
 										<button
