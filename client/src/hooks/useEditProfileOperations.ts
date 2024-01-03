@@ -8,7 +8,6 @@ import { toggleEditProfileModal } from '@/app/modalsSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { setNotificationMessageAsync } from '@/app/notificationSlice';
-import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
 
@@ -26,27 +25,7 @@ interface IInputValues {
 	profileImg: File | null;
 }
 
-interface IEditProfileViewModelState {
-	userData: IUserData;
-	inputValues: IInputValues;
-	isDeletionModalOpen: boolean;
-	profileImgPath: string | null;
-}
-
-interface IEditProfileViewModelOperations {
-	deleteUser(): void;
-	clearProfileImg(): void;
-	toggleIsDeletionModalOpen(): void;
-	toggleIsEditProfileModalOpen(): void;
-	updateUserData(e: React.FormEvent): void;
-	inputChangeHandler(e: React.ChangeEvent<HTMLInputElement>): void;
-	changeProfileImage(e: React.ChangeEvent<HTMLInputElement>): void;
-}
-
-export const useProfileViewModel = (): ViewModelReturnType<
-	IEditProfileViewModelState,
-	IEditProfileViewModelOperations
-> => {
+export const useEditProfileModal = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
@@ -200,20 +179,17 @@ export const useProfileViewModel = (): ViewModelReturnType<
 	};
 
 	return {
-		state: {
-			userData,
-			inputValues,
-			profileImgPath,
-			isDeletionModalOpen,
-		},
-		operations: {
-			deleteUser,
-			updateUserData,
-			clearProfileImg,
-			inputChangeHandler,
-			changeProfileImage,
-			toggleIsDeletionModalOpen,
-			toggleIsEditProfileModalOpen,
-		},
+		userData,
+		inputValues,
+		profileImgPath,
+		isDeletionModalOpen,
+
+		deleteUser,
+		updateUserData,
+		clearProfileImg,
+		inputChangeHandler,
+		changeProfileImage,
+		toggleIsDeletionModalOpen,
+		toggleIsEditProfileModalOpen,
 	};
 };

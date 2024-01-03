@@ -100,11 +100,11 @@
 }
 
 .imgOperationBtn {
+	padding: 3px;
 	font-size: 32px;
-	transition: 200ms ease-in-out;
 	cursor: pointer;
 	border-radius: 9px;
-	padding: 3px;
+	transition: 200ms ease-in-out;
 }
 
 .submitBtn {

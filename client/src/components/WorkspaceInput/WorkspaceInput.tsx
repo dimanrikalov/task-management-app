@@ -1,6 +1,6 @@
 import styles from './workspaceInput.module.css';
+import { IWorkspace } from '@/hooks/useCreateBoardModal';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
-import { IWorkspace } from '@/views/CreateBoardView/CreateBoard.viewmodel';
 
 interface IWorkspaceInputProps {
     value: string;
@@ -20,7 +20,10 @@ export const WorkspaceInput = ({
     accessibleWorkspaces
 }: IWorkspaceInputProps) => {
     const matches = accessibleWorkspaces
-        .filter(workspace => workspace.name.toLowerCase().trim().includes(value.toLowerCase().trim()));
+        .filter(workspace =>
+            workspace.name.toLowerCase()
+                .trim()
+                .includes(value.toLowerCase().trim()));
 
     const valueIsValidWorkspaceName = matches.find(workspace => workspace.name === value);
 

@@ -6,28 +6,10 @@ import { useAppSelector } from '@/app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { toggleCreateWorkspaceModal } from '@/app/modalsSlice';
-import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
 
-interface ICreateWorkspaceState {
-	userData: IUser;
-	inputValue: string;
-	colleagues: IUser[];
-}
-
-interface ICreateWorkspaceOperations {
-	toggleIsCreateWorkspaceModalOpen(): void;
-	addToColleaguesToAdd(colleague: IUser): void;
-	removeFromColleaguesToAdd(colleague: IUser): void;
-	createWorkspace(e: React.FormEvent<HTMLFormElement>): void;
-	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
-}
-
-export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
-	ICreateWorkspaceState,
-	ICreateWorkspaceOperations
-> => {
+export const useCreateWorkspaceModal = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [inputValue, setInputValue] = useState('');
@@ -77,6 +59,7 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 				throw new Error(data.errorMessage);
 			}
 
+			dispatch(toggleCreateWorkspaceModal());
 			navigate(ROUTES.WORKSPACE(data.workspaceId));
 		} catch (err: any) {
 			console.log(err.message);
@@ -99,17 +82,13 @@ export const useCreateWorkspaceViewModel = (): ViewModelReturnType<
 	};
 
 	return {
-		state: {
-			userData,
-			inputValue,
-			colleagues,
-		},
-		operations: {
-			createWorkspace,
-			handleInputChange,
-			addToColleaguesToAdd,
-			removeFromColleaguesToAdd,
-			toggleIsCreateWorkspaceModalOpen,
-		},
+		userData,
+		inputValue,
+		colleagues,
+		createWorkspace,
+		handleInputChange,
+		addToColleaguesToAdd,
+		removeFromColleaguesToAdd,
+		toggleIsCreateWorkspaceModalOpen,
 	};
 };

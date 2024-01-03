@@ -12,7 +12,6 @@ import { setErrorMessageAsync } from '@/app/errorSlice';
 import { toggleCreateBoardModal } from '@/app/modalsSlice';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { IDetailedWorkspace } from '@/contexts/workspace.context';
-import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 export enum INPUT_STATES_KEYS {
@@ -35,28 +34,7 @@ export interface IDetailedBoard {
 	workspaceId: number;
 }
 
-interface ICreateBoardViewModelState {
-	boardColleagues: IUser[];
-	inputValues: IInputStates;
-	workspacesData: IDetailedWorkspace[];
-	isWorkspaceNameInputDisabled: boolean;
-	selectedWorkspace: IDetailedWorkspace | null;
-}
-
-interface ICreateBoardViewModelOperations {
-	toggleIsCreateBoardModalOpen(): void;
-	addBoardColleague(colleague: IUser): void;
-	removeBoardColleague(colleague: IUser): void;
-	selectWorkspace(workspace: IDetailedWorkspace): void;
-	createBoard(e: React.FormEvent<HTMLFormElement>): void;
-	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
-	setInputValues: React.Dispatch<React.SetStateAction<IInputStates>>;
-}
-
-export const useCreateBoardViewModel = (): ViewModelReturnType<
-	ICreateBoardViewModelState,
-	ICreateBoardViewModelOperations
-> => {
+export const useCreateBoardModal = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const { workspaceName } = useAppSelector((state) => state.inputValues);
@@ -208,6 +186,7 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 				throw new Error(data.errorMessage);
 			}
 
+			dispatch(toggleCreateBoardModal());
 			navigate(ROUTES.BOARD(data.boardId));
 		} catch (err: any) {
 			console.log(err.message);
@@ -234,21 +213,16 @@ export const useCreateBoardViewModel = (): ViewModelReturnType<
 	};
 
 	return {
-		state: {
-			inputValues,
-			workspacesData,
-			boardColleagues,
-			selectedWorkspace,
-			isWorkspaceNameInputDisabled,
-		},
-		operations: {
-			createBoard,
-			setInputValues,
-			selectWorkspace,
-			handleInputChange,
-			addBoardColleague,
-			removeBoardColleague,
-			toggleIsCreateBoardModalOpen,
-		},
+		inputValues,
+		createBoard,
+		workspacesData,
+		boardColleagues,
+		selectWorkspace,
+		handleInputChange,
+		selectedWorkspace,
+		addBoardColleague,
+		removeBoardColleague,
+		isWorkspaceNameInputDisabled,
+		toggleIsCreateBoardModalOpen,
 	};
 };

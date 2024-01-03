@@ -1,13 +1,12 @@
 import {
 	ISearchInputs,
 	ENTRIES_TYPES,
-	IHomeBoardEntry,
-	IHomeWorkspaceEntry,
 } from '@/views/HomeView/Home.viewmodel';
 import styles from './homeDashboard.module.css';
 import { HomeList } from '../HomeList/HomeList';
 import { HomeStats } from '../HomeStats/HomeStats';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { IHomeBoardEntry, IHomeWorkspaceEntry } from '@/hooks/useFetchHomeLists';
 
 interface IHomeGridStatsProps {
 	isLoading: boolean;

@@ -9,9 +9,9 @@ import { useState, useEffect } from 'react';
 import { useAppSelector } from '@/app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useEditWorkspace } from '@/hooks/useEditWorkspace';
+import { IDetailedBoard } from '../../hooks/useCreateBoardModal';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
-import { IDetailedBoard } from '../CreateBoardView/CreateBoard.viewmodel';
 import { useEditWorkspaceColleagues } from '@/hooks/useEditWorkspaceColleagues';
 
 export enum MODAL_STATES_KEYS {

@@ -140,13 +140,7 @@ export class BoardsService {
                                 {
                                     User_Workspace: {
                                         some: {
-                                            AND: [
-                                                {
-                                                    workspaceId:
-                                                        board.Workspace.id,
-                                                },
-                                                { userId: body.userData.id },
-                                            ],
+                                            workspaceId: board.Workspace.id,
                                         },
                                     },
                                 },

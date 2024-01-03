@@ -3,27 +3,39 @@ import { RxCross2 } from 'react-icons/rx';
 import styles from './editProfile.module.css';
 import { Modal } from '@/components/Modal/Modal';
 import { FaCheck, FaXmark } from 'react-icons/fa6';
-import { useProfileViewModel } from './EditProfile.viewmodel';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { useEditProfileModal } from '../../hooks/useEditProfileOperations';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 
-export const EditProfileView = () => {
-	const { state, operations } = useProfileViewModel();
+export const EditProfileModal = () => {
+	const {
+		userData,
+		deleteUser,
+		inputValues,
+		updateUserData,
+		profileImgPath,
+		clearProfileImg,
+		inputChangeHandler,
+		changeProfileImage,
+		isDeletionModalOpen,
+		toggleIsDeletionModalOpen,
+		toggleIsEditProfileModalOpen,
+	} = useEditProfileModal();
 
 	return (
 		<Modal>
-			{state.isDeletionModalOpen && (
+			{isDeletionModalOpen && (
 				<Modal>
 					<div className={styles.modalBackground}>
 						<RxCross2
 							className={styles.closeBtn}
-							onClick={operations.toggleIsDeletionModalOpen}
+							onClick={toggleIsDeletionModalOpen}
 						/>
 						<DeleteConfirmation
 							entityName="your profile"
-							onConfirm={operations.deleteUser}
-							onCancel={operations.toggleIsDeletionModalOpen}
+							onConfirm={deleteUser}
+							onCancel={toggleIsDeletionModalOpen}
 						/>
 					</div>
 				</Modal>
@@ -33,7 +45,7 @@ export const EditProfileView = () => {
 				<div className={styles.background}>
 					<RxCross2
 						className={styles.closeBtn}
-						onClick={operations.toggleIsEditProfileModalOpen}
+						onClick={toggleIsEditProfileModalOpen}
 					/>
 					{/* adds some spacing on the top side */}
 					<div className={styles.header}></div>
@@ -48,46 +60,46 @@ export const EditProfileView = () => {
 									<img
 										alt="profile-img"
 										className={styles.previewImage}
-										src={state.profileImgPath || state.userData.profileImagePath}
+										src={profileImgPath || userData.profileImagePath}
 									/>
 								</div>
 							</label>
 							<form name='profileImg'
-								onSubmit={operations.updateUserData}
-								onReset={operations.clearProfileImg}
+								onSubmit={updateUserData}
+								onReset={clearProfileImg}
 							>
 								<input
 									type="file"
 									id="imgInput"
 									className={styles.fileInput}
-									onChange={operations.changeProfileImage}
-									disabled={!!state.inputValues.profileImg}
+									onChange={changeProfileImage}
+									disabled={!!inputValues.profileImg}
 									accept="image/png, image/jpg, image/gif, image/jpeg"
 								/>
 								<div className={styles.imgOperationsContainer}>
 									<button
 										type='submit'
 										className={styles.imgBtn}
-										disabled={!state.inputValues.profileImg}
+										disabled={!inputValues.profileImg}
 									>
 										<FaCheck
 											className={classNames(
 												styles.submitBtn,
 												styles.imgOperationBtn,
-												!state.inputValues.profileImg && styles.disabled
+												!inputValues.profileImg && styles.disabled
 											)}
 										/>
 									</button>
 									<button
 										type='reset'
 										className={styles.imgBtn}
-										disabled={!state.inputValues.profileImg}
+										disabled={!inputValues.profileImg}
 									>
 										<FaXmark
 											className={classNames(
 												styles.resetBtn,
 												styles.imgOperationBtn,
-												!state.inputValues.profileImg && styles.disabled
+												!inputValues.profileImg && styles.disabled
 											)}
 										/>
 									</button>
@@ -99,14 +111,14 @@ export const EditProfileView = () => {
 								<form
 									name='password'
 									className={styles.form}
-									onSubmit={operations.updateUserData}
+									onSubmit={updateUserData}
 								>
 									<IntroInput
 										name="password"
 										type="password"
 										placeholder="New password"
-										value={state.inputValues.password}
-										onChange={operations.inputChangeHandler}
+										value={inputValues.password}
+										onChange={inputChangeHandler}
 									/>
 									<IntroButton message={'Change Password'} />
 								</form>
@@ -118,14 +130,14 @@ export const EditProfileView = () => {
 								<form
 									name='firstName'
 									className={styles.form}
-									onSubmit={operations.updateUserData}
+									onSubmit={updateUserData}
 								>
 									<IntroInput
 										type="text"
 										name="firstName"
 										placeholder="New first name"
-										value={state.inputValues.firstName}
-										onChange={operations.inputChangeHandler}
+										value={inputValues.firstName}
+										onChange={inputChangeHandler}
 									/>
 									<IntroButton
 										message={'Change First Name'}
@@ -138,14 +150,14 @@ export const EditProfileView = () => {
 								<form
 									name='lastName'
 									className={styles.form}
-									onSubmit={operations.updateUserData}
+									onSubmit={updateUserData}
 								>
 									<IntroInput
 										type="text"
 										name="lastName"
 										placeholder="New last name"
-										value={state.inputValues.lastName}
-										onChange={operations.inputChangeHandler}
+										value={inputValues.lastName}
+										onChange={inputChangeHandler}
 									/>
 									<IntroButton message={'Change Last Name'} />
 								</form>
@@ -153,7 +165,7 @@ export const EditProfileView = () => {
 
 							<IntroButton
 								message={'Delete Profile'}
-								onClick={operations.toggleIsDeletionModalOpen}
+								onClick={toggleIsDeletionModalOpen}
 							/>
 						</div>
 					</div>

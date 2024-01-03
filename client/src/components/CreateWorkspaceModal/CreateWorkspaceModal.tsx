@@ -1,15 +1,23 @@
 import { RxCross2 } from 'react-icons/rx';
 import { Modal } from '@/components/Modal/Modal';
-import styles from './createWorkspace.module.css';
+import styles from './createWorkspaceModal.module.css';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
-import { useCreateWorkspaceViewModel } from './CreateWorkspace.viewmodel';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { useCreateWorkspaceModal } from '../../hooks/useCreateWorkspaceModal';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 
 
-export const CreateWorkspaceView = (
-) => {
-	const { state, operations } = useCreateWorkspaceViewModel();
+export const CreateWorkspaceModal = () => {
+	const {
+		userData,
+		colleagues,
+		inputValue,
+		createWorkspace,
+		handleInputChange,
+		addToColleaguesToAdd,
+		removeFromColleaguesToAdd,
+		toggleIsCreateWorkspaceModalOpen,
+	} = useCreateWorkspaceModal();
 
 	return (
 		<Modal>
@@ -17,7 +25,7 @@ export const CreateWorkspaceView = (
 				<div className={styles.background}>
 					<RxCross2
 						className={styles.closeBtn}
-						onClick={operations.toggleIsCreateWorkspaceModalOpen}
+						onClick={toggleIsCreateWorkspaceModalOpen}
 					/>
 					<div className={styles.leftSide}>
 						<div className={styles.introMessage}>
@@ -33,13 +41,13 @@ export const CreateWorkspaceView = (
 							<h2>
 								Name your <span>workspace</span>
 							</h2>
-							<form className={styles.createForm} onSubmit={operations.createWorkspace}>
+							<form className={styles.createForm} onSubmit={createWorkspace}>
 								<IntroInput
 									type="text"
+									value={inputValue}
 									name="workspace-name"
-									value={state.inputValue}
+									onChange={handleInputChange}
 									placeholder="Enter a workspace name"
-									onChange={operations.handleInputChange}
 								/>
 								<IntroButton
 									message="Create Workspace"
@@ -49,11 +57,11 @@ export const CreateWorkspaceView = (
 					</div>
 					<div className={styles.rightSide}>
 						<AddColleagueInput
-							colleagues={state.colleagues}
+							colleagues={colleagues}
 							title={'Workspace users list'}
-							disableDeletionFor={[state.userData.id]}
-							addColleagueHandler={operations.addToColleaguesToAdd}
-							removeColleagueHandler={operations.removeFromColleaguesToAdd}
+							disableDeletionFor={[userData.id]}
+							addColleagueHandler={addToColleaguesToAdd}
+							removeColleagueHandler={removeFromColleaguesToAdd}
 						/>
 					</div>
 				</div>

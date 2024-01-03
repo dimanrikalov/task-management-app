@@ -1,22 +1,34 @@
 import classNames from 'classnames';
 import { RxCross2 } from 'react-icons/rx';
-import styles from './createBoard.module.css';
 import { Modal } from '@/components/Modal/Modal';
-import { useCreateBoardViewModel } from './CreateBoard.viewmodel';
+import styles from './createBoardModal.module.css';
+import { useCreateBoardModal } from '../../hooks/useCreateBoardModal';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { WorkspaceInput } from '@/components/WorkspaceInput/WorkspaceInput';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 
-export const CreateBoardView = () => {
-	const { state, operations } = useCreateBoardViewModel();
+export const CreateBoardModal = () => {
+	const {
+		inputValues,
+		createBoard,
+		workspacesData,
+		boardColleagues,
+		selectWorkspace,
+		addBoardColleague,
+		handleInputChange,
+		selectedWorkspace,
+		removeBoardColleague,
+		toggleIsCreateBoardModalOpen,
+		isWorkspaceNameInputDisabled,
+	} = useCreateBoardModal();
 
 	return (
 		<Modal>
 			<div className={styles.backgroundWrapper}>
 				<RxCross2
 					className={styles.closeBtn}
-					onClick={operations.toggleIsCreateBoardModalOpen}
+					onClick={toggleIsCreateBoardModalOpen}
 				/>
 				<div className={styles.background}>
 					<div className={styles.leftSide}>
@@ -35,11 +47,11 @@ export const CreateBoardView = () => {
 							<h2>Choose a workspace</h2>
 							<form className={styles.createForm} >
 								<WorkspaceInput
-									onChange={operations.handleInputChange}
-									value={state.inputValues.workspaceName}
-									accessibleWorkspaces={state.workspacesData}
-									chooseWorkspace={operations.selectWorkspace}
-									disabled={state.isWorkspaceNameInputDisabled}
+									onChange={handleInputChange}
+									value={inputValues.workspaceName}
+									chooseWorkspace={selectWorkspace}
+									accessibleWorkspaces={workspacesData}
+									disabled={isWorkspaceNameInputDisabled}
 								/>
 							</form>
 						</div>
@@ -50,14 +62,14 @@ export const CreateBoardView = () => {
 							</h2>
 							<form
 								className={styles.createForm}
-								onSubmit={operations.createBoard}
+								onSubmit={createBoard}
 							>
 								<IntroInput
 									type="text"
 									name="boardName"
 									placeholder="Enter a board name"
-									value={state.inputValues.boardName}
-									onChange={operations.handleInputChange}
+									value={inputValues.boardName}
+									onChange={handleInputChange}
 								/>
 								<IntroButton
 									message="Create Board"
@@ -72,8 +84,8 @@ export const CreateBoardView = () => {
 								styles.rightSideContent,
 								(
 									(
-										!state.selectedWorkspace ||
-										state.selectedWorkspace
+										!selectedWorkspace ||
+										selectedWorkspace
 											.name
 											.toLowerCase()
 											.trim() === 'personal workspace'
@@ -84,16 +96,16 @@ export const CreateBoardView = () => {
 							{
 								<AddColleagueInput
 									title={'Board users list'}
-									addColleagueHandler={operations.addBoardColleague}
-									removeColleagueHandler={operations.removeBoardColleague}
+									addColleagueHandler={addBoardColleague}
+									removeColleagueHandler={removeBoardColleague}
 									colleagues={
 										[
-											...state.selectedWorkspace?.workspaceUsers || [],
-											...state.boardColleagues
+											...selectedWorkspace?.workspaceUsers || [],
+											...boardColleagues
 										]
 									}
 									disableDeletionFor={
-										state.selectedWorkspace?.
+										selectedWorkspace?.
 											workspaceUsers.map(colleague => colleague.id)
 									}
 								/>
