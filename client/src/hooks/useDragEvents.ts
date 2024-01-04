@@ -12,9 +12,9 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 
 export const useDragEvents = () => {
 	const dispatch = useAppDispatch();
-	const { boardData, setBoardData } = useBoardContext();
 	const { accessToken } = useAppSelector((state) => state.user);
 	const [hasDragStarted, setHasDragStarted] = useState<boolean>(false);
+	const { boardData, setBoardData, callForConfetti } = useBoardContext();
 
 	const toggleHasDragStarted = () => {
 		setHasDragStarted((prev) => !prev);
@@ -23,8 +23,6 @@ export const useDragEvents = () => {
 	const onDragStart = () => {
 		toggleHasDragStarted();
 	};
-
-
 
 	const onDragEnd = async (result: IResult) => {
 		const {
@@ -205,6 +203,9 @@ export const useDragEvents = () => {
 
 				if (res.errorMessage) {
 					throw new Error(res.errorMessage);
+				}
+				if (srcColumn.name !== 'Done' && destColumn.name === 'Done') {
+					callForConfetti();
 				}
 			}
 		} catch (err: any) {

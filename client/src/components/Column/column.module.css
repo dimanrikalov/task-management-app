@@ -100,3 +100,8 @@
 	cursor: pointer !important;
 	transition: 200ms ease-in-out;
 }
+
+.confetti {
+	left: 150px;
+	position: relative;
+}

@@ -51,6 +51,7 @@ interface IBoardViewModelState {
 	hasDragStarted: boolean;
 	isTaskModalOpen: boolean;
 	boardData: IBoardData | null;
+	shouldConfettiExplode: boolean;
 	isDeleteBoardModalOpen: boolean;
 	isEditBoardUsersModalOpen: boolean;
 }
@@ -99,6 +100,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		isLoading,
 		workspaceUsers,
 		isTaskModalOpen,
+		shouldConfettiExplode,
 		toggleIsTaskModalOpen,
 	} = useBoardContext();
 	const { allUsers, isLoading: isLoadingAllUsers } = useFetchAllUsers();
@@ -126,6 +128,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			workspaceUsers,
 			hasDragStarted,
 			isTaskModalOpen,
+			shouldConfettiExplode,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,
 			isLoading: isLoading || isLoadingAllUsers,

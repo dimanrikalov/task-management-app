@@ -168,6 +168,7 @@ export const BoardView = () => {
 														tasks={column.tasks}
 														users={state.allUsers}
 														hasDragStarted={state.hasDragStarted}
+														shouldConfettiExplode={state.shouldConfettiExplode}
 													/>
 												)
 										}
