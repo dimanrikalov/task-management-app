@@ -3,7 +3,6 @@ import styles from './task.module.css';
 import { FaCheck } from 'react-icons/fa';
 import { Draggable } from 'react-beautiful-dnd';
 import { IStep } from '@/hooks/useStepsOperations';
-
 enum PRIORITY {
 	'Low',
 	'Medium',
@@ -33,12 +32,23 @@ interface ITaskProps {
 	task: ITask;
 	index: number;
 	onClick(): void;
+	hasDragStarted: boolean;
 	assigneeImgPath: string;
 }
 
-export const Task = ({ task, index, onClick, assigneeImgPath }: ITaskProps) => {
+export const Task = ({
+	task,
+	index,
+	onClick,
+	hasDragStarted,
+	assigneeImgPath,
+}: ITaskProps) => {
 	return (
-		<Draggable index={index} draggableId={`task-${task.id}`}>
+		<Draggable
+			index={index}
+			draggableId={`task-${task.id}`}
+			isDragDisabled={hasDragStarted}
+		>
 			{(provided, snapshot) => (
 				<div
 					onClick={onClick}
@@ -47,7 +57,8 @@ export const Task = ({ task, index, onClick, assigneeImgPath }: ITaskProps) => {
 					{...provided.dragHandleProps}
 					className={classNames(
 						styles.background,
-						snapshot.isDragging && styles.isDragging
+						snapshot.isDragging
+						&& styles.isDragging
 					)}
 				>
 					{task.attachmentImgPath && (
@@ -66,7 +77,8 @@ export const Task = ({ task, index, onClick, assigneeImgPath }: ITaskProps) => {
 								<FaCheck
 									className={classNames(
 										styles.icon,
-										snapshot.isDragging && styles.invert
+										snapshot.isDragging
+										&& styles.invert
 									)}
 								/>
 								<h5 className={styles.progress}>{task.progress}%</h5>

@@ -98,12 +98,9 @@
 }
 
 .totalMessages .bottom,
+.totalMessages .bottom,
 .totalWorkspaces .bottom {
 	align-items: flex-end;
-}
-
-.totalMessages .bottom {
-	align-items: center;
 }
 
 .totalMessages .bottom .icon {

@@ -6,10 +6,12 @@ import { IBoardData, useFetchBoardData } from "@/hooks/useFetchBoardData";
 interface IBoardContext {
     isLoading: boolean;
     callForRefresh(): void;
+    hasDragStarted: boolean;
     workspaceUsers: IUser[];
     isTaskModalOpen: boolean;
     selectedTask: ITask | null;
     boardData: IBoardData | null;
+    toggleHasDragStarted(): void;
     toggleIsTaskModalOpen(): void;
     selectedColumnId: number | null;
     setWorkspaceUsers: React.Dispatch<React.SetStateAction<IUser[]>>;
@@ -25,8 +27,7 @@ export const useBoardContext = () => useContext<IBoardContext>(BoardContext);
 export const BoardContextProvider:
     React.FC<{ children: React.ReactNode }> =
     ({ children }) => {
-
-        const [selectedTask, setSelectedTask] = useState<ITask | null>(null)
+        const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
         const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
         const [selectedColumnId, setSelectedColumnId] = useState<number | null>(null);
         const { boardData, isLoading, setBoardData, workspaceUsers, callForRefresh } = useFetchBoardData();

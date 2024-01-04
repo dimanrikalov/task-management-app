@@ -151,6 +151,7 @@ export const BoardView = () => {
 					</div>
 					<DragDropContext
 						onDragEnd={operations.onDragEnd}
+						onDragStart={operations.onDragStart}
 					>
 						<Droppable
 							type='column'
@@ -185,6 +186,7 @@ export const BoardView = () => {
 														title={column.name}
 														tasks={column.tasks}
 														users={state.allUsers}
+														hasDragStarted={state.hasDragStarted}
 													/>
 												)
 										}

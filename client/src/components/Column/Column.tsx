@@ -14,6 +14,7 @@ export interface IColumnProps {
 	title: string;
 	tasks: ITask[];
 	users: IUser[];
+	hasDragStarted: boolean;
 }
 
 export const Column = ({
@@ -22,8 +23,8 @@ export const Column = ({
 	users,
 	title,
 	tasks,
+	hasDragStarted
 }: IColumnProps) => {
-
 	const {
 		onClick,
 		inputValue,
@@ -41,6 +42,7 @@ export const Column = ({
 		<Draggable
 			index={index}
 			draggableId={`column-${id}`} // Unique draggableId for columns
+			isDragDisabled={hasDragStarted}
 		>
 			{(provided) => (
 				<div
@@ -97,8 +99,8 @@ export const Column = ({
 							</h2>
 					}
 					<Droppable
-						droppableId={`column-${id}`} // Unique droppableId for columns
 						type="task"
+						droppableId={`column-${id}`} // Unique droppableId for columns
 					>
 						{(provided) => (
 							<>
@@ -113,6 +115,7 @@ export const Column = ({
 												task={task}
 												index={index}
 												key={task.id.toString()}
+												hasDragStarted={hasDragStarted}
 												onClick={() => taskClickHandler(task)}
 												assigneeImgPath={users.find((user) =>
 													user.id ===

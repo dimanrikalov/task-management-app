@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { ITask } from '@/components/Task/Task';
 import { useNavigate } from 'react-router-dom';
-import { useOnDragEnd } from '@/hooks/useOnDragEnd';
 import { useEditBoard } from '@/hooks/useEditBoard';
+import { useDragEvents } from '@/hooks/useDragEvents';
 import { useRenameBoard } from '@/hooks/useRenameBoard';
 import { useBoardContext } from '@/contexts/board.context';
 import { useFetchAllUsers } from '@/hooks/useFetchAllUsers';
@@ -48,6 +48,7 @@ interface IBoardViewModelState {
 	isInputModeOn: boolean;
 	boardNameInput: string;
 	workspaceUsers: IUser[];
+	hasDragStarted: boolean;
 	isTaskModalOpen: boolean;
 	boardData: IBoardData | null;
 	isDeleteBoardModalOpen: boolean;
@@ -58,6 +59,7 @@ interface IBoardViewModelOperations {
 	goBack(): void;
 	addColumn(): void;
 	deleteBoard(): void;
+	onDragStart(): void;
 	toggleIsChatOpen(): void;
 	toggleIsInputModeOn(): void;
 	onDragEnd(result: any): void;
@@ -88,9 +90,9 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		toggleIsEditBoardUsersModalOpen,
 	} = useEditBoardColleagues();
 	const navigate = useNavigate();
-	const { onDragEnd } = useOnDragEnd();
 	const { addColumn, deleteBoard } = useEditBoard();
 	const [isChatOpen, setIsChatOpen] = useState(false);
+	const { onDragEnd, onDragStart, hasDragStarted } = useDragEvents();
 
 	const {
 		boardData,
@@ -122,6 +124,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			isInputModeOn,
 			boardNameInput,
 			workspaceUsers,
+			hasDragStarted,
 			isTaskModalOpen,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,
@@ -131,6 +134,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			goBack,
 			addColumn,
 			onDragEnd,
+			onDragStart,
 			deleteBoard,
 			toggleIsChatOpen,
 			addBoardColleague,

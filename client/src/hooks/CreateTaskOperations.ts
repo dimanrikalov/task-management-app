@@ -18,9 +18,9 @@ interface ICreateTaskOperationsState {
 	steps: IStep[];
 	matches: IUser[];
 	progress: number;
-	selectedTask: ITask | null;
 	inputValues: IInputState;
 	assigneeId: number | null;
+	selectedTask: ITask | null;
 	showConfirmButton: boolean;
 	taskImagePath: string | null;
 }

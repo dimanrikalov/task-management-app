@@ -4,15 +4,27 @@ import {
 	TASK_ENDPOINTS,
 	COLUMN_ENDPOINTS,
 } from '@/utils/requester';
+import { useState } from 'react';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
 import { IResult } from '@/views/BoardView/Board.viewmodel';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 
-export const useOnDragEnd = () => {
+export const useDragEvents = () => {
 	const dispatch = useAppDispatch();
 	const { boardData, setBoardData } = useBoardContext();
 	const { accessToken } = useAppSelector((state) => state.user);
+	const [hasDragStarted, setHasDragStarted] = useState<boolean>(false);
+
+	const toggleHasDragStarted = () => {
+		setHasDragStarted((prev) => !prev);
+	};
+
+	const onDragStart = () => {
+		toggleHasDragStarted();
+	};
+
+
 
 	const onDragEnd = async (result: IResult) => {
 		const {
@@ -23,10 +35,12 @@ export const useOnDragEnd = () => {
 		} = result;
 
 		if (!boardData) {
+			toggleHasDragStarted();
 			return;
 		}
 
 		if (!destination) {
+			toggleHasDragStarted();
 			return;
 		}
 
@@ -40,6 +54,7 @@ export const useOnDragEnd = () => {
 			destination.index === source.index &&
 			sourceDroppableId === destinationDroppableId
 		) {
+			toggleHasDragStarted();
 			return;
 		}
 
@@ -111,6 +126,7 @@ export const useOnDragEnd = () => {
 				);
 
 				if (!srcColumn || !destColumn) {
+					toggleHasDragStarted();
 					return;
 				}
 
@@ -145,6 +161,7 @@ export const useOnDragEnd = () => {
 				} else {
 					//case where task is changing only its position in the same column
 					if (source.index === destination.index) {
+						toggleHasDragStarted();
 						return;
 					}
 
@@ -195,7 +212,8 @@ export const useOnDragEnd = () => {
 			dispatch(setErrorMessageAsync(err.message));
 			setBoardData(startingBoardState);
 		}
+		toggleHasDragStarted();
 	};
 
-	return { onDragEnd };
+	return { hasDragStarted, onDragEnd, onDragStart };
 };
