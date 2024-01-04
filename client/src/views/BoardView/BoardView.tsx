@@ -1,23 +1,25 @@
 import { ROUTES } from '@/router';
 import classNames from 'classnames';
 import styles from './board.module.css';
-import { FaEdit } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
+import { VscGraph } from "react-icons/vsc";
+import { FaUsersCog } from "react-icons/fa";
 import { Navigate } from 'react-router-dom';
 import { FcAddColumn } from "react-icons/fc";
 import { Chat } from '@/components/Chat/Chat';
 import { Modal } from '@/components/Modal/Modal';
+import { MdDeleteForever } from "react-icons/md";
 import { Column } from '@/components/Column/Column';
 import { useBoardViewModel } from './Board.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { TaskModalContextProvider } from '@/contexts/taskModal.context';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 import { TaskOperationsModal } from '../../components/TaskOperationsModal/TaskOperationsModal';
+import { EntryModificationForm } from '@/components/EntryModificationForm/EntryModificationForm';
+import { EntryModificationButton } from '@/components/Buttons/EntryModificationButton/EntryModificationButton';
 
 export const BoardView = () => {
 	const { state, operations } = useBoardViewModel();
@@ -89,37 +91,18 @@ export const BoardView = () => {
 					)}
 				>
 					<div
-						className={classNames(
-							styles.header,
-							state.isChatOpen && styles.directionColumn
-						)}
+						className={styles.header}
 					>
-						<div
-							className={classNames(
-								styles.titleDiv,
-								state.isChatOpen && styles.directionColumn
-							)}
-						>
-
-							<BackButton onClick={operations.goBack} />
-
+						<div className={styles.titleDiv}>
 							{
 								state.isInputModeOn ?
-									<form
-										className={styles.changeNameContainer}
+									<EntryModificationForm
+										name='board-name-input'
+										value={state.boardNameInput}
+										placeholder='Enter board name'
 										onSubmit={operations.handleBoardNameChange}
-									>
-										<IntroInput
-											type='text'
-											name='board-name-input'
-											value={state.boardNameInput}
-											placeholder='Enter board name'
-											onChange={operations.handleBoardNameInputChange}
-										/>
-										<button className={styles.submitBtn}>
-											<FaEdit className={styles.icon} />
-										</button>
-									</form>
+										onChange={operations.handleBoardNameInputChange}
+									/>
 									:
 									<h2
 										className={styles.boardName}
@@ -129,24 +112,27 @@ export const BoardView = () => {
 							}
 						</div>
 						<div className={styles.operationsContainer}>
+							<BackButton onClick={operations.goBack} />
 							{
 								state.boardData.workspace.name !== 'Personal Workspace' &&
-								<IntroButton
-									message="Edit Users"
-									onClick={
-										operations.toggleIsEditBoardUsersModalOpen
-									}
-								/>
+								<EntryModificationButton onClick={
+									operations.toggleIsEditBoardUsersModalOpen
+								}>
+									<FaUsersCog className={styles.icon} size={24} />
+								</EntryModificationButton>
+
 							}
-							<IntroButton
-								message="View Graph"
-							/>
-							<IntroButton
-								message="Delete Board"
-								onClick={
-									operations.toggleIsDeleteBoardModalOpen
-								}
-							/>
+							<EntryModificationButton onClick={() => { }}>
+								<VscGraph
+									size={21}
+									className={classNames(styles.icon, styles.graphIcon)}
+								/>
+							</EntryModificationButton>
+							<EntryModificationButton onClick={
+								operations.toggleIsDeleteBoardModalOpen
+							}>
+								<MdDeleteForever className={styles.icon} size={26} />
+							</EntryModificationButton>
 						</div>
 					</div>
 					<DragDropContext
@@ -162,14 +148,9 @@ export const BoardView = () => {
 								(provider) => (
 
 									<div
-										className={
-											classNames(
-												styles.columnsContainer,
-												state.isChatOpen && styles.squash
-											)
-										}
 										ref={provider.innerRef}
 										{...provider.droppableProps}
+										className={styles.columnsContainer}
 									>
 
 										{

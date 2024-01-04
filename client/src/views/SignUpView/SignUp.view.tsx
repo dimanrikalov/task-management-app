@@ -14,7 +14,10 @@ export const SignUpView = () => {
 		<div className={styles.background}>
 			<div className={styles.signInContainer}>
 				<div className={styles.positionBackButton}>
-					<BackButton onClick={operations.goToInitialView} />
+					<BackButton
+						reverse={true}
+						onClick={operations.goToInitialView}
+					/>
 				</div>
 				<div className={styles.leftSide}>
 					<div className={styles.titleContainer}>

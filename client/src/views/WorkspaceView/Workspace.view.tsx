@@ -1,16 +1,18 @@
 import { FcFile } from 'react-icons/fc';
-import { FaEdit } from 'react-icons/fa';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './workspace.module.css';
+import { FaUsersCog } from 'react-icons/fa';
 import { Modal } from '@/components/Modal/Modal';
+import { MdDeleteForever } from 'react-icons/md';
 import { BoardCard } from '@/components/BoardCard/BoardCard';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 import { MODAL_STATES_KEYS, useWorkspaceViewModel } from './Workspace.viewmodel';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
+import { EntryModificationForm } from '@/components/EntryModificationForm/EntryModificationForm';
+import { EntryModificationButton } from '@/components/Buttons/EntryModificationButton/EntryModificationButton';
 
 export const WorkspaceView = () => {
 	const { state, operations } = useWorkspaceViewModel();
@@ -76,57 +78,56 @@ export const WorkspaceView = () => {
 			<div className={styles.background}>
 				<div className={styles.header}>
 					<div className={styles.left}>
-						<BackButton onClick={operations.backBtnHandler} />
 						{
 							state.isInputModeOn ?
-								<form
-									className={styles.changeNameContainer}
+								<EntryModificationForm
+									name='workspace-name-input'
+									value={state.workspaceNameInput}
+									placeholder='Enter workspace name'
 									onSubmit={operations.handleWorkspaceNameChange}
-								>
-									<IntroInput
-										type='text'
-										name='workspace-name-input'
-										value={state.workspaceNameInput}
-										placeholder='Enter workspace name'
-										onChange={operations.handleWorkspaceNameInputChange}
-									/>
-									<button className={styles.submitBtn}>
-										<FaEdit className={styles.icon} />
-									</button>
-								</form>
+									onChange={operations.handleWorkspaceNameInputChange}
+								/>
+
 
 								:
-								<h2
-									className={styles.workspaceName}
-									onDoubleClick={operations.toggleIsInputModeOn}>{state.workspaceData.name}
-								</h2>
+								state.workspaceData.name.toLowerCase().trim() !== 'personal workspace' ?
+
+									<h2
+										className={styles.workspaceName}
+										onDoubleClick={operations.toggleIsInputModeOn}
+									>
+										{state.workspaceData.name}
+									</h2>
+									:
+									<h2>
+										{state.workspaceData.name}
+									</h2>
 						}
 					</div>
-					{
-						state.workspaceData.name.toLowerCase().trim() !== 'personal workspace' &&
-						(
-							<div className={styles.right}>
-								<IntroButton
-									message={'Edit Users'}
-									onClick={
-										() =>
-											operations.toggleModal(MODAL_STATES_KEYS.EDIT_COLLEAGUES)
-									}
-								/>
-								<IntroButton
-
-									message={'Delete Workspace'}
-									onClick={
+					<div className={styles.operationsContainer}>
+						<BackButton onClick={operations.backBtnHandler} />
+						{
+							state.workspaceData.name.toLowerCase().trim() !== 'personal workspace' &&
+							(
+								<>
+									<EntryModificationButton onClick={
+										() => operations.toggleModal(MODAL_STATES_KEYS.EDIT_COLLEAGUES)
+									}>
+										<FaUsersCog className={styles.icon} size={24} />
+									</EntryModificationButton>
+									<EntryModificationButton onClick={
 										() => operations.toggleModal(MODAL_STATES_KEYS.DELETE_WORKSPACE)
-									}
-								/>
-							</div>
-						)
-					}
+									}>
+										<MdDeleteForever className={styles.icon} size={26} />
+									</EntryModificationButton>
+								</>
+							)
+						}
+					</div>
 				</div>
 				<div className={styles.titleContainer}>
 					<h1>Boards</h1>
-					<div className={styles.inputContainer}>
+					<div>
 						<IntroInput
 							type="text"
 							name="board-name-input"

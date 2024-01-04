@@ -15,7 +15,10 @@ export const SignInView = () => {
 		<div className={styles.background}>
 			<div className={styles.signInContainer}>
 				<div className={styles.positionBackButton}>
-					<BackButton onClick={operations.goToInitialView} />
+					<BackButton
+						style={{ borderColor: '#fff' }}
+						onClick={operations.goToInitialView}
+					/>
 				</div>
 				<div className={styles.leftSide}>
 					<img

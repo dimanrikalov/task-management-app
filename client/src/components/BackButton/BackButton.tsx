@@ -6,17 +6,23 @@ interface IBackButtonProps {
 	onClick(): void;
 	iconSize?: number;
 	reverse?: boolean;
+	style?: React.CSSProperties;
 }
 
 export const BackButton = ({
 	onClick,
+	style,
 	iconSize = 18,
 	reverse = false,
 }: IBackButtonProps) => {
 	return (
 		<button
-			className={classNames(styles.backBtn, reverse && styles.reverse)}
+			style={style}
 			onClick={onClick}
+			className={classNames(
+				styles.backBtn,
+				reverse && styles.reverse
+			)}
 		>
 			<FaChevronLeft size={iconSize} />
 		</button>

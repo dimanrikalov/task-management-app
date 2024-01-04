@@ -5,10 +5,10 @@ import { IUserData } from '@/app/userSlice';
 import { useEffect, useState } from 'react';
 import { Message } from '../Message/Message';
 import { useLocation } from 'react-router-dom';
-import { BackButton } from '../BackButton/BackButton';
 import { setErrorMessageAsync } from '@/app/errorSlice';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { TbLayoutSidebarLeftExpandFilled } from "react-icons/tb";
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { MESSAGE_ENDPOINTS, METHODS, request } from '@/utils/requester';
 
@@ -104,7 +104,14 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 					isChatOpen && styles.isOpen
 				)}
 			>
-				<BackButton onClick={toggleIsChatOpen} />
+				<button className={
+					classNames(styles.hideBtn,
+						isChatOpen && styles.flip
+					)}
+					onClick={toggleIsChatOpen}>
+					<TbLayoutSidebarLeftExpandFilled size={32} />
+
+				</button>
 			</div>
 			<div className={styles.header}>
 				<h2>Board chat</h2>
@@ -124,8 +131,8 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 
 			</div>
 			<form
-				className={styles.inputContainer}
 				onSubmit={sendMessage}
+				className={styles.inputContainer}
 			>
 				<IntroInput
 					type="text"
@@ -135,7 +142,10 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 					onChange={(e) => setInputValue(e.target.value)}
 				/>
 
-				<button className={classNames(styles.sendBtn, inputValue !== '' && styles.enable)}>
+				<button
+					className={classNames(styles.sendBtn,
+						inputValue !== '' && styles.enable)
+					}>
 					<VscSend disabled={inputValue == ''} />
 				</button>
 			</form>

@@ -28,17 +28,26 @@
 }
 
 .hideBtn {
-	top: 16px;
-	right: -18px;
-	rotate: 180deg;
+	top: 9px;
+	right: -12px;
+	border: none;
+	display: flex;
+	font-size: 5px;
+	cursor: pointer;
+	border-radius: 9px;
 	position: absolute;
-	border-radius: 16px;
+	align-items: center;
+	justify-content: center;
+	color: var(--white-main);
 	transition: 200ms ease-in-out;
+	background-color: var(--blue-main);
 }
 
-.hideBtn.isOpen {
-	right: 16px;
-	rotate: unset;
+.flip {
+	right: 28px;
+	transform: rotate(180deg);
+	color: var(--white-main);
+	background-color: var(--blue-main);
 }
 
 .chat {

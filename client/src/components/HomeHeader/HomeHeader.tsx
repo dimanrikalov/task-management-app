@@ -1,5 +1,6 @@
-import { TbLogout2 } from 'react-icons/tb';
 import styles from './homeHeader.module.css'
+import { PiSignOutBold } from "react-icons/pi";
+import { EntryModificationButton } from '../Buttons/EntryModificationButton/EntryModificationButton';
 
 interface IHomeHeaderProps {
     date: string;
@@ -31,10 +32,14 @@ export const HomeHeader = ({
             <p className={styles.fullName}>
                 {`${firstName} ${lastName}`}
             </p>
-            <TbLogout2
+            <EntryModificationButton
                 onClick={logout}
-                className={styles.logout}
-            />
+            >
+                <PiSignOutBold
+                    size={24}
+                    className={styles.icon}
+                />
+            </EntryModificationButton>
         </div>
     </div>)
 }
