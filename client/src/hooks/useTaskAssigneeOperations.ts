@@ -4,10 +4,24 @@ import { useTaskModalContext } from '@/contexts/taskModal.context';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 export const useTaskAssigneeOperations = () => {
+    const {
+        matches,
+        setMatches,
+        assigneeId,
+        inputValues,
+        setAssigneeId,
+        setInputValues
+    } = useTaskModalContext();
     const { boardData } = useBoardContext();
     const boardUsers = boardData?.boardUsers || [];
-    const { inputValues, setInputValues, matches, setMatches, setAssigneeId } =
-        useTaskModalContext();
+
+    useEffect(() => {
+        if (assigneeId) {
+            setMatches([]);
+            return;
+        }
+        setMatches(boardUsers);
+    }, [assigneeId]);
 
     useEffect(() => {
         const assignee = matches.find(
@@ -18,18 +32,9 @@ export const useTaskAssigneeOperations = () => {
 
         if (assignee) {
             setAssigneeId(assignee.id);
-            setMatches([]);
             return;
         }
         setAssigneeId(null);
-        setMatches(
-            boardUsers.filter((user) =>
-                user.email
-                    .trim()
-                    .toLowerCase()
-                    .includes(inputValues.email.trim().toLowerCase())
-            )
-        );
     }, [inputValues.email]);
 
     const selectAssignee = (user: IUser) => {
@@ -37,7 +42,5 @@ export const useTaskAssigneeOperations = () => {
         setInputValues((prev) => ({ ...prev, email: user.email }));
     };
 
-    return {
-        selectAssignee
-    };
+    return { selectAssignee };
 };

@@ -11,116 +11,119 @@ import { CreateBoardModal } from '@/components/CreateBoardModal/CreateBoardModal
 import { EditProfileModal } from '@/components/EditProfileModal/EditProfileModal';
 import { CreateWorkspaceModal } from '@/components/CreateWorkspaceModal/CreateWorkspaceModal';
 
-
 export interface ITokens {
-	accessToken: string;
-	refreshToken: string;
+    accessToken: string;
+    refreshToken: string;
 }
 
 export const AuthGuard = () => {
-	const navigate = useNavigate();
-	const dispatch = useAppDispatch();
-	const url = useLocation().pathname;
-	const user = useAppSelector(state => state.user);
-	const [isLoading, setIsLoading] = useState(true);
-	const modalStates = useAppSelector(state => state.modals);
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const url = useLocation().pathname;
+    const user = useAppSelector((state) => state.user);
+    const [isLoading, setIsLoading] = useState(true);
+    const modalStates = useAppSelector((state) => state.modals);
 
-	useEffect(() => {
-		const tokens = extractTokens();
+    useEffect(() => {
+        const tokens = extractTokens();
 
-		const refreshTokens = async () => {
-			const data = await request({
-				method: METHODS.GET,
-				endpoint: USER_ENDPOINTS.REFRESH
-			})
+        const refreshTokens = async () => {
+            const data = await request({
+                method: METHODS.GET,
+                endpoint: USER_ENDPOINTS.REFRESH
+            });
 
-			if (data.errorMessage) {
-				console.log(data.errorMessage);
-				throw new Error('Invalid refresh token!');
-			}
-		}
+            if (data.errorMessage) {
+                console.log(data.errorMessage);
+                throw new Error('Invalid refresh token!');
+            }
+        };
 
-		const getUserData = async () => {
-			const data = await request({
-				method: METHODS.GET,
-				endpoint: USER_ENDPOINTS.USER,
-				accessToken: tokens.accessToken,
-			});
+        const getUserData = async () => {
+            const data = await request({
+                method: METHODS.GET,
+                endpoint: USER_ENDPOINTS.USER,
+                accessToken: tokens.accessToken
+            });
 
-			if (data.errorMessage) {
-				throw new Error(data.errorMessage);
-			}
-			dispatch(setUserData({
-				accessToken: tokens.accessToken,
-				data: {
-					...data,
-					profileImagePath: `data:image/png;base64,${data.profileImg}`
-				}
-			}));
-		}
+            if (data.errorMessage) {
+                throw new Error(data.errorMessage);
+            }
+            dispatch(
+                setUserData({
+                    accessToken: tokens.accessToken,
+                    data: {
+                        ...data,
+                        profileImagePath: `data:image/png;base64,${data.profileImg}`
+                    }
+                })
+            );
+        };
 
-		const authenticate = async () => {
-			setIsLoading(true);
-			try {
-				if (!tokens.accessToken) {
-					if (!tokens.refreshToken) {
-						setIsLoading(false);
-						navigate(ROUTES.SIGN_IN);
-						return;
-					}
+        const authenticate = async () => {
+            setIsLoading(true);
+            try {
+                if (!tokens.accessToken) {
+                    if (!tokens.refreshToken) {
+                        setIsLoading(false);
+                        navigate(ROUTES.SIGN_IN);
+                        return;
+                    }
 
-					await refreshTokens();
-					setIsLoading(false);
-					return;
-				}
-				else if (!isAccessTokenValid(tokens.accessToken)) {
-					await refreshTokens();
-					setIsLoading(false);
-					return;
-				}
+                    await refreshTokens();
+                    setIsLoading(false);
+                    return;
+                } else if (!isAccessTokenValid(tokens.accessToken)) {
+                    await refreshTokens();
+                    setIsLoading(false);
+                    return;
+                }
 
-				await getUserData();
-				setIsLoading(false);
-			} catch (err: any) {
-				console.log(err.message);
+                await getUserData();
+                setIsLoading(false);
+            } catch (err: any) {
+                console.log(err.message);
 
-				switch (err.message) {
-					case 'Invalid refresh token!':
-						err.message = 'Invalid session. Please sign in again!';
-						deleteTokens();
-						setIsLoading(false);
-						break;
-					case 'Unauthorized':
-						err.message = 'You do not have access to this resource or action!';
-						setIsLoading(false);
-						navigate(ROUTES.SIGN_IN)
-						break;
-					case 'Failed to fetch':
-						err.message = 'Cannot connect to server. Please try again later!';
-						break;
-				}
+                switch (err.message) {
+                    case 'Invalid JWT token!':
+                        err.message = 'Invalid session. Please sign in again!';
+                        deleteTokens();
+                        setIsLoading(false);
+                        navigate(ROUTES.SIGN_IN);
+                        break;
+                    case 'Unauthorized':
+                        err.message =
+                            'You do not have access to this resource or action!';
+                        setIsLoading(false);
+                        navigate(ROUTES.SIGN_IN);
+                        break;
+                    case 'Failed to fetch':
+                        err.message =
+                            'Cannot connect to server. Please try again later!';
+                        break;
+                }
 
-				dispatch(setErrorMessageAsync(err.message));
-			}
-		}
+                dispatch(setErrorMessageAsync(err.message));
+            }
+        };
 
-		authenticate();
-	}, [url]);
+        authenticate();
+    }, [url]);
 
-	if (isLoading) {
-		return <LoadingOverlay />
-	}
+    if (isLoading) {
+        return <LoadingOverlay />;
+    }
 
-	if (!user.data) {
-		return <Navigate to={ROUTES.SIGN_IN} />
-	}
+    if (!user.data) {
+        return <Navigate to={ROUTES.SIGN_IN} />;
+    }
 
-	return (
-		<>
-			{modalStates.showEditProfileModal && <EditProfileModal />}
-			{modalStates.showCreateBoardModal && <CreateBoardModal />}
-			{modalStates.showCreateWorkspaceModal && <CreateWorkspaceModal />}
-			<Outlet />
-		</>
-	)
-}
+    return (
+        <>
+            {modalStates.showEditProfileModal && <EditProfileModal />}
+            {modalStates.showCreateBoardModal && <CreateBoardModal />}
+            {modalStates.showCreateWorkspaceModal && <CreateWorkspaceModal />}
+            <Outlet />
+        </>
+    );
+};
