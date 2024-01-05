@@ -12,142 +12,142 @@ import { useEditBoardColleagues } from '@/hooks/useEditBoardColleagues';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 export interface IColumn {
-	id: number;
-	name: string;
-	tasks: ITask[];
-	boardId: number;
-	position: number;
+    id: number;
+    name: string;
+    tasks: ITask[];
+    boardId: number;
+    position: number;
 }
 
 interface IBoardData {
-	id: number;
-	name: string;
-	columns: IColumn[];
-	boardUsers: IUser[];
-	workspaceId: number;
-	workspace: IDetailedWorkspace;
+    id: number;
+    name: string;
+    columns: IColumn[];
+    boardUsers: IUser[];
+    workspaceId: number;
+    workspace: IDetailedWorkspace;
 }
 
 interface ISource {
-	index: number;
-	droppableId: string;
+    index: number;
+    droppableId: string;
 }
 
 export interface IResult {
-	type: string;
-	reason?: string;
-	source: ISource;
-	draggableId: string;
-	destination: ISource | null;
+    type: string;
+    reason?: string;
+    source: ISource;
+    draggableId: string;
+    destination: ISource | null;
 }
 
 interface IBoardViewModelState {
-	allUsers: IUser[];
-	isLoading: boolean;
-	isChatOpen: boolean;
-	isInputModeOn: boolean;
-	boardNameInput: string;
-	workspaceUsers: IUser[];
-	hasDragStarted: boolean;
-	isTaskModalOpen: boolean;
-	boardData: IBoardData | null;
-	shouldConfettiExplode: boolean;
-	isDeleteBoardModalOpen: boolean;
-	isEditBoardUsersModalOpen: boolean;
+    allUsers: IUser[];
+    isLoading: boolean;
+    isChatOpen: boolean;
+    isInputModeOn: boolean;
+    boardNameInput: string;
+    workspaceUsers: IUser[];
+    hasDragStarted: boolean;
+    isTaskModalOpen: boolean;
+    boardData: IBoardData | null;
+    shouldConfettiExplode: boolean;
+    isDeleteBoardModalOpen: boolean;
+    isEditBoardUsersModalOpen: boolean;
 }
 
 interface IBoardViewModelOperations {
-	goBack(): void;
-	addColumn(): void;
-	deleteBoard(): void;
-	onDragStart(): void;
-	toggleIsChatOpen(): void;
-	toggleIsInputModeOn(): void;
-	onDragEnd(result: any): void;
-	toggleIsTaskModalOpen(): void;
-	toggleIsDeleteBoardModalOpen(): void;
-	toggleIsEditBoardUsersModalOpen(): void;
-	addBoardColleague(colleague: IUser): void;
-	removeBoardColleague(colleague: IUser): void;
-	handleBoardNameChange(e: React.FormEvent<HTMLFormElement>): void;
-	handleBoardNameInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
+    goBack(): void;
+    addColumn(): void;
+    deleteBoard(): void;
+    onDragStart(): void;
+    toggleIsChatOpen(): void;
+    toggleIsInputModeOn(): void;
+    onDragEnd(result: any): void;
+    toggleIsTaskModalOpen(): void;
+    toggleIsDeleteBoardModalOpen(): void;
+    toggleIsEditBoardUsersModalOpen(): void;
+    addBoardColleague(colleague: IUser): void;
+    removeBoardColleague(colleague: IUser): void;
+    handleBoardNameChange(e: React.FormEvent<HTMLFormElement>): void;
+    handleBoardNameInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const useBoardViewModel = (): ViewModelReturnType<
-	IBoardViewModelState,
-	IBoardViewModelOperations
+    IBoardViewModelState,
+    IBoardViewModelOperations
 > => {
-	const {
-		isInputModeOn,
-		boardNameInput,
-		toggleIsInputModeOn,
-		handleBoardNameChange,
-		handleBoardNameInputChange,
-	} = useRenameBoard();
-	const {
-		addBoardColleague,
-		removeBoardColleague,
-		isEditBoardUsersModalOpen,
-		toggleIsEditBoardUsersModalOpen,
-	} = useEditBoardColleagues();
-	const navigate = useNavigate();
-	const { addColumn, deleteBoard } = useEditBoard();
-	const [isChatOpen, setIsChatOpen] = useState(false);
-	const { onDragEnd, onDragStart, hasDragStarted } = useDragEvents();
+    const {
+        isInputModeOn,
+        boardNameInput,
+        toggleIsInputModeOn,
+        handleBoardNameChange,
+        handleBoardNameInputChange
+    } = useRenameBoard();
+    const {
+        addBoardColleague,
+        removeBoardColleague,
+        isEditBoardUsersModalOpen,
+        toggleIsEditBoardUsersModalOpen
+    } = useEditBoardColleagues();
+    const navigate = useNavigate();
+    const { addColumn, deleteBoard } = useEditBoard();
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const { onDragEnd, onDragStart, hasDragStarted } = useDragEvents();
 
-	const {
-		boardData,
-		isLoading,
-		workspaceUsers,
-		isTaskModalOpen,
-		shouldConfettiExplode,
-		toggleIsTaskModalOpen,
-	} = useBoardContext();
-	const { allUsers, isLoading: isLoadingAllUsers } = useFetchAllUsers();
-	const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
+    const {
+        boardData,
+        isLoading,
+        workspaceUsers,
+        isTaskModalOpen,
+        shouldConfettiExplode,
+        toggleIsTaskModalOpen
+    } = useBoardContext();
+    const { allUsers, isLoading: isLoadingAllUsers } = useFetchAllUsers();
+    const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 
-	const goBack = () => {
-		navigate(-1);
-	};
+    const goBack = () => {
+        navigate(-1);
+    };
 
-	const toggleIsChatOpen = () => {
-		setIsChatOpen((prev) => !prev);
-	};
+    const toggleIsChatOpen = () => {
+        setIsChatOpen((prev) => !prev);
+    };
 
-	const toggleIsDeleteBoardModalOpen = () => {
-		setIsDeleteBoardModalOpen((prev) => !prev);
-	};
+    const toggleIsDeleteBoardModalOpen = () => {
+        setIsDeleteBoardModalOpen((prev) => !prev);
+    };
 
-	return {
-		state: {
-			allUsers,
-			boardData,
-			isChatOpen,
-			isInputModeOn,
-			boardNameInput,
-			workspaceUsers,
-			hasDragStarted,
-			isTaskModalOpen,
-			shouldConfettiExplode,
-			isDeleteBoardModalOpen,
-			isEditBoardUsersModalOpen,
-			isLoading: isLoading || isLoadingAllUsers,
-		},
-		operations: {
-			goBack,
-			addColumn,
-			onDragEnd,
-			onDragStart,
-			deleteBoard,
-			toggleIsChatOpen,
-			addBoardColleague,
-			toggleIsInputModeOn,
-			removeBoardColleague,
-			handleBoardNameChange,
-			toggleIsTaskModalOpen,
-			handleBoardNameInputChange,
-			toggleIsDeleteBoardModalOpen,
-			toggleIsEditBoardUsersModalOpen,
-		},
-	};
+    return {
+        state: {
+            allUsers,
+            boardData,
+            isChatOpen,
+            isInputModeOn,
+            boardNameInput,
+            workspaceUsers,
+            hasDragStarted,
+            isTaskModalOpen,
+            shouldConfettiExplode,
+            isDeleteBoardModalOpen,
+            isEditBoardUsersModalOpen,
+            isLoading: isLoading || isLoadingAllUsers
+        },
+        operations: {
+            goBack,
+            addColumn,
+            onDragEnd,
+            onDragStart,
+            deleteBoard,
+            toggleIsChatOpen,
+            addBoardColleague,
+            toggleIsInputModeOn,
+            removeBoardColleague,
+            handleBoardNameChange,
+            toggleIsTaskModalOpen,
+            handleBoardNameInputChange,
+            toggleIsDeleteBoardModalOpen,
+            toggleIsEditBoardUsersModalOpen
+        }
+    };
 };

@@ -6,21 +6,21 @@ import notificationReducer from './notificationSlice';
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
 export const store = configureStore({
-	reducer: {
-		user: userReducer,
-		error: errorReducer,
-		modals: modalsReducer,
-		inputValues: inputValuesReducer,
-		notification: notificationReducer,
-		// Add other reducers as needed
-	},
+    reducer: {
+        user: userReducer,
+        error: errorReducer,
+        modals: modalsReducer,
+        inputValues: inputValuesReducer,
+        notification: notificationReducer
+        // Add other reducers as needed
+    }
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppThunk<ReturnType = void> = ThunkAction<
-	ReturnType,
-	RootState,
-	unknown,
-	Action<string>
+    ReturnType,
+    RootState,
+    unknown,
+    Action<string>
 >;
 export type AppDispatch = typeof store.dispatch;

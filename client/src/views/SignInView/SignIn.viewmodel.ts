@@ -7,82 +7,82 @@ import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 interface IInputFields {
-	email: string;
-	password: string;
+    email: string;
+    password: string;
 }
 
 interface ISignInViewmodelState {
-	inputFields: IInputFields;
+    inputFields: IInputFields;
 }
 
 interface ISignInViewmodelOperations {
-	goToSignUpView(): void;
-	goToInitialView(): void;
-	signIn(e: React.FormEvent): void;
-	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
+    goToSignUpView(): void;
+    goToInitialView(): void;
+    signIn(e: React.FormEvent): void;
+    handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const useSignInViewmodel = (): ViewModelReturnType<
-	ISignInViewmodelState,
-	ISignInViewmodelOperations
+    ISignInViewmodelState,
+    ISignInViewmodelOperations
 > => {
-	const navigate = useNavigate();
-	const dispatch = useAppDispatch();
-	const [inputFields, setInputFields] = useState<IInputFields>({
-		email: '',
-		password: '',
-	});
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const [inputFields, setInputFields] = useState<IInputFields>({
+        email: '',
+        password: ''
+    });
 
-	const goToInitialView = () => {
-		navigate(ROUTES.HOME);
-	};
+    const goToInitialView = () => {
+        navigate(ROUTES.HOME);
+    };
 
-	const goToSignUpView = () => {
-		navigate(ROUTES.SIGN_UP);
-	};
+    const goToSignUpView = () => {
+        navigate(ROUTES.SIGN_UP);
+    };
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setInputFields((prevInputFields) => ({
-			...prevInputFields,
-			[name]: value,
-		}));
-	};
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setInputFields((prevInputFields) => ({
+            ...prevInputFields,
+            [name]: value
+        }));
+    };
 
-	const signIn = async (e: React.FormEvent) => {
-		e.preventDefault();
+    const signIn = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-		try {
-			if (Object.values(inputFields).some((value) => value === '')) {
-				throw new Error('All fields are required!');
-			}
+        try {
+            if (Object.values(inputFields).some((value) => value === '')) {
+                throw new Error('All fields are required!');
+            }
 
-			const data = await request({
-				body: inputFields,
-				method: METHODS.POST,
-				endpoint: USER_ENDPOINTS.SIGN_IN,
-			});
+            const data = await request({
+                body: inputFields,
+                method: METHODS.POST,
+                endpoint: USER_ENDPOINTS.SIGN_IN
+            });
 
-			//case where the endpoint actually throws an exception
-			if (data.errorMessage) {
-				throw new Error(data.errorMessage);
-			}
+            //case where the endpoint actually throws an exception
+            if (data.errorMessage) {
+                throw new Error(data.errorMessage);
+            }
 
-			navigate(ROUTES.DASHBOARD);
-		} catch (err: any) {
-			dispatch(setErrorMessageAsync(err.message));
-		}
-	};
+            navigate(ROUTES.DASHBOARD);
+        } catch (err: any) {
+            dispatch(setErrorMessageAsync(err.message));
+        }
+    };
 
-	return {
-		state: {
-			inputFields,
-		},
-		operations: {
-			signIn,
-			goToSignUpView,
-			goToInitialView,
-			handleInputChange,
-		},
-	};
+    return {
+        state: {
+            inputFields
+        },
+        operations: {
+            signIn,
+            goToSignUpView,
+            goToInitialView,
+            handleInputChange
+        }
+    };
 };

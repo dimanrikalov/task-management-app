@@ -1,7 +1,7 @@
 import {
-	IStep,
-	IEditStep,
-	useStepsOperations,
+    IStep,
+    IEditStep,
+    useStepsOperations
 } from '@/hooks/useStepsOperations';
 import { useState, useEffect } from 'react';
 import { ITask } from '@/components/Task/Task';
@@ -15,131 +15,131 @@ import { useTaskAssigneeOperations } from '@/hooks/useTaskAssigneeOperations';
 import { IInputState, useTaskModalContext } from '@/contexts/taskModal.context';
 
 interface ICreateTaskOperationsState {
-	steps: IStep[];
-	matches: IUser[];
-	progress: number;
-	inputValues: IInputState;
-	assigneeId: number | null;
-	selectedTask: ITask | null;
-	showConfirmButton: boolean;
-	taskImagePath: string | null;
+    steps: IStep[];
+    matches: IUser[];
+    progress: number;
+    inputValues: IInputState;
+    assigneeId: number | null;
+    selectedTask: ITask | null;
+    showConfirmButton: boolean;
+    taskImagePath: string | null;
 }
 
 interface ICreateTaskOperations {
-	addStep(): void;
-	clearTaskImage(): void;
-	editTask(): Promise<void>;
-	deleteTask(): Promise<void>;
-	createTask(): Promise<void>;
-	toggleConfirmationBtn(): void;
-	loadTaskData(task: ITask): void;
-	selectAssignee(user: IUser): void;
-	removeStep(description: string): void;
-	setErrorMessage(message: string): void;
-	toggleStatus(description: string): void;
-	changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
-	handleInputChange(
-		e: React.ChangeEvent<
-			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-		>
-	): void;
+    addStep(): void;
+    clearTaskImage(): void;
+    editTask(): Promise<void>;
+    deleteTask(): Promise<void>;
+    createTask(): Promise<void>;
+    toggleConfirmationBtn(): void;
+    loadTaskData(task: ITask): void;
+    selectAssignee(user: IUser): void;
+    removeStep(description: string): void;
+    setErrorMessage(message: string): void;
+    toggleStatus(description: string): void;
+    changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
+    handleInputChange(
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
+    ): void;
 }
 
 export const useCreateTaskOperations = (): ViewModelReturnType<
-	ICreateTaskOperationsState,
-	ICreateTaskOperations
+    ICreateTaskOperationsState,
+    ICreateTaskOperations
 > => {
-	const {
-		matches,
-		assigneeId,
-		inputValues,
-		setInputValues,
-		handleInputChange,
-	} = useTaskModalContext();
-	const { steps, setSteps, addStep, removeStep, progress, toggleStatus } =
-		useStepsOperations();
-	const { selectAssignee } = useTaskAssigneeOperations();
-	const { workspaceUsers, selectedTask } = useBoardContext();
-	const { editTask, createTask, deleteTask, setErrorMessage } =
-		useTaskOperations({ inputValues, steps });
-	const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
-	const { taskImagePath, clearTaskImage, changeTaskImage, setTaskImagePath } =
-		useTaskImageOperations();
+    const {
+        matches,
+        assigneeId,
+        inputValues,
+        setInputValues,
+        handleInputChange
+    } = useTaskModalContext();
+    const { steps, setSteps, addStep, removeStep, progress, toggleStatus } =
+        useStepsOperations();
+    const { selectAssignee } = useTaskAssigneeOperations();
+    const { workspaceUsers, selectedTask } = useBoardContext();
+    const { editTask, createTask, deleteTask, setErrorMessage } =
+        useTaskOperations({ inputValues, steps });
+    const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
+    const { taskImagePath, clearTaskImage, changeTaskImage, setTaskImagePath } =
+        useTaskImageOperations();
 
-	useEffect(() => {
-		if (!selectedTask) return;
-		loadTaskData(selectedTask);
-	}, []);
+    useEffect(() => {
+        if (!selectedTask) return;
+        loadTaskData(selectedTask);
+    }, []);
 
-	const toggleConfirmationBtn = () => {
-		setShowConfirmButton((prev) => !prev);
-	};
+    const toggleConfirmationBtn = () => {
+        setShowConfirmButton((prev) => !prev);
+    };
 
-	const loadTaskData = (task: ITask) => {
-		if (!task) return;
+    const loadTaskData = (task: ITask) => {
+        if (!task) return;
 
-		// Sort task.steps by id
-		const sortedSteps = task.steps
-			? [...(task.steps as IEditStep[])].sort((a, b) => a.id - b.id)
-			: [];
+        // Sort task.steps by id
+        const sortedSteps = task.steps
+            ? [...(task.steps as IEditStep[])].sort((a, b) => a.id - b.id)
+            : [];
 
-		Object.entries(task).forEach(([key, value]) => {
-			setInputValues((prev) => ({
-				...prev,
-				[key]: value,
-			}));
-		});
+        Object.entries(task).forEach(([key, value]) => {
+            setInputValues((prev) => ({
+                ...prev,
+                [key]: value
+            }));
+        });
 
-		const image = generateFileFromBase64(
-			task.attachmentImgPath,
-			'image/png',
-			'task-img'
-		);
+        const image = generateFileFromBase64(
+            task.attachmentImgPath,
+            'image/png',
+            'task-img'
+        );
 
-		setInputValues((prev) => ({
-			...prev,
-			image,
-			email:
-				workspaceUsers.find((user) => user.id === task.assigneeId)
-					?.email || '',
-		}));
+        setInputValues((prev) => ({
+            ...prev,
+            image,
+            email:
+                workspaceUsers.find((user) => user.id === task.assigneeId)
+                    ?.email || ''
+        }));
 
-		// Set the sorted steps
-		setSteps(sortedSteps);
+        // Set the sorted steps
+        setSteps(sortedSteps);
 
-		if (task.attachmentImgPath) {
-			setTaskImagePath(`data:image/png;base64,${task.attachmentImgPath}`);
-		} else {
-			setTaskImagePath(null);
-			setInputValues((prev) => ({ ...prev, image: null }));
-		}
-	};
+        if (task.attachmentImgPath) {
+            setTaskImagePath(`data:image/png;base64,${task.attachmentImgPath}`);
+        } else {
+            setTaskImagePath(null);
+            setInputValues((prev) => ({ ...prev, image: null }));
+        }
+    };
 
-	return {
-		state: {
-			steps,
-			matches,
-			progress,
-			assigneeId,
-			inputValues,
-			selectedTask,
-			taskImagePath,
-			showConfirmButton,
-		},
-		operations: {
-			addStep,
-			editTask,
-			removeStep,
-			deleteTask,
-			createTask,
-			loadTaskData,
-			toggleStatus,
-			selectAssignee,
-			clearTaskImage,
-			setErrorMessage,
-			changeTaskImage,
-			handleInputChange,
-			toggleConfirmationBtn,
-		},
-	};
+    return {
+        state: {
+            steps,
+            matches,
+            progress,
+            assigneeId,
+            inputValues,
+            selectedTask,
+            taskImagePath,
+            showConfirmButton
+        },
+        operations: {
+            addStep,
+            editTask,
+            removeStep,
+            deleteTask,
+            createTask,
+            loadTaskData,
+            toggleStatus,
+            selectAssignee,
+            clearTaskImage,
+            setErrorMessage,
+            changeTaskImage,
+            handleInputChange,
+            toggleConfirmationBtn
+        }
+    };
 };

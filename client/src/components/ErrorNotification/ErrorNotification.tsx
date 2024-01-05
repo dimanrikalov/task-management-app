@@ -1,10 +1,8 @@
-
 import { useAppSelector } from '@/app/hooks';
 import styles from './errorNotification.module.css';
 
-
 export const ErrorNotification = () => {
-    const error = useAppSelector(state => state.error);
+    const error = useAppSelector((state) => state.error);
 
     return (
         <div
@@ -13,5 +11,5 @@ export const ErrorNotification = () => {
         >
             <h4>{error.message}</h4>
         </div>
-    )
-}
+    );
+};

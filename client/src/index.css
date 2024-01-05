@@ -1,28 +1,28 @@
 @import url('./imports.css');
 
 :root {
-	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
-	font-weight: 400;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
 
-	background-color: whitesmoke;
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	-webkit-text-size-adjust: 100%;
+    background-color: whitesmoke;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
 
-	--pink: #de5d83;
-	--green: #0b6860;
-	--yellow: #e0ca00;
-	--purple: #4e2a84;
-	--error-background: #ffccc4;
-	--error-font-color: #ff0000;
-	--red-main: #fc5757;
-	--blue-main: #1da1f2;
-	--white-main: #ffffff;
-	--grey-main: rgb(199, 199, 199);
-	--white-secondary: whitesmoke;
+    --pink: #de5d83;
+    --green: #0b6860;
+    --yellow: #e0ca00;
+    --purple: #4e2a84;
+    --error-background: #ffccc4;
+    --error-font-color: #ff0000;
+    --red-main: #fc5757;
+    --blue-main: #1da1f2;
+    --white-main: #ffffff;
+    --grey-main: rgb(199, 199, 199);
+    --white-secondary: whitesmoke;
 }
 
 h1,
@@ -32,58 +32,58 @@ h4,
 h5,
 h6,
 button {
-	font-weight: 500;
+    font-weight: 500;
 }
 
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	outline-color: var(--blue-main);
-	font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline-color: var(--blue-main);
+    font-family: var(--font-family);
 
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-o-user-select: none;
-	user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 
-	-webkit-user-drag: none;
-	-khtml-user-drag: none;
-	-moz-user-drag: none;
-	-o-user-drag: none;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
 }
 
 ::-webkit-scrollbar {
-	height: 7px;
-	width: 7px;
-	color: transparent;
+    height: 7px;
+    width: 7px;
+    color: transparent;
 }
 ::-webkit-scrollbar-corner {
-	background-color: transparent;
+    background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-	border-radius: 2rem;
-	background-color: rgb(177, 177, 177);
+    border-radius: 2rem;
+    background-color: rgb(177, 177, 177);
 }
 ::-webkit-scrollbar-thumb:hover {
-	background-color: var(--blue-main);
+    background-color: var(--blue-main);
 }
 
 ::-webkit-scrollbar-track {
-	background-color: rgb(223, 223, 223);
-	border-radius: 2rem;
+    background-color: rgb(223, 223, 223);
+    border-radius: 2rem;
 }
 
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-	-webkit-appearance: none;
-	margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
 input[type='number'] {
-	-moz-appearance: textfield;
+    -moz-appearance: textfield;
 }

@@ -1,23 +1,23 @@
 import styles from './boardCard.module.css';
 
 interface IBoardCardProps {
-	fontSize?: number;
-	boardName: string;
-	onClickHandler(): void;
+    fontSize?: number;
+    boardName: string;
+    onClickHandler(): void;
 }
 
 export const BoardCard = ({
-	fontSize,
-	boardName,
-	onClickHandler,
+    fontSize,
+    boardName,
+    onClickHandler
 }: IBoardCardProps) => {
-	return (
-		<button
-			style={{ fontSize: fontSize ? fontSize : 24 }}
-			className={styles.background}
-			onClick={onClickHandler}
-		>
-			{boardName}
-		</button>
-	);
+    return (
+        <button
+            style={{ fontSize: fontSize ? fontSize : 24 }}
+            className={styles.background}
+            onClick={onClickHandler}
+        >
+            {boardName}
+        </button>
+    );
 };

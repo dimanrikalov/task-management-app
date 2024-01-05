@@ -1,77 +1,77 @@
 .btn {
-	width: 100%;
-	border: none;
-	cursor: pointer;
-	overflow: hidden;
-	border-radius: 16px;
-	transition: 200ms ease-in-out;
-	background-color: var(--white-main);
-	box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
-	-moz-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
-	-webkit-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 16px;
+    transition: 200ms ease-in-out;
+    background-color: var(--white-main);
+    box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
 }
 
 .board-btn {
-	min-width: 320px;
-	min-height: 140px;
+    min-width: 320px;
+    min-height: 140px;
 }
 
 .workspace-btn {
-	min-width: 300px;
+    min-width: 300px;
 }
 
 .btn:hover {
-	background-color: var(--blue-main);
-	.icon,
-	.title,
-	.subtitle,
-	.userCount {
-		color: var(--white-main);
-	}
+    background-color: var(--blue-main);
+    .icon,
+    .title,
+    .subtitle,
+    .userCount {
+        color: var(--white-main);
+    }
 }
 
 .background {
-	width: 100%;
-	height: 100%;
-	padding: 24px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .header {
-	gap: 6px;
-	display: flex;
-	align-self: flex-start;
-	flex-direction: column;
-	align-items: flex-start;
+    gap: 6px;
+    display: flex;
+    align-self: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .title {
-	font-size: 28px;
-	font-weight: 600;
-	text-align: start;
-	color: var(--blue-main);
-	transition: 200ms ease-in-out;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: start;
+    color: var(--blue-main);
+    transition: 200ms ease-in-out;
 }
 
 .subtitle {
-	font-size: 16px;
-	letter-spacing: 0.2px;
-	transition: 200ms ease-in-out;
+    font-size: 16px;
+    letter-spacing: 0.2px;
+    transition: 200ms ease-in-out;
 }
 
 .userCount {
-	display: flex;
-	font-size: 24px;
-	font-weight: 500;
-	align-items: center;
-	align-self: flex-end;
-	transition: 200ms ease-in-out;
+    display: flex;
+    font-size: 24px;
+    font-weight: 500;
+    align-items: center;
+    align-self: flex-end;
+    transition: 200ms ease-in-out;
 }
 
 .icon {
-	font-size: 32px;
-	color: var(--blue-main);
-	transition: 200ms ease-in-out;
+    font-size: 32px;
+    color: var(--blue-main);
+    transition: 200ms ease-in-out;
 }

@@ -7,298 +7,298 @@ import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
 import { IInputState, useTaskModalContext } from '@/contexts/taskModal.context';
 
 interface IUseTaskOperationArgs {
-	steps: IStep[];
-	inputValues: IInputState;
+    steps: IStep[];
+    inputValues: IInputState;
 }
 
 export const useTaskOperations = ({
-	steps,
-	inputValues,
+    steps,
+    inputValues
 }: IUseTaskOperationArgs) => {
-	const {
-		setBoardData,
-		selectedColumnId,
-		toggleIsTaskModalOpen,
-		selectedTask: taskData,
-	} = useBoardContext();
-	const dispatch = useAppDispatch();
-	const { assigneeId } = useTaskModalContext();
-	const { accessToken } = useAppSelector((state) => state.user);
-	const setErrorMessage = (message: string) => {
-		dispatch(setErrorMessageAsync(message));
-	};
+    const {
+        setBoardData,
+        selectedColumnId,
+        toggleIsTaskModalOpen,
+        selectedTask: taskData
+    } = useBoardContext();
+    const dispatch = useAppDispatch();
+    const { assigneeId } = useTaskModalContext();
+    const { accessToken } = useAppSelector((state) => state.user);
+    const setErrorMessage = (message: string) => {
+        dispatch(setErrorMessageAsync(message));
+    };
 
-	const createTask = async () => {
-		try {
-			if (!selectedColumnId) {
-				throw new Error('Invalid column!');
-			}
+    const createTask = async () => {
+        try {
+            if (!selectedColumnId) {
+                throw new Error('Invalid column!');
+            }
 
-			if (!assigneeId) {
-				throw new Error('Assignee is required!');
-			}
+            if (!assigneeId) {
+                throw new Error('Assignee is required!');
+            }
 
-			if (!inputValues.title) {
-				throw new Error('Task name is required!');
-			}
+            if (!inputValues.title) {
+                throw new Error('Task name is required!');
+            }
 
-			if (inputValues.title.length < 2) {
-				throw new Error(
-					'Task name must be at least 2 characters long!'
-				);
-			}
+            if (inputValues.title.length < 2) {
+                throw new Error(
+                    'Task name must be at least 2 characters long!'
+                );
+            }
 
-			//create the task
-			const body = {
-				steps,
-				assigneeId,
-				title: inputValues.title,
-				columnId: selectedColumnId,
-				description: inputValues.description,
-				effort: Number(inputValues.effort) || 1,
-				priority: Number(inputValues.priority) || 1,
-				hoursSpent: Number(inputValues.hoursSpent) || 0,
-				minutesSpent: Number(inputValues.minutesSpent) || 0,
-				estimatedHours: Number(inputValues.estimatedHours) || 0,
-				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
-			};
+            //create the task
+            const body = {
+                steps,
+                assigneeId,
+                title: inputValues.title,
+                columnId: selectedColumnId,
+                description: inputValues.description,
+                effort: Number(inputValues.effort) || 1,
+                priority: Number(inputValues.priority) || 1,
+                hoursSpent: Number(inputValues.hoursSpent) || 0,
+                minutesSpent: Number(inputValues.minutesSpent) || 0,
+                estimatedHours: Number(inputValues.estimatedHours) || 0,
+                estimatedMinutes: Number(inputValues.estimatedMinutes) || 0
+            };
 
-			const data = await request({
-				body,
-				accessToken,
-				method: METHODS.POST,
-				endpoint: TASK_ENDPOINTS.BASE,
-			});
+            const data = await request({
+                body,
+                accessToken,
+                method: METHODS.POST,
+                endpoint: TASK_ENDPOINTS.BASE
+            });
 
-			//check for handled errors
-			if (data.errorMessage) {
-				throw new Error(data.errorMessage);
-			}
+            //check for handled errors
+            if (data.errorMessage) {
+                throw new Error(data.errorMessage);
+            }
 
-			//set task image optionally
-			if (inputValues.image) {
-				const payload = new FormData();
-				payload.append('taskImg', inputValues.image, 'task-img');
+            //set task image optionally
+            if (inputValues.image) {
+                const payload = new FormData();
+                payload.append('taskImg', inputValues.image, 'task-img');
 
-				const imageUploadData = await request({
-					accessToken,
-					body: payload,
-					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.task.id),
-				});
+                const imageUploadData = await request({
+                    accessToken,
+                    body: payload,
+                    method: METHODS.PUT,
+                    endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.task.id)
+                });
 
-				if (imageUploadData.errorMessage) {
-					throw new Error(imageUploadData.errorMessage);
-				}
+                if (imageUploadData.errorMessage) {
+                    throw new Error(imageUploadData.errorMessage);
+                }
 
-				// Convert the image to base64
-				const base64String = await convertImageToBase64(
-					inputValues.image
-				);
+                // Convert the image to base64
+                const base64String = await convertImageToBase64(
+                    inputValues.image
+                );
 
-				setBoardData((prev) => {
-					if (!prev) return null;
-					const columnToUpdate = {
-						...prev.columns.find(
-							(col) => col.id === selectedColumnId
-						)!,
-					};
+                setBoardData((prev) => {
+                    if (!prev) return null;
+                    const columnToUpdate = {
+                        ...prev.columns.find(
+                            (col) => col.id === selectedColumnId
+                        )!
+                    };
 
-					const columns = [...prev.columns];
-					columnToUpdate.tasks.push({
-						...data.task,
-						attachmentImgPath: base64String,
-					});
+                    const columns = [...prev.columns];
+                    columnToUpdate.tasks.push({
+                        ...data.task,
+                        attachmentImgPath: base64String
+                    });
 
-					columns.splice(columnToUpdate.position, 1, columnToUpdate);
+                    columns.splice(columnToUpdate.position, 1, columnToUpdate);
 
-					return {
-						...prev,
-						columns,
-					};
-				});
-			} else {
-				setBoardData((prev) => {
-					if (!prev) return null;
-					const columnToUpdate = {
-						...prev.columns.find(
-							(col) => col.id === selectedColumnId
-						)!,
-					};
+                    return {
+                        ...prev,
+                        columns
+                    };
+                });
+            } else {
+                setBoardData((prev) => {
+                    if (!prev) return null;
+                    const columnToUpdate = {
+                        ...prev.columns.find(
+                            (col) => col.id === selectedColumnId
+                        )!
+                    };
 
-					columnToUpdate.tasks.push(data.task);
-					const columns = [...prev.columns];
+                    columnToUpdate.tasks.push(data.task);
+                    const columns = [...prev.columns];
 
-					columns.splice(columnToUpdate.position, 1, columnToUpdate);
+                    columns.splice(columnToUpdate.position, 1, columnToUpdate);
 
-					return {
-						...prev,
-						columns,
-					};
-				});
-			}
-			toggleIsTaskModalOpen();
-		} catch (err: any) {
-			console.log(err.message);
-			setErrorMessage(err.message);
-		}
-	};
+                    return {
+                        ...prev,
+                        columns
+                    };
+                });
+            }
+            toggleIsTaskModalOpen();
+        } catch (err: any) {
+            console.log(err.message);
+            setErrorMessage(err.message);
+        }
+    };
 
-	const editTask = async () => {
-		if (!taskData) return;
+    const editTask = async () => {
+        if (!taskData) return;
 
-		try {
-			if (!taskData.id) {
-				throw new Error('Invalid task!');
-			}
+        try {
+            if (!taskData.id) {
+                throw new Error('Invalid task!');
+            }
 
-			if (!assigneeId) {
-				throw new Error('Assignee is required!');
-			}
+            if (!assigneeId) {
+                throw new Error('Assignee is required!');
+            }
 
-			if (!inputValues.title) {
-				throw new Error('Task name is required!');
-			}
+            if (!inputValues.title) {
+                throw new Error('Task name is required!');
+            }
 
-			if (inputValues.title.length < 2) {
-				throw new Error(
-					'Task name must be at least 2 characters long!'
-				);
-			}
+            if (inputValues.title.length < 2) {
+                throw new Error(
+                    'Task name must be at least 2 characters long!'
+                );
+            }
 
-			const body = {
-				steps,
-				assigneeId,
-				title: inputValues.title,
-				description: inputValues.description,
-				effort: Number(inputValues.effort) || 1,
-				priority: Number(inputValues.priority) || 1,
-				hoursSpent: Number(inputValues.hoursSpent) || 0,
-				minutesSpent: Number(inputValues.minutesSpent) || 0,
-				estimatedHours: Number(inputValues.estimatedHours) || 0,
-				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
-			};
+            const body = {
+                steps,
+                assigneeId,
+                title: inputValues.title,
+                description: inputValues.description,
+                effort: Number(inputValues.effort) || 1,
+                priority: Number(inputValues.priority) || 1,
+                hoursSpent: Number(inputValues.hoursSpent) || 0,
+                minutesSpent: Number(inputValues.minutesSpent) || 0,
+                estimatedHours: Number(inputValues.estimatedHours) || 0,
+                estimatedMinutes: Number(inputValues.estimatedMinutes) || 0
+            };
 
-			const res = await request({
-				accessToken,
-				method: METHODS.PUT,
-				body: { payload: body },
-				endpoint: TASK_ENDPOINTS.EDIT(taskData.id),
-			});
+            const res = await request({
+                accessToken,
+                method: METHODS.PUT,
+                body: { payload: body },
+                endpoint: TASK_ENDPOINTS.EDIT(taskData.id)
+            });
 
-			if (res.errorMessage) {
-				throw new Error(res.errorMessage);
-			}
+            if (res.errorMessage) {
+                throw new Error(res.errorMessage);
+            }
 
-			//set task image optionally
-			if (inputValues.image) {
-				const payload = new FormData();
-				payload.append('taskImg', inputValues.image, 'task-img');
+            //set task image optionally
+            if (inputValues.image) {
+                const payload = new FormData();
+                payload.append('taskImg', inputValues.image, 'task-img');
 
-				const imageUploadData = await request({
-					accessToken,
-					body: payload,
-					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(taskData.id),
-				});
+                const imageUploadData = await request({
+                    accessToken,
+                    body: payload,
+                    method: METHODS.PUT,
+                    endpoint: TASK_ENDPOINTS.UPLOAD_IMG(taskData.id)
+                });
 
-				if (imageUploadData.errorMessage) {
-					throw new Error(imageUploadData.errorMessage);
-				}
+                if (imageUploadData.errorMessage) {
+                    throw new Error(imageUploadData.errorMessage);
+                }
 
-				const base64String = await convertImageToBase64(
-					inputValues.image
-				);
+                const base64String = await convertImageToBase64(
+                    inputValues.image
+                );
 
-				setBoardData((prev) => {
-					if (!prev) return null;
+                setBoardData((prev) => {
+                    if (!prev) return null;
 
-					const columns = prev.columns.map((col) => {
-						if (col.tasks.some((task) => task.id === taskData.id)) {
-							const updatedTasks = col.tasks.map((task) =>
-								task.id === taskData.id
-									? {
-											...res.task,
-											attachmentImgPath: base64String,
-									  }
-									: task
-							);
-							return { ...col, tasks: updatedTasks };
-						}
-						return col;
-					});
+                    const columns = prev.columns.map((col) => {
+                        if (col.tasks.some((task) => task.id === taskData.id)) {
+                            const updatedTasks = col.tasks.map((task) =>
+                                task.id === taskData.id
+                                    ? {
+                                          ...res.task,
+                                          attachmentImgPath: base64String
+                                      }
+                                    : task
+                            );
+                            return { ...col, tasks: updatedTasks };
+                        }
+                        return col;
+                    });
 
-					return { ...prev, columns };
-				});
-			} else {
-				setBoardData((prev) => {
-					if (!prev) return null;
+                    return { ...prev, columns };
+                });
+            } else {
+                setBoardData((prev) => {
+                    if (!prev) return null;
 
-					const columns = prev.columns.map((col) => {
-						if (col.tasks.some((task) => task.id === taskData.id)) {
-							const updatedTasks = col.tasks.map((task) =>
-								task.id === taskData.id ? { ...res.task } : task
-							);
-							return { ...col, tasks: updatedTasks };
-						}
-						return col;
-					});
+                    const columns = prev.columns.map((col) => {
+                        if (col.tasks.some((task) => task.id === taskData.id)) {
+                            const updatedTasks = col.tasks.map((task) =>
+                                task.id === taskData.id ? { ...res.task } : task
+                            );
+                            return { ...col, tasks: updatedTasks };
+                        }
+                        return col;
+                    });
 
-					return { ...prev, columns };
-				});
-			}
-			toggleIsTaskModalOpen();
-		} catch (err: any) {
-			console.log(err.message);
-			setErrorMessage(err.message);
-		}
-	};
+                    return { ...prev, columns };
+                });
+            }
+            toggleIsTaskModalOpen();
+        } catch (err: any) {
+            console.log(err.message);
+            setErrorMessage(err.message);
+        }
+    };
 
-	const deleteTask = async () => {
-		if (!taskData) return;
+    const deleteTask = async () => {
+        if (!taskData) return;
 
-		try {
-			const res = await request({
-				accessToken,
-				method: METHODS.DELETE,
-				endpoint: TASK_ENDPOINTS.EDIT(taskData.id),
-			});
+        try {
+            const res = await request({
+                accessToken,
+                method: METHODS.DELETE,
+                endpoint: TASK_ENDPOINTS.EDIT(taskData.id)
+            });
 
-			if (res.errorMessage) {
-				throw new Error(res.errorMessage);
-			}
+            if (res.errorMessage) {
+                throw new Error(res.errorMessage);
+            }
 
-			setBoardData((prev) => {
-				if (!prev) return null;
+            setBoardData((prev) => {
+                if (!prev) return null;
 
-				const columns = prev.columns.map((col) => {
-					if (col.tasks.some((task) => task.id === taskData.id)) {
-						const updatedTasks = col.tasks.filter(
-							(task) => task.id !== taskData.id
-						);
-						return { ...col, tasks: updatedTasks };
-					}
-					return col;
-				});
+                const columns = prev.columns.map((col) => {
+                    if (col.tasks.some((task) => task.id === taskData.id)) {
+                        const updatedTasks = col.tasks.filter(
+                            (task) => task.id !== taskData.id
+                        );
+                        return { ...col, tasks: updatedTasks };
+                    }
+                    return col;
+                });
 
-				return {
-					...prev,
-					columns,
-				};
-			});
+                return {
+                    ...prev,
+                    columns
+                };
+            });
 
-			toggleIsTaskModalOpen();
-		} catch (err: any) {
-			console.log(err.message);
-			setErrorMessage(err.message);
-		}
-	};
+            toggleIsTaskModalOpen();
+        } catch (err: any) {
+            console.log(err.message);
+            setErrorMessage(err.message);
+        }
+    };
 
-	return {
-		editTask,
-		createTask,
-		deleteTask,
-		setErrorMessage,
-		toggleIsTaskModalOpen,
-	};
+    return {
+        editTask,
+        createTask,
+        deleteTask,
+        setErrorMessage,
+        toggleIsTaskModalOpen
+    };
 };

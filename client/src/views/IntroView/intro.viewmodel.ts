@@ -5,28 +5,28 @@ import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 interface IIntroViewModelState {}
 
 interface IIntroViewModelOperations {
-	signInHandler(): void;
-	signUpHandler(): void;
+    signInHandler(): void;
+    signUpHandler(): void;
 }
 export const useIntroViewModel = (): ViewModelReturnType<
-	IIntroViewModelState,
-	IIntroViewModelOperations
+    IIntroViewModelState,
+    IIntroViewModelOperations
 > => {
-	const navigate = useNavigate();
+    const navigate = useNavigate();
 
-	const signInHandler = () => {
-		navigate(ROUTES.SIGN_IN);
-	};
+    const signInHandler = () => {
+        navigate(ROUTES.SIGN_IN);
+    };
 
-	const signUpHandler = () => {
-		navigate(ROUTES.SIGN_UP);
-	};
+    const signUpHandler = () => {
+        navigate(ROUTES.SIGN_UP);
+    };
 
-	return {
-		state: {},
-		operations: {
-			signInHandler,
-			signUpHandler,
-		},
-	};
+    return {
+        state: {},
+        operations: {
+            signInHandler,
+            signUpHandler
+        }
+    };
 };

@@ -1,10 +1,8 @@
-
 import { useAppSelector } from '@/app/hooks';
 import styles from './notification.module.css';
 
-
 export const Notification = () => {
-    const notification = useAppSelector(state => state.notification);
+    const notification = useAppSelector((state) => state.notification);
 
     return (
         <div
@@ -13,5 +11,5 @@ export const Notification = () => {
         >
             <h4>{notification.message}</h4>
         </div>
-    )
-}
+    );
+};

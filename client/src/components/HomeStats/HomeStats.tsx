@@ -24,25 +24,26 @@ interface IStatProps {
 
 const Stat = ({ isLoading, stat }: IStatProps) => {
     return (
-        <div className={styles.value}>{isLoading ?
-            <LoadingOverlay size={42} color='#fff' />
-            :
-            <h1>{stat}</h1>
-        }
+        <div className={styles.value}>
+            {isLoading ? (
+                <LoadingOverlay size={42} color="#fff" />
+            ) : (
+                <h1>{stat}</h1>
+            )}
         </div>
-    )
-}
+    );
+};
 
 export const HomeStats = () => {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const { accessToken } = useAppSelector(state => state.user);
+    const { accessToken } = useAppSelector((state) => state.user);
     const [userStats, setUserStats] = useState<IUserStats>({
         boardsCount: -1,
         messagesCount: -1,
         workspacesCount: -1,
         pendingTasksCount: -1,
-        completedTasksCount: -1,
+        completedTasksCount: -1
     });
 
     useEffect(() => {
@@ -52,7 +53,7 @@ export const HomeStats = () => {
                 const data = await request({
                     accessToken,
                     method: METHODS.GET,
-                    endpoint: USER_ENDPOINTS.STATS,
+                    endpoint: USER_ENDPOINTS.STATS
                 });
                 setUserStats(data);
             } catch (err: any) {
@@ -70,13 +71,19 @@ export const HomeStats = () => {
             <div className={styles.completeTasks}>
                 <div className={styles.header}>
                     <BsCheckLg className={styles.icon} />{' '}
-                    <Stat isLoading={isLoading} stat={userStats.completedTasksCount} />
+                    <Stat
+                        isLoading={isLoading}
+                        stat={userStats.completedTasksCount}
+                    />
                 </div>
                 <h3 className={styles.statName}>Tasks Completed</h3>
             </div>
             <div className={styles.pendingTasks}>
                 <div className={styles.header}>
-                    <Stat isLoading={isLoading} stat={userStats.pendingTasksCount} />
+                    <Stat
+                        isLoading={isLoading}
+                        stat={userStats.pendingTasksCount}
+                    />
                     <MdPendingActions className={styles.icon} />
                 </div>
                 <h3 className={styles.statName}>Pending Tasks</h3>
@@ -92,16 +99,22 @@ export const HomeStats = () => {
                 <h3 className={styles.statName}>Workspaces</h3>
                 <div className={styles.bottom}>
                     <HiOutlineDocument className={styles.icon} />
-                    <Stat isLoading={isLoading} stat={userStats.workspacesCount} />
+                    <Stat
+                        isLoading={isLoading}
+                        stat={userStats.workspacesCount}
+                    />
                 </div>
             </div>
             <div className={styles.totalMessages}>
                 <h3 className={styles.statName}>Messages</h3>
                 <div className={styles.bottom}>
                     <LuMessageSquare className={styles.icon} />
-                    <Stat isLoading={isLoading} stat={userStats.messagesCount} />
+                    <Stat
+                        isLoading={isLoading}
+                        stat={userStats.messagesCount}
+                    />
                 </div>
             </div>
         </>
-    )
-}
+    );
+};

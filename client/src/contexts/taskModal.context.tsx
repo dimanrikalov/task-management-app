@@ -1,7 +1,7 @@
-import { useBoardContext } from "./board.context";
-import { generateFileFromBase64 } from "@/utils/convertImages";
-import { createContext, useContext, useEffect, useState } from "react";
-import { IUser } from "@/components/AddColleagueInput/AddColleagueInput";
+import { useBoardContext } from './board.context';
+import { generateFileFromBase64 } from '@/utils/convertImages';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 
 export interface IInputState {
     title: string;
@@ -29,74 +29,78 @@ interface ITaskModalContext {
 
 const TaskModalContext = createContext<any>(null);
 
-export const useTaskModalContext = () => useContext<ITaskModalContext>(TaskModalContext);
+export const useTaskModalContext = () =>
+    useContext<ITaskModalContext>(TaskModalContext);
 
-export const TaskModalContextProvider:
-    React.FC<{ children: React.ReactNode }> = ({ children }) => {
-        const { selectedTask } = useBoardContext();
-        const [assigneeId, setAssigneeId] = useState<number | null>(null);
-        const [inputValues, setInputValues] = useState<IInputState>({
+export const TaskModalContextProvider: React.FC<{
+    children: React.ReactNode;
+}> = ({ children }) => {
+    const { selectedTask } = useBoardContext();
+    const [assigneeId, setAssigneeId] = useState<number | null>(null);
+    const [inputValues, setInputValues] = useState<IInputState>({
+        step: '',
+        title: '',
+        email: '',
+        effort: '',
+        image: null,
+        priority: '',
+        hoursSpent: '',
+        description: '',
+        minutesSpent: '',
+        estimatedHours: '',
+        estimatedMinutes: ''
+    });
+
+    const { boardData } = useBoardContext();
+    const boardUsers = boardData?.boardUsers || [];
+    const [matches, setMatches] = useState<IUser[]>([]);
+
+    useEffect(() => {
+        if (!selectedTask) return;
+        const email =
+            boardUsers.find((user) => user.id === selectedTask.assigneeId)
+                ?.email || '';
+        const image = selectedTask.attachmentImgPath
+            ? generateFileFromBase64(
+                  selectedTask.attachmentImgPath,
+                  'image/png',
+                  'task-img'
+              )
+            : null;
+        setInputValues({
+            email,
+            image,
             step: '',
-            title: '',
-            email: '',
-            effort: '',
-            image: null,
-            priority: '',
-            hoursSpent: '',
-            description: '',
-            minutesSpent: '',
-            estimatedHours: '',
-            estimatedMinutes: '',
+            title: selectedTask.title,
+            description: selectedTask.description,
+            effort: selectedTask.effort.toString(),
+            priority: selectedTask.priority.toString(),
+            hoursSpent: selectedTask.hoursSpent.toString(),
+            minutesSpent: selectedTask.minutesSpent.toString(),
+            estimatedHours: selectedTask.estimatedHours.toString(),
+            estimatedMinutes: selectedTask.estimatedMinutes.toString()
         });
+    }, [selectedTask]);
 
-        const { boardData } = useBoardContext();
-        const boardUsers = boardData?.boardUsers || [];
-        const [matches, setMatches] = useState<IUser[]>([]);
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputValues((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
+    };
 
-        useEffect(() => {
-            if (!selectedTask) return;
-            const email = boardUsers.
-                find(user => user.id === selectedTask.assigneeId)?.email || ''
-            const image = selectedTask.attachmentImgPath ?
-                generateFileFromBase64(selectedTask.attachmentImgPath,
-                    'image/png',
-                    'task-img'
-                ) : null
-            setInputValues({
-                email,
-                image,
-                step: '',
-                title: selectedTask.title,
-                description: selectedTask.description,
-                effort: selectedTask.effort.toString(),
-                priority: selectedTask.priority.toString(),
-                hoursSpent: selectedTask.hoursSpent.toString(),
-                minutesSpent: selectedTask.minutesSpent.toString(),
-                estimatedHours: selectedTask.estimatedHours.toString(),
-                estimatedMinutes: selectedTask.estimatedMinutes.toString(),
-            })
-        }, [selectedTask]);
-
-
-        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            setInputValues((prev) => ({
-                ...prev,
-                [e.target.name]: e.target.value,
-            }));
-        };
-
-        const data: ITaskModalContext = {
-            matches,
-            assigneeId,
-            setMatches,
-            inputValues,
-            setAssigneeId,
-            setInputValues,
-            handleInputChange,
-        }
-        return (
-            <TaskModalContext.Provider value={data}>
-                {children}
-            </TaskModalContext.Provider>
-        );
-    }
+    const data: ITaskModalContext = {
+        matches,
+        assigneeId,
+        setMatches,
+        inputValues,
+        setAssigneeId,
+        setInputValues,
+        handleInputChange
+    };
+    return (
+        <TaskModalContext.Provider value={data}>
+            {children}
+        </TaskModalContext.Provider>
+    );
+};

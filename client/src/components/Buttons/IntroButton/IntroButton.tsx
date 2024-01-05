@@ -15,8 +15,8 @@ export const IntroButton = ({
     backgroundColor,
     reverse = false,
     disabled = false,
-    onClick = () => { },
-    disableHoverEffects = false,
+    onClick = () => {},
+    disableHoverEffects = false
 }: IIntroButtonProps) => {
     return (
         <button

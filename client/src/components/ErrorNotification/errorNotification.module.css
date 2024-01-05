@@ -1,15 +1,15 @@
 .background {
-	opacity: 0;
-	z-index: 1;
-	right: 32px;
-	bottom: 32px;
-	width: 300px;
-	position: fixed;
-	padding: 12px 12px;
-	text-align: center;
-	border-radius: 0.5em;
-	pointer-events: none;
-	color: var(--red-main);
-	transition: opacity 1s ease;
-	background-color: var(--error-background);
+    opacity: 0;
+    z-index: 1;
+    right: 32px;
+    bottom: 32px;
+    width: 300px;
+    position: fixed;
+    padding: 12px 12px;
+    text-align: center;
+    border-radius: 0.5em;
+    pointer-events: none;
+    color: var(--red-main);
+    transition: opacity 1s ease;
+    background-color: var(--error-background);
 }

@@ -1,112 +1,112 @@
 .statName {
-	font-size: 24px;
+    font-size: 24px;
 }
 
 .value {
-	width: 42px;
-	height: 42px;
-	display: flex;
-	font-weight: 600;
-	align-items: center;
-	justify-content: center;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    font-weight: 600;
+    align-items: center;
+    justify-content: center;
 }
 
 .icon {
-	font-size: 64px;
-	border-radius: 12px;
-	background-color: rgba(255, 255, 255, 0.35);
+    font-size: 64px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.35);
 }
 
 .completeTasks,
 .completeTasks .header {
-	display: flex;
-	justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 
 .completeTasks {
-	gap: 32px;
-	flex-direction: column;
-	grid-area: complete-tasks;
-	background-color: var(--purple);
+    gap: 32px;
+    flex-direction: column;
+    grid-area: complete-tasks;
+    background-color: var(--purple);
 }
 
 .completeTasks .header {
-	gap: 24px;
-	align-items: flex-start;
+    gap: 24px;
+    align-items: flex-start;
 }
 
 .pendingTasks {
-	grid-area: pending-tasks;
-	background-color: var(--pink);
+    grid-area: pending-tasks;
+    background-color: var(--pink);
 }
 
 .totalBoards,
 .totalBoards .header {
-	gap: 32px;
-	display: flex;
-	justify-content: space-between;
+    gap: 32px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .totalBoards {
-	grid-area: total-boards;
-	background-color: var(--blue-main);
+    grid-area: total-boards;
+    background-color: var(--blue-main);
 }
 
 .totalBoards .header {
-	flex-direction: column;
+    flex-direction: column;
 }
 
 .totalBoards .icon {
-	padding: 8px;
+    padding: 8px;
 }
 
 .totalWorkspaces {
-	grid-area: total-workspaces;
-	background-color: var(--green);
+    grid-area: total-workspaces;
+    background-color: var(--green);
 }
 
 .pendingTasks,
 .totalMessages,
 .totalWorkspaces {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .totalMessages {
-	gap: 32px;
-	grid-area: total-messages;
-	background-color: var(--yellow);
+    gap: 32px;
+    grid-area: total-messages;
+    background-color: var(--yellow);
 }
 
 .pendingTasks {
-	gap: 16px;
+    gap: 16px;
 }
 
 .pendingTasks .header,
 .totalMessages .bottom,
 .totalWorkspaces .bottom {
-	gap: 16px;
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
+    gap: 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
 }
 
 .pendingTasks .header .icon,
 .totalWorkspaces .bottom .icon {
-	padding: 4px 8px;
+    padding: 4px 8px;
 }
 
 .totalMessages .bottom,
 .totalMessages .bottom,
 .totalWorkspaces .bottom {
-	align-items: flex-end;
+    align-items: flex-end;
 }
 
 .totalMessages .bottom .icon {
-	padding: 12px;
+    padding: 12px;
 }
 
 .totalMessages h2 {
-	align-self: flex-end;
+    align-self: flex-end;
 }

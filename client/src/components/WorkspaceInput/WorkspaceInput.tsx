@@ -19,13 +19,13 @@ export const WorkspaceInput = ({
     chooseWorkspace,
     accessibleWorkspaces
 }: IWorkspaceInputProps) => {
-    const matches = accessibleWorkspaces
-        .filter(workspace =>
-            workspace.name.toLowerCase()
-                .trim()
-                .includes(value.toLowerCase().trim()));
+    const matches = accessibleWorkspaces.filter((workspace) =>
+        workspace.name.toLowerCase().trim().includes(value.toLowerCase().trim())
+    );
 
-    const valueIsValidWorkspaceName = matches.find(workspace => workspace.name === value);
+    const valueIsValidWorkspaceName = matches.find(
+        (workspace) => workspace.name === value
+    );
 
     return (
         <div>
@@ -38,12 +38,12 @@ export const WorkspaceInput = ({
                 name="workspaceName"
                 placeholder="Enter a workspace name"
             />
-            {
-                value !== '' && !valueIsValidWorkspaceName && matches.length > 0 &&
-                <div className={styles.dropdownWrapper}>
-                    <div className={styles.dropdown}>
-                        {
-                            matches.map((workspace) =>
+            {value !== '' &&
+                !valueIsValidWorkspaceName &&
+                matches.length > 0 && (
+                    <div className={styles.dropdownWrapper}>
+                        <div className={styles.dropdown}>
+                            {matches.map((workspace) => (
                                 <div
                                     key={workspace.id}
                                     className={styles.match}
@@ -51,11 +51,10 @@ export const WorkspaceInput = ({
                                 >
                                     {workspace.name}
                                 </div>
-                            )
-                        }
+                            ))}
+                        </div>
                     </div>
-                </div>
-            }
+                )}
         </div>
-    )
-}
+    );
+};

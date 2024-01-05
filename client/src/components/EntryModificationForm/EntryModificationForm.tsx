@@ -2,13 +2,12 @@ import { FaEdit } from 'react-icons/fa';
 import styles from './entryModificationForm.module.css';
 import { EntryModificationButton } from '../Buttons/EntryModificationButton/EntryModificationButton';
 
-
 interface IEntryModificationForm {
     name: string;
     value: string;
     placeholder?: string;
-    onSubmit: React.FormEventHandler<HTMLFormElement>
-    onChange: React.ChangeEventHandler<HTMLInputElement>
+    onSubmit: React.FormEventHandler<HTMLFormElement>;
+    onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 export const EntryModificationForm = ({
@@ -16,15 +15,10 @@ export const EntryModificationForm = ({
     value,
     onSubmit,
     onChange,
-    placeholder,
+    placeholder
 }: IEntryModificationForm) => {
-
     return (
-
-        <form
-            onSubmit={onSubmit}
-            className={styles.form}
-        >
+        <form onSubmit={onSubmit} className={styles.form}>
             <input
                 type="text"
                 name={name}
@@ -37,5 +31,5 @@ export const EntryModificationForm = ({
                 <FaEdit className={styles.icon} />
             </EntryModificationButton>
         </form>
-    )
-}
+    );
+};

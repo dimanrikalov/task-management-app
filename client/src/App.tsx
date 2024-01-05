@@ -6,15 +6,15 @@ import { Notification } from './components/Notification/Notification';
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
 
 function App() {
-	return (
-		<div className={styles.background}>
-			<Provider store={store}>
-				<Router />
-				<Notification />
-				<ErrorNotification />
-			</Provider>
-		</div>
-	);
+    return (
+        <div className={styles.background}>
+            <Provider store={store}>
+                <Router />
+                <Notification />
+                <ErrorNotification />
+            </Provider>
+        </div>
+    );
 }
 
 export default App;
