@@ -1,5 +1,4 @@
 import {
-    ILists,
     IHomeBoardEntry,
     useFetchHomeLists,
     IHomeWorkspaceEntry
@@ -28,12 +27,18 @@ export interface ISearchInputs {
     searchWorkspaces: string;
 }
 
+interface IFilteredLists {
+    boards: IHomeBoardEntry[];
+    workspaces: IHomeWorkspaceEntry[];
+}
+
 interface IUseHomeViewmodelState {
     date: string;
-    isLoading: boolean;
     userData: IUserData;
-    filteredLists: ILists;
+    isLoadingBoards: boolean;
     searchInputs: ISearchInputs;
+    isLoadingWorkspaces: boolean;
+    filteredLists: IFilteredLists;
 }
 
 const options: Intl.DateTimeFormatOptions = {
@@ -52,10 +57,16 @@ export const useHomeViewModel = (): ViewModelReturnType<
     IUseHomeViewmodelState,
     IUserHomeViewmodelOperations
 > => {
+    const {
+        lists,
+        isLoadingBoards,
+        setIsLoadingBoards,
+        isLoadingWorkspaces,
+        setIsLoadingWorkspaces
+    } = useFetchHomeLists();
     const navigate = useNavigate();
-    const { lists, isLoading } = useFetchHomeLists();
     const date = new Date().toLocaleDateString('en-US', options);
-    const [filteredLists, setFilteredLists] = useState<ILists>({
+    const [filteredLists, setFilteredLists] = useState<IFilteredLists>({
         boards: [],
         workspaces: []
     });
@@ -68,10 +79,21 @@ export const useHomeViewModel = (): ViewModelReturnType<
     };
 
     useEffect(() => {
-        setFilteredLists(() => ({
-            boards: [...lists.boards],
-            workspaces: [...lists.workspaces]
+        if (!lists.boards) return;
+        setFilteredLists((prev) => ({
+            ...prev,
+            boards: lists.boards as IHomeBoardEntry[]
         }));
+        setIsLoadingBoards(false);
+    }, [lists]);
+
+    useEffect(() => {
+        if (!lists.workspaces) return;
+        setFilteredLists((prev) => ({
+            ...prev,
+            workspaces: lists.workspaces as IHomeWorkspaceEntry[]
+        }));
+        setIsLoadingWorkspaces(false);
     }, [lists]);
 
     //filter out entries based on search inputs
@@ -106,10 +128,13 @@ export const useHomeViewModel = (): ViewModelReturnType<
 
         setFilteredLists(() => {
             return {
-                boards: filterBoards(searchInputs.searchBoards, lists.boards),
+                boards: filterBoards(
+                    searchInputs.searchBoards,
+                    lists.boards || []
+                ),
                 workspaces: filterWorkspaces(
                     searchInputs.searchWorkspaces,
-                    lists.workspaces
+                    lists.workspaces || []
                 )
             };
         });
@@ -134,9 +159,10 @@ export const useHomeViewModel = (): ViewModelReturnType<
         state: {
             date,
             userData,
-            isLoading,
             searchInputs,
-            filteredLists
+            filteredLists,
+            isLoadingBoards,
+            isLoadingWorkspaces
         },
         operations: {
             logout,

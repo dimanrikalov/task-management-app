@@ -24,46 +24,56 @@ export interface IHomeWorkspaceEntry {
 }
 
 export interface ILists {
-    boards: IHomeBoardEntry[];
-    workspaces: IHomeWorkspaceEntry[];
+    boards: IHomeBoardEntry[] | null;
+    workspaces: IHomeWorkspaceEntry[] | null;
 }
 
 export const useFetchHomeLists = () => {
     const dispatch = useAppDispatch();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoadingWorkspaces, setIsLoadingWorkspaces] =
+        useState<boolean>(true);
+    const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(true);
     const { accessToken } = useAppSelector((state) => state.user);
     const [lists, setLists] = useState<ILists>({
-        boards: [],
-        workspaces: []
+        boards: null,
+        workspaces: null
     });
 
+    //fetching boards
     useEffect(() => {
-        const fetchEntries = async (entries: ENTRIES_TYPES) => {
-            try {
-                const data = await request({
-                    accessToken,
-                    method: METHODS.GET,
-                    endpoint:
-                        entries === ENTRIES_TYPES.BOARDS
-                            ? BOARD_ENDPOINTS.BASE
-                            : WORKSPACE_ENDPOINTS.BASE
-                });
-
-                setLists((prev) => ({ ...prev, [entries]: data }));
-            } catch (err: any) {
-                console.log(err.message);
-                dispatch(setErrorMessageAsync(err.message));
-            }
-        };
-
-        setIsLoading(true);
+        setIsLoadingBoards(true);
         fetchEntries(ENTRIES_TYPES.BOARDS);
-        fetchEntries(ENTRIES_TYPES.WORKSPACES);
-        setIsLoading(false);
     }, [accessToken]);
+
+    //fetching workspaces
+    useEffect(() => {
+        setIsLoadingWorkspaces(true);
+        fetchEntries(ENTRIES_TYPES.WORKSPACES);
+    }, [accessToken]);
+
+    const fetchEntries = async (entries: ENTRIES_TYPES) => {
+        try {
+            const data = await request({
+                accessToken,
+                method: METHODS.GET,
+                endpoint:
+                    entries === ENTRIES_TYPES.BOARDS
+                        ? BOARD_ENDPOINTS.BASE
+                        : WORKSPACE_ENDPOINTS.BASE
+            });
+
+            setLists((prev) => ({ ...prev, [entries]: data }));
+        } catch (err: any) {
+            console.log(err.message);
+            dispatch(setErrorMessageAsync(err.message));
+        }
+    };
 
     return {
         lists,
-        isLoading
+        isLoadingBoards,
+        setIsLoadingBoards,
+        isLoadingWorkspaces,
+        setIsLoadingWorkspaces
     };
 };

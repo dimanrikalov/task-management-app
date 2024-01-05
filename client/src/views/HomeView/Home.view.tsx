@@ -21,10 +21,11 @@ export const HomeView = () => {
                     <OperationsRibbon />
                 </div>
                 <HomeDashboard
-                    isLoading={state.isLoading}
                     searchInputs={state.searchInputs}
                     boards={state.filteredLists.boards}
+                    isLoadingBoards={state.isLoadingBoards}
                     workspaces={state.filteredLists.workspaces}
+                    isLoadingWorkspaces={state.isLoadingWorkspaces}
                     filterHandler={operations.handleFilterInputChange}
                 />
             </div>

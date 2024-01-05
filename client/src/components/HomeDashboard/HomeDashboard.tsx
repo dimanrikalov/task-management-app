@@ -1,27 +1,29 @@
-import { ISearchInputs, ENTRIES_TYPES } from '@/views/HomeView/Home.viewmodel';
-import styles from './homeDashboard.module.css';
-import { HomeList } from '../HomeList/HomeList';
-import { HomeStats } from '../HomeStats/HomeStats';
-import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import {
     IHomeBoardEntry,
     IHomeWorkspaceEntry
 } from '@/hooks/useFetchHomeLists';
+import styles from './homeDashboard.module.css';
+import { HomeList } from '../HomeList/HomeList';
+import { HomeStats } from '../HomeStats/HomeStats';
+import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { ISearchInputs, ENTRIES_TYPES } from '@/views/HomeView/Home.viewmodel';
 
 interface IHomeGridStatsProps {
-    isLoading: boolean;
+    isLoadingBoards: boolean;
     boards: IHomeBoardEntry[];
     searchInputs: ISearchInputs;
+    isLoadingWorkspaces: boolean;
     workspaces: IHomeWorkspaceEntry[];
     filterHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const HomeDashboard = ({
     boards,
-    isLoading,
     workspaces,
     searchInputs,
-    filterHandler
+    filterHandler,
+    isLoadingBoards,
+    isLoadingWorkspaces
 }: IHomeGridStatsProps) => {
     return (
         <div className={styles.background}>
@@ -41,7 +43,7 @@ export const HomeDashboard = ({
                     </div>
                     <HomeList
                         entries={boards}
-                        isLoading={isLoading}
+                        isLoading={isLoadingBoards}
                         type={ENTRIES_TYPES.BOARDS}
                     />
                 </div>
@@ -61,7 +63,7 @@ export const HomeDashboard = ({
                     </div>
                     <HomeList
                         entries={workspaces}
-                        isLoading={isLoading}
+                        isLoading={isLoadingWorkspaces}
                         type={ENTRIES_TYPES.WORKSPACES}
                     />
                 </div>
