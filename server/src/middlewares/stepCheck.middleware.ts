@@ -14,8 +14,8 @@ export class StepCheckMiddleware implements NestMiddleware {
 
             const step = await this.prismaService.step.findFirst({
                 where: {
-                    id: req.body.stepId,
-                },
+                    id: req.body.stepId
+                }
             });
             if (!step) {
                 throw new Error('Invalid step ID!');

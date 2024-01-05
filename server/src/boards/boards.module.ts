@@ -2,7 +2,7 @@ import {
     Module,
     NestModule,
     RequestMethod,
-    MiddlewareConsumer,
+    MiddlewareConsumer
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { BoardsGateway } from './boards.gateway';
@@ -27,10 +27,10 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
         BoardsGateway,
         ColumnsService,
         ColumnsGateway,
-        MessagesService,
+        MessagesService
     ],
     imports: [PrismaModule],
-    controllers: [BoardsController],
+    controllers: [BoardsController]
 })
 export class BoardsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
@@ -41,12 +41,12 @@ export class BoardsModule implements NestModule {
         consumer.apply(AuthMiddleware, BoardCheckMiddleware).forRoutes(
             {
                 path: 'boards/:boardId',
-                method: RequestMethod.DELETE,
+                method: RequestMethod.DELETE
             },
             {
                 path: 'boards/:boardId*',
-                method: RequestMethod.ALL,
-            },
+                method: RequestMethod.ALL
+            }
         );
 
         consumer

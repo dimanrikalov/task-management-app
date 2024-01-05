@@ -14,7 +14,7 @@ export class ColumnsService {
     constructor(
         private readonly tasksService: TasksService,
         private readonly prismaService: PrismaService,
-        private readonly columnsGateway: ColumnsGateway,
+        private readonly columnsGateway: ColumnsGateway
     ) {}
 
     async create(body: CreateColumnDto) {
@@ -24,11 +24,11 @@ export class ColumnsService {
                 AND: {
                     name: {
                         equals: body.name.trim(),
-                        mode: 'insensitive',
+                        mode: 'insensitive'
                     },
-                    boardId: body.boardData.id,
-                },
-            },
+                    boardId: body.boardData.id
+                }
+            }
         }));
 
         if (isColumnNameTaken) {
@@ -37,8 +37,8 @@ export class ColumnsService {
 
         const allColumns = await this.prismaService.column.findMany({
             where: {
-                boardId: body.boardData.id,
-            },
+                boardId: body.boardData.id
+            }
         });
 
         //create the column
@@ -46,15 +46,15 @@ export class ColumnsService {
             data: {
                 name: body.name,
                 boardId: body.boardData.id,
-                position: allColumns.length,
-            },
+                position: allColumns.length
+            }
         });
 
         //emit event to anyone inside the board that the board view must be refreshed
         //check on the client side inside board view if the boardId === affectedBoardId, if yes trigger refetching request
         this.columnsGateway.handleColumnCreated({
             message: 'New column added.',
-            affectedBoardId: body.boardData.id,
+            affectedBoardId: body.boardData.id
         });
 
         return id;
@@ -63,7 +63,7 @@ export class ColumnsService {
     async delete(body: DeleteColumnDto) {
         if (
             defaultColumnNames.includes(
-                body.columnData.name.trim().toLowerCase(),
+                body.columnData.name.trim().toLowerCase()
             )
         ) {
             throw new Error('You cannot delete the default table columns!');
@@ -71,51 +71,51 @@ export class ColumnsService {
 
         const columnsInBoardCount = await this.prismaService.column.count({
             where: {
-                boardId: body.boardData.id,
-            },
+                boardId: body.boardData.id
+            }
         });
 
         //move the column to the last position
         await this.move({
             boardData: body.boardData,
             columnData: body.columnData,
-            destinationPosition: columnsInBoardCount - 1,
+            destinationPosition: columnsInBoardCount - 1
         });
 
         //the task deletion is cascading
         await this.tasksService.deleteMany(body.columnData.id);
         await this.prismaService.column.delete({
             where: {
-                id: body.columnData.id,
-            },
+                id: body.columnData.id
+            }
         });
     }
 
     async deleteMany(boardId: number) {
         const columns = await this.prismaService.column.findMany({
             where: {
-                boardId,
-            },
+                boardId
+            }
         });
 
         //deletes all tasks and steps cascadingly
         await Promise.all(
             columns.map(async (column) => {
                 await this.tasksService.deleteMany(column.id);
-            }),
+            })
         );
 
         await this.prismaService.column.deleteMany({
             where: {
-                boardId,
-            },
+                boardId
+            }
         });
     }
 
     async rename(body: RenameColumnDto) {
         if (
             defaultColumnNames.includes(
-                body.columnData.name.trim().toLowerCase(),
+                body.columnData.name.trim().toLowerCase()
             )
         ) {
             throw new Error('You cannot rename the default table columns!');
@@ -125,16 +125,16 @@ export class ColumnsService {
             where: {
                 AND: {
                     name: body.newName,
-                    boardId: body.boardData.id,
-                },
-            },
+                    boardId: body.boardData.id
+                }
+            }
         });
 
         const isColumnNameTaken =
             columnsWithSameName.filter(
                 (column) =>
                     column.name === body.newName &&
-                    column.id !== body.columnData.id,
+                    column.id !== body.columnData.id
             ).length > 0;
 
         if (isColumnNameTaken) {
@@ -143,19 +143,19 @@ export class ColumnsService {
 
         await this.prismaService.column.update({
             where: {
-                id: body.columnData.id,
+                id: body.columnData.id
             },
             data: {
-                name: body.newName,
-            },
+                name: body.newName
+            }
         });
     }
 
     async move(body: MoveColumnDto) {
         const columnsInsideBoard = await this.prismaService.column.findMany({
             where: {
-                boardId: body.boardData.id,
-            },
+                boardId: body.boardData.id
+            }
         });
 
         if (body.destinationPosition == body.columnData.position) {
@@ -173,39 +173,39 @@ export class ColumnsService {
                     AND: [
                         {
                             position: {
-                                gt: body.columnData.position,
-                            },
+                                gt: body.columnData.position
+                            }
                         },
                         {
                             position: {
-                                lte: body.destinationPosition,
-                            },
+                                lte: body.destinationPosition
+                            }
                         },
-                        { boardId: body.boardData.id },
-                    ],
-                },
+                        { boardId: body.boardData.id }
+                    ]
+                }
             });
 
             await Promise.all(
                 matches.map(async (column) => {
                     await this.prismaService.column.update({
                         where: {
-                            id: column.id,
+                            id: column.id
                         },
                         data: {
-                            position: column.position - 1,
-                        },
+                            position: column.position - 1
+                        }
                     });
-                }),
+                })
             );
 
             await this.prismaService.column.update({
                 where: {
-                    id: body.columnData.id,
+                    id: body.columnData.id
                 },
                 data: {
-                    position: body.destinationPosition,
-                },
+                    position: body.destinationPosition
+                }
             });
 
             return;
@@ -216,39 +216,39 @@ export class ColumnsService {
                 AND: [
                     {
                         position: {
-                            gte: body.destinationPosition,
-                        },
+                            gte: body.destinationPosition
+                        }
                     },
                     {
                         position: {
-                            lt: body.columnData.position,
-                        },
+                            lt: body.columnData.position
+                        }
                     },
-                    { boardId: body.boardData.id },
-                ],
-            },
+                    { boardId: body.boardData.id }
+                ]
+            }
         });
 
         await Promise.all(
             matches.map(async (column) => {
                 await this.prismaService.column.update({
                     where: {
-                        id: column.id,
+                        id: column.id
                     },
                     data: {
-                        position: column.position + 1,
-                    },
+                        position: column.position + 1
+                    }
                 });
-            }),
+            })
         );
 
         await this.prismaService.column.update({
             where: {
-                id: body.columnData.id,
+                id: body.columnData.id
             },
             data: {
-                position: body.destinationPosition,
-            },
+                position: body.destinationPosition
+            }
         });
     }
 }

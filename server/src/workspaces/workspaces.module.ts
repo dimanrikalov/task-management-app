@@ -25,10 +25,10 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
         ColumnsGateway,
         MessagesService,
         WorkspacesService,
-        WorkspacesGateway,
+        WorkspacesGateway
     ],
     imports: [PrismaModule],
-    controllers: [WorkspacesController],
+    controllers: [WorkspacesController]
 })
 export class WorkspacesModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

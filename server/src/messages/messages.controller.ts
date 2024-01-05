@@ -11,17 +11,17 @@ export class MessagesController {
     @Get('/:boardId/messages')
     async getBoardMessages(
         @Res() res: Response,
-        @Body() body: BaseMessagesDto,
+        @Body() body: BaseMessagesDto
     ) {
         try {
             const messages = await this.messagesService.getAllByBoardId(
-                body.boardData.id,
+                body.boardData.id
             );
             return res.status(200).json(messages);
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -31,12 +31,12 @@ export class MessagesController {
         try {
             await this.messagesService.create(body);
             return res.status(200).json({
-                message: 'Message sent successfully!',
+                message: 'Message sent successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }

@@ -2,7 +2,7 @@ import {
     Module,
     NestModule,
     RequestMethod,
-    MiddlewareConsumer,
+    MiddlewareConsumer
 } from '@nestjs/common';
 import { ColumnsService } from './columns.service';
 import { ColumnsGateway } from './columns.gateway';
@@ -21,10 +21,10 @@ import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
         StepsService,
         TasksGateway,
         ColumnsGateway,
-        ColumnsService,
+        ColumnsService
     ],
     imports: [PrismaModule],
-    controllers: [ColumnsController],
+    controllers: [ColumnsController]
 })
 export class ColumnsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
@@ -34,8 +34,6 @@ export class ColumnsModule implements NestModule {
 
         consumer
             .apply(AuthMiddleware, ColumnCheckMiddleware, BoardCheckMiddleware)
-            .forRoutes(
-                { path: 'columns/*', method: RequestMethod.ALL },
-            );
+            .forRoutes({ path: 'columns/*', method: RequestMethod.ALL });
     }
 }

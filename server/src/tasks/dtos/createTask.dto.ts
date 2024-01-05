@@ -6,7 +6,7 @@ import {
     IsString,
     MinLength,
     MaxLength,
-    IsOptional,
+    IsOptional
 } from 'class-validator';
 import { BaseTasksDto } from './base.dto';
 import { BaseStepsDto } from 'src/steps/dtos/base.dto';

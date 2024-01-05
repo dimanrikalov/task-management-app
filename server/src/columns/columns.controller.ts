@@ -16,12 +16,12 @@ export class ColumnsController {
             const columnId = await this.columnsService.create(body);
             return res.status(200).json({
                 columnId,
-                message: 'New column added successfully!',
+                message: 'New column added successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -31,12 +31,12 @@ export class ColumnsController {
         try {
             await this.columnsService.move(body);
             return res.status(200).json({
-                message: 'Column moved successfully!',
+                message: 'Column moved successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -46,12 +46,12 @@ export class ColumnsController {
         try {
             await this.columnsService.rename(body);
             return res.status(200).json({
-                message: 'Column renamed succesfully!',
+                message: 'Column renamed succesfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -61,11 +61,11 @@ export class ColumnsController {
         try {
             await this.columnsService.delete(body);
             return res.status(200).json({
-                message: 'Column deleted successfully!',
+                message: 'Column deleted successfully!'
             });
         } catch (err: any) {
             res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }

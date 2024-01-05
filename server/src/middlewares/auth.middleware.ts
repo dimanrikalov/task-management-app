@@ -16,7 +16,7 @@ export class AuthMiddleware implements NestMiddleware {
                 throw new Error('Unauthorized access!');
             }
             const authorizationToken = authorizationHeader.split(' ')[1];
-            
+
             // Verify the JWT token is valid
             if (!validateJWTToken(authorizationToken)) {
                 throw new Error('Invalid JWT token!');
@@ -29,8 +29,8 @@ export class AuthMiddleware implements NestMiddleware {
             // check if the token is valid by checking if user with same id and email exists
             const user = !!(await this.prismaService.user.findUnique({
                 where: {
-                    id: decodedToken.id,
-                },
+                    id: decodedToken.id
+                }
             }));
 
             if (!user) {

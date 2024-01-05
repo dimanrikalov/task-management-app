@@ -2,7 +2,7 @@ import {
     Module,
     NestModule,
     RequestMethod,
-    MiddlewareConsumer,
+    MiddlewareConsumer
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { TasksGateway } from './tasks.gateway';
@@ -17,7 +17,7 @@ import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
 @Module({
     imports: [PrismaModule],
     controllers: [TasksController],
-    providers: [TasksService, TasksGateway, StepsService],
+    providers: [TasksService, TasksGateway, StepsService]
 })
 export class TasksModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
@@ -33,13 +33,13 @@ export class TasksModule implements NestModule {
             .apply(
                 TaskCheckMiddleware,
                 ColumnCheckMiddleware,
-                BoardCheckMiddleware,
+                BoardCheckMiddleware
             ) //apply only to endpoints that modify an already existing task
             .forRoutes(
                 { path: 'tasks', method: RequestMethod.PUT },
                 { path: 'tasks/move', method: RequestMethod.PUT },
                 { path: 'tasks/:taskId', method: RequestMethod.PUT },
-                { path: 'tasks/:taskId', method: RequestMethod.DELETE },
+                { path: 'tasks/:taskId', method: RequestMethod.DELETE }
             );
     }
 }

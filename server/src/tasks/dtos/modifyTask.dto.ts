@@ -4,7 +4,7 @@ import {
     IsString,
     IsNumber,
     MinLength,
-    IsOptional,
+    IsOptional
 } from 'class-validator';
 import { Column, Task } from '@prisma/client';
 import { IStep } from 'src/steps/steps.service';

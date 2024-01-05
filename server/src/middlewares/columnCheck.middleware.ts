@@ -15,8 +15,8 @@ export class ColumnCheckMiddleware implements NestMiddleware {
             }
             const column = await this.prismaService.column.findFirst({
                 where: {
-                    id: columnId || req.body.columnId,
-                },
+                    id: columnId || req.body.columnId
+                }
             });
             if (!column) {
                 throw new Error('Invalid column ID');

@@ -8,7 +8,7 @@ import {
     Headers,
     Controller,
     UploadedFile,
-    UseInterceptors,
+    UseInterceptors
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
@@ -33,12 +33,12 @@ export class TasksController {
             const task = await this.tasksService.create(body);
             return res.status(200).json({
                 task,
-                message: 'Task created successfully!',
+                message: 'Task created successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -48,12 +48,12 @@ export class TasksController {
         try {
             await this.tasksService.move(body);
             return res.status(200).json({
-                message: 'Task moved successfully!',
+                message: 'Task moved successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -64,12 +64,12 @@ export class TasksController {
             const task = await this.tasksService.edit(body);
             return res.status(200).json({
                 task,
-                message: 'Task modified successfully!',
+                message: 'Task modified successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -80,7 +80,7 @@ export class TasksController {
         @Res() res: Response,
         @Headers() headers: any,
         @UploadedFile() file: any,
-        @Param('taskId') taskId: string,
+        @Param('taskId') taskId: string
     ) {
         try {
             const token = headers.authorization.split(' ')[1];
@@ -105,17 +105,17 @@ export class TasksController {
             const body: UploadTaskImgDto = {
                 task,
                 token,
-                taskImagePath: filePath,
+                taskImagePath: filePath
             };
 
             await this.tasksService.uploadTaskImg(body);
             return res.status(200).json({
-                message: 'User image updated successfully!',
+                message: 'User image updated successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -125,12 +125,12 @@ export class TasksController {
         try {
             await this.tasksService.delete(body);
             return res.status(200).json({
-                message: 'Task deleted successfully!',
+                message: 'Task deleted successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }

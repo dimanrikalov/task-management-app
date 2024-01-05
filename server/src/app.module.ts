@@ -21,9 +21,9 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
         ColumnsModule,
         MessagesModule,
         WorkspacesModule,
-        ConfigModule.forRoot(),
+        ConfigModule.forRoot()
     ],
     providers: [AppService],
-    controllers: [AppController],
+    controllers: [AppController]
 })
 export class AppModule {}

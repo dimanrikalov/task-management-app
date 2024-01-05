@@ -16,8 +16,8 @@ export class BoardCheckMiddleware implements NestMiddleware {
             //check if the board exists
             const board = await this.prismaService.board.findFirst({
                 where: {
-                    id: Number(req.params.boardId || req.body.boardId),
-                },
+                    id: Number(req.params.boardId || req.body.boardId)
+                }
             });
             if (!board) {
                 throw new Error('Invalid board ID!');
@@ -26,8 +26,8 @@ export class BoardCheckMiddleware implements NestMiddleware {
             //check if the workspace exists
             const workspace = await this.prismaService.workspace.findFirst({
                 where: {
-                    id: board.workspaceId,
-                },
+                    id: board.workspaceId
+                }
             });
             if (!workspace) {
                 throw new Error('Invalid Workspace ID!');
@@ -42,7 +42,7 @@ export class BoardCheckMiddleware implements NestMiddleware {
                 req.method.toUpperCase() === 'DELETE'
             ) {
                 throw new Error(
-                    'You do not have permission to delete in this workspace!',
+                    'You do not have permission to delete in this workspace!'
                 );
             }
 
@@ -51,9 +51,9 @@ export class BoardCheckMiddleware implements NestMiddleware {
                     where: {
                         AND: [
                             { workspaceId: workspace.id },
-                            { userId: req.body.userData.id },
-                        ],
-                    },
+                            { userId: req.body.userData.id }
+                        ]
+                    }
                 }));
 
             //check if user has access to the board itself
@@ -62,9 +62,9 @@ export class BoardCheckMiddleware implements NestMiddleware {
                     where: {
                         AND: [
                             { boardId: board.id },
-                            { userId: req.body.userData.id },
-                        ],
-                    },
+                            { userId: req.body.userData.id }
+                        ]
+                    }
                 }));
 
             if (

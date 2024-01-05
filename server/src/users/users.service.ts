@@ -1,7 +1,7 @@
 import {
     Injectable,
     ConflictException,
-    NotFoundException,
+    NotFoundException
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { promisify } from 'util';
@@ -27,14 +27,14 @@ const unlink = promisify(fs.unlink);
 export class UsersService {
     constructor(
         private readonly prismaService: PrismaService,
-        private readonly workspaceService: WorkspacesService,
+        private readonly workspaceService: WorkspacesService
     ) {}
 
     async findUserByEmail(email: string): Promise<IUser> {
         return await this.prismaService.user.findFirst({
             where: {
-                email,
-            },
+                email
+            }
         });
     }
 
@@ -45,8 +45,8 @@ export class UsersService {
                 email: true,
                 lastName: true,
                 firstName: true,
-                profileImagePath: true,
-            },
+                profileImagePath: true
+            }
         });
 
         return matches.map((match) => {
@@ -56,7 +56,7 @@ export class UsersService {
 
             return {
                 ...match,
-                profileImagePath: imageBinary,
+                profileImagePath: imageBinary
             };
         });
     }
@@ -67,24 +67,24 @@ export class UsersService {
                 AND: [
                     {
                         id: {
-                            notIn: [0, body.userData.id, ...body.notIn],
-                        },
+                            notIn: [0, body.userData.id, ...body.notIn]
+                        }
                     },
                     {
                         email: {
                             contains: body.email,
-                            mode: 'insensitive',
-                        },
-                    },
-                ],
+                            mode: 'insensitive'
+                        }
+                    }
+                ]
             },
             select: {
                 id: true,
                 email: true,
                 firstName: true,
                 lastName: true,
-                profileImagePath: true,
-            },
+                profileImagePath: true
+            }
         });
 
         return matches.map((match) => {
@@ -94,7 +94,7 @@ export class UsersService {
 
             return {
                 ...match,
-                profileImagePath: imageBinary,
+                profileImagePath: imageBinary
             };
         });
     }
@@ -102,8 +102,8 @@ export class UsersService {
     async getUserById(userId: number) {
         const data = await this.prismaService.user.findUnique({
             where: {
-                id: userId,
-            },
+                id: userId
+            }
         });
         delete data.password;
         return data;
@@ -112,14 +112,14 @@ export class UsersService {
     async getUserStats(userId: number) {
         const messagesCount = await this.prismaService.message.count({
             where: {
-                writtenBy: userId,
-            },
+                writtenBy: userId
+            }
         });
 
         const userTasks = await this.prismaService.task.findMany({
             where: {
-                assigneeId: userId,
-            },
+                assigneeId: userId
+            }
         });
 
         const completedTasksCount = userTasks.reduce((acc, task) => {
@@ -135,17 +135,17 @@ export class UsersService {
             where: {
                 OR: [
                     {
-                        ownerId: userId,
+                        ownerId: userId
                     },
                     {
                         User_Workspace: {
                             some: {
-                                userId,
-                            },
-                        },
-                    },
-                ],
-            },
+                                userId
+                            }
+                        }
+                    }
+                ]
+            }
         });
 
         const boardsCount = await this.prismaService.board.count({
@@ -156,27 +156,27 @@ export class UsersService {
                         Workspace: {
                             User_Workspace: {
                                 some: {
-                                    userId,
-                                },
-                            },
-                        },
+                                    userId
+                                }
+                            }
+                        }
                     },
                     {
                         // Boards where the user is the workspace creator
                         Workspace: {
-                            ownerId: userId,
-                        },
+                            ownerId: userId
+                        }
                     },
                     {
                         // Boards where the user has direct access
                         User_Board: {
                             some: {
-                                userId,
-                            },
-                        },
-                    },
-                ],
-            },
+                                userId
+                            }
+                        }
+                    }
+                ]
+            }
         });
 
         return {
@@ -184,7 +184,7 @@ export class UsersService {
             messagesCount,
             workspacesCount,
             pendingTasksCount,
-            completedTasksCount,
+            completedTasksCount
         };
     }
 
@@ -197,7 +197,7 @@ export class UsersService {
         // Hash the password before saving it
         const hashedPassword = await bcrypt.hash(
             body.password,
-            Number(process.env.SALT_ROUNDS),
+            Number(process.env.SALT_ROUNDS)
         );
 
         const userData = {
@@ -205,19 +205,19 @@ export class UsersService {
             lastName: body.lastName,
             password: hashedPassword,
             firstName: body.firstName,
-            profileImagePath: process.env.DEFAULT_PROFILE_IMG_URL,
+            profileImagePath: process.env.DEFAULT_PROFILE_IMG_URL
         };
 
         const user = await this.prismaService.user.create({
-            data: userData,
+            data: userData
         });
 
         // Create default 'Personal Workspace'
         await this.prismaService.workspace.create({
             data: {
                 name: 'Personal Workspace',
-                ownerId: user.id,
-            },
+                ownerId: user.id
+            }
         });
     }
 
@@ -234,7 +234,7 @@ export class UsersService {
 
         const isValidPassword = await bcrypt.compare(
             body.password,
-            user.password,
+            user.password
         );
         if (!isValidPassword) {
             throw new NotFoundException('Wrong email or password!');
@@ -242,16 +242,16 @@ export class UsersService {
 
         //create authorization token + refresh token
         const { accessToken, refreshToken } = generateJWTTokens({
-            id: user.id,
+            id: user.id
         });
 
         //set the accessToken and refreshToken as cookies
         res.cookie('accessToken', accessToken, {
-            maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
+            maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN)
         });
 
         res.cookie('refreshToken', refreshToken, {
-            maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
+            maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN)
         });
     }
 
@@ -263,14 +263,14 @@ export class UsersService {
         const data = {
             ...(body.lastName && { lastName: body.lastName }),
             ...(hashedPassword && { password: hashedPassword }),
-            ...(body.firstName && { firstName: body.firstName }),
+            ...(body.firstName && { firstName: body.firstName })
         };
 
         await this.prismaService.user.update({
             where: {
-                id: body.userData.id,
+                id: body.userData.id
             },
-            data,
+            data
         });
     }
 
@@ -278,8 +278,8 @@ export class UsersService {
         const { id } = extractJWTData(body.token);
         const userData = await this.prismaService.user.findUnique({
             where: {
-                id,
-            },
+                id
+            }
         });
 
         if (!userData) {
@@ -303,11 +303,11 @@ export class UsersService {
         // Update the user's profile image path
         await this.prismaService.user.update({
             where: {
-                id: userData.id,
+                id: userData.id
             },
             data: {
-                profileImagePath: body.profileImagePath,
-            },
+                profileImagePath: body.profileImagePath
+            }
         });
     }
 
@@ -319,8 +319,8 @@ export class UsersService {
         //create "Deleted User" (id:0) if none exists
         let deletedUser = await this.prismaService.user.findUnique({
             where: {
-                id: 0,
-            },
+                id: 0
+            }
         });
         if (!deletedUser) {
             deletedUser = await this.prismaService.user.create({
@@ -330,43 +330,43 @@ export class UsersService {
                     firstName: 'Deleted',
                     lastName: 'User',
                     password: '*******',
-                    profileImagePath: '/',
-                },
+                    profileImagePath: '/'
+                }
             });
         }
 
         //transfer all messages to "Deleted user"
         await this.prismaService.message.updateMany({
             where: {
-                writtenBy: body.userData.id,
+                writtenBy: body.userData.id
             },
             data: {
-                writtenBy: deletedUser.id,
-            },
+                writtenBy: deletedUser.id
+            }
         });
 
         //transfer all tasks to "Deleted user"
         await this.prismaService.task.updateMany({
             where: {
-                assigneeId: deletedUser.id,
+                assigneeId: deletedUser.id
             },
             data: {
-                assigneeId: deletedUser.id,
-            },
+                assigneeId: deletedUser.id
+            }
         });
 
         //delete all relationships with other users' boards
         await this.prismaService.user_Board.deleteMany({
             where: {
-                userId: body.userData.id,
-            },
+                userId: body.userData.id
+            }
         });
 
         //delete all relationships with other users' workspaces
         await this.prismaService.user_Workspace.deleteMany({
             where: {
-                userId: body.userData.id,
-            },
+                userId: body.userData.id
+            }
         });
 
         //delete user workspaces
@@ -375,8 +375,8 @@ export class UsersService {
         //delete the user
         await this.prismaService.user.delete({
             where: {
-                id: body.userData.id,
-            },
+                id: body.userData.id
+            }
         });
     }
 }

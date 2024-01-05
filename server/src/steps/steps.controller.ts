@@ -18,7 +18,7 @@ export class StepsController {
                 .json({ message: 'Step created successfully!' });
         } catch (err: any) {
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -32,7 +32,7 @@ export class StepsController {
                 .json({ message: 'Step updated successfully!' });
         } catch (err: any) {
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -46,7 +46,7 @@ export class StepsController {
                 .json({ message: 'Step deleted successfully!' });
         } catch (err: any) {
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }

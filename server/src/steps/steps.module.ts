@@ -2,7 +2,7 @@ import {
     Module,
     NestModule,
     RequestMethod,
-    MiddlewareConsumer,
+    MiddlewareConsumer
 } from '@nestjs/common';
 import { StepsService } from './steps.service';
 import { StepsController } from './steps.controller';
@@ -16,7 +16,7 @@ import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
 @Module({
     imports: [PrismaModule],
     providers: [StepsService],
-    controllers: [StepsController],
+    controllers: [StepsController]
 })
 export class StepsModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
@@ -25,7 +25,7 @@ export class StepsModule implements NestModule {
                 AuthMiddleware,
                 TaskCheckMiddleware,
                 ColumnCheckMiddleware,
-                BoardCheckMiddleware,
+                BoardCheckMiddleware
             )
             .forRoutes({ path: 'steps', method: RequestMethod.POST });
 
@@ -35,17 +35,17 @@ export class StepsModule implements NestModule {
                 StepCheckMiddleware,
                 TaskCheckMiddleware,
                 ColumnCheckMiddleware,
-                BoardCheckMiddleware,
+                BoardCheckMiddleware
             )
             .forRoutes(
                 {
                     path: 'steps',
-                    method: RequestMethod.PUT,
+                    method: RequestMethod.PUT
                 },
                 {
                     path: 'steps',
-                    method: RequestMethod.DELETE,
-                },
+                    method: RequestMethod.DELETE
+                }
             );
     }
 }

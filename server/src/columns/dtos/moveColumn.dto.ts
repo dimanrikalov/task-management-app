@@ -12,4 +12,3 @@ export class MoveColumnDto {
     @IsNumber()
     destinationPosition: number;
 }
-

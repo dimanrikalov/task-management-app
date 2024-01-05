@@ -4,11 +4,11 @@ import { IRefreshTokensBody } from 'src/users/dtos/users.interfaces';
 
 export const refreshJWTTokens = ({
     payload,
-    refreshToken,
+    refreshToken
 }: IRefreshTokensBody) => {
     const decoded = jwt.verify(
         refreshToken,
-        process.env.REFRESH_TOKEN_SECRET,
+        process.env.REFRESH_TOKEN_SECRET
     ) as IRefreshTokenPayload;
 
     if (decoded.id !== payload.userData.id) {
@@ -20,7 +20,7 @@ export const refreshJWTTokens = ({
         process.env.ACCESS_TOKEN_SECRET,
         {
             // expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
-        },
+        }
     );
 
     const newRefreshToken = jwt.sign(
@@ -28,7 +28,7 @@ export const refreshJWTTokens = ({
         process.env.REFRESH_TOKEN_SECRET,
         {
             // expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
-        },
+        }
     );
 
     return { newAccessToken, newRefreshToken };

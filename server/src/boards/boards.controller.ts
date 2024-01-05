@@ -20,7 +20,7 @@ export class BoardsController {
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -31,12 +31,12 @@ export class BoardsController {
             const newBoard = await this.boardsService.create(body);
             return res.status(200).json({
                 boardId: newBoard.id,
-                message: 'Board created successfully!',
+                message: 'Board created successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -46,12 +46,12 @@ export class BoardsController {
         try {
             await this.boardsService.delete(body);
             return res.status(200).json({
-                message: 'Board deleted successfully!',
+                message: 'Board deleted successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -71,12 +71,12 @@ export class BoardsController {
         try {
             await this.boardsService.rename(body);
             return res.status(200).json({
-                message: 'Board renamed successfully!',
+                message: 'Board renamed successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -84,17 +84,17 @@ export class BoardsController {
     @Post('/:boardId/colleagues')
     async addColleague(
         @Res() res: Response,
-        @Body() body: EditBoardColleagueDto,
+        @Body() body: EditBoardColleagueDto
     ) {
         try {
             await this.boardsService.addColleague(body);
             return res.status(200).json({
-                message: 'Colleague added to board successfully!',
+                message: 'Colleague added to board successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -102,17 +102,17 @@ export class BoardsController {
     @Delete('/:boardId/colleagues')
     async removeColleague(
         @Res() res: Response,
-        @Body() body: EditBoardColleagueDto,
+        @Body() body: EditBoardColleagueDto
     ) {
         try {
             await this.boardsService.removeColleague(body);
             return res.status(200).json({
-                message: 'Colleague removed from board successfully!',
+                message: 'Colleague removed from board successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }

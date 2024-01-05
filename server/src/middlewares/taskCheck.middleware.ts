@@ -16,8 +16,8 @@ export class TaskCheckMiddleware implements NestMiddleware {
             // need to check if all of this information(queries) is needed
             const task = await this.prismaService.task.findFirst({
                 where: {
-                    id: req.body.taskId || Number(req.params.taskId),
-                },
+                    id: req.body.taskId || Number(req.params.taskId)
+                }
             });
             if (!task) {
                 throw new Error('Invalid task ID!');

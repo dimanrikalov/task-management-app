@@ -7,7 +7,7 @@ import {
     Body,
     Delete,
     Controller,
-    UseInterceptors,
+    UseInterceptors
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
@@ -33,7 +33,7 @@ export class UsersController {
     async getUser(@Res() res: Response, @Body() body: BaseUsersDto) {
         try {
             const userData = await this.usersService.getUserById(
-                body.userData.id,
+                body.userData.id
             );
 
             const imageBuffer = fs.readFileSync(userData.profileImagePath);
@@ -46,7 +46,7 @@ export class UsersController {
         } catch (err: any) {
             console.log(err.message);
             return res.status(401).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -59,7 +59,7 @@ export class UsersController {
         } catch (err: any) {
             console.log(err.message);
             res.status(401).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -72,7 +72,7 @@ export class UsersController {
         } catch (err: any) {
             console.log(err.message);
             res.status(401).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -80,7 +80,7 @@ export class UsersController {
     @Get('/users/stats')
     async getUserStatsById(
         @Res() res: Response,
-        @Body() { userData }: BaseUsersDto,
+        @Body() { userData }: BaseUsersDto
     ) {
         try {
             const stats = await this.usersService.getUserStats(userData.id);
@@ -119,11 +119,11 @@ export class UsersController {
         try {
             await this.usersService.update(userBody);
             return res.json({
-                message: 'User credentials updated successfully!',
+                message: 'User credentials updated successfully!'
             });
         } catch (err: any) {
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -133,7 +133,7 @@ export class UsersController {
     async updateUserProfileImg(
         @Res() res: Response,
         @Headers() headers: any,
-        @UploadedFile() file: any,
+        @UploadedFile() file: any
     ) {
         try {
             const token = headers.authorization.split(' ')[1];
@@ -158,16 +158,16 @@ export class UsersController {
 
             const body: EditProfleImgDto = {
                 token,
-                profileImagePath: filePath,
+                profileImagePath: filePath
             };
 
             await this.usersService.updateProfileImg(body);
             return res.status(200).json({
-                message: 'User image updated successfully!',
+                message: 'User image updated successfully!'
             });
         } catch (err: any) {
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -182,13 +182,13 @@ export class UsersController {
             const { newAccessToken, newRefreshToken } =
                 this.usersService.refreshTokens({
                     refreshToken,
-                    payload: { userData: body },
+                    payload: { userData: body }
                 });
             res.cookie('accessToken', newAccessToken, {
-                maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
+                maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN)
             });
             res.cookie('refreshToken', newRefreshToken, {
-                maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
+                maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN)
             });
             return res
                 .status(200)
@@ -196,7 +196,7 @@ export class UsersController {
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -206,12 +206,12 @@ export class UsersController {
         try {
             await this.usersService.delete(body);
             return res.status(200).json({
-                message: 'User deleted successfully!',
+                message: 'User deleted successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }

@@ -3,7 +3,7 @@ import {
     ValidationOptions,
     ValidationArguments,
     ValidatorConstraint,
-    ValidatorConstraintInterface,
+    ValidatorConstraintInterface
 } from 'class-validator';
 
 @ValidatorConstraint({ async: false })
@@ -26,7 +26,7 @@ class IsArrayOfTypeConstraint implements ValidatorConstraintInterface {
 
 export function IsArrayOfType(
     itemType: string | number,
-    validationOptions?: ValidationOptions,
+    validationOptions?: ValidationOptions
 ) {
     return (object: object, propertyName: string) => {
         registerDecorator({
@@ -34,7 +34,7 @@ export function IsArrayOfType(
             propertyName: propertyName,
             options: validationOptions,
             constraints: [itemType],
-            validator: IsArrayOfTypeConstraint,
+            validator: IsArrayOfTypeConstraint
         });
     };
 }

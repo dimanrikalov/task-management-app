@@ -5,7 +5,7 @@ import { IsObject, IsString, Length, MinLength } from 'class-validator';
 export class RenameBoardDto extends BaseBoardsDto {
     @IsString({ message: 'New board name must be a string!' })
     @Length(2, 128, {
-        message: 'Board name must be in range 2-128 characters long.',
+        message: 'Board name must be in range 2-128 characters long.'
     })
     newName: string;
 

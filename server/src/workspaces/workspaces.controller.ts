@@ -15,7 +15,7 @@ export class WorkspacesController {
     @Get()
     async getUserWorkspaces(
         @Res() res: Response,
-        @Body() body: BaseWorkspaceDto,
+        @Body() body: BaseWorkspaceDto
     ) {
         try {
             const workspaces =
@@ -24,7 +24,7 @@ export class WorkspacesController {
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.mssage,
+                errorMessage: err.mssage
             });
         }
     }
@@ -32,18 +32,18 @@ export class WorkspacesController {
     @Post()
     async createWorkspace(
         @Res() res: Response,
-        @Body() body: CreateWorkspaceDto,
+        @Body() body: CreateWorkspaceDto
     ) {
         try {
             const workspace = await this.workspacesService.create(body);
             return res.status(200).json({
                 workspaceId: workspace.id,
-                message: 'Workspace successfully created!',
+                message: 'Workspace successfully created!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -51,17 +51,17 @@ export class WorkspacesController {
     @Delete('/:workspaceId')
     async deleteWorkspace(
         @Res() res: Response,
-        @Body() body: DeleteWorkspaceDto,
+        @Body() body: DeleteWorkspaceDto
     ) {
         try {
             await this.workspacesService.delete(body);
             return res.status(200).json({
-                message: 'Workspace successfully deleted!',
+                message: 'Workspace successfully deleted!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -69,7 +69,7 @@ export class WorkspacesController {
     @Get('/:workspaceId/details')
     async getWorkspaceById(
         @Body() body: GetWorkspaceDetails,
-        @Res() res: Response,
+        @Res() res: Response
     ) {
         try {
             const data = await this.workspacesService.getWorkspaceById(body);
@@ -82,17 +82,17 @@ export class WorkspacesController {
     @Put('/:workspaceId/rename')
     async renameWorkspace(
         @Res() res: Response,
-        @Body() body: RenameWorkspaceDto,
+        @Body() body: RenameWorkspaceDto
     ) {
         try {
             await this.workspacesService.rename(body);
             return res.status(200).json({
-                message: 'Workspace renamed successfully!',
+                message: 'Workspace renamed successfully!'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -100,17 +100,17 @@ export class WorkspacesController {
     @Post('/:workspaceId/colleagues')
     async addColleague(
         @Res() res: Response,
-        @Body() body: EditWorkspaceColleagueDto,
+        @Body() body: EditWorkspaceColleagueDto
     ) {
         try {
             await this.workspacesService.addColleague(body);
             return res.status(200).json({
-                message: 'Colleague added to workspace.',
+                message: 'Colleague added to workspace.'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }
@@ -118,17 +118,17 @@ export class WorkspacesController {
     @Delete('/:workspaceId/colleagues')
     async removeColleague(
         @Res() res: Response,
-        @Body() body: EditWorkspaceColleagueDto,
+        @Body() body: EditWorkspaceColleagueDto
     ) {
         try {
             await this.workspacesService.removeColleague(body);
             return res.status(200).json({
-                message: 'Colleague removed from workspace.',
+                message: 'Colleague removed from workspace.'
             });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({
-                errorMessage: err.message,
+                errorMessage: err.message
             });
         }
     }

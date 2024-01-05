@@ -2,7 +2,7 @@ import {
     Module,
     NestModule,
     RequestMethod,
-    MiddlewareConsumer,
+    MiddlewareConsumer
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
@@ -31,10 +31,10 @@ import { WorkspacesGateway } from 'src/workspaces/workspaces.gateway';
         ColumnsService,
         MessagesService,
         WorkspacesService,
-        WorkspacesGateway,
+        WorkspacesGateway
     ],
     imports: [PrismaModule],
-    controllers: [UsersController],
+    controllers: [UsersController]
 })
 export class UsersModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
@@ -45,8 +45,8 @@ export class UsersModule implements NestModule {
                 'users/edit*',
                 'users/stats',
                 'users/delete',
-                {path: 'users', method: RequestMethod.GET},
-                {path: 'users', method: RequestMethod.POST},
+                { path: 'users', method: RequestMethod.GET },
+                { path: 'users', method: RequestMethod.POST }
             );
     }
 }

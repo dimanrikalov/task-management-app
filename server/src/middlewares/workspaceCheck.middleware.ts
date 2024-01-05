@@ -18,8 +18,8 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
 
             const workspace = await this.prismaService.workspace.findFirst({
                 where: {
-                    id: workspaceId,
-                },
+                    id: workspaceId
+                }
             });
             if (!workspace) {
                 throw new Error('Invalid Workspace ID!');
@@ -31,9 +31,9 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
                     where: {
                         AND: [
                             { workspaceId: workspace.id },
-                            { userId: req.body.userData.id },
-                        ],
-                    },
+                            { userId: req.body.userData.id }
+                        ]
+                    }
                 });
 
             //check if user is workspace owner

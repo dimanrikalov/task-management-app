@@ -2,7 +2,7 @@ import {
     MessageBody,
     WebSocketServer,
     SubscribeMessage,
-    WebSocketGateway,
+    WebSocketGateway
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 

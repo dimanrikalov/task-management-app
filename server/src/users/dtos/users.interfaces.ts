@@ -1,6 +1,6 @@
-import { BaseUsersDto } from "./base.dto";
+import { BaseUsersDto } from './base.dto';
 
 export interface IRefreshTokensBody {
-    payload: BaseUsersDto,
-    refreshToken: string
+    payload: BaseUsersDto;
+    refreshToken: string;
 }

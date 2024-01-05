@@ -8,7 +8,7 @@ import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
 @Module({
     imports: [PrismaModule],
     providers: [MessagesService],
-    controllers: [MessagesController],
+    controllers: [MessagesController]
 })
 export class MessagesModule {
     configure(consumer: MiddlewareConsumer) {

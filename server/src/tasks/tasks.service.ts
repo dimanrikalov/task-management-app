@@ -17,14 +17,14 @@ export class TasksService {
     constructor(
         private readonly tasksGateway: TasksGateway,
         private readonly stepsService: StepsService,
-        private readonly prismaService: PrismaService,
+        private readonly prismaService: PrismaService
     ) {}
 
     async getById(id: number) {
         return await this.prismaService.task.findUnique({
             where: {
-                id,
-            },
+                id
+            }
         });
     }
 
@@ -52,17 +52,17 @@ export class TasksService {
                     {
                         title: {
                             equals: body.title.toLowerCase().trim(),
-                            mode: 'insensitive',
-                        },
+                            mode: 'insensitive'
+                        }
                     },
                     {
                         Column: {
-                            boardId: body.boardData.id,
-                        },
-                    },
-                ],
+                            boardId: body.boardData.id
+                        }
+                    }
+                ]
             },
-            distinct: ['id'],
+            distinct: ['id']
         }));
         if (isTaskTitleTaken) {
             throw new Error('Task title is taken!');
@@ -78,7 +78,7 @@ export class TasksService {
         //check for duplicate task description
         const isTaskDuplicate = this.stepsHaveRepeatingDescriptions(
             body.steps,
-            'description',
+            'description'
         );
 
         if (isTaskDuplicate) {
@@ -92,7 +92,7 @@ export class TasksService {
             }
         });
         const progress = Math.round(
-            (completeSteps.length / body.steps.length) * 100,
+            (completeSteps.length / body.steps.length) * 100
         );
 
         //check if assigneeId has access to board
@@ -105,23 +105,23 @@ export class TasksService {
                                 some: {
                                     AND: [
                                         { userId: body.assigneeId },
-                                        { workspaceId: body.workspaceData.id },
-                                    ],
-                                },
-                            },
+                                        { workspaceId: body.workspaceData.id }
+                                    ]
+                                }
+                            }
                         },
                         {
                             User_Board: {
                                 some: {
                                     AND: [
                                         { userId: body.assigneeId },
-                                        { boardId: body.boardData.id },
-                                    ],
-                                },
-                            },
-                        },
-                    ],
-                },
+                                        { boardId: body.boardData.id }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
             }));
 
         const assigneeIsWorkspaceOwner =
@@ -133,8 +133,8 @@ export class TasksService {
 
         const tasksCount = await this.prismaService.task.count({
             where: {
-                columnId: body.columnData.id,
-            },
+                columnId: body.columnData.id
+            }
         });
 
         // Create task
@@ -152,8 +152,8 @@ export class TasksService {
                 minutesSpent: body.minutesSpent,
                 estimatedHours: body.estimatedHours,
                 estimatedMinutes: body.estimatedMinutes,
-                attachmentImgPath: body.attachmentImgPath,
-            },
+                attachmentImgPath: body.attachmentImgPath
+            }
         });
 
         // Create steps
@@ -162,7 +162,7 @@ export class TasksService {
         // Emit event with boardId to cause everyone on the board to refetch
         this.tasksGateway.handleTaskCreated({
             message: 'New task created.',
-            affectedBoardId: body.boardData.id,
+            affectedBoardId: body.boardData.id
         });
 
         return task;
@@ -182,11 +182,11 @@ export class TasksService {
         // Update the user's profile image path
         await this.prismaService.task.update({
             where: {
-                id: body.task.id,
+                id: body.task.id
             },
             data: {
-                attachmentImgPath: body.taskImagePath,
-            },
+                attachmentImgPath: body.taskImagePath
+            }
         });
     }
 
@@ -194,8 +194,8 @@ export class TasksService {
         const { boardData, columnData, taskData } = body;
         const tasksCount = await this.prismaService.task.count({
             where: {
-                columnId: columnData.id,
-            },
+                columnId: columnData.id
+            }
         });
 
         //move the task to last place
@@ -203,7 +203,7 @@ export class TasksService {
             taskData,
             boardData,
             destinationColumnId: columnData.id,
-            destinationPosition: tasksCount - 1,
+            destinationPosition: tasksCount - 1
         });
 
         //delete the steps
@@ -222,8 +222,8 @@ export class TasksService {
         //delete the task
         await this.prismaService.task.delete({
             where: {
-                id: body.taskData.id,
-            },
+                id: body.taskData.id
+            }
         });
     }
 
@@ -231,22 +231,22 @@ export class TasksService {
         //get all tasks from the column
         const tasks = await this.prismaService.task.findMany({
             where: {
-                columnId,
-            },
+                columnId
+            }
         });
         //delete all steps of every task from the column
         await Promise.all(
             tasks.map(async (task) => {
                 // await the steps deletion for each task
                 await this.stepsService.deleteMany(task.id);
-            }),
+            })
         );
 
         //delete the tasks themselves
         await this.prismaService.task.deleteMany({
             where: {
-                columnId,
-            },
+                columnId
+            }
         });
     }
 
@@ -259,22 +259,22 @@ export class TasksService {
                     {
                         title: {
                             equals: body.payload.title.trim(),
-                            mode: 'insensitive',
-                        },
+                            mode: 'insensitive'
+                        }
                     },
                     {
                         Column: {
-                            boardId: body.boardData.id,
-                        },
+                            boardId: body.boardData.id
+                        }
                     },
                     {
                         NOT: {
-                            id: body.taskData.id,
-                        },
-                    },
-                ],
+                            id: body.taskData.id
+                        }
+                    }
+                ]
             },
-            distinct: ['id'],
+            distinct: ['id']
         }));
 
         if (isTaskTitleTaken) {
@@ -296,7 +296,7 @@ export class TasksService {
         const stepIdsToKeep = stepsToEdit.map((step) => step.id);
         await this.stepsService.deleteManyNotIn(
             body.taskData.id,
-            stepIdsToKeep,
+            stepIdsToKeep
         );
 
         await this.stepsService.updateMany(stepsToEdit);
@@ -307,14 +307,14 @@ export class TasksService {
         //update progress
         const totalSteps = await this.prismaService.step.count({
             where: {
-                taskId: body.taskData.id,
-            },
+                taskId: body.taskData.id
+            }
         });
 
         const completeSteps = await this.prismaService.step.count({
             where: {
-                AND: [{ taskId: body.taskData.id }, { isComplete: true }],
-            },
+                AND: [{ taskId: body.taskData.id }, { isComplete: true }]
+            }
         });
 
         const progress = Math.round((completeSteps / totalSteps) * 100) || 0;
@@ -327,13 +327,13 @@ export class TasksService {
         //update the task
         const task = await this.prismaService.task.update({
             where: {
-                id: body.taskData.id,
+                id: body.taskData.id
             },
             data: {
                 ...body.payload,
                 progress,
-                attachmentImgPath: null,
-            },
+                attachmentImgPath: null
+            }
         });
 
         return task;
@@ -347,9 +347,9 @@ export class TasksService {
                 where: {
                     AND: [
                         { id: body.taskData.columnId },
-                        { boardId: body.boardData.id },
-                    ],
-                },
+                        { boardId: body.boardData.id }
+                    ]
+                }
             });
 
             const destinationColumn = await this.prismaService.column.findFirst(
@@ -357,10 +357,10 @@ export class TasksService {
                     where: {
                         AND: [
                             { id: body.destinationColumnId },
-                            { boardId: body.boardData.id },
-                        ],
-                    },
-                },
+                            { boardId: body.boardData.id }
+                        ]
+                    }
+                }
             );
 
             if (!sourceColumn || !destinationColumn) {
@@ -370,15 +370,15 @@ export class TasksService {
             const tasksInsideSourceColumn =
                 await this.prismaService.task.findMany({
                     where: {
-                        columnId: sourceColumn.id,
-                    },
+                        columnId: sourceColumn.id
+                    }
                 });
 
             const tasksInsideDestinationColumn =
                 await this.prismaService.task.findMany({
                     where: {
-                        columnId: destinationColumn.id,
-                    },
+                        columnId: destinationColumn.id
+                    }
                 });
 
             //DESTINATION CHECKS
@@ -390,14 +390,14 @@ export class TasksService {
                     if (task.position > body.taskData.position) {
                         await this.prismaService.task.update({
                             where: {
-                                id: task.id,
+                                id: task.id
                             },
                             data: {
-                                position: task.position - 1,
-                            },
+                                position: task.position - 1
+                            }
                         });
                     }
-                }),
+                })
             );
 
             Promise.all(
@@ -405,25 +405,25 @@ export class TasksService {
                     if (task.position >= body.destinationPosition) {
                         await this.prismaService.task.update({
                             where: {
-                                id: task.id,
+                                id: task.id
                             },
                             data: {
-                                position: task.position + 1,
-                            },
+                                position: task.position + 1
+                            }
                         });
                     }
-                }),
+                })
             );
 
             //update the task
             await this.prismaService.task.update({
                 where: {
-                    id: body.taskData.id,
+                    id: body.taskData.id
                 },
                 data: {
                     columnId: body.destinationColumnId,
-                    position: body.destinationPosition,
-                },
+                    position: body.destinationPosition
+                }
             });
             return;
         }
@@ -431,11 +431,11 @@ export class TasksService {
         const tasksInsideDestinationColumn =
             await this.prismaService.task.findMany({
                 where: {
-                    columnId: body.destinationColumnId,
+                    columnId: body.destinationColumnId
                 },
                 orderBy: {
-                    position: 'asc',
-                },
+                    position: 'asc'
+                }
             });
 
         if (body.destinationPosition == body.taskData.position) {
@@ -453,39 +453,39 @@ export class TasksService {
                     AND: [
                         {
                             position: {
-                                gt: body.taskData.position,
-                            },
+                                gt: body.taskData.position
+                            }
                         },
                         {
                             position: {
-                                lte: body.destinationPosition,
-                            },
+                                lte: body.destinationPosition
+                            }
                         },
-                        { columnId: body.destinationColumnId },
-                    ],
-                },
+                        { columnId: body.destinationColumnId }
+                    ]
+                }
             });
 
             await Promise.all(
                 matches.map(async (task) => {
                     await this.prismaService.task.update({
                         where: {
-                            id: task.id,
+                            id: task.id
                         },
                         data: {
-                            position: task.position - 1,
-                        },
+                            position: task.position - 1
+                        }
                     });
-                }),
+                })
             );
 
             await this.prismaService.task.update({
                 where: {
-                    id: body.taskData.id,
+                    id: body.taskData.id
                 },
                 data: {
-                    position: body.destinationPosition,
-                },
+                    position: body.destinationPosition
+                }
             });
 
             return;
@@ -496,39 +496,39 @@ export class TasksService {
                 AND: [
                     {
                         position: {
-                            gte: body.destinationPosition,
-                        },
+                            gte: body.destinationPosition
+                        }
                     },
                     {
                         position: {
-                            lt: body.taskData.position,
-                        },
+                            lt: body.taskData.position
+                        }
                     },
-                    { columnId: body.destinationColumnId },
-                ],
-            },
+                    { columnId: body.destinationColumnId }
+                ]
+            }
         });
 
         await Promise.all(
             matches.map(async (task) => {
                 await this.prismaService.task.update({
                     where: {
-                        id: task.id,
+                        id: task.id
                     },
                     data: {
-                        position: task.position + 1,
-                    },
+                        position: task.position + 1
+                    }
                 });
-            }),
+            })
         );
 
         await this.prismaService.task.update({
             where: {
-                id: body.taskData.id,
+                id: body.taskData.id
             },
             data: {
-                position: body.destinationPosition,
-            },
+                position: body.destinationPosition
+            }
         });
     }
 }

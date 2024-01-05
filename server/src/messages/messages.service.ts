@@ -11,7 +11,7 @@ export class MessagesService {
     async getAllByBoardId(boardId: number) {
         const messages = await this.prismaService.message.findMany({
             where: {
-                boardId,
+                boardId
             },
             select: {
                 id: true,
@@ -22,13 +22,13 @@ export class MessagesService {
                     select: {
                         lastName: true,
                         firstName: true,
-                        profileImagePath: true,
-                    },
-                },
+                        profileImagePath: true
+                    }
+                }
             },
             orderBy: {
-                timestamp: { sort: 'asc' },
-            },
+                timestamp: { sort: 'asc' }
+            }
         });
 
         return messages.map((message) => {
@@ -40,7 +40,7 @@ export class MessagesService {
                 ...message,
                 profileImgPath: imageBinary,
                 lastName: message.User.lastName,
-                firstName: message.User.firstName,
+                firstName: message.User.firstName
             };
 
             delete data.User;
@@ -54,16 +54,16 @@ export class MessagesService {
                 content: body.content,
                 boardId: body.boardData.id,
                 writtenBy: body.userData.id,
-                timestamp: new Date(Date.now()),
-            },
+                timestamp: new Date(Date.now())
+            }
         });
     }
 
     async deleteAll(boardId: number) {
         await this.prismaService.message.deleteMany({
             where: {
-                boardId,
-            },
+                boardId
+            }
         });
     }
 }
