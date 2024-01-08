@@ -1,13 +1,13 @@
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
 import { useWorkspaceContext } from '@/contexts/workspace.context';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 import { EDIT_COLLEAGUE_METHOD } from '@/views/WorkspaceView/Workspace.viewmodel';
 
 export const useEditWorkspaceColleagues = () => {
-    const dispatch = useAppDispatch();
-    const { accessToken } = useAppSelector((state) => state.user);
+    const { showError } = useErrorContext();
+    const { accessToken } = useUserContext() as IUserContextSecure;
     const { workspaceData, setWorkspaceData } = useWorkspaceContext();
 
     const editWorkspaceColleague = async (
@@ -28,7 +28,7 @@ export const useEditWorkspaceColleagues = () => {
             });
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 

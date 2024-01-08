@@ -10,7 +10,7 @@ import { EmailInput } from '@/components/EmailInput/EmailInput';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { ListContainer } from '@/components/ListContainer/ListContainer';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
-import { useCreateTaskOperations } from '../../hooks/CreateTaskOperations';
+import { useCreateTaskOperations } from '../../hooks/useCreateTaskOperations';
 
 export const TaskOperationsModal = () => {
     const { state, operations } = useCreateTaskOperations();

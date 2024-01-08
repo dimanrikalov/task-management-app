@@ -1,25 +1,26 @@
 import { useState } from 'react';
 import { ROUTES } from '@/router';
 import { useNavigate } from 'react-router-dom';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { setWorkspaceName } from '@/app/inputValuesSlice';
-import { toggleCreateBoardModal } from '@/app/modalsSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
+import { useModalsContext } from '@/contexts/modals.context';
 import { useWorkspaceContext } from '@/contexts/workspace.context';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
+import { useSelectedWorkspaceContext } from '@/contexts/selectedWorkspace.context';
 
 export const useEditWorkspace = () => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
-    const { accessToken } = useAppSelector((state) => state.user);
+    const { showError } = useErrorContext();
+    const { toggleModal } = useModalsContext();
+    const { setWorkspaceName } = useSelectedWorkspaceContext();
+    const { accessToken } = useUserContext() as IUserContextSecure;
     const { workspaceData, setWorkspaceData } = useWorkspaceContext();
     const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
     const [workspaceNameInput, setWorkspaceNameInput] = useState<string>('');
-
     const toggleIsCreateBoardModalOpen = () => {
         if (!workspaceData) return;
-        dispatch(toggleCreateBoardModal());
-        dispatch(setWorkspaceName({ workspaceName: workspaceData.name }));
+        toggleModal('showCreateBoardModal');
+        setWorkspaceName(workspaceData.name);
     };
 
     const handleWorkspaceNameInputChange = (
@@ -63,7 +64,7 @@ export const useEditWorkspace = () => {
             });
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
         setIsInputModeOn(false);
     };
@@ -81,7 +82,7 @@ export const useEditWorkspace = () => {
             navigate(ROUTES.DASHBOARD, { replace: true });
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 

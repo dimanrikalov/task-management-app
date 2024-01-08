@@ -1,29 +1,25 @@
-import {
-    toggleCreateBoardModal,
-    toggleEditProfileModal,
-    toggleCreateWorkspaceModal
-} from '@/app/modalsSlice';
-import { useAppDispatch } from '@/app/hooks';
 import { MdLibraryAdd } from 'react-icons/md';
 import { HiDocumentAdd } from 'react-icons/hi';
 import styles from './operationsRibbon.module.css';
 import { FaChevronLeft, FaUserEdit } from 'react-icons/fa';
-import { clearWorkspaceName } from '@/app/inputValuesSlice';
+import { useModalsContext } from '@/contexts/modals.context';
+import { useSelectedWorkspaceContext } from '@/contexts/selectedWorkspace.context';
 
 export const OperationsRibbon = () => {
-    const dispatch = useAppDispatch();
+    const { toggleModal } = useModalsContext();
+    const { clearWorkspaceName } = useSelectedWorkspaceContext();
 
     const toggleisWorkspaceModalOpen = () => {
-        dispatch(toggleCreateWorkspaceModal());
+        toggleModal('showCreateWorkspaceModal');
     };
 
     const toggleIsCreateBoardModalOpen = () => {
-        dispatch(toggleCreateBoardModal());
-        dispatch(clearWorkspaceName());
+        toggleModal('showCreateBoardModal');
+        clearWorkspaceName();
     };
 
     const toggleIsEditProfileModalOpen = () => {
-        dispatch(toggleEditProfileModal());
+        toggleModal('showEditProfileModal');
     };
 
     return (

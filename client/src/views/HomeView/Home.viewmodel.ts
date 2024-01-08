@@ -1,4 +1,9 @@
 import {
+    IUserData,
+    useUserContext,
+    IUserContextSecure
+} from '@/contexts/user.context';
+import {
     IHomeBoardEntry,
     useFetchHomeLists,
     IHomeWorkspaceEntry
@@ -6,8 +11,6 @@ import {
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
 import { useState, useEffect } from 'react';
-import { IUserData } from '@/app/userSlice';
-import { useAppSelector } from '@/app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
@@ -66,6 +69,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
     } = useFetchHomeLists();
     const navigate = useNavigate();
     const date = new Date().toLocaleDateString('en-US', options);
+    const { data: userData } = useUserContext() as IUserContextSecure;
     const [filteredLists, setFilteredLists] = useState<IFilteredLists>({
         boards: [],
         workspaces: []
@@ -74,9 +78,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
         searchBoards: '',
         searchWorkspaces: ''
     });
-    const { data: userData } = useAppSelector((state) => state.user) as {
-        data: IUserData;
-    };
 
     useEffect(() => {
         if (!lists.boards) return;

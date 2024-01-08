@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+    Injectable,
+    ConflictException,
+    ForbiddenException
+} from '@nestjs/common';
 import { ColumnsGateway } from './columns.gateway';
 import { MoveColumnDto } from './dtos/moveColumn.dto';
 import { TasksService } from 'src/tasks/tasks.service';
@@ -32,7 +36,7 @@ export class ColumnsService {
         }));
 
         if (isColumnNameTaken) {
-            throw new Error('Column name is taken!');
+            throw new ConflictException('Column name is taken!');
         }
 
         const allColumns = await this.prismaService.column.findMany({
@@ -66,7 +70,9 @@ export class ColumnsService {
                 body.columnData.name.trim().toLowerCase()
             )
         ) {
-            throw new Error('You cannot delete the default table columns!');
+            throw new ForbiddenException(
+                'You cannot delete the default table columns!'
+            );
         }
 
         const columnsInBoardCount = await this.prismaService.column.count({
@@ -118,7 +124,9 @@ export class ColumnsService {
                 body.columnData.name.trim().toLowerCase()
             )
         ) {
-            throw new Error('You cannot rename the default table columns!');
+            throw new ForbiddenException(
+                'You cannot rename the default table columns!'
+            );
         }
 
         const columnsWithSameName = await this.prismaService.column.findMany({
@@ -138,7 +146,7 @@ export class ColumnsService {
             ).length > 0;
 
         if (isColumnNameTaken) {
-            throw new Error('Column name is taken!');
+            throw new ConflictException('Column name is taken!');
         }
 
         await this.prismaService.column.update({

@@ -3,11 +3,11 @@ import styles from './homeStats.module.css';
 import { useEffect, useState } from 'react';
 import { LuMessageSquare } from 'react-icons/lu';
 import { HiOutlineDocument } from 'react-icons/hi';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { MdOutlineLibraryBooks, MdPendingActions } from 'react-icons/md';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 interface IUserStats {
     boardsCount: number;
@@ -35,9 +35,9 @@ const Stat = ({ isLoading, stat }: IStatProps) => {
 };
 
 export const HomeStats = () => {
-    const dispatch = useAppDispatch();
+    const { showError } = useErrorContext();
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const { accessToken } = useAppSelector((state) => state.user);
+    const { accessToken } = useUserContext() as IUserContextSecure;
     const [userStats, setUserStats] = useState<IUserStats>({
         boardsCount: -1,
         messagesCount: -1,
@@ -58,7 +58,7 @@ export const HomeStats = () => {
                 setUserStats(data);
             } catch (err: any) {
                 console.log(err.message);
-                dispatch(setErrorMessageAsync(err.message));
+                showError(err.message);
             }
             setIsLoading(false);
         };

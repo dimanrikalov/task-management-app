@@ -179,11 +179,38 @@ export class UsersService {
             }
         });
 
+        const totalStepsComplete = await this.prismaService.step.count({
+            where: {
+                AND: [
+                    {
+                        Task: {
+                            assigneeId: userId
+                        }
+                    },
+                    {
+                        isComplete: true
+                    }
+                ]
+            }
+        });
+
+        const hoursSpent = userTasks.reduce(
+            (acc, task) => acc + task.hoursSpent,
+            0
+        );
+        const minutesSpent = userTasks.reduce(
+            (acc, task) => acc + task.minutesSpent,
+            0
+        );
+
         return {
+            hoursSpent,
             boardsCount,
+            minutesSpent,
             messagesCount,
             workspacesCount,
             pendingTasksCount,
+            totalStepsComplete,
             completedTasksCount
         };
     }
@@ -326,11 +353,11 @@ export class UsersService {
             deletedUser = await this.prismaService.user.create({
                 data: {
                     id: 0,
-                    email: 'Deleted_User',
-                    firstName: 'Deleted',
                     lastName: 'User',
                     password: '*******',
-                    profileImagePath: '/'
+                    firstName: 'Deleted',
+                    email: 'Deleted_User',
+                    profileImagePath: process.env.DEFAULT_PROFILE_IMG_URL
                 }
             });
         }
@@ -348,7 +375,7 @@ export class UsersService {
         //transfer all tasks to "Deleted user"
         await this.prismaService.task.updateMany({
             where: {
-                assigneeId: deletedUser.id
+                assigneeId: body.userData.id
             },
             data: {
                 assigneeId: deletedUser.id
@@ -371,6 +398,21 @@ export class UsersService {
 
         //delete user workspaces
         await this.workspaceService.deleteMany(body.userData.id);
+
+        //delete user image if they have one
+        const userToDelete = await this.prismaService.user.findUnique({
+            where: {
+                id: body.userData.id
+            }
+        });
+
+        if (
+            fs.existsSync(userToDelete.profileImagePath) &&
+            userToDelete.profileImagePath !==
+                process.env.DEFAULT_PROFILE_IMG_URL
+        ) {
+            await unlink(userToDelete.profileImagePath);
+        }
 
         //delete the user
         await this.prismaService.user.delete({

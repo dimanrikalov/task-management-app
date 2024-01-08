@@ -1,21 +1,19 @@
 import { useState } from 'react';
 import { ROUTES } from '@/router';
-import { useDispatch } from 'react-redux';
-import { IUserData } from '@/app/userSlice';
-import { useAppSelector } from '@/app/hooks';
 import { useNavigate } from 'react-router-dom';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { toggleCreateWorkspaceModal } from '@/app/modalsSlice';
+import { useErrorContext } from '@/contexts/error.context';
+import { useModalsContext } from '@/contexts/modals.context';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 export const useCreateWorkspaceModal = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const { showError } = useErrorContext();
+    const { toggleModal } = useModalsContext();
     const [inputValue, setInputValue] = useState('');
-    const { data: userData, accessToken } = useAppSelector(
-        (state) => state.user
-    ) as { data: IUserData; accessToken: string };
+    const { data: userData, accessToken } =
+        useUserContext() as IUserContextSecure;
     const [colleagues, setColleagues] = useState<IUser[]>([
         { ...userData, email: 'Me' }
     ]);
@@ -28,16 +26,12 @@ export const useCreateWorkspaceModal = () => {
         e.preventDefault();
 
         if (!inputValue) {
-            dispatch(setErrorMessageAsync('A workspace name is required!'));
+            showError('A workspace name is required!');
             return;
         }
 
         if (inputValue.length < 4) {
-            dispatch(
-                setErrorMessageAsync(
-                    'Workspace name must be at least 4 characters long!'
-                )
-            );
+            showError('Workspace name must be at least 4 characters long!');
         }
 
         try {
@@ -59,11 +53,11 @@ export const useCreateWorkspaceModal = () => {
                 throw new Error(data.errorMessage);
             }
 
-            dispatch(toggleCreateWorkspaceModal());
+            toggleModal('showCreateWorkspaceModal');
             navigate(ROUTES.WORKSPACE(data.workspaceId));
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 
@@ -78,7 +72,7 @@ export const useCreateWorkspaceModal = () => {
     };
 
     const toggleIsCreateWorkspaceModalOpen = () => {
-        dispatch(toggleCreateWorkspaceModal());
+        toggleModal('showCreateWorkspaceModal');
     };
 
     return {

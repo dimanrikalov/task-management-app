@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { IUserData } from '@/app/userSlice';
 import { useLocation } from 'react-router-dom';
 import { ITask } from '@/components/Task/Task';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
 import { IDetailedWorkspace } from '@/contexts/workspace.context';
 import { BOARD_ENDPOINTS, METHODS, request } from '@/utils/requester';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 export interface IColumn {
     id: number;
@@ -26,16 +25,15 @@ export interface IBoardData {
 }
 
 export const useFetchBoardData = () => {
-    const dispatch = useAppDispatch();
     const { pathname } = useLocation();
+    const { showError } = useErrorContext();
     const boardId = Number(pathname.split('/').pop());
-    const { data: userData, accessToken } = useAppSelector(
-        (state) => state.user
-    ) as { data: IUserData; accessToken: string };
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
     const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
     const [boardData, setBoardData] = useState<IBoardData | null>(null);
+    const { data: userData, accessToken } =
+        useUserContext() as IUserContextSecure;
 
     useEffect(() => {
         const fetchBoardData = async () => {
@@ -93,7 +91,7 @@ export const useFetchBoardData = () => {
                 setShouldRefresh(false);
             } catch (err: any) {
                 console.log(err.message);
-                dispatch(setErrorMessageAsync(err.message));
+                showError(err.message);
             }
             setIsLoading(false);
         };

@@ -1,6 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
+import {
+    Injectable,
+    NestMiddleware,
+    NotFoundException,
+    BadRequestException,
+    UnauthorizedException
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
 
 //need to somehow extend Request and add userData to the body
 @Injectable()
@@ -10,7 +16,7 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.params.workspaceId && !req.body.workspaceId) {
-                throw new Error('Workspace ID is required!');
+                throw new BadRequestException('Workspace ID is required!');
             }
 
             const workspaceId =
@@ -22,7 +28,7 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
                 }
             });
             if (!workspace) {
-                throw new Error('Invalid Workspace ID!');
+                throw new NotFoundException('Invalid Workspace ID!');
             }
 
             //check if user has access to workspace
@@ -41,14 +47,17 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
                 workspace.ownerId === req.body.userData.id;
 
             if (!userHasAccessToWorkspace && !userIsWorkspaceOwner) {
-                throw new Error('You do not have access to the workspace!');
+                throw new UnauthorizedException(
+                    'You do not have access to the workspace!'
+                );
             }
 
             req.body.workspaceData = workspace;
             req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
             next();
         } catch (err: any) {
-            return res.status(401).json({ errorMessage: err.message });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 }

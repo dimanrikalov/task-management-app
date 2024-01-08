@@ -1,6 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
+import {
+    Injectable,
+    NestMiddleware,
+    NotFoundException,
+    BadRequestException,
+    UnauthorizedException
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable, NestMiddleware, RequestMethod } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
 
 //need to somehow extend Request and add userData to the body
 @Injectable()
@@ -10,7 +16,7 @@ export class BoardCheckMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.params.boardId && !req.body.boardId) {
-                throw new Error('Board ID is required!');
+                throw new BadRequestException('Board ID is required!');
             }
 
             //check if the board exists
@@ -20,7 +26,7 @@ export class BoardCheckMiddleware implements NestMiddleware {
                 }
             });
             if (!board) {
-                throw new Error('Invalid board ID!');
+                throw new NotFoundException('Invalid board ID!');
             }
 
             //check if the workspace exists
@@ -30,7 +36,7 @@ export class BoardCheckMiddleware implements NestMiddleware {
                 }
             });
             if (!workspace) {
-                throw new Error('Invalid Workspace ID!');
+                throw new NotFoundException('Invalid Workspace ID!');
             }
 
             //check if the user has access to the board by any of the available ways
@@ -41,7 +47,7 @@ export class BoardCheckMiddleware implements NestMiddleware {
                 !userIsWorkspaceOwner &&
                 req.method.toUpperCase() === 'DELETE'
             ) {
-                throw new Error(
+                throw new UnauthorizedException(
                     'You do not have permission to delete in this workspace!'
                 );
             }
@@ -72,7 +78,9 @@ export class BoardCheckMiddleware implements NestMiddleware {
                 !userHasAccessToBoard &&
                 !userHasAccessToWorkspace
             ) {
-                throw new Error('You do not have access to the board!');
+                throw new UnauthorizedException(
+                    'You do not have access to the board!'
+                );
             }
 
             req.body.boardData = board;
@@ -82,7 +90,8 @@ export class BoardCheckMiddleware implements NestMiddleware {
 
             next();
         } catch (err: any) {
-            return res.status(401).json({ errorMessage: err.message });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 }

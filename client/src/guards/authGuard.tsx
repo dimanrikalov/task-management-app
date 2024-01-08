@@ -1,8 +1,8 @@
 import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
-import { setUserData } from '@/app/userSlice';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
+import { useModalsContext } from '@/contexts/modals.context';
+import { IUserData, useUserContext } from '@/contexts/user.context';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
@@ -11,6 +11,10 @@ import { CreateBoardModal } from '@/components/CreateBoardModal/CreateBoardModal
 import { EditProfileModal } from '@/components/EditProfileModal/EditProfileModal';
 import { CreateWorkspaceModal } from '@/components/CreateWorkspaceModal/CreateWorkspaceModal';
 
+export interface IOutletContext {
+    data: IUserData;
+    accessToken: string;
+}
 export interface ITokens {
     accessToken: string;
     refreshToken: string;
@@ -18,11 +22,11 @@ export interface ITokens {
 
 export const AuthGuard = () => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
     const url = useLocation().pathname;
-    const user = useAppSelector((state) => state.user);
+    const { showError } = useErrorContext();
+    const { modalsState } = useModalsContext();
     const [isLoading, setIsLoading] = useState(true);
-    const modalStates = useAppSelector((state) => state.modals);
+    const { data: user, setUserData } = useUserContext();
 
     useEffect(() => {
         const tokens = extractTokens();
@@ -49,15 +53,13 @@ export const AuthGuard = () => {
             if (data.errorMessage) {
                 throw new Error(data.errorMessage);
             }
-            dispatch(
-                setUserData({
-                    accessToken: tokens.accessToken,
-                    data: {
-                        ...data,
-                        profileImagePath: `data:image/png;base64,${data.profileImg}`
-                    }
-                })
-            );
+            setUserData({
+                accessToken: tokens.accessToken,
+                data: {
+                    ...data,
+                    profileImagePath: `data:image/png;base64,${data.profileImg}`
+                }
+            })
         };
 
         const authenticate = async () => {
@@ -103,7 +105,7 @@ export const AuthGuard = () => {
                         break;
                 }
 
-                dispatch(setErrorMessageAsync(err.message));
+                showError(err.message);
             }
         };
 
@@ -114,15 +116,15 @@ export const AuthGuard = () => {
         return <LoadingOverlay />;
     }
 
-    if (!user.data) {
+    if (!user) {
         return <Navigate to={ROUTES.SIGN_IN} />;
     }
 
     return (
         <>
-            {modalStates.showEditProfileModal && <EditProfileModal />}
-            {modalStates.showCreateBoardModal && <CreateBoardModal />}
-            {modalStates.showCreateWorkspaceModal && <CreateWorkspaceModal />}
+            {modalsState.showEditProfileModal && <EditProfileModal />}
+            {modalsState.showCreateBoardModal && <CreateBoardModal />}
+            {modalsState.showCreateWorkspaceModal && <CreateWorkspaceModal />}
             <Outlet />
         </>
     );

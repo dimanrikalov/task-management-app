@@ -5,17 +5,16 @@ import {
     COLUMN_ENDPOINTS
 } from '@/utils/requester';
 import { useState } from 'react';
-import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
+import { useErrorContext } from '@/contexts/error.context';
 import { IResult } from '@/views/BoardView/Board.viewmodel';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 export const useDragEvents = () => {
-    const dispatch = useAppDispatch();
-    const { accessToken } = useAppSelector((state) => state.user);
+    const { showError } = useErrorContext();
+    const { accessToken } = useUserContext() as IUserContextSecure;
     const [hasDragStarted, setHasDragStarted] = useState<boolean>(false);
     const { boardData, setBoardData, callForConfetti } = useBoardContext();
-
     const toggleHasDragStarted = () => {
         setHasDragStarted((prev) => !prev);
     };
@@ -210,7 +209,7 @@ export const useDragEvents = () => {
             }
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
             setBoardData(startingBoardState);
         }
         toggleHasDragStarted();

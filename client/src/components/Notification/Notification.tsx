@@ -1,15 +1,15 @@
-import { useAppSelector } from '@/app/hooks';
 import styles from './notification.module.css';
+import { useNotificationContext } from '@/contexts/notification.context';
 
 export const Notification = () => {
-    const notification = useAppSelector((state) => state.notification);
+    const { notificationMsg, showNotificationMsg } = useNotificationContext();
 
     return (
         <div
             className={styles.background}
-            style={{ opacity: Number(notification.showMsg) }}
+            style={{ opacity: Number(showNotificationMsg) }}
         >
-            <h4>{notification.message}</h4>
+            <h4>{notificationMsg}</h4>
         </div>
     );
 };

@@ -1,9 +1,13 @@
+import {
+    Injectable,
+    NestMiddleware,
+    UnauthorizedException
+} from '@nestjs/common';
 import { IJWTPayload } from 'src/jwt/jwt.interfaces';
 import { extractJWTData } from 'src/jwt/extractJWTData';
 import { Request, Response, NextFunction } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { validateJWTToken } from 'src/jwt/validateJWTToken';
-import { Injectable, NestMiddleware } from '@nestjs/common';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -13,13 +17,13 @@ export class AuthMiddleware implements NestMiddleware {
         try {
             const authorizationHeader = req.headers.authorization;
             if (!authorizationHeader) {
-                throw new Error('Unauthorized access!');
+                throw new UnauthorizedException('Unauthorized access!');
             }
             const authorizationToken = authorizationHeader.split(' ')[1];
 
             // Verify the JWT token is valid
             if (!validateJWTToken(authorizationToken)) {
-                throw new Error('Invalid JWT token!');
+                throw new UnauthorizedException('Invalid JWT token!');
             }
 
             // Decode the JWT token
@@ -34,7 +38,7 @@ export class AuthMiddleware implements NestMiddleware {
             }));
 
             if (!user) {
-                throw new Error('Invalid JWT token!');
+                throw new UnauthorizedException('Invalid JWT token!');
             }
 
             //add the decodedUserData to the body
@@ -44,7 +48,8 @@ export class AuthMiddleware implements NestMiddleware {
             next();
         } catch (err: any) {
             console.log(err.message);
-            return res.status(401).json({ errorMessage: err.message });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 }

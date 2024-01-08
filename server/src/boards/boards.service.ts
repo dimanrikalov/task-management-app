@@ -1,6 +1,13 @@
+import {
+    Injectable,
+    ConflictException,
+    NotFoundException,
+    ForbiddenException,
+    BadRequestException,
+    UnauthorizedException
+} from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
-import { Injectable } from '@nestjs/common';
 import { BoardsGateway } from './boards.gateway';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
@@ -234,7 +241,7 @@ export class BoardsService {
                 profileImagePath: imageBinary
             };
         });
-        console.log(boardUsers);
+
         const workspace = await this.getWorkpaceByIdLocal({
             userData: body.userData,
             workspaceData: body.workspaceData
@@ -255,7 +262,7 @@ export class BoardsService {
             body.workspaceData.name.toLowerCase().trim() ===
                 'personal workspace'
         ) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot add colleagues to boards belonging to your Personal Workspace!'
             );
         }
@@ -265,17 +272,19 @@ export class BoardsService {
 
         //if the user somehow decides to add themself
         if (body.colleagues.includes(body.userData.id)) {
-            throw new Error('You cannot add yourself as a colleague!');
+            throw new ForbiddenException(
+                'You cannot add yourself as a colleague!'
+            );
         }
         //if the user tries to add 'Deleted User'
         if (body.colleagues.includes(0)) {
-            throw new Error(
+            throw new ForbiddenException(
                 'Invalid colleague ID(s)! Double check and try again!'
             );
         }
         //if the user tries to add the workspace owner
         if (body.colleagues.includes(body.workspaceData.ownerId)) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot add the workspace creator to a board from the workspace!'
             );
         }
@@ -290,7 +299,7 @@ export class BoardsService {
         });
 
         if (colleagues.length < body.colleagues.length) {
-            throw new Error(
+            throw new NotFoundException(
                 'Invalid colleague ID(s)! Double check and try again!'
             );
         }
@@ -324,7 +333,7 @@ export class BoardsService {
             });
 
         if (usersWithoutWorkspaceAccess.length < validColleagueIds.length) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot add users with workspace access to the board!'
             );
         }
@@ -396,7 +405,9 @@ export class BoardsService {
             body.userData.id === body.workspaceData.ownerId;
 
         if (!userIsWorkspaceOwner) {
-            throw new Error('You must own the workspace to delete this board!');
+            throw new UnauthorizedException(
+                'You must own the workspace to delete this board!'
+            );
         }
 
         //delete the relationship entries concerning the board to be deleted
@@ -427,23 +438,32 @@ export class BoardsService {
             }
         });
 
+        const boardIds = boards.map((board) => board.id);
+
+        //delete all messages
+        await this.prismaService.message.deleteMany({
+            where: {
+                boardId: {
+                    in: boardIds
+                }
+            }
+        });
+
         //delete all columns from all boards
         await Promise.all(
-            boards.map(async (board) => {
-                await this.columnsService.deleteMany(board.id);
+            boardIds.map(async (boardId) => {
+                await this.columnsService.deleteMany(boardId);
             })
         );
 
         //remove any user_boards relationship with the deleted boards
-        await Promise.all(
-            boards.map(async (board) => {
-                await this.prismaService.user_Board.deleteMany({
-                    where: {
-                        boardId: board.id
-                    }
-                });
-            })
-        );
+        await this.prismaService.user_Board.deleteMany({
+            where: {
+                boardId: {
+                    in: boardIds
+                }
+            }
+        });
 
         //delete the boards themselves
         await this.prismaService.board.deleteMany({
@@ -459,13 +479,15 @@ export class BoardsService {
             body.workspaceData.name.toLowerCase().trim() ===
             'personal workspace'
         ) {
-            throw new Error('You cannot add colleagues to personal boards!');
+            throw new ForbiddenException(
+                'You cannot add colleagues to personal boards!'
+            );
         }
 
         //check the user to be added (it must not be the user themself, a user with access to the workspace where the board is, or the owner)
         if (colleagueId === 0) {
             // 'Deleted User' id
-            throw new Error('Invalid colleague ID!');
+            throw new ForbiddenException('Invalid colleague ID!');
         }
 
         const userIsAddingThemself = colleagueId === body.userData.id;
@@ -499,7 +521,9 @@ export class BoardsService {
             colleagueIsWorkspaceOwner ||
             colleagueIsPartOfWorkspace
         ) {
-            throw new Error('User already has access to the board!');
+            throw new ConflictException(
+                'User already has access to the board!'
+            );
         }
 
         await this.prismaService.user_Board.create({
@@ -523,19 +547,21 @@ export class BoardsService {
             body.workspaceData.name.toLowerCase().trim() ===
             'personal workspace'
         ) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot remove colleagues from personal boards!'
             );
         }
 
         if (colleagueId === 0) {
-            throw new Error('Invalid colleague ID!');
+            throw new ForbiddenException('Invalid colleague ID!');
         }
         if (colleagueId === body.userData.id) {
-            throw new Error('You cannot remove yourself from the board!');
+            throw new ForbiddenException(
+                'You cannot remove yourself from the board!'
+            );
         }
         if (body.workspaceData.ownerId === colleagueId) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot remove the workspace owner from a board that is part of the same workspace!'
             );
         }
@@ -550,7 +576,7 @@ export class BoardsService {
                 }
             });
         if (colleagueIsPartOfWorkspace) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot remove a user with access to the workspace from the board!'
             );
         }
@@ -565,7 +591,7 @@ export class BoardsService {
                 }
             });
         if (!colleagueIsPartOfBoard) {
-            throw new Error('User is not part of the board!');
+            throw new BadRequestException('User is not part of the board!');
         }
 
         await this.prismaService.user_Board.deleteMany({

@@ -5,17 +5,17 @@ import {
     COLUMN_ENDPOINTS
 } from '@/utils/requester';
 import { useNavigate } from 'react-router-dom';
-import { setErrorMessageAsync } from '@/app/errorSlice';
+import { useErrorContext } from '@/contexts/error.context';
 import { useBoardContext } from '@/contexts/board.context';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 const defaultNewColumnName = import.meta.env.VITE_DEFAULT_COLUMN_NAME as string;
 
 export const useEditBoard = () => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+    const { showError } = useErrorContext();
+    const { accessToken } = useUserContext() as IUserContextSecure;
     const { boardData, setBoardData } = useBoardContext();
-    const { accessToken } = useAppSelector((state) => state.user);
 
     const addColumn = async () => {
         if (!boardData) return;
@@ -64,7 +64,7 @@ export const useEditBoard = () => {
             });
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 
@@ -95,7 +95,7 @@ export const useEditBoard = () => {
             navigate(-1);
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 

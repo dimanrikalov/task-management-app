@@ -7,7 +7,8 @@ import {
     Body,
     Delete,
     Controller,
-    UseInterceptors
+    UseInterceptors,
+    UnauthorizedException
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
@@ -45,7 +46,7 @@ export class UsersController {
                 .json({ ...userData, profileImg: imageBinary });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(401).json({
+            return res.status(400).json({
                 errorMessage: err.message
             });
         }
@@ -58,7 +59,7 @@ export class UsersController {
             res.status(200).json(users);
         } catch (err: any) {
             console.log(err.message);
-            res.status(401).json({
+            res.status(400).json({
                 errorMessage: err.message
             });
         }
@@ -71,7 +72,7 @@ export class UsersController {
             res.status(200).json(users);
         } catch (err: any) {
             console.log(err.message);
-            res.status(401).json({
+            res.status(400).json({
                 errorMessage: err.message
             });
         }
@@ -138,7 +139,7 @@ export class UsersController {
         try {
             const token = headers.authorization.split(' ')[1];
             if (!token || !validateJWTToken(token)) {
-                throw new Error('Unauthorized access!');
+                throw new UnauthorizedException('Unauthorized access!');
             }
 
             if (!file) {
@@ -166,9 +167,8 @@ export class UsersController {
                 message: 'User image updated successfully!'
             });
         } catch (err: any) {
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 

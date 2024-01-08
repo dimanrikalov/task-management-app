@@ -35,7 +35,10 @@ export const useTaskModalContext = () =>
 export const TaskModalContextProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
+    const { boardData } = useBoardContext();
     const { selectedTask } = useBoardContext();
+    const boardUsers = boardData?.boardUsers || [];
+    const [matches, setMatches] = useState<IUser[]>([]);
     const [assigneeId, setAssigneeId] = useState<number | null>(null);
     const [inputValues, setInputValues] = useState<IInputState>({
         step: '',
@@ -50,10 +53,6 @@ export const TaskModalContextProvider: React.FC<{
         estimatedHours: '',
         estimatedMinutes: ''
     });
-
-    const { boardData } = useBoardContext();
-    const boardUsers = boardData?.boardUsers || [];
-    const [matches, setMatches] = useState<IUser[]>([]);
 
     useEffect(() => {
         if (!selectedTask) return;

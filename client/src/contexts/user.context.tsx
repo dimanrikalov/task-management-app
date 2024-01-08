@@ -1,0 +1,61 @@
+import { createContext, useContext, useState } from "react";
+
+export interface IUserData {
+    id: number;
+    email: string;
+    lastName: string;
+    firstName: string;
+    profileImg: Buffer;
+    profileImagePath: string;
+}
+
+interface ISetUserDataPayload {
+    accessToken: string;
+    data: IUserData | null;
+}
+
+interface IUserContext {
+    accessToken: string;
+    data: IUserData | null;
+    setUserData(data: ISetUserDataPayload): void;
+}
+
+export interface IUserContextSecure {
+    data: IUserData;
+    accessToken: string;
+    setUserData(data: ISetUserDataPayload): void;
+}
+
+const UserContext = createContext<IUserContext>({
+    data: null,
+    accessToken: '',
+    setUserData: () => { }
+});
+
+export const useUserContext = () => useContext<IUserContext>(UserContext);
+
+
+export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
+    children
+}) => {
+    const [data, setData] = useState<IUserData | null>(null);
+    const [accessToken, setAccessToken] = useState<string>('');
+
+    const setUserData = (data: ISetUserDataPayload) => {
+        if (data.data) {
+            setData({ ...data.data });
+        } else {
+            setData(null);
+        }
+        setAccessToken(data.accessToken);
+    };
+
+    const value = {
+        data,
+        accessToken,
+        setUserData
+    };
+    return (
+        <UserContext.Provider value={value}>{children}</UserContext.Provider>
+    );
+};

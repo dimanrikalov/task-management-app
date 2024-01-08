@@ -1,9 +1,9 @@
 import { IStep } from './useStepsOperations';
-import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
+import { useErrorContext } from '@/contexts/error.context';
 import { convertImageToBase64 } from '@/utils/convertImages';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { METHODS, TASK_ENDPOINTS, request } from '@/utils/requester';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 import { IInputState, useTaskModalContext } from '@/contexts/taskModal.context';
 
 interface IUseTaskOperationArgs {
@@ -21,12 +21,9 @@ export const useTaskOperations = ({
         toggleIsTaskModalOpen,
         selectedTask: taskData
     } = useBoardContext();
-    const dispatch = useAppDispatch();
+    const { showError } = useErrorContext();
     const { assigneeId } = useTaskModalContext();
-    const { accessToken } = useAppSelector((state) => state.user);
-    const setErrorMessage = (message: string) => {
-        dispatch(setErrorMessageAsync(message));
-    };
+    const { accessToken } = useUserContext() as IUserContextSecure;
 
     const createTask = async () => {
         try {
@@ -140,7 +137,7 @@ export const useTaskOperations = ({
             toggleIsTaskModalOpen();
         } catch (err: any) {
             console.log(err.message);
-            setErrorMessage(err.message);
+            showError(err.message);
         }
     };
 
@@ -250,7 +247,7 @@ export const useTaskOperations = ({
             toggleIsTaskModalOpen();
         } catch (err: any) {
             console.log(err.message);
-            setErrorMessage(err.message);
+            showError(err.message);
         }
     };
 
@@ -290,7 +287,7 @@ export const useTaskOperations = ({
             toggleIsTaskModalOpen();
         } catch (err: any) {
             console.log(err.message);
-            setErrorMessage(err.message);
+            showError(err.message);
         }
     };
 
@@ -298,7 +295,6 @@ export const useTaskOperations = ({
         editTask,
         createTask,
         deleteTask,
-        setErrorMessage,
         toggleIsTaskModalOpen
     };
 };

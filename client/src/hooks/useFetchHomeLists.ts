@@ -5,9 +5,9 @@ import {
     WORKSPACE_ENDPOINTS
 } from '@/utils/requester';
 import { useEffect, useState } from 'react';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
 import { ENTRIES_TYPES } from '@/views/HomeView/Home.viewmodel';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 export interface IHomeBoardEntry {
     id: number;
@@ -29,11 +29,11 @@ export interface ILists {
 }
 
 export const useFetchHomeLists = () => {
-    const dispatch = useAppDispatch();
+    const { showError } = useErrorContext();
+    const { accessToken } = useUserContext() as IUserContextSecure;
+    const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(true);
     const [isLoadingWorkspaces, setIsLoadingWorkspaces] =
         useState<boolean>(true);
-    const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(true);
-    const { accessToken } = useAppSelector((state) => state.user);
     const [lists, setLists] = useState<ILists>({
         boards: null,
         workspaces: null
@@ -65,7 +65,7 @@ export const useFetchHomeLists = () => {
             setLists((prev) => ({ ...prev, [entries]: data }));
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 

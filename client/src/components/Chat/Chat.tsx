@@ -1,16 +1,15 @@
 import classNames from 'classnames';
 import styles from './chat.module.css';
 import { VscSend } from 'react-icons/vsc';
-import { IUserData } from '@/app/userSlice';
 import { useEffect, useState } from 'react';
 import { Message } from '../Message/Message';
 import { useLocation } from 'react-router-dom';
-import { setErrorMessageAsync } from '@/app/errorSlice';
+import { useErrorContext } from '@/contexts/error.context';
 import { IntroInput } from '../Inputs/IntroInput/IntroInput';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { TbLayoutSidebarLeftExpandFilled } from 'react-icons/tb';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { MESSAGE_ENDPOINTS, METHODS, request } from '@/utils/requester';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 export interface IMessage {
     id: number;
@@ -28,15 +27,13 @@ interface IChatProps {
 }
 
 export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
-    const dispatch = useAppDispatch();
+    const { showError } = useErrorContext();
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const boardId = Number(useLocation().pathname.split('/').pop());
     const [chatMessages, setChatMessages] = useState<IMessage[]>([]);
     const [refetchMessages, setRefetchMessages] = useState<boolean>(true);
-    const { data: userData, accessToken } = useAppSelector(
-        (state) => state.user
-    ) as { data: IUserData; accessToken: string };
+    const { data: userData, accessToken } = useUserContext() as IUserContextSecure;
 
     useEffect(() => {
         setIsLoading(true);
@@ -59,7 +56,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
                 setChatMessages(messages);
             } catch (err: any) {
                 console.log(err.message);
-                dispatch(setErrorMessageAsync(err.message));
+                showError(err.message);
             }
             setIsLoading(false);
         };
@@ -86,7 +83,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
             setRefetchMessages(true);
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 

@@ -78,6 +78,14 @@ export const useBoardViewModel = (): ViewModelReturnType<
     IBoardViewModelOperations
 > => {
     const {
+        boardData,
+        isLoading,
+        workspaceUsers,
+        isTaskModalOpen,
+        shouldConfettiExplode,
+        toggleIsTaskModalOpen
+    } = useBoardContext();
+    const {
         isInputModeOn,
         boardNameInput,
         toggleIsInputModeOn,
@@ -94,15 +102,6 @@ export const useBoardViewModel = (): ViewModelReturnType<
     const { addColumn, deleteBoard } = useEditBoard();
     const [isChatOpen, setIsChatOpen] = useState(false);
     const { onDragEnd, onDragStart, hasDragStarted } = useDragEvents();
-
-    const {
-        boardData,
-        isLoading,
-        workspaceUsers,
-        isTaskModalOpen,
-        shouldConfettiExplode,
-        toggleIsTaskModalOpen
-    } = useBoardContext();
     const { allUsers, isLoading: isLoadingAllUsers } = useFetchAllUsers();
     const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
 

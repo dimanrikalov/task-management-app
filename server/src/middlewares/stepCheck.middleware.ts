@@ -1,6 +1,11 @@
+import {
+    Injectable,
+    NestMiddleware,
+    NotFoundException,
+    BadRequestException
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request, Response, NextFunction } from 'express';
-import { Injectable, NestMiddleware } from '@nestjs/common';
 
 @Injectable()
 export class StepCheckMiddleware implements NestMiddleware {
@@ -9,7 +14,7 @@ export class StepCheckMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.body.stepId) {
-                throw new Error('Step ID is required');
+                throw new BadRequestException('Step ID is required');
             }
 
             const step = await this.prismaService.step.findFirst({
@@ -18,7 +23,7 @@ export class StepCheckMiddleware implements NestMiddleware {
                 }
             });
             if (!step) {
-                throw new Error('Invalid step ID!');
+                throw new NotFoundException('Invalid step ID!');
             }
 
             req.body.stepData = step;
@@ -27,7 +32,8 @@ export class StepCheckMiddleware implements NestMiddleware {
             next();
         } catch (err: any) {
             console.log(err.message);
-            return res.status(401).json({ errorMessage: err.message });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 }

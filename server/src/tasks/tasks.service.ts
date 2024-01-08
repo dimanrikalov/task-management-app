@@ -1,12 +1,19 @@
+import {
+    Injectable,
+    ConflictException,
+    ForbiddenException,
+    NotFoundException,
+    UnauthorizedException
+} from '@nestjs/common';
 import * as fs from 'fs';
 import { promisify } from 'util';
-import { Injectable } from '@nestjs/common';
 import { TasksGateway } from './tasks.gateway';
 import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
 import { StepsService } from 'src/steps/steps.service';
 import { DeleteTasksDto } from './dtos/deleteTask.dto';
+import { extractJWTData } from 'src/jwt/extractJWTData';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
 
@@ -19,6 +26,67 @@ export class TasksService {
         private readonly stepsService: StepsService,
         private readonly prismaService: PrismaService
     ) {}
+
+    async validateUserAccessToBoard({ task, token }) {
+        const userData = extractJWTData(token);
+
+        const column = await this.prismaService.column.findFirst({
+            where: {
+                id: task.columnId
+            }
+        });
+
+        const board = await this.prismaService.board.findFirst({
+            where: {
+                id: column.boardId
+            }
+        });
+
+        const workspace = await this.prismaService.workspace.findFirst({
+            where: {
+                id: board.workspaceId
+            }
+        });
+
+        //user has access to board
+        const userHasBoardAccess =
+            await this.prismaService.user_Board.findFirst({
+                where: {
+                    AND: [
+                        {
+                            userId: userData.id
+                        },
+                        {
+                            boardId: board.id
+                        }
+                    ]
+                }
+            });
+
+        //user has access to board's workspace
+        const userHasWorkspaceAccess =
+            await this.prismaService.user_Workspace.findFirst({
+                where: {
+                    AND: [
+                        { userId: userData.id },
+                        { workspaceId: board.workspaceId }
+                    ]
+                }
+            });
+
+        //user is workspace owner
+        const userIsWorkspaceOwner = workspace.ownerId === userData.id;
+
+        if (
+            !userHasBoardAccess &&
+            !userHasWorkspaceAccess &&
+            !userIsWorkspaceOwner
+        ) {
+            throw new UnauthorizedException(
+                'You do not have access to this board!'
+            );
+        }
+    }
 
     async getById(id: number) {
         return await this.prismaService.task.findUnique({
@@ -65,11 +133,11 @@ export class TasksService {
             distinct: ['id']
         }));
         if (isTaskTitleTaken) {
-            throw new Error('Task title is taken!');
+            throw new ConflictException('Task title is taken!');
         }
 
         if (body.assigneeId === 0) {
-            throw new Error('Invalid assignee ID!');
+            throw new ForbiddenException('Invalid assignee ID!');
         }
 
         //handle the case of no array being passed as payload
@@ -82,7 +150,7 @@ export class TasksService {
         );
 
         if (isTaskDuplicate) {
-            throw new Error('Task descriptions must be unqiue!');
+            throw new ConflictException('Task descriptions must be unqiue!');
         }
 
         //calculate the progress based on how many tasks are completed
@@ -128,7 +196,9 @@ export class TasksService {
             body.assigneeId === body.workspaceData.ownerId;
 
         if (!assigneeIsWorkspaceOwner && !assigneeHasAccessToBoard) {
-            throw new Error('Assignee does not have access to board!');
+            throw new UnauthorizedException(
+                'Assignee does not have access to board!'
+            );
         }
 
         const tasksCount = await this.prismaService.task.count({
@@ -165,18 +235,14 @@ export class TasksService {
             affectedBoardId: body.boardData.id
         });
 
-        return task;
+        return { ...task, steps: body.steps };
     }
 
     async uploadTaskImg(body: UploadTaskImgDto) {
         // Check if the file exists before attempting to delete it
         if (fs.existsSync(body.task.attachmentImgPath)) {
-            try {
-                // Delete the existing file
-                await unlink(body.task.attachmentImgPath);
-            } catch (error) {
-                console.error('Error deleting file:', error);
-            }
+            // Delete the existing file
+            await unlink(body.task.attachmentImgPath);
         }
 
         // Update the user's profile image path
@@ -207,16 +273,16 @@ export class TasksService {
         });
 
         //delete the steps
-        await this.stepsService.deleteMany(body.taskData.id);
+        await this.prismaService.step.deleteMany({
+            where: {
+                taskId: body.taskData.id
+            }
+        });
 
         //delete task image if it exists
         if (fs.existsSync(body.taskData.attachmentImgPath)) {
-            try {
-                // Delete the existing file
-                await unlink(body.taskData.attachmentImgPath);
-            } catch (error) {
-                console.error('Error deleting file:', error);
-            }
+            // Delete the existing file
+            await unlink(body.taskData.attachmentImgPath);
         }
 
         //delete the task
@@ -235,10 +301,23 @@ export class TasksService {
             }
         });
         //delete all steps of every task from the column
+
+        await this.prismaService.step.deleteMany({
+            where: {
+                taskId: {
+                    in: tasks.map((task) => task.id)
+                }
+            }
+        });
+
+        //delete task images
         await Promise.all(
             tasks.map(async (task) => {
-                // await the steps deletion for each task
-                await this.stepsService.deleteMany(task.id);
+                //delete task image if it exists
+                if (fs.existsSync(task.attachmentImgPath)) {
+                    // Delete the existing file
+                    await unlink(task.attachmentImgPath);
+                }
             })
         );
 
@@ -278,7 +357,7 @@ export class TasksService {
         }));
 
         if (isTaskTitleTaken) {
-            throw new Error('Task title is taken!');
+            throw new ConflictException('Task title is taken!');
         }
 
         const stepsToEdit = [];
@@ -336,7 +415,11 @@ export class TasksService {
             }
         });
 
-        return task;
+        const steps = await this.prismaService.step.findMany({
+            where: { taskId: task.id }
+        });
+
+        return { ...task, steps };
     }
 
     async move(body: MoveTaskDto) {
@@ -364,7 +447,7 @@ export class TasksService {
             );
 
             if (!sourceColumn || !destinationColumn) {
-                throw new Error('Invalid column IDs!');
+                throw new NotFoundException('Invalid column IDs!');
             }
 
             const tasksInsideSourceColumn =

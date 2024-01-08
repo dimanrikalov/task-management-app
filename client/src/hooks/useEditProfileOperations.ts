@@ -1,13 +1,12 @@
 import { ROUTES } from '@/router';
 import { deleteTokens } from '@/utils';
-import { IUserData } from '@/app/userSlice';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { toggleEditProfileModal } from '@/app/modalsSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
+import { useModalsContext } from '@/contexts/modals.context';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
-import { setNotificationMessageAsync } from '@/app/notificationSlice';
+import { useNotificationContext } from '@/contexts/notification.context';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
 
@@ -27,12 +26,13 @@ interface IInputValues {
 
 export const useEditProfileModal = () => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+    const { showError } = useErrorContext();
+    const { toggleModal } = useModalsContext();
+    const { showNotification } = useNotificationContext();
     const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
-    const { data: userData, accessToken } = useAppSelector(
-        (state) => state.user
-    ) as { data: IUserData; accessToken: string };
     const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
+    const { data: userData, accessToken } =
+        useUserContext() as IUserContextSecure;
     const [inputValues, setInputValues] = useState<IInputValues>({
         lastName: '',
         password: '',
@@ -68,7 +68,7 @@ export const useEditProfileModal = () => {
 
             setProfileImgPath(null);
             setInputValues((prev) => ({ ...prev, profileImg: null }));
-            dispatch(setNotificationMessageAsync('Update successful!'));
+            showNotification('Update successful!');
             navigate(ROUTES.HOME); // cause refetching of user data through the guard
         } catch (err: any) {
             console.log(err.message);
@@ -81,7 +81,7 @@ export const useEditProfileModal = () => {
                 setProfileImgPath(null);
             }
 
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 
@@ -139,8 +139,9 @@ export const useEditProfileModal = () => {
             });
             deleteTokens();
             navigate(ROUTES.HOME); // force refetching of user through the guard
+            toggleIsEditProfileModalOpen();
         } catch (err: any) {
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
             setIsDeletionModalOpen(false);
         }
     };
@@ -175,7 +176,7 @@ export const useEditProfileModal = () => {
     };
 
     const toggleIsEditProfileModalOpen = () => {
-        dispatch(toggleEditProfileModal());
+        toggleModal('showEditProfileModal');
     };
 
     return {

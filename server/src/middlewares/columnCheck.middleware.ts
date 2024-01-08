@@ -1,6 +1,11 @@
+import {
+    Injectable,
+    NestMiddleware,
+    NotFoundException,
+    BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request, Response, NextFunction } from 'express';
-import { Injectable, NestMiddleware } from '@nestjs/common';
 
 @Injectable()
 export class ColumnCheckMiddleware implements NestMiddleware {
@@ -11,7 +16,7 @@ export class ColumnCheckMiddleware implements NestMiddleware {
             const columnId = Number(req.params[0]?.split('/')[0]);
 
             if (!req.body.columnId && !columnId) {
-                throw new Error('Column ID is required!');
+                throw new BadRequestException('Column ID is required!');
             }
             const column = await this.prismaService.column.findFirst({
                 where: {
@@ -19,7 +24,7 @@ export class ColumnCheckMiddleware implements NestMiddleware {
                 }
             });
             if (!column) {
-                throw new Error('Invalid column ID');
+                throw new NotFoundException('Invalid column ID');
             }
 
             req.body.boardId = column.boardId;
@@ -28,7 +33,8 @@ export class ColumnCheckMiddleware implements NestMiddleware {
             next();
         } catch (err: any) {
             console.log(err.message);
-            return res.status(401).json({ errorMessage: err.message });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 }

@@ -1,6 +1,12 @@
+import {
+    Injectable,
+    ConflictException,
+    ForbiddenException,
+    NotFoundException,
+    UnauthorizedException
+} from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
-import { Injectable } from '@nestjs/common';
 import { BaseWorkspaceDto } from './dtos/base.dto';
 import { WorkspacesGateway } from './workspaces.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -130,7 +136,7 @@ export class WorkspacesService {
     async create(body: CreateWorkspaceDto): Promise<IWorkspace> {
         // A user can have only one Personal Workspace
         if (body.name.toLowerCase().trim() === 'personal workspace') {
-            throw new Error(
+            throw new ConflictException(
                 'There can only be one workspace with this name per user!'
             );
         }
@@ -140,11 +146,13 @@ export class WorkspacesService {
 
         //if the creator somehow decides to add themself or 'Deleted_User' (id: 0)
         if (body.colleagues.includes(body.userData.id)) {
-            throw new Error('You cannot add yourself as a colleague!');
+            throw new ForbiddenException(
+                'You cannot add yourself as a colleague!'
+            );
         }
 
         if (body.colleagues.includes(0)) {
-            throw new Error(
+            throw new ForbiddenException(
                 'Invalid colleague ID! Double check and try again!'
             );
         }
@@ -158,7 +166,7 @@ export class WorkspacesService {
         });
 
         if (colleagues.length < body.colleagues.length) {
-            throw new Error(
+            throw new NotFoundException(
                 'Invalid colleague ID! Double check and try again!'
             );
         }
@@ -193,11 +201,13 @@ export class WorkspacesService {
 
     async rename(body: RenameWorkspaceDto) {
         if (body.workspaceData.name === 'Personal Workspace') {
-            throw new Error('You cannot rename your Personal Workspace!');
+            throw new ForbiddenException(
+                'You cannot rename your Personal Workspace!'
+            );
         }
 
         if (body.newName === 'Personal Workspace') {
-            throw new Error(
+            throw new ForbiddenException(
                 'There can only be one Personal Workspace per user!'
             );
         }
@@ -216,7 +226,7 @@ export class WorkspacesService {
     async delete(body: DeleteWorkspaceDto) {
         //check if user is the workspace owner
         if (!body.userIsWorkspaceOwner) {
-            throw new Error('Unauthorized access!');
+            throw new UnauthorizedException('Unauthorized access!');
         }
 
         //check if the workspace exists and is not 'Personal Workspace'
@@ -224,7 +234,9 @@ export class WorkspacesService {
             body.workspaceData.name.toLowerCase().trim() ===
             'personal workspace'
         ) {
-            throw new Error('You cannot delete your personal workspace!');
+            throw new ForbiddenException(
+                'You cannot delete your personal workspace!'
+            );
         }
 
         //delete cascadingly
@@ -259,6 +271,15 @@ export class WorkspacesService {
             })
         );
 
+        //delete user_Workspace entries
+        await this.prismaService.user_Workspace.deleteMany({
+            where: {
+                workspaceId: {
+                    in: workspaces.map((workspace) => workspace.id)
+                }
+            }
+        });
+
         //delete the workspaces themselves
         await this.prismaService.workspace.deleteMany({
             where: {
@@ -272,7 +293,7 @@ export class WorkspacesService {
             body.workspaceData.name.toLowerCase().trim() ===
             'personal workspace'
         ) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot add / remove colleagues inside this workspace!'
             );
         }
@@ -290,13 +311,13 @@ export class WorkspacesService {
 
         //Trying to add "Deleted User"
         if (body.colleagueId == 0) {
-            throw new Error('Invalid colleague ID!');
+            throw new NotFoundException('Invalid colleague ID!');
         }
         if (colleagueIsAlreadyAdded) {
-            throw new Error('User is already added to workspace!');
+            throw new ConflictException('User is already added to workspace!');
         }
         if (colleagueIsWorkspaceOwner) {
-            throw new Error(
+            throw new ConflictException(
                 'You cannot add the creator of the workspace to the workspace itself!'
             );
         }
@@ -320,7 +341,7 @@ export class WorkspacesService {
             body.workspaceData.name.toLowerCase().trim() ===
             'personal workspace'
         ) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot add / remove colleagues inside this workspace!'
             );
         }
@@ -329,14 +350,16 @@ export class WorkspacesService {
         const colleagueIsWorkspaceOwner =
             body.colleagueId === body.workspaceData.ownerId;
         if (colleagueIsWorkspaceOwner) {
-            throw new Error(
+            throw new ForbiddenException(
                 'You cannot remove the workspace owner from their workspace!'
             );
         }
 
         const colleagueIsUser = body.colleagueId === body.userData.id;
         if (colleagueIsUser) {
-            throw new Error('You cannot remove yourself from the workspace!');
+            throw new ForbiddenException(
+                'You cannot remove yourself from the workspace!'
+            );
         }
 
         // deleteMany will not throw error in case of no matching colleagueId record

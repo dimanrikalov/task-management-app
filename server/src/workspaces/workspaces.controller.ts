@@ -42,9 +42,8 @@ export class WorkspacesController {
             });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 
@@ -60,9 +59,8 @@ export class WorkspacesController {
             });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 
@@ -109,9 +107,8 @@ export class WorkspacesController {
             });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 
@@ -127,9 +124,8 @@ export class WorkspacesController {
             });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 }

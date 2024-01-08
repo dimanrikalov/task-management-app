@@ -1,6 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import {
+    Injectable,
+    NestMiddleware,
+    NotFoundException,
+    BadRequestException
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
 
 //need to somehow extend Request and add userData to the body
 @Injectable()
@@ -10,7 +15,7 @@ export class TaskCheckMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.body.taskId && !req.params.taskId) {
-                throw new Error('Task ID is required.');
+                throw new BadRequestException('Task ID is required.');
             }
 
             // need to check if all of this information(queries) is needed
@@ -20,7 +25,7 @@ export class TaskCheckMiddleware implements NestMiddleware {
                 }
             });
             if (!task) {
-                throw new Error('Invalid task ID!');
+                throw new NotFoundException('Invalid task ID!');
             }
 
             req.body.taskData = task;
@@ -30,7 +35,8 @@ export class TaskCheckMiddleware implements NestMiddleware {
             next();
         } catch (err: any) {
             console.log(err.message);
-            return res.status(401).json({ errorMessage: err.message });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 }

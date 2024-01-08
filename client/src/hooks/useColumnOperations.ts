@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useEditBoard } from './useEditBoard';
 import { ITask } from '@/components/Task/Task';
-import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
 import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 const defaultColumnNames = ['to do', 'doing', 'done'];
 const defaultNewColumnName = import.meta.env.VITE_DEFAULT_COLUMN_NAME as string;
@@ -18,8 +18,6 @@ export const useColumnOperations = ({
     id,
     title
 }: IUseColumnOperationsArgs) => {
-    const dispatch = useAppDispatch();
-    const { updateColumnData } = useEditBoard();
     const {
         boardData,
         setBoardData,
@@ -27,8 +25,10 @@ export const useColumnOperations = ({
         setSelectedColumnId,
         toggleIsTaskModalOpen
     } = useBoardContext();
+    const { showError } = useErrorContext();
+    const { updateColumnData } = useEditBoard();
     const [inputValue, setInputValue] = useState<string>('');
-    const { accessToken } = useAppSelector((state) => state.user);
+    const { accessToken } = useUserContext() as IUserContextSecure;
 
     const [showDeleteBtn, setShowDeleteBtn] = useState<boolean>(false);
     const [isInputModeOn, setIsInputModeOn] = useState(
@@ -64,11 +64,7 @@ export const useColumnOperations = ({
 
         try {
             if (inputVal.length < 2 && title === defaultNewColumnName) {
-                dispatch(
-                    setErrorMessageAsync(
-                        'Column name must be at least 2 characters!'
-                    )
-                );
+                showError('Column name must be at least 2 characters!');
                 return;
             }
 
@@ -97,7 +93,7 @@ export const useColumnOperations = ({
             updateColumnData(id, inputVal);
         } catch (err: any) {
             if (title === defaultNewColumnName) {
-                dispatch(setErrorMessageAsync(err.message));
+                showError(err.message);
                 return;
             }
             updateColumnData(id, nameBeforeChange);
@@ -153,7 +149,7 @@ export const useColumnOperations = ({
             });
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 

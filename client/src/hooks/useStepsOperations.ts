@@ -25,6 +25,11 @@ export const useStepsOperations = () => {
         setProgress(Math.round((completedCount / steps.length) * 100) || 0);
     }, [steps]);
 
+    useEffect(() => {
+        if (!selectedTask) return;
+        setSteps(selectedTask.steps);
+    }, [selectedTask]);
+
     const addStep = () => {
         if (!inputValues.step) return;
         if (steps.some((step) => step.description === inputValues.step)) return;

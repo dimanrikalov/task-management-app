@@ -1,21 +1,19 @@
 import { useEffect, useState } from 'react';
-import { IUserData } from '@/app/userSlice';
 import { useLocation } from 'react-router-dom';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
 import { IDetailedWorkspace } from '@/contexts/workspace.context';
 import { METHODS, WORKSPACE_ENDPOINTS, request } from '@/utils/requester';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 export const useFetchWorkspaceData = () => {
     const { pathname } = useLocation();
-    const dispatch = useAppDispatch();
+    const { showError } = useErrorContext();
     const [workspaceData, setWorkspaceData] =
         useState<IDetailedWorkspace | null>(null);
     const workspaceId = Number(pathname.split('/').pop());
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const { data: userData, accessToken } = useAppSelector(
-        (state) => state.user
-    ) as { data: IUserData; accessToken: string };
+    const { data: userData, accessToken } =
+        useUserContext() as IUserContextSecure;
 
     useEffect(() => {
         const fetchWorkspace = async () => {
@@ -54,7 +52,7 @@ export const useFetchWorkspaceData = () => {
                 setWorkspaceData(workspaceData);
             } catch (err: any) {
                 console.log(err.message);
-                dispatch(setErrorMessageAsync(err.message));
+                showError(err.message);
             }
             setIsLoading(false);
         };

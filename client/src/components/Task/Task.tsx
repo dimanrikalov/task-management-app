@@ -3,6 +3,7 @@ import styles from './task.module.css';
 import { FaCheck } from 'react-icons/fa';
 import { Draggable } from 'react-beautiful-dnd';
 import { IStep } from '@/hooks/useStepsOperations';
+
 enum PRIORITY {
     'Low',
     'Medium',

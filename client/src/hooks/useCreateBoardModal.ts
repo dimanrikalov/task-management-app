@@ -6,13 +6,13 @@ import {
 } from '@/utils/requester';
 import { ROUTES } from '@/router';
 import { useState, useEffect } from 'react';
-import { IUserData } from '@/app/userSlice';
 import { useNavigate } from 'react-router-dom';
-import { setErrorMessageAsync } from '@/app/errorSlice';
-import { toggleCreateBoardModal } from '@/app/modalsSlice';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
+import { useModalsContext } from '@/contexts/modals.context';
 import { IDetailedWorkspace } from '@/contexts/workspace.context';
 import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
+import { useSelectedWorkspaceContext } from '@/contexts/selectedWorkspace.context';
 
 export enum INPUT_STATES_KEYS {
     BOARD_NAME = 'boardName',
@@ -36,23 +36,20 @@ export interface IDetailedBoard {
 
 export const useCreateBoardModal = () => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
-    const { workspaceName } = useAppSelector((state) => state.inputValues);
+    const { showError } = useErrorContext();
+    const { toggleModal } = useModalsContext();
+    const { workspaceName } = useSelectedWorkspaceContext();
+    const [boardColleagues, setBoardColleagues] = useState<IUser[]>([]);
+    const { data: userData, accessToken } =
+        useUserContext() as IUserContextSecure;
     const [isWorkspaceNameInputDisabled, setIsWorkspaceNameInputDisabled] =
         useState<boolean>(false);
+    const [selectedWorkspace, setSelectedWorkspace] =
+        useState<IDetailedWorkspace | null>(null);
     const [inputValues, setInputValues] = useState<IInputStates>({
         [INPUT_STATES_KEYS.BOARD_NAME]: '',
         [INPUT_STATES_KEYS.WORKSPACE_NAME]: ''
     });
-    const [selectedWorkspace, setSelectedWorkspace] =
-        useState<IDetailedWorkspace | null>(null);
-    const { data: userData, accessToken } = useAppSelector(
-        (state) => state.user
-    ) as {
-        data: IUserData;
-        accessToken: string;
-    };
-    const [boardColleagues, setBoardColleagues] = useState<IUser[]>([]);
     const [workspacesData, setWorkspacesData] = useState<IDetailedWorkspace[]>(
         []
     );
@@ -125,7 +122,7 @@ export const useCreateBoardModal = () => {
             } catch (err: any) {
                 console.log(err.message);
                 setSelectedWorkspace(null);
-                dispatch(setErrorMessageAsync(err.message));
+                showError(err.message);
             }
         };
 
@@ -148,21 +145,17 @@ export const useCreateBoardModal = () => {
         console.log(selectedWorkspace);
 
         if (!selectedWorkspace) {
-            dispatch(setErrorMessageAsync('Workspace is required!'));
+            showError('Workspace is required!');
             return;
         }
 
         if (!inputValues.boardName) {
-            dispatch(setErrorMessageAsync('Board name is required!'));
+            showError('Board name is required!');
             return;
         }
 
         if (inputValues.boardName.length < 2) {
-            dispatch(
-                setErrorMessageAsync(
-                    'Board name must be at least 2 characters long!'
-                )
-            );
+            showError('Board name must be at least 2 characters long!');
             return;
         }
 
@@ -186,11 +179,11 @@ export const useCreateBoardModal = () => {
                 throw new Error(data.errorMessage);
             }
 
-            dispatch(toggleCreateBoardModal());
+            toggleModal('showCreateBoardModal');
             navigate(ROUTES.BOARD(data.boardId));
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
     };
 
@@ -209,7 +202,7 @@ export const useCreateBoardModal = () => {
     };
 
     const toggleIsCreateBoardModalOpen = () => {
-        dispatch(toggleCreateBoardModal());
+        toggleModal('showCreateBoardModal');
     };
 
     return {

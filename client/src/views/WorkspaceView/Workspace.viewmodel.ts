@@ -1,12 +1,15 @@
 import {
+    IUserData,
+    useUserContext,
+    IUserContextSecure
+} from '@/contexts/user.context';
+import {
     IDetailedWorkspace,
     useWorkspaceContext
 } from '@/contexts/workspace.context';
 import { ROUTES } from '@/router';
 import { METHODS } from '@/utils/requester';
-import { IUserData } from '@/app/userSlice';
 import { useState, useEffect } from 'react';
-import { useAppSelector } from '@/app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useEditWorkspace } from '@/hooks/useEditWorkspace';
 import { IDetailedBoard } from '../../hooks/useCreateBoardModal';
@@ -70,12 +73,10 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
     const navigate = useNavigate();
     const [inputValue, setInputValue] = useState('');
     const { workspaceData, isLoading } = useWorkspaceContext();
+    const { data: userData } = useUserContext() as IUserContextSecure;
     const [filteredBoards, setFilteredBoards] = useState<IDetailedBoard[]>([]);
     const { addWorkspaceColleague, removeWorkspaceColleague } =
         useEditWorkspaceColleagues();
-    const { data: userData } = useAppSelector((state) => state.user) as {
-        data: IUserData;
-    };
     const [modals, setModals] = useState<IModalStates>({
         [MODAL_STATES_KEYS.EDIT_COLLEAGUES]: false,
         [MODAL_STATES_KEYS.DELETE_WORKSPACE]: false

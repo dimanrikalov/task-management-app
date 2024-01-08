@@ -17,9 +17,8 @@ export class StepsController {
                 .status(200)
                 .json({ message: 'Step created successfully!' });
         } catch (err: any) {
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 

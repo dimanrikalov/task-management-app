@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import { setErrorMessageAsync } from '@/app/errorSlice';
 import { useBoardContext } from '@/contexts/board.context';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { useErrorContext } from '@/contexts/error.context';
 import { BOARD_ENDPOINTS, METHODS, request } from '@/utils/requester';
+import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
 
 export const useRenameBoard = () => {
-    const dispatch = useAppDispatch();
+    const { showError } = useErrorContext();
+    const { accessToken } = useUserContext() as IUserContextSecure;
     const { boardData, setBoardData } = useBoardContext();
-    const { accessToken } = useAppSelector((state) => state.user);
     const [boardNameInput, setBoardNameInput] = useState<string>('');
     const [isInputModeOn, setIsInputModeOn] = useState<boolean>(false);
-
     const handleBoardNameInputChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
@@ -57,7 +56,7 @@ export const useRenameBoard = () => {
             });
         } catch (err: any) {
             console.log(err.message);
-            dispatch(setErrorMessageAsync(err.message));
+            showError(err.message);
         }
         setIsInputModeOn(false);
     };

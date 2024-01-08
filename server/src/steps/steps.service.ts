@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { EditStepDto } from './dtos/editStep.dto';
 import { DeleteStepDto } from './dtos/deleteStep.dto';
 import { CreateStepDto } from './dtos/createStep.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IEditStep } from 'src/tasks/dtos/modifyTask.dto';
+import { ConflictException, Injectable } from '@nestjs/common';
 
 export type IStep = {
     isComplete: boolean;
@@ -26,7 +26,7 @@ export class StepsService {
         );
 
         if (taskDescriptionIsTaken) {
-            throw new Error('Step description is already in use!');
+            throw new ConflictException('Step description is already in use!');
         }
 
         await this.prismaService.step.create({
@@ -64,7 +64,6 @@ export class StepsService {
     }
 
     async updateMany(stepsData: IEditStep[]) {
-        console.log(stepsData);
         await Promise.all(
             stepsData.map(async (step) => {
                 await this.prismaService.step.update({
@@ -142,14 +141,6 @@ export class StepsService {
             },
             data: {
                 progress
-            }
-        });
-    }
-
-    async deleteMany(taskId: number) {
-        await this.prismaService.step.deleteMany({
-            where: {
-                taskId
             }
         });
     }

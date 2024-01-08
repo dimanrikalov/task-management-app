@@ -1,15 +1,15 @@
-import { useAppSelector } from '@/app/hooks';
 import styles from './errorNotification.module.css';
+import { useErrorContext } from '@/contexts/error.context';
 
 export const ErrorNotification = () => {
-    const error = useAppSelector((state) => state.error);
+    const { errorMsg, showErrorMsg } = useErrorContext();
 
     return (
         <div
             className={styles.background}
-            style={{ opacity: Number(error.showMsg) }}
+            style={{ opacity: Number(showErrorMsg) }}
         >
-            <h4>{error.message}</h4>
+            <h4>{errorMsg}</h4>
         </div>
     );
 };

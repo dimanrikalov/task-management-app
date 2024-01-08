@@ -5,6 +5,7 @@ import {
 } from '@/hooks/useStepsOperations';
 import { useState, useEffect } from 'react';
 import { ITask } from '@/components/Task/Task';
+import { useErrorContext } from '@/contexts/error.context';
 import { useBoardContext } from '@/contexts/board.context';
 import { useTaskOperations } from '@/hooks/useTaskOperations';
 import { generateFileFromBase64 } from '@/utils/convertImages';
@@ -33,9 +34,9 @@ interface ICreateTaskOperations {
     createTask(): Promise<void>;
     toggleConfirmationBtn(): void;
     loadTaskData(task: ITask): void;
+    showError(message: string): void;
     selectAssignee(user: IUser): void;
     removeStep(description: string): void;
-    setErrorMessage(message: string): void;
     toggleStatus(description: string): void;
     changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
     handleInputChange(
@@ -56,12 +57,15 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
         setInputValues,
         handleInputChange
     } = useTaskModalContext();
+    const { showError } = useErrorContext();
     const { steps, setSteps, addStep, removeStep, progress, toggleStatus } =
         useStepsOperations();
     const { selectAssignee } = useTaskAssigneeOperations();
     const { workspaceUsers, selectedTask } = useBoardContext();
-    const { editTask, createTask, deleteTask, setErrorMessage } =
-        useTaskOperations({ inputValues, steps });
+    const { editTask, createTask, deleteTask } = useTaskOperations({
+        inputValues,
+        steps
+    });
     const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
     const { taskImagePath, clearTaskImage, changeTaskImage, setTaskImagePath } =
         useTaskImageOperations();
@@ -129,6 +133,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
         operations: {
             addStep,
             editTask,
+            showError,
             removeStep,
             deleteTask,
             createTask,
@@ -136,7 +141,6 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
             toggleStatus,
             selectAssignee,
             clearTaskImage,
-            setErrorMessage,
             changeTaskImage,
             handleInputChange,
             toggleConfirmationBtn

@@ -37,9 +37,8 @@ export class TasksController {
             });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 
@@ -52,9 +51,8 @@ export class TasksController {
             });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 
@@ -68,9 +66,8 @@ export class TasksController {
             });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 
@@ -88,8 +85,10 @@ export class TasksController {
                 throw new Error('Unauthorized access!');
             }
 
-            //need to check if user has access to the board
             const task = await this.tasksService.getById(Number(taskId));
+
+            //check if user has access to the board
+            await this.tasksService.validateUserAccessToBoard({ task, token });
 
             const uploadDir = process.env.TASK_IMGS_URL;
 
@@ -114,9 +113,8 @@ export class TasksController {
             });
         } catch (err: any) {
             console.log(err.message);
-            return res.status(400).json({
-                errorMessage: err.message
-            });
+            const { statusCode, message: errorMessage } = err.response;
+            return res.status(statusCode || 400).json({ errorMessage });
         }
     }
 
