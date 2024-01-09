@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import styles from './homeCard.module.css';
 import { BiSolidUser } from 'react-icons/bi';
 
@@ -7,26 +6,18 @@ interface IHomeCardProps {
     onClick(): void;
     subtitle: string;
     userCount: number;
-    isBoardBtn?: boolean;
-    isWorkspaceBtn?: boolean;
 }
 
 export const HomeCard = ({
-    onClick,
     title,
+    onClick,
     subtitle,
     userCount,
-    isBoardBtn,
-    isWorkspaceBtn
 }: IHomeCardProps) => {
     return (
         <button
-            className={classNames(
-                styles.btn,
-                isBoardBtn && styles['board-btn'],
-                isWorkspaceBtn && styles['workspace-btn']
-            )}
             onClick={onClick}
+            className={styles.btn}
         >
             <div className={styles.background} style={{ height: '100%' }}>
                 <div className={styles.header}>

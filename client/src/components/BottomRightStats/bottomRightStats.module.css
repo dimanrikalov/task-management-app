@@ -1,0 +1,53 @@
+.background {
+    gap: 16px;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+        'messages    boards        boards'
+        'workspaces  workspaces    columns';
+}
+
+.card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    padding: 16px;
+    border-radius: 16px;
+    color: var(--white-main);
+    transition: 200ms ease-in-out;
+    box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+    -moz-box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+    -webkit-box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+.messages {
+    grid-area: messages;
+    background-color: var(--red-main);
+}
+
+.workspacesCreated {
+    grid-area: workspaces;
+    background-color: var(--pink-main);
+}
+
+.boardsCreated {
+    grid-area: boards;
+    background-color: var(--purple-main);
+}
+
+.columns {
+    grid-area: columns;
+    background-color: var(--deep-puprle);
+}
+
+
+.icon {
+    font-size: 64px;
+    color: rgba(255, 255, 255, 0.35);
+}

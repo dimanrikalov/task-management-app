@@ -7,19 +7,11 @@
 }
 
 .mainContainer {
-    gap: 56px;
     width: 100%;
-    display: flex;
     padding: 16px;
+    display: flex;
     overflow-x: auto;
     flex-direction: column;
     transition: 200ms ease-in-out;
     justify-content: space-between;
-}
-
-.operationsContainer {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    justify-content: center;
 }

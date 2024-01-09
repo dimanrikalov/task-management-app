@@ -3,21 +3,13 @@
     border: none;
     cursor: pointer;
     overflow: hidden;
+    min-height: 200px;
     border-radius: 16px;
     transition: 200ms ease-in-out;
     background-color: var(--white-main);
     box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
     -webkit-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
-}
-
-.board-btn {
-    min-width: 320px;
-    min-height: 140px;
-}
-
-.workspace-btn {
-    min-width: 300px;
 }
 
 .btn:hover {
@@ -32,7 +24,6 @@
 
 .background {
     width: 100%;
-    height: 100%;
     padding: 24px;
     display: flex;
     flex-direction: column;

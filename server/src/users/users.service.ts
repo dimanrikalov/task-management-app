@@ -148,7 +148,7 @@ export class UsersService {
             }
         });
 
-        const boardsCount = await this.prismaService.board.count({
+        const boards = await this.prismaService.board.findMany({
             where: {
                 OR: [
                     {
@@ -176,10 +176,11 @@ export class UsersService {
                         }
                     }
                 ]
-            }
+            },
+            distinct: 'id'
         });
 
-        const totalStepsComplete = await this.prismaService.step.count({
+        const stepsCompleted = await this.prismaService.step.count({
             where: {
                 AND: [
                     {
@@ -202,15 +203,25 @@ export class UsersService {
             (acc, task) => acc + task.minutesSpent,
             0
         );
+        const columnsCount = await this.prismaService.column.count({
+            where: {
+                boardId: {
+                    in: boards.map((board) => board.id)
+                }
+            }
+        });
+
+        const boardsCount = boards.length;
 
         return {
             hoursSpent,
             boardsCount,
+            columnsCount,
             minutesSpent,
             messagesCount,
+            stepsCompleted,
             workspacesCount,
             pendingTasksCount,
-            totalStepsComplete,
             completedTasksCount
         };
     }

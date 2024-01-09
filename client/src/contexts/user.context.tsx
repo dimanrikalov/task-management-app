@@ -1,3 +1,4 @@
+import { deleteTokens } from "@/utils";
 import { createContext, useContext, useState } from "react";
 
 export interface IUserData {
@@ -15,12 +16,14 @@ interface ISetUserDataPayload {
 }
 
 interface IUserContext {
+    logout(): void;
     accessToken: string;
     data: IUserData | null;
     setUserData(data: ISetUserDataPayload): void;
 }
 
 export interface IUserContextSecure {
+    logout(): void;
     data: IUserData;
     accessToken: string;
     setUserData(data: ISetUserDataPayload): void;
@@ -29,6 +32,7 @@ export interface IUserContextSecure {
 const UserContext = createContext<IUserContext>({
     data: null,
     accessToken: '',
+    logout: () => { },
     setUserData: () => { }
 });
 
@@ -50,8 +54,13 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setAccessToken(data.accessToken);
     };
 
+    const logout = () => {
+        deleteTokens();
+    };
+
     const value = {
         data,
+        logout,
         accessToken,
         setUserData
     };

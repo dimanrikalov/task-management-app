@@ -12,17 +12,22 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
 
-    --pink: #de5d83;
-    --green: #0b6860;
-    --yellow: #e0ca00;
-    --purple: #4e2a84;
+
+    --red-main: #fc5757;
+    --lime-main:#04b31b;
+    --blue-main: #1da1f2;
+    --cyan-main: #00bfff; 
+    --pink-main: #e91e63; 
+    --grey-main: #c7c7c7;
+    --green-main: #059e8a; 
+    --white-main: #ffffff;
+    --yellow-main: #ecc40f; 
+    --purple-main: #9c27b0;
+    --orange-main: #ff9800; 
+    --deep-puprle: #673ab7; 
+    --white-secondary: #f5f5f5;
     --error-background: #ffccc4;
     --error-font-color: #ff0000;
-    --red-main: #fc5757;
-    --blue-main: #1da1f2;
-    --white-main: #ffffff;
-    --grey-main: rgb(199, 199, 199);
-    --white-secondary: whitesmoke;
 }
 
 h1,

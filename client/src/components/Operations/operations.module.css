@@ -1,0 +1,64 @@
+.background {
+    gap: 16px;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+        'logout       create-workspace create-board'
+        'edit-profile create-workspace create-board';
+}
+
+.operation {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    cursor: pointer;
+    border-radius: 16px;
+    align-items: center;
+    justify-content: center;
+    transition: 200ms ease-in-out;
+    background-color: var(--blue-main);
+    box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+    -moz-box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+    -webkit-box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+}
+
+.operation .icon {
+    font-size: 92px;
+    color: var(--white-main);
+}
+
+.operation:hover {
+    transform: scale(1.03);
+}
+
+.logout {
+    cursor: pointer;
+    grid-area: logout;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--blue-main);
+}
+
+.logoutIcon {
+    font-size: 82px;
+    color: var(--white-main);
+    transform: rotate(180deg);
+}
+
+.createWorkspace {
+    grid-area: logout;
+}
+
+.createWorkspace {
+    grid-area: create-workspace;
+}
+
+.createBoard {
+    grid-area: create-board;
+}
+
+.editProfile {
+    grid-area: edit-profile;
+}

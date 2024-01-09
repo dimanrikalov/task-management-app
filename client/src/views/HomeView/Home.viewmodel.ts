@@ -8,10 +8,7 @@ import {
     useFetchHomeLists,
     IHomeWorkspaceEntry
 } from '@/hooks/useFetchHomeLists';
-import { ROUTES } from '@/router';
-import { deleteTokens } from '@/utils';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
 
 export enum ENTRIES_TYPES {
@@ -52,7 +49,6 @@ const options: Intl.DateTimeFormatOptions = {
 };
 
 interface IUserHomeViewmodelOperations {
-    logout(): void;
     handleFilterInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -67,8 +63,10 @@ export const useHomeViewModel = (): ViewModelReturnType<
         isLoadingWorkspaces,
         setIsLoadingWorkspaces
     } = useFetchHomeLists();
-    const navigate = useNavigate();
-    const date = new Date().toLocaleDateString('en-US', options);
+    const date = new Date()
+        .toLocaleDateString('en-US', options)
+        .split(',')
+        .join(' ');
     const { data: userData } = useUserContext() as IUserContextSecure;
     const [filteredLists, setFilteredLists] = useState<IFilteredLists>({
         boards: [],
@@ -100,11 +98,16 @@ export const useHomeViewModel = (): ViewModelReturnType<
     //filter out entries based on search inputs
     useEffect(() => {
         const filterBoards = (input: string, entries: IHomeBoardEntry[]) => {
-            return entries.filter((entry) =>
-                entry.name
-                    .trim()
-                    .toLowerCase()
-                    .includes(input.trim().toLowerCase())
+            return entries.filter(
+                (entry) =>
+                    entry.name
+                        .trim()
+                        .toLowerCase()
+                        .includes(input.trim().toLowerCase()) ||
+                    entry.workspaceName
+                        .trim()
+                        .toLowerCase()
+                        .includes(input.trim().toLowerCase())
             );
         };
 
@@ -141,11 +144,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
         });
     }, [searchInputs]);
 
-    const logout = () => {
-        deleteTokens();
-        navigate(ROUTES.HOME);
-    };
-
     const handleFilterInputChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
@@ -166,7 +164,6 @@ export const useHomeViewModel = (): ViewModelReturnType<
             isLoadingWorkspaces
         },
         operations: {
-            logout,
             handleFilterInputChange
         }
     };

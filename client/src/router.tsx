@@ -9,6 +9,7 @@ import { BoardContextProvider } from './contexts/board.context';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { WorkspaceView } from './views/WorkspaceView/Workspace.view';
 import { WorkspaceContextProvider } from './contexts/workspace.context';
+import { UserStatsContextProvider } from './contexts/userStats.context';
 
 export const ROUTES = {
     HOME: '/',
@@ -35,7 +36,10 @@ const router = createHashRouter([
         children: [
             {
                 path: '/dashboard',
-                element: <HomeView />
+                element:
+                    <UserStatsContextProvider>
+                        <HomeView />
+                    </UserStatsContextProvider>
             },
             {
                 path: '/boards/:id',

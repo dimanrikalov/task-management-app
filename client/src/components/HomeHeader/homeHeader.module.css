@@ -2,17 +2,23 @@
     gap: 16px;
     width: 100%;
     display: flex;
-    padding-top: 16px;
+    padding: 16px 0px;
+    align-items: center;
     align-items: flex-start;
     justify-content: space-between;
 }
 
-.dashboard h3 {
-    font-weight: 600;
+.date {
+    color: grey;
+    font-size: 15px;
+    font-weight: 500;
 }
 
-.dashboard h5 {
-    font-weight: 400;
+.rightSide {
+    gap: 9px;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
 }
 
 .userData {
