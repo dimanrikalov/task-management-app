@@ -15,3 +15,9 @@
     transition: 200ms ease-in-out;
     justify-content: space-between;
 }
+
+@media screen and (max-height: 620px) {
+    .mainContainer {
+        padding-bottom: 32px;
+    }
+}
