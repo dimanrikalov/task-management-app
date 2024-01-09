@@ -1,7 +1,7 @@
 import { RxCross2 } from 'react-icons/rx';
 import { Modal } from '@/components/Modal/Modal';
 import styles from './createWorkspaceModal.module.css';
-import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { IntroInput } from '@/components/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { useCreateWorkspaceModal } from '../../hooks/useCreateWorkspaceModal';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';

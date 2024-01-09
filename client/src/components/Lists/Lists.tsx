@@ -2,7 +2,6 @@ import styles from './lists.module.css';
 import { HomeList } from '../HomeList/HomeList';
 import { ENTRIES_TYPES, ISearchInputs } from '@/views/HomeView/Home.viewmodel';
 import { IHomeBoardEntry, IHomeWorkspaceEntry } from '@/hooks/useFetchHomeLists';
-import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 
 interface IListsProps {
     isLoadingBoard: boolean,

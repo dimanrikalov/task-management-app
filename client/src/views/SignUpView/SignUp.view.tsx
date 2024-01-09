@@ -3,7 +3,7 @@ import styles from './signUp.module.css';
 import { FaUsers } from 'react-icons/fa6';
 import { useSignUpViewModel } from './SignUp.viewmodel';
 import { BackButton } from '@/components/BackButton/BackButton';
-import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { IntroInput } from '@/components/IntroInput/IntroInput';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { FaEnvelope, FaEnvelopeOpen, FaLock, FaUnlock } from 'react-icons/fa';
 

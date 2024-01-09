@@ -7,7 +7,7 @@ import { Modal } from '@/components/Modal/Modal';
 import styles from './taskOperationsModal.module.css';
 import { useBoardContext } from '@/contexts/board.context';
 import { EmailInput } from '@/components/EmailInput/EmailInput';
-import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { IntroInput } from '@/components/IntroInput/IntroInput';
 import { ListContainer } from '@/components/ListContainer/ListContainer';
 import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
 import { useCreateTaskOperations } from '../../hooks/useCreateTaskOperations';

@@ -1,6 +1,6 @@
 import styles from './emailInput.module.css';
 import { UserEntry } from '../UserEntry/UserEntry';
-import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { IntroInput } from '../IntroInput/IntroInput';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 
 interface IEmailInputProps {

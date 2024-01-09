@@ -10,7 +10,7 @@ import { Modal } from '@/components/Modal/Modal';
 import { MdDeleteForever } from 'react-icons/md';
 import { BoardCard } from '@/components/BoardCard/BoardCard';
 import { BackButton } from '@/components/BackButton/BackButton';
-import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
+import { IntroInput } from '@/components/IntroInput/IntroInput';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
