@@ -1,17 +1,17 @@
-import { FcFile } from 'react-icons/fc';
+import {
+    MODAL_STATES_KEYS,
+    useWorkspaceViewModel
+} from './Workspace.viewmodel';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './workspace.module.css';
 import { FaUsersCog } from 'react-icons/fa';
+import { HiDocumentAdd } from 'react-icons/hi';
 import { Modal } from '@/components/Modal/Modal';
 import { MdDeleteForever } from 'react-icons/md';
 import { BoardCard } from '@/components/BoardCard/BoardCard';
 import { BackButton } from '@/components/BackButton/BackButton';
 import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
 import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
-import {
-    MODAL_STATES_KEYS,
-    useWorkspaceViewModel
-} from './Workspace.viewmodel';
 import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
 import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
 import { EntryModificationForm } from '@/components/EntryModificationForm/EntryModificationForm';
@@ -101,7 +101,7 @@ export const WorkspaceView = () => {
                                 }
                             />
                         ) : state.workspaceData.name.toLowerCase().trim() !==
-                          'personal workspace' ? (
+                            'personal workspace' ? (
                             <h2
                                 className={styles.workspaceName}
                                 onDoubleClick={operations.toggleIsInputModeOn}
@@ -116,33 +116,33 @@ export const WorkspaceView = () => {
                         <BackButton onClick={operations.backBtnHandler} />
                         {state.workspaceData.name.toLowerCase().trim() !==
                             'personal workspace' && (
-                            <>
-                                <EntryModificationButton
-                                    onClick={() =>
-                                        operations.toggleModal(
-                                            MODAL_STATES_KEYS.EDIT_COLLEAGUES
-                                        )
-                                    }
-                                >
-                                    <FaUsersCog
-                                        className={styles.icon}
-                                        size={24}
-                                    />
-                                </EntryModificationButton>
-                                <EntryModificationButton
-                                    onClick={() =>
-                                        operations.toggleModal(
-                                            MODAL_STATES_KEYS.DELETE_WORKSPACE
-                                        )
-                                    }
-                                >
-                                    <MdDeleteForever
-                                        className={styles.icon}
-                                        size={26}
-                                    />
-                                </EntryModificationButton>
-                            </>
-                        )}
+                                <>
+                                    <EntryModificationButton
+                                        onClick={() =>
+                                            operations.toggleModal(
+                                                MODAL_STATES_KEYS.EDIT_COLLEAGUES
+                                            )
+                                        }
+                                    >
+                                        <FaUsersCog
+                                            className={styles.icon}
+                                            size={24}
+                                        />
+                                    </EntryModificationButton>
+                                    <EntryModificationButton
+                                        onClick={() =>
+                                            operations.toggleModal(
+                                                MODAL_STATES_KEYS.DELETE_WORKSPACE
+                                            )
+                                        }
+                                    >
+                                        <MdDeleteForever
+                                            className={styles.icon}
+                                            size={26}
+                                        />
+                                    </EntryModificationButton>
+                                </>
+                            )}
                     </div>
                 </div>
                 <div className={styles.titleContainer}>
@@ -162,7 +162,7 @@ export const WorkspaceView = () => {
                         className={styles.addButton}
                         onClick={operations.toggleIsCreateBoardModalOpen}
                     >
-                        <FcFile className={styles.icon} />
+                        <HiDocumentAdd className={styles.icon} />
                     </button>
                     {state.filteredBoards.map((board) => (
                         <BoardCard

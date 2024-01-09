@@ -8,6 +8,10 @@
     justify-content: space-between;
 }
 
+.dashboard {
+    line-height: 2;
+}
+
 .date {
     color: grey;
     font-size: 15px;
@@ -22,7 +26,7 @@
 }
 
 .userData {
-    gap: 21px;
+    gap: 16px;
     display: flex;
     position: relative;
     align-items: center;
@@ -37,7 +41,8 @@
     width: 38px;
     height: 38px;
     overflow: hidden;
-    border-radius: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--blue-main);
 }
 
 .profileImgContainer img {

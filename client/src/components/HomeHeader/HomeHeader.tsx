@@ -15,10 +15,7 @@ export const HomeHeader = ({
 }: IHomeHeaderProps) => {
     return (
         <div className={styles.header}>
-            <div className={styles.dashboard}>
-                <h1>Dashboard</h1>
-
-            </div>
+            <h1 className={styles.dashboard}>Dashboard</h1>
             <div className={styles.rightSide}>
                 <div className={styles.userData}>
                     <div className={styles.profileImgContainer}>

@@ -15,6 +15,7 @@
 
 .filter h3 {
     flex: 1;
+    line-height: 2;
 }
 
 .filter .filterInput {
