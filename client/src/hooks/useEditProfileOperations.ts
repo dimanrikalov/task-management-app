@@ -93,7 +93,9 @@ export const useEditProfileModal = () => {
             (inputValues[inputField] as string).length < 2
         ) {
             throw new Error(
-                `${inputField} must be at least 2 characters long!`
+                `${
+                    inputField === INPUT_FIELDS.FIRST_NAME ? 'First' : 'Last'
+                } name must be at least 2 characters long!`
             );
         }
 
@@ -101,7 +103,9 @@ export const useEditProfileModal = () => {
             inputField === INPUT_FIELDS.PASSWORD &&
             !passwordRegex.test(inputValues[inputField] as string)
         ) {
-            throw new Error('Password must conform to the rules!');
+            throw new Error(
+                'Password must conform to the rules:at least 4 characters long, at least 1 capital letter and 1 non-alphabetic symbol.'
+            );
         }
 
         await request({
