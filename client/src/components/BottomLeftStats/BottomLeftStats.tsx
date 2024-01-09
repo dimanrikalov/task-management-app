@@ -45,7 +45,7 @@ export const BottomLeftStats = () => {
             <div className={classNames(styles.card, styles.timeSpent)}>
                 <HomeStat
                     value={timeSpent}
-                    title={'Time Spent'}
+                    title={'Time Spent On Tasks'}
                     isLoading={isLoading}
                     icon={<RxLapTimer className={styles.icon} />}
                 />

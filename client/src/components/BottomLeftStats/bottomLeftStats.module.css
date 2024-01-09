@@ -5,7 +5,7 @@
     display: grid;
     grid-template-areas:
         'steps-completed tasks-completed    tasks-completed'
-        'pending-tasks   pending-tasks      time-spent';
+        'time-spent      time-spent         pending-tasks';
     grid-template-columns: repeat(3, 1fr);
 }
 
@@ -33,16 +33,17 @@
 
 .pendingTasks {
     grid-area: pending-tasks;
-    background-color: var(--lime-main) ;
+    background-color: var(--orange-main);
 }
 
 .tasksCompleted {
     grid-area: tasks-completed;
-    background-color: var(--yellow-main);;
+    background-color: var(--yellow-main);
 }
 
 .timeSpent {
-    background-color: var(--orange-main) ;
+    grid-area: time-spent;
+    background-color: var(--lime-main);
 }
 
 .icon {
