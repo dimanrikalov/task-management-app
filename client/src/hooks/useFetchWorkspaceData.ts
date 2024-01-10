@@ -22,18 +22,18 @@ export const useFetchWorkspaceData = () => {
 				const workspaceData = (await request({
 					accessToken,
 					method: METHODS.GET,
-					endpoint: WORKSPACE_ENDPOINTS.DETAILS(workspaceId),
+					endpoint: WORKSPACE_ENDPOINTS.DETAILS(workspaceId)
 				})) as IDetailedWorkspace;
 
 				//add workspace owner to the users with access to the workspace, and filter out the currently logged user
 				const workspaceUsers = [
 					workspaceData.workspaceOwner,
-					...workspaceData.workspaceUsers,
+					...workspaceData.workspaceUsers
 				]
 					.filter((user) => user.id !== userData.id)
 					.map((user) => ({
 						...user,
-						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
+						profileImagePath: `data:image/png;base64,${user.profileImagePath}`
 					}));
 
 				/* 
@@ -44,7 +44,7 @@ export const useFetchWorkspaceData = () => {
 				workspaceUsers.unshift({
 					email: 'Me',
 					id: userData.id,
-					profileImagePath: userData.profileImagePath,
+					profileImagePath: userData.profileImagePath
 				});
 
 				workspaceData.workspaceUsers = workspaceUsers;
@@ -63,6 +63,6 @@ export const useFetchWorkspaceData = () => {
 	return {
 		isLoading,
 		workspaceData,
-		setWorkspaceData,
+		setWorkspaceData
 	};
 };

@@ -2,7 +2,7 @@ import {
 	request,
 	METHODS,
 	BOARD_ENDPOINTS,
-	COLUMN_ENDPOINTS,
+	COLUMN_ENDPOINTS
 } from '../utils/requester';
 import { useNavigate } from 'react-router-dom';
 import { useErrorContext } from '../contexts/error.context';
@@ -32,11 +32,11 @@ export const useEditBoard = () => {
 			const res = await request({
 				body: {
 					boardId: boardData.id,
-					name: defaultNewColumnName,
+					name: defaultNewColumnName
 				},
 				accessToken,
 				method: METHODS.POST,
-				endpoint: COLUMN_ENDPOINTS.BASE,
+				endpoint: COLUMN_ENDPOINTS.BASE
 			});
 
 			if (res.errorMessage) {
@@ -53,13 +53,13 @@ export const useEditBoard = () => {
 						id: res.columnId,
 						boardId: prev.id,
 						name: defaultNewColumnName,
-						position: prev.columns.length,
-					},
+						position: prev.columns.length
+					}
 				];
 
 				return {
 					...prev,
-					columns,
+					columns
 				};
 			});
 		} catch (err: any) {
@@ -90,7 +90,7 @@ export const useEditBoard = () => {
 			await request({
 				accessToken,
 				method: METHODS.DELETE,
-				endpoint: BOARD_ENDPOINTS.BOARD(boardData.id),
+				endpoint: BOARD_ENDPOINTS.BOARD(boardData.id)
 			});
 			navigate(-1);
 		} catch (err: any) {
@@ -102,6 +102,6 @@ export const useEditBoard = () => {
 	return {
 		addColumn,
 		deleteBoard,
-		updateColumnData,
+		updateColumnData
 	};
 };

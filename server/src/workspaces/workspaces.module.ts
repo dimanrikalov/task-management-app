@@ -15,26 +15,26 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middleware';
 
 @Module({
-    providers: [
-        TasksService,
-        TasksGateway,
-        StepsService,
-        BoardsService,
-        BoardsGateway,
-        ColumnsService,
-        ColumnsGateway,
-        MessagesService,
-        WorkspacesService,
-        WorkspacesGateway
-    ],
-    imports: [PrismaModule],
-    controllers: [WorkspacesController]
+	providers: [
+		TasksService,
+		TasksGateway,
+		StepsService,
+		BoardsService,
+		BoardsGateway,
+		ColumnsService,
+		ColumnsGateway,
+		MessagesService,
+		WorkspacesService,
+		WorkspacesGateway
+	],
+	imports: [PrismaModule],
+	controllers: [WorkspacesController]
 })
 export class WorkspacesModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('workspaces*');
-        consumer
-            .apply(WorkspaceCheckMiddleware)
-            .forRoutes('workspaces/:workspaceId*');
-    }
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(AuthMiddleware).forRoutes('workspaces*');
+		consumer
+			.apply(WorkspaceCheckMiddleware)
+			.forRoutes('workspaces/:workspaceId*');
+	}
 }

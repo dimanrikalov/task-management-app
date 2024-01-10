@@ -24,7 +24,7 @@ export const useEditWorkspaceColleagues = () => {
 				method,
 				accessToken,
 				body: { colleagueId: colleague.id },
-				endpoint: WORKSPACE_ENDPOINTS.COLLEAGUES(workspaceData.id),
+				endpoint: WORKSPACE_ENDPOINTS.COLLEAGUES(workspaceData.id)
 			});
 		} catch (err: any) {
 			console.log(err.message);
@@ -40,7 +40,7 @@ export const useEditWorkspaceColleagues = () => {
 			if (!prev) return null;
 			return {
 				...prev,
-				workspaceUsers: [...prev.workspaceUsers, colleague],
+				workspaceUsers: [...prev.workspaceUsers, colleague]
 			};
 		});
 	};
@@ -56,14 +56,14 @@ export const useEditWorkspaceColleagues = () => {
 				workspaceUsers: [
 					...prev.workspaceUsers.filter(
 						(col) => col.id !== colleague.id
-					),
-				],
+					)
+				]
 			};
 		});
 	};
 
 	return {
 		addWorkspaceColleague,
-		removeWorkspaceColleague,
+		removeWorkspaceColleague
 	};
 };

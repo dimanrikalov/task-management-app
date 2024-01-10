@@ -1,27 +1,27 @@
 .background {
-    gap: 8px;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+	gap: 8px;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 .bottom {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
 }
 
 .value {
-    height: 100%;
-    display: flex;
-    min-width: 64px;
-    align-items: center;
-    justify-content: center;
+	height: 100%;
+	display: flex;
+	min-width: 64px;
+	align-items: center;
+	justify-content: center;
 }
 
 .value span {
-    font-size: 28px;
-    font-weight: 600;
+	font-size: 28px;
+	font-weight: 600;
 }

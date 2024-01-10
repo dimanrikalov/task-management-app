@@ -1,6 +1,6 @@
 import {
 	IInputState,
-	useTaskModalContext,
+	useTaskModalContext
 } from '../contexts/taskModal.context';
 import { IStep } from './useStepsOperations';
 import { useBoardContext } from '../contexts/board.context';
@@ -16,13 +16,13 @@ interface IUseTaskOperationArgs {
 
 export const useTaskOperations = ({
 	steps,
-	inputValues,
+	inputValues
 }: IUseTaskOperationArgs) => {
 	const {
 		setBoardData,
 		selectedColumnId,
 		toggleIsTaskModalOpen,
-		selectedTask: taskData,
+		selectedTask: taskData
 	} = useBoardContext();
 	const { showError } = useErrorContext();
 	const { assigneeId } = useTaskModalContext();
@@ -60,14 +60,14 @@ export const useTaskOperations = ({
 				hoursSpent: Number(inputValues.hoursSpent) || 0,
 				minutesSpent: Number(inputValues.minutesSpent) || 0,
 				estimatedHours: Number(inputValues.estimatedHours) || 0,
-				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
+				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0
 			};
 
 			const data = await request({
 				body,
 				accessToken,
 				method: METHODS.POST,
-				endpoint: TASK_ENDPOINTS.BASE,
+				endpoint: TASK_ENDPOINTS.BASE
 			});
 
 			//check for handled errors
@@ -84,7 +84,7 @@ export const useTaskOperations = ({
 					accessToken,
 					body: payload,
 					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.task.id),
+					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.task.id)
 				});
 
 				if (imageUploadData.errorMessage) {
@@ -101,20 +101,20 @@ export const useTaskOperations = ({
 					const columnToUpdate = {
 						...prev.columns.find(
 							(col) => col.id === selectedColumnId
-						)!,
+						)!
 					};
 
 					const columns = [...prev.columns];
 					columnToUpdate.tasks.push({
 						...data.task,
-						attachmentImgPath: base64String,
+						attachmentImgPath: base64String
 					});
 
 					columns.splice(columnToUpdate.position, 1, columnToUpdate);
 
 					return {
 						...prev,
-						columns,
+						columns
 					};
 				});
 			} else {
@@ -123,7 +123,7 @@ export const useTaskOperations = ({
 					const columnToUpdate = {
 						...prev.columns.find(
 							(col) => col.id === selectedColumnId
-						)!,
+						)!
 					};
 
 					columnToUpdate.tasks.push(data.task);
@@ -133,7 +133,7 @@ export const useTaskOperations = ({
 
 					return {
 						...prev,
-						columns,
+						columns
 					};
 				});
 			}
@@ -176,14 +176,14 @@ export const useTaskOperations = ({
 				hoursSpent: Number(inputValues.hoursSpent) || 0,
 				minutesSpent: Number(inputValues.minutesSpent) || 0,
 				estimatedHours: Number(inputValues.estimatedHours) || 0,
-				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0,
+				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0
 			};
 
 			const res = await request({
 				accessToken,
 				method: METHODS.PUT,
 				body: { payload: body },
-				endpoint: TASK_ENDPOINTS.EDIT(taskData.id),
+				endpoint: TASK_ENDPOINTS.EDIT(taskData.id)
 			});
 
 			if (res.errorMessage) {
@@ -199,7 +199,7 @@ export const useTaskOperations = ({
 					accessToken,
 					body: payload,
 					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(taskData.id),
+					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(taskData.id)
 				});
 
 				if (imageUploadData.errorMessage) {
@@ -219,7 +219,7 @@ export const useTaskOperations = ({
 								task.id === taskData.id
 									? {
 											...res.task,
-											attachmentImgPath: base64String,
+											attachmentImgPath: base64String
 										}
 									: task
 							);
@@ -261,7 +261,7 @@ export const useTaskOperations = ({
 			const res = await request({
 				accessToken,
 				method: METHODS.DELETE,
-				endpoint: TASK_ENDPOINTS.EDIT(taskData.id),
+				endpoint: TASK_ENDPOINTS.EDIT(taskData.id)
 			});
 
 			if (res.errorMessage) {
@@ -283,7 +283,7 @@ export const useTaskOperations = ({
 
 				return {
 					...prev,
-					columns,
+					columns
 				};
 			});
 
@@ -298,6 +298,6 @@ export const useTaskOperations = ({
 		editTask,
 		createTask,
 		deleteTask,
-		toggleIsTaskModalOpen,
+		toggleIsTaskModalOpen
 	};
 };

@@ -1,52 +1,52 @@
 .background {
-    gap: 16px;
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-areas:
-        'steps-completed tasks-completed    tasks-completed'
-        'time-spent      time-spent         pending-tasks';
-    grid-template-columns: repeat(3, 1fr);
+	gap: 16px;
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-areas:
+		'steps-completed tasks-completed    tasks-completed'
+		'time-spent      time-spent         pending-tasks';
+	grid-template-columns: repeat(3, 1fr);
 }
 
 .card {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    padding: 16px;
-    border-radius: 16px;
-    color: var(--white-main);
-    transition: 200ms ease-in-out;
-    box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
-    -moz-box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
-    -webkit-box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+	width: 100%;
+	height: 100%;
+	display: flex;
+	padding: 16px;
+	border-radius: 16px;
+	color: var(--white-main);
+	transition: 200ms ease-in-out;
+	box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+	-moz-box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
+	-webkit-box-shadow: 5px 5px 9px -3px rgba(128, 128, 128, 1);
 }
 
 .card:hover {
-    transform: scale(1.03);
+	transform: scale(1.03);
 }
 
 .stepsCompleted {
-    grid-area: steps-completed;
-    background-color: var(--green-main);
+	grid-area: steps-completed;
+	background-color: var(--green-main);
 }
 
 .pendingTasks {
-    grid-area: pending-tasks;
-    background-color: var(--orange-main);
+	grid-area: pending-tasks;
+	background-color: var(--orange-main);
 }
 
 .tasksCompleted {
-    grid-area: tasks-completed;
-    background-color: var(--yellow-main);
+	grid-area: tasks-completed;
+	background-color: var(--yellow-main);
 }
 
 .timeSpent {
-    grid-area: time-spent;
-    background-color: var(--lime-main);
+	grid-area: time-spent;
+	background-color: var(--lime-main);
 }
 
 .icon {
-    font-size: 64px;
-    color: rgba(255, 255, 255, 0.45);
+	font-size: 64px;
+	color: rgba(255, 255, 255, 0.45);
 }

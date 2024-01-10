@@ -1,41 +1,41 @@
 {
-	"build": {
-		"beforeDevCommand": "yarn dev",
-		"beforeBuildCommand": "yarn build",
-		"devPath": "http://localhost:1420",
-		"distDir": "../dist"
-	},
-	"package": {
-		"productName": "Taskify",
-		"version": "1.0.0"
-	},
-	"tauri": {
-		"allowlist": {
-			"all": false,
-			"shell": {
-				"all": false,
-				"open": true
-			}
-		},
-		"bundle": {
-			"active": true,
-			"targets": "all",
-			"identifier": "com.taskify.dev",
-			"icon": ["icons/icon.icns", "icons/icon.ico"]
-		},
-		"security": {
-			"csp": null
-		},
-		"windows": [
-			{
-				"fullscreen": false,
-				"resizable": true,
-				"title": "Taskify",
-				"width": 1330,
-				"height": 810,
-				"minHeight": 485,
-				"minWidth": 856
-			}
-		]
-	}
+  "build": {
+    "beforeDevCommand": "yarn dev",
+    "beforeBuildCommand": "yarn build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "Taskify",
+    "version": "1.0.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.taskify.dev",
+      "icon": ["icons/icon.icns", "icons/icon.ico"]
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Taskify",
+        "width": 1330,
+        "height": 810,
+        "minHeight": 485,
+        "minWidth": 856
+      }
+    ]
+  }
 }

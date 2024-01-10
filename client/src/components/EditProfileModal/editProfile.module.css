@@ -1,147 +1,147 @@
 .modalBackground {
-    padding: 32px;
-    position: relative;
-    border-radius: 16px;
-    background-color: var(--white-main);
+	padding: 32px;
+	position: relative;
+	border-radius: 16px;
+	background-color: var(--white-main);
 }
 
 .closeBtn {
-    top: 16px;
-    right: 16px;
-    color: grey;
-    font-size: 32px;
-    cursor: pointer;
-    position: absolute;
+	top: 16px;
+	right: 16px;
+	color: grey;
+	font-size: 32px;
+	cursor: pointer;
+	position: absolute;
 }
 
 .backgroundWrapper {
-    height: 90%;
-    padding: 8px;
-    max-height: 626px;
-    position: relative;
-    border-radius: 16px;
-    background-color: var(--white-main);
+	height: 90%;
+	padding: 8px;
+	max-height: 626px;
+	position: relative;
+	border-radius: 16px;
+	background-color: var(--white-main);
 }
 
 .background {
-    height: 100%;
-    width: 100%;
-    padding: 32px 36px;
-    overflow-y: auto;
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+	padding: 32px 36px;
 }
 
 .header {
-    width: 100%;
-    display: flex;
-    margin-bottom: 46px;
-    flex-direction: column;
-    align-items: flex-start;
+	width: 100%;
+	display: flex;
+	margin-bottom: 46px;
+	flex-direction: column;
+	align-items: flex-start;
 }
 
 .main {
-    display: flex;
-    justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
 .background h3 {
-    font-size: 16px;
+	font-size: 16px;
 }
 
 .leftSide {
-    gap: 32px;
-    width: 45%;
-    display: flex;
-    max-width: 350px;
-    align-items: center;
-    flex-direction: column;
+	gap: 32px;
+	width: 45%;
+	display: flex;
+	max-width: 350px;
+	align-items: center;
+	flex-direction: column;
 }
 
 .imgContainer {
-    width: 164px;
-    height: 164px;
-    display: flex;
-    overflow: hidden;
-    align-items: center;
-    border-radius: 100%;
-    justify-content: center;
-    border: 2px solid var(--blue-main);
+	width: 164px;
+	height: 164px;
+	display: flex;
+	overflow: hidden;
+	align-items: center;
+	border-radius: 100%;
+	justify-content: center;
+	border: 2px solid var(--blue-main);
 }
 
 .previewImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .imgInput {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: none;
-    cursor: pointer;
+	width: 100%;
+	border: none;
+	display: flex;
+	cursor: pointer;
+	align-items: center;
+	flex-direction: column;
 }
 
 .fileInput {
-    display: none;
+	display: none;
 }
 
 .imgBtn {
-    border: none;
-    background: none;
+	border: none;
+	background: none;
 }
 
 .imgOperationsContainer {
-    gap: 32px;
-    width: 100%;
-    display: flex;
-    padding: 0 32px;
-    justify-content: space-between;
+	gap: 32px;
+	width: 100%;
+	display: flex;
+	padding: 0 32px;
+	justify-content: space-between;
 }
 
 .imgOperationBtn {
-    padding: 3px;
-    font-size: 32px;
-    cursor: pointer;
-    border-radius: 9px;
-    transition: 200ms ease-in-out;
+	padding: 3px;
+	font-size: 32px;
+	cursor: pointer;
+	border-radius: 9px;
+	transition: 200ms ease-in-out;
 }
 
 .submitBtn {
-    color: var(--white-main);
-    background-color: green;
+	color: var(--white-main);
+	background-color: green;
 }
 .resetBtn {
-    color: var(--white-main);
-    background-color: red;
+	color: var(--white-main);
+	background-color: red;
 }
 
 .disabled:first-of-type,
 .disabled:last-of-type {
-    cursor: default;
-    background-color: grey;
+	cursor: default;
+	background-color: grey;
 }
 
 .formContainer {
-    gap: 16px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+	gap: 16px;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
 }
 
 .form {
-    gap: 16px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+	gap: 16px;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
 }
 
 .rightSide {
-    width: 45%;
-    display: flex;
-    max-width: 350px;
-    flex-direction: column;
-    justify-content: space-between;
+	width: 45%;
+	display: flex;
+	max-width: 350px;
+	flex-direction: column;
+	justify-content: space-between;
 }

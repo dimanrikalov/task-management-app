@@ -83,20 +83,20 @@ export const useBoardViewModel = (): ViewModelReturnType<
 		workspaceUsers,
 		isTaskModalOpen,
 		shouldConfettiExplode,
-		toggleIsTaskModalOpen,
+		toggleIsTaskModalOpen
 	} = useBoardContext();
 	const {
 		isInputModeOn,
 		boardNameInput,
 		toggleIsInputModeOn,
 		handleBoardNameChange,
-		handleBoardNameInputChange,
+		handleBoardNameInputChange
 	} = useRenameBoard();
 	const {
 		addBoardColleague,
 		removeBoardColleague,
 		isEditBoardUsersModalOpen,
-		toggleIsEditBoardUsersModalOpen,
+		toggleIsEditBoardUsersModalOpen
 	} = useEditBoardColleagues();
 	const navigate = useNavigate();
 	const { addColumn, deleteBoard } = useEditBoard();
@@ -130,7 +130,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			shouldConfettiExplode,
 			isDeleteBoardModalOpen,
 			isEditBoardUsersModalOpen,
-			isLoading: isLoading || isLoadingAllUsers,
+			isLoading: isLoading || isLoadingAllUsers
 		},
 		operations: {
 			goBack,
@@ -146,7 +146,7 @@ export const useBoardViewModel = (): ViewModelReturnType<
 			toggleIsTaskModalOpen,
 			handleBoardNameInputChange,
 			toggleIsDeleteBoardModalOpen,
-			toggleIsEditBoardUsersModalOpen,
-		},
+			toggleIsEditBoardUsersModalOpen
+		}
 	};
 };

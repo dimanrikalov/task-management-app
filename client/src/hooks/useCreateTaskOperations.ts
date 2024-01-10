@@ -1,6 +1,6 @@
 import {
 	IInputState,
-	useTaskModalContext,
+	useTaskModalContext
 } from '../contexts/taskModal.context';
 import { useState, useEffect } from 'react';
 import { ITask } from '../components/Task/Task';
@@ -54,7 +54,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 		assigneeId,
 		inputValues,
 		setInputValues,
-		handleInputChange,
+		handleInputChange
 	} = useTaskModalContext();
 	const { showError } = useErrorContext();
 	const { steps, setSteps, addStep, removeStep, progress, toggleStatus } =
@@ -63,7 +63,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 	const { workspaceUsers, selectedTask } = useBoardContext();
 	const { editTask, createTask, deleteTask } = useTaskOperations({
 		inputValues,
-		steps,
+		steps
 	});
 	const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
 	const { taskImagePath, clearTaskImage, changeTaskImage, setTaskImagePath } =
@@ -89,7 +89,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 		Object.entries(task).forEach(([key, value]) => {
 			setInputValues((prev) => ({
 				...prev,
-				[key]: value,
+				[key]: value
 			}));
 		});
 
@@ -104,7 +104,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 			image,
 			email:
 				workspaceUsers.find((user) => user.id === task.assigneeId)
-					?.email || '',
+					?.email || ''
 		}));
 
 		// Set the sorted steps
@@ -127,7 +127,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 			inputValues,
 			selectedTask,
 			taskImagePath,
-			showConfirmButton,
+			showConfirmButton
 		},
 		operations: {
 			addStep,
@@ -142,7 +142,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 			clearTaskImage,
 			changeTaskImage,
 			handleInputChange,
-			toggleConfirmationBtn,
-		},
+			toggleConfirmationBtn
+		}
 	};
 };

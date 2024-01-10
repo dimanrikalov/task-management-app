@@ -1,23 +1,23 @@
 .background {
-    position: relative;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 16px;
-    height: 200px;
-    min-width: 300px;
-    border: none;
-    cursor: pointer;
-    background-color: var(--white-main);
-    box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
-    -webkit-box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
-    -moz-box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
+	position: relative;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 16px;
+	height: 200px;
+	min-width: 300px;
+	border: none;
+	cursor: pointer;
+	background-color: var(--white-main);
+	box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
+	-webkit-box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
+	-moz-box-shadow: 0px 2px 7px 0px rgba(199, 199, 199, 0.75);
 }
 
 .deleteBtn {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    color: var(--blue-main);
+	position: absolute;
+	top: 18px;
+	right: 18px;
+	color: var(--blue-main);
 }

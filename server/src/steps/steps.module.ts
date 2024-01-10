@@ -1,8 +1,8 @@
 import {
-    Module,
-    NestModule,
-    RequestMethod,
-    MiddlewareConsumer
+	Module,
+	NestModule,
+	RequestMethod,
+	MiddlewareConsumer
 } from '@nestjs/common';
 import { StepsService } from './steps.service';
 import { StepsController } from './steps.controller';
@@ -14,38 +14,38 @@ import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
 import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
 
 @Module({
-    imports: [PrismaModule],
-    providers: [StepsService],
-    controllers: [StepsController]
+	imports: [PrismaModule],
+	providers: [StepsService],
+	controllers: [StepsController]
 })
 export class StepsModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply(
-                AuthMiddleware,
-                TaskCheckMiddleware,
-                ColumnCheckMiddleware,
-                BoardCheckMiddleware
-            )
-            .forRoutes({ path: 'steps', method: RequestMethod.POST });
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(
+				AuthMiddleware,
+				TaskCheckMiddleware,
+				ColumnCheckMiddleware,
+				BoardCheckMiddleware
+			)
+			.forRoutes({ path: 'steps', method: RequestMethod.POST });
 
-        consumer
-            .apply(
-                AuthMiddleware,
-                StepCheckMiddleware,
-                TaskCheckMiddleware,
-                ColumnCheckMiddleware,
-                BoardCheckMiddleware
-            )
-            .forRoutes(
-                {
-                    path: 'steps',
-                    method: RequestMethod.PUT
-                },
-                {
-                    path: 'steps',
-                    method: RequestMethod.DELETE
-                }
-            );
-    }
+		consumer
+			.apply(
+				AuthMiddleware,
+				StepCheckMiddleware,
+				TaskCheckMiddleware,
+				ColumnCheckMiddleware,
+				BoardCheckMiddleware
+			)
+			.forRoutes(
+				{
+					path: 'steps',
+					method: RequestMethod.PUT
+				},
+				{
+					path: 'steps',
+					method: RequestMethod.DELETE
+				}
+			);
+	}
 }

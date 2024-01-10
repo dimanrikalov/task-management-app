@@ -35,14 +35,14 @@ export const useStepsOperations = () => {
 		if (steps.some((step) => step.description === inputValues.step)) return;
 		setSteps((prev) => [
 			...prev,
-			{ description: inputValues.step, isComplete: false },
+			{ description: inputValues.step, isComplete: false }
 		]);
 		setInputValues((prev) => ({ ...prev, step: '' }));
 	};
 
 	const removeStep = (description: string) => {
 		setSteps((prev) => [
-			...prev.filter((step) => step.description !== description),
+			...prev.filter((step) => step.description !== description)
 		]);
 	};
 
@@ -65,6 +65,6 @@ export const useStepsOperations = () => {
 		progress,
 		setSteps,
 		removeStep,
-		toggleStatus,
+		toggleStatus
 	};
 };

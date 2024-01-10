@@ -1,11 +1,11 @@
 import {
 	IUserData,
 	useUserContext,
-	IUserContextSecure,
+	IUserContextSecure
 } from '../../contexts/user.context';
 import {
 	IDetailedWorkspace,
-	useWorkspaceContext,
+	useWorkspaceContext
 } from '../../contexts/workspace.context';
 import { ROUTES } from '../../router';
 import { useEffect, useState } from 'react';
@@ -19,7 +19,7 @@ import { useEditWorkspaceColleagues } from '../../hooks/useEditWorkspaceColleagu
 
 export enum MODAL_STATES_KEYS {
 	EDIT_COLLEAGUES = 'editColleaguesIsOpen',
-	DELETE_WORKSPACE = 'deleteWorkspaceIsOpen',
+	DELETE_WORKSPACE = 'deleteWorkspaceIsOpen'
 }
 
 export type EDIT_COLLEAGUE_METHOD = METHODS.POST | METHODS.DELETE;
@@ -68,7 +68,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 		toggleIsInputModeOn,
 		handleWorkspaceNameChange,
 		toggleIsCreateBoardModalOpen,
-		handleWorkspaceNameInputChange,
+		handleWorkspaceNameInputChange
 	} = useEditWorkspace();
 	const navigate = useNavigate();
 	const [inputValue, setInputValue] = useState('');
@@ -79,7 +79,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 		useEditWorkspaceColleagues();
 	const [modals, setModals] = useState<IModalStates>({
 		[MODAL_STATES_KEYS.EDIT_COLLEAGUES]: false,
-		[MODAL_STATES_KEYS.DELETE_WORKSPACE]: false,
+		[MODAL_STATES_KEYS.DELETE_WORKSPACE]: false
 	});
 
 	//search filter
@@ -120,7 +120,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			workspaceData,
 			isInputModeOn,
 			filteredBoards,
-			workspaceNameInput,
+			workspaceNameInput
 		},
 		operations: {
 			goToBoard,
@@ -133,7 +133,7 @@ export const useWorkspaceViewModel = (): ViewModelReturnType<
 			removeWorkspaceColleague,
 			handleWorkspaceNameChange,
 			toggleIsCreateBoardModalOpen,
-			handleWorkspaceNameInputChange,
-		},
+			handleWorkspaceNameInputChange
+		}
 	};
 };

@@ -1,5 +1,5 @@
 export interface IBoard {
-    id: number;
-    name: string;
-    workspaceId: number;
+	id: number;
+	name: string;
+	workspaceId: number;
 }

@@ -39,8 +39,8 @@ export const useRenameBoard = () => {
 				method: METHODS.PUT,
 				endpoint: BOARD_ENDPOINTS.RENAME(boardData.id),
 				body: {
-					newName: boardNameInput.trim(),
-				},
+					newName: boardNameInput.trim()
+				}
 			});
 
 			if (data.errorMessage) {
@@ -51,7 +51,7 @@ export const useRenameBoard = () => {
 
 				return {
 					...prev,
-					name: boardNameInput,
+					name: boardNameInput
 				};
 			});
 		} catch (err: any) {
@@ -66,6 +66,6 @@ export const useRenameBoard = () => {
 		boardNameInput,
 		toggleIsInputModeOn,
 		handleBoardNameChange,
-		handleBoardNameInputChange,
+		handleBoardNameInputChange
 	};
 };

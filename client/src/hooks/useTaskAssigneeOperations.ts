@@ -10,7 +10,7 @@ export const useTaskAssigneeOperations = () => {
 		assigneeId,
 		inputValues,
 		setAssigneeId,
-		setInputValues,
+		setInputValues
 	} = useTaskModalContext();
 	const { boardData } = useBoardContext();
 	const boardUsers = boardData?.boardUsers || [];

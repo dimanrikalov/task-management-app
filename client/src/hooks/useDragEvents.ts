@@ -2,7 +2,7 @@ import {
 	request,
 	METHODS,
 	TASK_ENDPOINTS,
-	COLUMN_ENDPOINTS,
+	COLUMN_ENDPOINTS
 } from '../utils/requester';
 import { useState } from 'react';
 import { useErrorContext } from '../contexts/error.context';
@@ -28,7 +28,7 @@ export const useDragEvents = () => {
 			type,
 			source,
 			destination,
-			draggableId: rawDraggableId,
+			draggableId: rawDraggableId
 		} = result;
 
 		if (!boardData) {
@@ -105,8 +105,8 @@ export const useDragEvents = () => {
 					endpoint: COLUMN_ENDPOINTS.MOVE,
 					body: {
 						columnId: Number(draggableId),
-						destinationPosition: destination.index,
-					},
+						destinationPosition: destination.index
+					}
 				});
 
 				if (res.errorMessage) {
@@ -178,7 +178,7 @@ export const useDragEvents = () => {
 							if (col.id === srcColumn.id) {
 								return {
 									...col,
-									tasks: srcColumnTasks,
+									tasks: srcColumnTasks
 								};
 							}
 							return col;
@@ -196,8 +196,8 @@ export const useDragEvents = () => {
 					body: {
 						taskId: Number(draggableId),
 						destinationPosition: destination.index,
-						destinationColumnId: Number(destinationDroppableId),
-					},
+						destinationColumnId: Number(destinationDroppableId)
+					}
 				});
 
 				if (res.errorMessage) {

@@ -17,12 +17,12 @@ export const useFetchAllUsers = () => {
 				const data = (await request({
 					accessToken,
 					method: METHODS.GET,
-					endpoint: USER_ENDPOINTS.BASE,
+					endpoint: USER_ENDPOINTS.BASE
 				})) as IUser[];
 
 				const users = data.map((user) => ({
 					...user,
-					profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
+					profileImagePath: `data:image/png;base64,${user.profileImagePath}`
 				}));
 				setAllUsers(users);
 			} catch (err: any) {
@@ -37,6 +37,6 @@ export const useFetchAllUsers = () => {
 
 	return {
 		allUsers,
-		isLoading,
+		isLoading
 	};
 };

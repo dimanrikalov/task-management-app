@@ -30,7 +30,7 @@ export const useEditBoardColleagues = () => {
 				method,
 				accessToken,
 				body: { colleagueId: colleague.id },
-				endpoint: BOARD_ENDPOINTS.COLLEAGUES(boardData.id),
+				endpoint: BOARD_ENDPOINTS.COLLEAGUES(boardData.id)
 			});
 		} catch (err: any) {
 			console.log(err.message);
@@ -46,7 +46,7 @@ export const useEditBoardColleagues = () => {
 
 			return {
 				...prev,
-				boardUsers: [...prev.boardUsers, colleague],
+				boardUsers: [...prev.boardUsers, colleague]
 			};
 		});
 	};
@@ -60,8 +60,8 @@ export const useEditBoardColleagues = () => {
 			return {
 				...prev,
 				boardUsers: [
-					...prev.boardUsers.filter((col) => col.id !== colleague.id),
-				],
+					...prev.boardUsers.filter((col) => col.id !== colleague.id)
+				]
 			};
 		});
 	};
@@ -70,6 +70,6 @@ export const useEditBoardColleagues = () => {
 		addBoardColleague,
 		removeBoardColleague,
 		isEditBoardUsersModalOpen,
-		toggleIsEditBoardUsersModalOpen,
+		toggleIsEditBoardUsersModalOpen
 	};
 };

@@ -12,18 +12,18 @@ import { MessagesModule } from './messages/messages.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
-    imports: [
-        UsersModule,
-        TasksModule,
-        StepsModule,
-        BoardsModule,
-        PrismaModule,
-        ColumnsModule,
-        MessagesModule,
-        WorkspacesModule,
-        ConfigModule.forRoot()
-    ],
-    providers: [AppService],
-    controllers: [AppController]
+	imports: [
+		UsersModule,
+		TasksModule,
+		StepsModule,
+		BoardsModule,
+		PrismaModule,
+		ColumnsModule,
+		MessagesModule,
+		WorkspacesModule,
+		ConfigModule.forRoot()
+	],
+	providers: [AppService],
+	controllers: [AppController]
 })
 export class AppModule {}

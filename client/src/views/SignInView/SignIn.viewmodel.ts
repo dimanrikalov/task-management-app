@@ -30,7 +30,7 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 	const { showError } = useErrorContext();
 	const [inputFields, setInputFields] = useState<IInputFields>({
 		email: '',
-		password: '',
+		password: ''
 	});
 
 	const goToInitialView = () => {
@@ -45,7 +45,7 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 		const { name, value } = e.target;
 		setInputFields((prevInputFields) => ({
 			...prevInputFields,
-			[name]: value,
+			[name]: value
 		}));
 	};
 
@@ -56,11 +56,11 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 			if (Object.values(inputFields).some((value) => value === '')) {
 				throw new Error('All fields are required!');
 			}
-            console.log(USER_ENDPOINTS.SIGN_IN);
+			console.log(USER_ENDPOINTS.SIGN_IN);
 			const data = await request({
 				body: inputFields,
 				method: METHODS.POST,
-				endpoint: USER_ENDPOINTS.SIGN_IN,
+				endpoint: USER_ENDPOINTS.SIGN_IN
 			});
 
 			//case where the endpoint actually throws an exception
@@ -69,9 +69,9 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 			}
 
 			setTokens({
-                accessToken: data.accessToken,
-                refreshToken: data.refreshToken
-            });
+				accessToken: data.accessToken,
+				refreshToken: data.refreshToken
+			});
 
 			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
@@ -81,13 +81,13 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 
 	return {
 		state: {
-			inputFields,
+			inputFields
 		},
 		operations: {
 			signIn,
 			goToSignUpView,
 			goToInitialView,
-			handleInputChange,
-		},
+			handleInputChange
+		}
 	};
 };

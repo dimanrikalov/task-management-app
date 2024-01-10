@@ -46,8 +46,8 @@ export const useEditWorkspace = () => {
 				method: METHODS.PUT,
 				endpoint: WORKSPACE_ENDPOINTS.RENAME(workspaceData.id),
 				body: {
-					newName: workspaceNameInput.trim(),
-				},
+					newName: workspaceNameInput.trim()
+				}
 			});
 
 			if (data.errorMessage) {
@@ -59,7 +59,7 @@ export const useEditWorkspace = () => {
 
 				return {
 					...prev,
-					name: workspaceNameInput,
+					name: workspaceNameInput
 				};
 			});
 		} catch (err: any) {
@@ -77,7 +77,7 @@ export const useEditWorkspace = () => {
 			await request({
 				accessToken,
 				method: METHODS.DELETE,
-				endpoint: WORKSPACE_ENDPOINTS.WORKSPACE(workspaceData.id),
+				endpoint: WORKSPACE_ENDPOINTS.WORKSPACE(workspaceData.id)
 			});
 			navigate(ROUTES.DASHBOARD, { replace: true });
 		} catch (err: any) {
@@ -99,6 +99,6 @@ export const useEditWorkspace = () => {
 		toggleIsInputModeOn,
 		handleWorkspaceNameChange,
 		toggleIsCreateBoardModalOpen,
-		handleWorkspaceNameInputChange,
+		handleWorkspaceNameInputChange
 	};
 };

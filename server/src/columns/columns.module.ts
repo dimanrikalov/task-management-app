@@ -1,8 +1,8 @@
 import {
-    Module,
-    NestModule,
-    RequestMethod,
-    MiddlewareConsumer
+	Module,
+	NestModule,
+	RequestMethod,
+	MiddlewareConsumer
 } from '@nestjs/common';
 import { ColumnsService } from './columns.service';
 import { ColumnsGateway } from './columns.gateway';
@@ -16,24 +16,24 @@ import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
 import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
 
 @Module({
-    providers: [
-        TasksService,
-        StepsService,
-        TasksGateway,
-        ColumnsGateway,
-        ColumnsService
-    ],
-    imports: [PrismaModule],
-    controllers: [ColumnsController]
+	providers: [
+		TasksService,
+		StepsService,
+		TasksGateway,
+		ColumnsGateway,
+		ColumnsService
+	],
+	imports: [PrismaModule],
+	controllers: [ColumnsController]
 })
 export class ColumnsModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply(AuthMiddleware, BoardCheckMiddleware)
-            .forRoutes({ path: 'columns', method: RequestMethod.POST });
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(AuthMiddleware, BoardCheckMiddleware)
+			.forRoutes({ path: 'columns', method: RequestMethod.POST });
 
-        consumer
-            .apply(AuthMiddleware, ColumnCheckMiddleware, BoardCheckMiddleware)
-            .forRoutes({ path: 'columns/*', method: RequestMethod.ALL });
-    }
+		consumer
+			.apply(AuthMiddleware, ColumnCheckMiddleware, BoardCheckMiddleware)
+			.forRoutes({ path: 'columns/*', method: RequestMethod.ALL });
+	}
 }

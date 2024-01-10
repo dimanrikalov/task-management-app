@@ -26,7 +26,7 @@ export const useIntroViewModel = (): ViewModelReturnType<
 		state: {},
 		operations: {
 			signInHandler,
-			signUpHandler,
-		},
+			signUpHandler
+		}
 	};
 };

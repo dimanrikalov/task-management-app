@@ -9,23 +9,23 @@ import { ErrorNotification } from './components/ErrorNotification/ErrorNotificat
 import { SelectedWorkspaceContextProvider } from './contexts/selectedWorkspace.context';
 
 function App() {
-    return (
-        <div className={styles.background}>
-            <UserContextProvider>
-                <ErrorContextProvider>
-                    <NotificationContextProvider>
-                        <ModalsContextProvider>
-                            <SelectedWorkspaceContextProvider>
-                                <Router />
-                            </SelectedWorkspaceContextProvider>
-                        </ModalsContextProvider>
-                        <Notification />
-                    </NotificationContextProvider>
-                    <ErrorNotification />
-                </ErrorContextProvider>
-            </UserContextProvider>
-        </div >
-    );
+	return (
+		<div className={styles.background}>
+			<UserContextProvider>
+				<ErrorContextProvider>
+					<NotificationContextProvider>
+						<ModalsContextProvider>
+							<SelectedWorkspaceContextProvider>
+								<Router />
+							</SelectedWorkspaceContextProvider>
+						</ModalsContextProvider>
+						<Notification />
+					</NotificationContextProvider>
+					<ErrorNotification />
+				</ErrorContextProvider>
+			</UserContextProvider>
+		</div>
+	);
 }
 
 export default App;

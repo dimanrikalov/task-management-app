@@ -1,25 +1,25 @@
 import {
 	IUserData,
 	useUserContext,
-	IUserContextSecure,
+	IUserContextSecure
 } from '../../contexts/user.context';
 import {
 	IHomeBoardEntry,
 	useFetchHomeLists,
-	IHomeWorkspaceEntry,
+	IHomeWorkspaceEntry
 } from '../../hooks/useFetchHomeLists';
 import { useEffect, useState } from 'react';
 import { ViewModelReturnType } from '../../interfaces/viewModel.interface';
 
 export enum ENTRIES_TYPES {
 	BOARDS = 'boards',
-	WORKSPACES = 'workspaces',
+	WORKSPACES = 'workspaces'
 }
 
 export enum MODALS_STATE_KEYS {
 	CREATE_BOARD_IS_OPEN = 'createBoardIsOpen',
 	EDIT_PROFILE_IS_OPEN = 'editProfileIsOpen',
-	CREATE_WORKSPACE_IS_OPEN = 'createWorkspaceIsOpen',
+	CREATE_WORKSPACE_IS_OPEN = 'createWorkspaceIsOpen'
 }
 
 export interface ISearchInputs {
@@ -45,7 +45,7 @@ const options: Intl.DateTimeFormatOptions = {
 	month: 'long',
 	day: 'numeric',
 	year: 'numeric',
-	weekday: 'long',
+	weekday: 'long'
 };
 
 interface IUserHomeViewmodelOperations {
@@ -61,7 +61,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		isLoadingBoards,
 		setIsLoadingBoards,
 		isLoadingWorkspaces,
-		setIsLoadingWorkspaces,
+		setIsLoadingWorkspaces
 	} = useFetchHomeLists();
 	const date = new Date()
 		.toLocaleDateString('en-US', options)
@@ -70,18 +70,18 @@ export const useHomeViewModel = (): ViewModelReturnType<
 	const { data: userData } = useUserContext() as IUserContextSecure;
 	const [filteredLists, setFilteredLists] = useState<IFilteredLists>({
 		boards: [],
-		workspaces: [],
+		workspaces: []
 	});
 	const [searchInputs, setSearchInputs] = useState<ISearchInputs>({
 		searchBoards: '',
-		searchWorkspaces: '',
+		searchWorkspaces: ''
 	});
 
 	useEffect(() => {
 		if (!lists.boards) return;
 		setFilteredLists((prev) => ({
 			...prev,
-			boards: lists.boards as IHomeBoardEntry[],
+			boards: lists.boards as IHomeBoardEntry[]
 		}));
 		setIsLoadingBoards(false);
 	}, [lists]);
@@ -90,7 +90,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		if (!lists.workspaces) return;
 		setFilteredLists((prev) => ({
 			...prev,
-			workspaces: lists.workspaces as IHomeWorkspaceEntry[],
+			workspaces: lists.workspaces as IHomeWorkspaceEntry[]
 		}));
 		setIsLoadingWorkspaces(false);
 	}, [lists]);
@@ -139,7 +139,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 				workspaces: filterWorkspaces(
 					searchInputs.searchWorkspaces,
 					lists.workspaces || []
-				),
+				)
 			};
 		});
 	}, [searchInputs]);
@@ -150,7 +150,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		const { name, value } = e.target;
 		setSearchInputs((prevInputFields) => ({
 			...prevInputFields,
-			[name]: value,
+			[name]: value
 		}));
 	};
 
@@ -161,10 +161,10 @@ export const useHomeViewModel = (): ViewModelReturnType<
 			searchInputs,
 			filteredLists,
 			isLoadingBoards,
-			isLoadingWorkspaces,
+			isLoadingWorkspaces
 		},
 		operations: {
-			handleFilterInputChange,
-		},
+			handleFilterInputChange
+		}
 	};
 };

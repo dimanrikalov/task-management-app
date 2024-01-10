@@ -14,7 +14,7 @@ enum INPUT_FIELDS {
 	PASSWORD = 'password',
 	LAST_NAME = 'lastName',
 	FIRST_NAME = 'firstName',
-	PROFILE_IMG = 'profileImg',
+	PROFILE_IMG = 'profileImg'
 }
 
 interface IInputValues {
@@ -37,7 +37,7 @@ export const useEditProfileModal = () => {
 		lastName: '',
 		password: '',
 		firstName: '',
-		profileImg: null,
+		profileImg: null
 	});
 
 	useEffect(() => {
@@ -75,7 +75,7 @@ export const useEditProfileModal = () => {
 			setInputValues((prev) => ({
 				...prev,
 				[inputField]:
-					inputField === INPUT_FIELDS.PROFILE_IMG ? null : '',
+					inputField === INPUT_FIELDS.PROFILE_IMG ? null : ''
 			}));
 			if (inputField === INPUT_FIELDS.PROFILE_IMG) {
 				setProfileImgPath(null);
@@ -112,7 +112,7 @@ export const useEditProfileModal = () => {
 			accessToken,
 			method: METHODS.PUT,
 			endpoint: USER_ENDPOINTS.EDIT,
-			body: { [inputField]: inputValues[inputField] },
+			body: { [inputField]: inputValues[inputField] }
 		});
 	};
 
@@ -130,7 +130,7 @@ export const useEditProfileModal = () => {
 			body,
 			accessToken,
 			method: METHODS.POST,
-			endpoint: USER_ENDPOINTS.PROFILE_IMG_EDIT,
+			endpoint: USER_ENDPOINTS.PROFILE_IMG_EDIT
 		});
 	};
 
@@ -139,7 +139,7 @@ export const useEditProfileModal = () => {
 			await request({
 				accessToken,
 				method: METHODS.DELETE,
-				endpoint: USER_ENDPOINTS.DELETE,
+				endpoint: USER_ENDPOINTS.DELETE
 			});
 			deleteTokens();
 			navigate(ROUTES.HOME); // force refetching of user through the guard
@@ -157,7 +157,7 @@ export const useEditProfileModal = () => {
 
 		setInputValues((prev) => ({
 			...prev,
-			profileImg: e.target.files![0],
+			profileImg: e.target.files![0]
 		}));
 
 		e.target.value = '';
@@ -166,7 +166,7 @@ export const useEditProfileModal = () => {
 	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValues((prev) => ({
 			...prev,
-			[e.target.name]: e.target.value,
+			[e.target.name]: e.target.value
 		}));
 	};
 
@@ -195,6 +195,6 @@ export const useEditProfileModal = () => {
 		inputChangeHandler,
 		changeProfileImage,
 		toggleIsDeletionModalOpen,
-		toggleIsEditProfileModalOpen,
+		toggleIsEditProfileModalOpen
 	};
 };

@@ -1,94 +1,94 @@
 .background {
-    gap: 8px;
-    width: 100%;
-    display: flex;
-    padding: 16px;
-    border-radius: 16px;
-    margin-bottom: 32px;
-    flex-direction: column;
-    background-color: #f5f5f5;
-    justify-content: space-between;
-    box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-    -moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-    -webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	gap: 8px;
+	width: 100%;
+	display: flex;
+	padding: 16px;
+	border-radius: 16px;
+	margin-bottom: 32px;
+	flex-direction: column;
+	background-color: #f5f5f5;
+	justify-content: space-between;
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
 .background:hover {
-    cursor: grab;
+	cursor: grab;
 }
 
 .background:active {
-    cursor: grabbing;
+	cursor: grabbing;
 }
 
 .isDragging {
-    color: white;
-    background-color: #1da1f2;
+	color: white;
+	background-color: #1da1f2;
 }
 
 .taskImg {
-    overflow: hidden;
-    border-radius: 16px;
+	overflow: hidden;
+	border-radius: 16px;
 }
 
 .taskImg img {
-    width: 100%;
-    height: 100%;
+	width: 100%;
+	height: 100%;
 }
 
 .title {
-    flex-grow: 1;
-    width: 100%;
+	flex-grow: 1;
+	width: 100%;
 }
 
 .footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .rightSide {
-    gap: 6px;
-    display: flex;
-    justify-content: space-between;
+	gap: 6px;
+	display: flex;
+	justify-content: space-between;
 }
 
 .completedSteps {
-    gap: 8px;
-    display: flex;
-    align-items: center;
+	gap: 8px;
+	display: flex;
+	align-items: center;
 }
 
 .completedSteps .icon {
-    padding: 4px;
-    font-size: 21px;
-    border-radius: 4px;
-    color: var(--white-main);
-    background-color: var(--blue-main);
+	padding: 4px;
+	font-size: 21px;
+	border-radius: 4px;
+	color: var(--white-main);
+	background-color: var(--blue-main);
 }
 
 .completedSteps .icon.invert {
-    color: var(--blue-main);
-    background-color: var(--white-main);
+	color: var(--blue-main);
+	background-color: var(--white-main);
 }
 
 .userImg {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    overflow: hidden;
-    object-fit: cover;
-    border-radius: 50%;
-    align-items: center;
-    justify-content: center;
+	width: 36px;
+	height: 36px;
+	display: flex;
+	overflow: hidden;
+	object-fit: cover;
+	border-radius: 50%;
+	align-items: center;
+	justify-content: center;
 }
 
 .userImg img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .progress {
-    padding-top: 2px;
+	padding-top: 2px;
 }

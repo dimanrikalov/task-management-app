@@ -42,18 +42,18 @@ export const useFetchBoardData = () => {
 				const newBoardData = (await request({
 					accessToken,
 					method: METHODS.GET,
-					endpoint: BOARD_ENDPOINTS.DETAILS(boardId),
+					endpoint: BOARD_ENDPOINTS.DETAILS(boardId)
 				})) as IBoardData;
 
 				//add workspace owner to the users with access to the workspace, and filter out the currently logged user
 				const workspaceUsers = [
 					...newBoardData.workspace.workspaceUsers,
-					newBoardData.workspace.workspaceOwner,
+					newBoardData.workspace.workspaceOwner
 				]
 					.filter((user) => user.id !== userData.id)
 					.map((user) => ({
 						...user,
-						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
+						profileImagePath: `data:image/png;base64,${user.profileImagePath}`
 					}));
 
 				/* 
@@ -64,7 +64,7 @@ export const useFetchBoardData = () => {
 				workspaceUsers.unshift({
 					email: 'Me',
 					id: userData.id,
-					profileImagePath: userData.profileImagePath,
+					profileImagePath: userData.profileImagePath
 				});
 
 				const boardUsers = newBoardData.boardUsers
@@ -79,12 +79,12 @@ export const useFetchBoardData = () => {
 					})
 					.map((user) => ({
 						...user,
-						profileImagePath: `data:image/png;base64,${user.profileImagePath}`,
+						profileImagePath: `data:image/png;base64,${user.profileImagePath}`
 					}));
 
 				setBoardData({
 					...newBoardData,
-					boardUsers: [...workspaceUsers, ...boardUsers],
+					boardUsers: [...workspaceUsers, ...boardUsers]
 				});
 
 				setWorkspaceUsers(workspaceUsers);
@@ -109,6 +109,6 @@ export const useFetchBoardData = () => {
 		boardData,
 		setBoardData,
 		workspaceUsers,
-		callForRefresh,
+		callForRefresh
 	};
 };

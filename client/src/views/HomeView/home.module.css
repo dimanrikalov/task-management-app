@@ -1,23 +1,23 @@
 .background {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    position: relative;
-    background-color: var(--white-secondary);
+	width: 100%;
+	height: 100%;
+	display: flex;
+	position: relative;
+	background-color: var(--white-secondary);
 }
 
 .mainContainer {
-    width: 100%;
-    padding: 16px;
-    display: flex;
-    overflow-x: auto;
-    flex-direction: column;
-    transition: 200ms ease-in-out;
-    justify-content: space-between;
+	width: 100%;
+	padding: 16px;
+	display: flex;
+	overflow-x: auto;
+	flex-direction: column;
+	transition: 200ms ease-in-out;
+	justify-content: space-between;
 }
 
 @media screen and (max-height: 620px) {
-    .mainContainer {
-        padding-bottom: 32px;
-    }
+	.mainContainer {
+		padding-bottom: 32px;
+	}
 }

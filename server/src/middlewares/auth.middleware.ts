@@ -1,7 +1,7 @@
 import {
-    Injectable,
-    NestMiddleware,
-    UnauthorizedException
+	Injectable,
+	NestMiddleware,
+	UnauthorizedException
 } from '@nestjs/common';
 import { IJWTPayload } from 'src/jwt/jwt.interfaces';
 import { extractJWTData } from 'src/jwt/extractJWTData';
@@ -11,45 +11,45 @@ import { validateJWTToken } from 'src/jwt/validateJWTToken';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-    constructor(private readonly prismaService: PrismaService) {}
+	constructor(private readonly prismaService: PrismaService) {}
 
-    async use(req: Request, res: Response, next: NextFunction) {
-        try {
-            const authorizationHeader = req.headers.authorization;
-            if (!authorizationHeader) {
-                throw new UnauthorizedException('Unauthorized access!');
-            }
-            const authorizationToken = authorizationHeader.split(' ')[1];
+	async use(req: Request, res: Response, next: NextFunction) {
+		try {
+			const authorizationHeader = req.headers.authorization;
+			if (!authorizationHeader) {
+				throw new UnauthorizedException('Unauthorized access!');
+			}
+			const authorizationToken = authorizationHeader.split(' ')[1];
 
-            // Verify the JWT token is valid
-            if (!validateJWTToken(authorizationToken)) {
-                throw new UnauthorizedException('Invalid JWT token!');
-            }
+			// Verify the JWT token is valid
+			if (!validateJWTToken(authorizationToken)) {
+				throw new UnauthorizedException('Invalid JWT token!');
+			}
 
-            // Decode the JWT token
-            const decodedToken: IJWTPayload =
-                extractJWTData(authorizationToken);
+			// Decode the JWT token
+			const decodedToken: IJWTPayload =
+				extractJWTData(authorizationToken);
 
-            // check if the token is valid by checking if user with same id and email exists
-            const user = !!(await this.prismaService.user.findUnique({
-                where: {
-                    id: decodedToken.id
-                }
-            }));
+			// check if the token is valid by checking if user with same id and email exists
+			const user = !!(await this.prismaService.user.findUnique({
+				where: {
+					id: decodedToken.id
+				}
+			}));
 
-            if (!user) {
-                throw new UnauthorizedException('Invalid JWT token!');
-            }
+			if (!user) {
+				throw new UnauthorizedException('Invalid JWT token!');
+			}
 
-            //add the decodedUserData to the body
-            req.body.userData = decodedToken;
+			//add the decodedUserData to the body
+			req.body.userData = decodedToken;
 
-            //proceed accessing the endpoint
-            next();
-        } catch (err: any) {
-            console.log(err.message);
-            const { statusCode, message: errorMessage } = err.response;
-            return res.status(statusCode || 400).json({ errorMessage });
-        }
-    }
+			//proceed accessing the endpoint
+			next();
+		} catch (err: any) {
+			console.log(err.message);
+			const { statusCode, message: errorMessage } = err.response;
+			return res.status(statusCode || 400).json({ errorMessage });
+		}
+	}
 }

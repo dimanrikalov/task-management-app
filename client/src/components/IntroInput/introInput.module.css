@@ -1,43 +1,43 @@
 .inputContainer {
-    position: relative;
-    width: 100%;
+	width: 100%;
+	position: relative;
 }
 
 .iconContainer {
-    position: absolute;
-    top: 8px;
-    left: 14px;
+	top: 8px;
+	left: 14px;
+	position: absolute;
 }
 
 .iconContainer > * {
-    color: grey;
-    transition: 200ms ease-in-out;
+	color: grey;
+	transition: 200ms ease-in-out;
 }
 
 .input {
-    width: 100%;
-    outline: none;
-    font-size: 16px;
-    padding: 7px 0px;
-    box-shadow: none;
-    border-radius: 0.5em;
-    transition: 300ms ease-in-out;
-    background-color: whitesmoke;
-    border: 2px solid var(--grey-main);
+	width: 100%;
+	outline: none;
+	font-size: 16px;
+	padding: 7px 0px;
+	box-shadow: none;
+	border-radius: 0.5em;
+	transition: 300ms ease-in-out;
+	background-color: whitesmoke;
+	border: 2px solid var(--grey-main);
 }
 
 .input:disabled:hover {
-    cursor: not-allowed;
+	cursor: not-allowed;
 }
 
 .paddingLeft {
-    padding-left: 36px;
+	padding-left: 36px;
 }
 
 .input:focus {
-    border: 2px solid var(--blue-main);
+	border: 2px solid var(--blue-main);
 }
 
 .colorIcon {
-    color: var(--blue-main);
+	color: var(--blue-main);
 }

@@ -1,22 +1,22 @@
 .background {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 200px;
-    padding: 32px;
+	padding: 32px;
+	display: flex;
+	min-height: 200px;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 .background p {
-    font-size: 18px;
-    text-align: center;
+	font-size: 18px;
+	text-align: center;
 }
 
 .bold {
-    font-weight: 600;
+	font-weight: 600;
 }
 
 .operationsContainer {
-    display: flex;
-    justify-content: space-between;
-    gap: 32px;
+	gap: 32px;
+	display: flex;
+	justify-content: space-between;
 }

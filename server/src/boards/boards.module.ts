@@ -1,8 +1,8 @@
 import {
-    Module,
-    NestModule,
-    RequestMethod,
-    MiddlewareConsumer
+	Module,
+	NestModule,
+	RequestMethod,
+	MiddlewareConsumer
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { BoardsGateway } from './boards.gateway';
@@ -19,38 +19,38 @@ import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
 import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middleware';
 
 @Module({
-    providers: [
-        TasksService,
-        TasksGateway,
-        StepsService,
-        BoardsService,
-        BoardsGateway,
-        ColumnsService,
-        ColumnsGateway,
-        MessagesService
-    ],
-    imports: [PrismaModule],
-    controllers: [BoardsController]
+	providers: [
+		TasksService,
+		TasksGateway,
+		StepsService,
+		BoardsService,
+		BoardsGateway,
+		ColumnsService,
+		ColumnsGateway,
+		MessagesService
+	],
+	imports: [PrismaModule],
+	controllers: [BoardsController]
 })
 export class BoardsModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply(AuthMiddleware)
-            .forRoutes({ path: 'boards', method: RequestMethod.GET });
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(AuthMiddleware)
+			.forRoutes({ path: 'boards', method: RequestMethod.GET });
 
-        consumer.apply(AuthMiddleware, BoardCheckMiddleware).forRoutes(
-            {
-                path: 'boards/:boardId',
-                method: RequestMethod.DELETE
-            },
-            {
-                path: 'boards/:boardId*',
-                method: RequestMethod.ALL
-            }
-        );
+		consumer.apply(AuthMiddleware, BoardCheckMiddleware).forRoutes(
+			{
+				path: 'boards/:boardId',
+				method: RequestMethod.DELETE
+			},
+			{
+				path: 'boards/:boardId*',
+				method: RequestMethod.ALL
+			}
+		);
 
-        consumer
-            .apply(AuthMiddleware, WorkspaceCheckMiddleware)
-            .forRoutes({ path: 'boards', method: RequestMethod.POST });
-    }
+		consumer
+			.apply(AuthMiddleware, WorkspaceCheckMiddleware)
+			.forRoutes({ path: 'boards', method: RequestMethod.POST });
+	}
 }

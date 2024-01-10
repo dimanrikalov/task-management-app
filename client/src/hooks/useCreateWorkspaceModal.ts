@@ -15,7 +15,7 @@ export const useCreateWorkspaceModal = () => {
 	const { data: userData, accessToken } =
 		useUserContext() as IUserContextSecure;
 	const [colleagues, setColleagues] = useState<IUser[]>([
-		{ ...userData, email: 'Me' },
+		{ ...userData, email: 'Me' }
 	]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,14 +39,14 @@ export const useCreateWorkspaceModal = () => {
 				name: inputValue,
 				colleagues: colleagues
 					.map((colleague) => colleague.id)
-					.filter((colleagueId) => colleagueId !== userData.id),
+					.filter((colleagueId) => colleagueId !== userData.id)
 			};
 
 			const data = await request({
 				body,
 				accessToken,
 				method: METHODS.POST,
-				endpoint: WORKSPACE_ENDPOINTS.BASE,
+				endpoint: WORKSPACE_ENDPOINTS.BASE
 			});
 
 			if (data.errorMessage) {
@@ -67,7 +67,7 @@ export const useCreateWorkspaceModal = () => {
 
 	const removeFromColleaguesToAdd = (colleague: IUser) => {
 		setColleagues((prev) => [
-			...prev.filter((col) => col.id !== colleague.id),
+			...prev.filter((col) => col.id !== colleague.id)
 		]);
 	};
 
@@ -83,6 +83,6 @@ export const useCreateWorkspaceModal = () => {
 		handleInputChange,
 		addToColleaguesToAdd,
 		removeFromColleaguesToAdd,
-		toggleIsCreateWorkspaceModalOpen,
+		toggleIsCreateWorkspaceModalOpen
 	};
 };
