@@ -1,12 +1,13 @@
 import classNames from 'classnames';
+import { Modal } from '../Modal/Modal';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './editProfile.module.css';
-import { Modal } from '@/components/Modal/Modal';
 import { FaCheck, FaXmark } from 'react-icons/fa6';
-import { IntroInput } from '@/components/IntroInput/IntroInput';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { IntroInput } from '../IntroInput/IntroInput';
+import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { useEditProfileModal } from '../../hooks/useEditProfileOperations';
-import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
+import { DeleteConfirmation } from '../DeleteConfirmation/DeleteConfirmation';
+
 
 export const EditProfileModal = () => {
     const {

@@ -14,6 +14,7 @@ import { FindUserDto } from './dtos/findUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { extractJWTData } from 'src/jwt/extractJWTData';
+import { IGenerateTokens } from 'src/jwt/jwt.interfaces';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EditProfleImgDto } from './dtos/editProfleImg.dto';
 import { refreshJWTTokens } from 'src/jwt/refreshJWTTokens';
@@ -259,7 +260,7 @@ export class UsersService {
         });
     }
 
-    async signIn(res: Response, body: LoginUserDto): Promise<void> {
+    async signIn(res: Response, body: LoginUserDto): Promise<IGenerateTokens> {
         const user = await this.findUserByEmail(body.email);
 
         if (!user) {
@@ -283,14 +284,10 @@ export class UsersService {
             id: user.id
         });
 
-        //set the accessToken and refreshToken as cookies
-        res.cookie('accessToken', accessToken, {
-            maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN)
-        });
-
-        res.cookie('refreshToken', refreshToken, {
-            maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN)
-        });
+        return {
+            accessToken,
+            refreshToken
+        };
     }
 
     async update(body: EditUserDto): Promise<void> {

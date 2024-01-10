@@ -1,10 +1,11 @@
+import { Modal } from '../Modal/Modal';
 import { RxCross2 } from 'react-icons/rx';
-import { Modal } from '@/components/Modal/Modal';
+import { IntroInput } from '../IntroInput/IntroInput';
 import styles from './createWorkspaceModal.module.css';
-import { IntroInput } from '@/components/IntroInput/IntroInput';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { IntroButton } from '../Buttons/IntroButton/IntroButton';
+import { AddColleagueInput } from '../AddColleagueInput/AddColleagueInput';
 import { useCreateWorkspaceModal } from '../../hooks/useCreateWorkspaceModal';
-import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
+
 
 export const CreateWorkspaceModal = () => {
     const {

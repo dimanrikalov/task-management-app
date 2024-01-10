@@ -1,25 +1,26 @@
-import { ROUTES } from '@/router';
 import classNames from 'classnames';
+import { ROUTES } from '../../router';
 import styles from './board.module.css';
 import { RxCross2 } from 'react-icons/rx';
 import { VscGraph } from 'react-icons/vsc';
 import { FaUsersCog } from 'react-icons/fa';
 import { Navigate } from 'react-router-dom';
 import { FcAddColumn } from 'react-icons/fc';
-import { Chat } from '@/components/Chat/Chat';
-import { Modal } from '@/components/Modal/Modal';
 import { MdDeleteForever } from 'react-icons/md';
-import { Column } from '@/components/Column/Column';
+import { Chat } from '../../components/Chat/Chat';
+import { Modal } from '../../components/Modal/Modal';
 import { useBoardViewModel } from './Board.viewmodel';
-import { BackButton } from '@/components/BackButton/BackButton';
+import { Column } from '../../components/Column/Column';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { TaskModalContextProvider } from '@/contexts/taskModal.context';
-import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
-import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
-import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
+import { BackButton } from '../../components/BackButton/BackButton';
+import { TaskModalContextProvider } from '../../contexts/taskModal.context';
+import { LoadingOverlay } from '../../components/LoadingOverlay/LoadingOverlay';
+import { AddColleagueInput } from '../../components/AddColleagueInput/AddColleagueInput';
+import { DeleteConfirmation } from '../../components/DeleteConfirmation/DeleteConfirmation';
 import { TaskOperationsModal } from '../../components/TaskOperationsModal/TaskOperationsModal';
-import { EntryModificationForm } from '@/components/EntryModificationForm/EntryModificationForm';
-import { EntryModificationButton } from '@/components/Buttons/EntryModificationButton/EntryModificationButton';
+import { EntryModificationForm } from '../../components/EntryModificationForm/EntryModificationForm';
+import { EntryModificationButton } from '../../components/Buttons/EntryModificationButton/EntryModificationButton';
+
 
 export const BoardView = () => {
     const { state, operations } = useBoardViewModel();
@@ -114,18 +115,18 @@ export const BoardView = () => {
                             <BackButton onClick={operations.goBack} />
                             {state.boardData.workspace.name !==
                                 'Personal Workspace' && (
-                                <EntryModificationButton
-                                    onClick={
-                                        operations.toggleIsEditBoardUsersModalOpen
-                                    }
-                                >
-                                    <FaUsersCog
-                                        className={styles.icon}
-                                        size={24}
-                                    />
-                                </EntryModificationButton>
-                            )}
-                            <EntryModificationButton onClick={() => {}}>
+                                    <EntryModificationButton
+                                        onClick={
+                                            operations.toggleIsEditBoardUsersModalOpen
+                                        }
+                                    >
+                                        <FaUsersCog
+                                            className={styles.icon}
+                                            size={24}
+                                        />
+                                    </EntryModificationButton>
+                                )}
+                            <EntryModificationButton onClick={() => { }}>
                                 <VscGraph
                                     size={21}
                                     className={classNames(

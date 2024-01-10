@@ -1,7 +1,8 @@
 import { createContext, useContext } from 'react';
-import { IDetailedBoard } from '@/hooks/useCreateBoardModal';
-import { useFetchWorkspaceData } from '@/hooks/useFetchWorkspaceData';
-import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
+import { IDetailedBoard } from '../hooks/useCreateBoardModal';
+import { useFetchWorkspaceData } from '../hooks/useFetchWorkspaceData';
+import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
+
 
 export interface IDetailedWorkspace {
     id: number;

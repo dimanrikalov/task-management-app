@@ -2,10 +2,10 @@ import { FaUser } from 'react-icons/fa';
 import styles from './signUp.module.css';
 import { FaUsers } from 'react-icons/fa6';
 import { useSignUpViewModel } from './SignUp.viewmodel';
-import { BackButton } from '@/components/BackButton/BackButton';
-import { IntroInput } from '@/components/IntroInput/IntroInput';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { BackButton } from '../../components/BackButton/BackButton';
+import { IntroInput } from '../../components/IntroInput/IntroInput';
 import { FaEnvelope, FaEnvelopeOpen, FaLock, FaUnlock } from 'react-icons/fa';
+import { IntroButton } from '../../components/Buttons/IntroButton/IntroButton';
 
 export const SignUpView = () => {
     const { state, operations } = useSignUpViewModel();

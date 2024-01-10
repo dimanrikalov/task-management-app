@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react';
 import { Message } from '../Message/Message';
 import { useLocation } from 'react-router-dom';
 import { IntroInput } from '../IntroInput/IntroInput';
-import { useErrorContext } from '@/contexts/error.context';
+import { useErrorContext } from '../../contexts/error.context';
 import { TbLayoutSidebarLeftExpandFilled } from 'react-icons/tb';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
-import { MESSAGE_ENDPOINTS, METHODS, request } from '@/utils/requester';
-import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
+import { MESSAGE_ENDPOINTS, METHODS, request } from '../../utils/requester';
+import { IUserContextSecure, useUserContext } from '../../contexts/user.context';
 
 export interface IMessage {
     id: number;

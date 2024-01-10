@@ -1,7 +1,8 @@
 import styles from './home.module.css';
 import { useHomeViewModel } from './Home.viewmodel';
-import { HomeHeader } from '@/components/HomeHeader/HomeHeader';
-import { HomeDashboard } from '@/components/HomeDashboard/HomeDashboard';
+import { HomeHeader } from '../../components/HomeHeader/HomeHeader';
+import { HomeDashboard } from '../../components/HomeDashboard/HomeDashboard';
+
 
 export const HomeView = () => {
     const { state, operations } = useHomeViewModel();

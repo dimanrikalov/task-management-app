@@ -1,7 +1,7 @@
 import { useBoardContext } from './board.context';
-import { generateFileFromBase64 } from '@/utils/convertImages';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
+import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
+import { generateFileFromBase64 } from '../utils/convertImages';
 
 export interface IInputState {
     title: string;
@@ -61,10 +61,10 @@ export const TaskModalContextProvider: React.FC<{
                 ?.email || '';
         const image = selectedTask.attachmentImgPath
             ? generateFileFromBase64(
-                  selectedTask.attachmentImgPath,
-                  'image/png',
-                  'task-img'
-              )
+                selectedTask.attachmentImgPath,
+                'image/png',
+                'task-img'
+            )
             : null;
         setInputValues({
             email,

@@ -1,6 +1,6 @@
 import styles from './workspaceInput.module.css';
 import { IntroInput } from '../IntroInput/IntroInput';
-import { IWorkspace } from '@/hooks/useCreateBoardModal';
+import { IWorkspace } from '../../hooks/useCreateBoardModal';
 
 interface IWorkspaceInputProps {
     value: string;

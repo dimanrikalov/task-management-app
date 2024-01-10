@@ -1,18 +1,14 @@
-import {
-    request,
-    METHODS,
-    BOARD_ENDPOINTS,
-    WORKSPACE_ENDPOINTS
-} from '@/utils/requester';
-import { ROUTES } from '@/router';
+import { ROUTES } from '../router';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useErrorContext } from '@/contexts/error.context';
-import { useModalsContext } from '@/contexts/modals.context';
-import { IDetailedWorkspace } from '@/contexts/workspace.context';
-import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
-import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
-import { useSelectedWorkspaceContext } from '@/contexts/selectedWorkspace.context';
+import { useErrorContext } from '../contexts/error.context';
+import { useModalsContext } from '../contexts/modals.context';
+import { IDetailedWorkspace } from '../contexts/workspace.context';
+import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
+import { IUserContextSecure, useUserContext } from '../contexts/user.context';
+import { useSelectedWorkspaceContext } from '../contexts/selectedWorkspace.context';
+import { BOARD_ENDPOINTS, METHODS, WORKSPACE_ENDPOINTS, request } from '../utils/requester';
+
 
 export enum INPUT_STATES_KEYS {
     BOARD_NAME = 'boardName',

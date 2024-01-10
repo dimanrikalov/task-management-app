@@ -1,6 +1,7 @@
 import styles from './intro.module.css';
 import { useIntroViewModel } from './intro.viewmodel';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { IntroButton } from '../../components/Buttons/IntroButton/IntroButton';
+
 
 export const IntroView = () => {
     const { operations } = useIntroViewModel();

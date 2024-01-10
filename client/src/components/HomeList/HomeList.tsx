@@ -1,13 +1,12 @@
-import {
-    IHomeBoardEntry,
-    IHomeWorkspaceEntry
-} from '@/hooks/useFetchHomeLists';
+
 import styles from './homeList.module.css';
 import { useNavigate } from 'react-router-dom';
 import { HomeCard } from '../HomeCard/HomeCard';
 import { IntroInput } from '../IntroInput/IntroInput';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
-import { ENTRIES_TYPES, ISearchInputs } from '@/views/HomeView/Home.viewmodel';
+import { ENTRIES_TYPES, ISearchInputs } from '../../views/HomeView/Home.viewmodel';
+import { IHomeBoardEntry, IHomeWorkspaceEntry } from '../../hooks/useFetchHomeLists';
+
 
 type TEntries = IHomeWorkspaceEntry[] | IHomeBoardEntry[];
 

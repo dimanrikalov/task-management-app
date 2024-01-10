@@ -1,12 +1,13 @@
 import classNames from 'classnames';
+import { Modal } from '../Modal/Modal';
 import { RxCross2 } from 'react-icons/rx';
-import { Modal } from '@/components/Modal/Modal';
 import styles from './createBoardModal.module.css';
-import { IntroInput } from '@/components/IntroInput/IntroInput';
+import { IntroInput } from '../IntroInput/IntroInput';
+import { WorkspaceInput } from '../WorkspaceInput/WorkspaceInput';
+import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { useCreateBoardModal } from '../../hooks/useCreateBoardModal';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
-import { WorkspaceInput } from '@/components/WorkspaceInput/WorkspaceInput';
-import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
+import { AddColleagueInput } from '../AddColleagueInput/AddColleagueInput';
+
 
 export const CreateBoardModal = () => {
     const {

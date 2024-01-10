@@ -6,16 +6,17 @@ import { RxCross2 } from 'react-icons/rx';
 import styles from './workspace.module.css';
 import { FaUsersCog } from 'react-icons/fa';
 import { HiDocumentAdd } from 'react-icons/hi';
-import { Modal } from '@/components/Modal/Modal';
 import { MdDeleteForever } from 'react-icons/md';
-import { BoardCard } from '@/components/BoardCard/BoardCard';
-import { BackButton } from '@/components/BackButton/BackButton';
-import { IntroInput } from '@/components/IntroInput/IntroInput';
-import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
-import { AddColleagueInput } from '@/components/AddColleagueInput/AddColleagueInput';
-import { DeleteConfirmation } from '@/components/DeleteConfirmation/DeleteConfirmation';
-import { EntryModificationForm } from '@/components/EntryModificationForm/EntryModificationForm';
-import { EntryModificationButton } from '@/components/Buttons/EntryModificationButton/EntryModificationButton';
+import { Modal } from '../../components/Modal/Modal';
+import { BoardCard } from '../../components/BoardCard/BoardCard';
+import { IntroInput } from '../../components/IntroInput/IntroInput';
+import { BackButton } from '../../components/BackButton/BackButton';
+import { LoadingOverlay } from '../../components/LoadingOverlay/LoadingOverlay';
+import { AddColleagueInput } from '../../components/AddColleagueInput/AddColleagueInput';
+import { DeleteConfirmation } from '../../components/DeleteConfirmation/DeleteConfirmation';
+import { EntryModificationForm } from '../../components/EntryModificationForm/EntryModificationForm';
+import { EntryModificationButton } from '../../components/Buttons/EntryModificationButton/EntryModificationButton';
+
 
 export const WorkspaceView = () => {
     const { state, operations } = useWorkspaceViewModel();

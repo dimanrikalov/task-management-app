@@ -5,7 +5,8 @@ import { LuMessageSquare } from 'react-icons/lu';
 import styles from './bottomRightStats.module.css';
 import { HiOutlineDocument } from "react-icons/hi";
 import { MdOutlineLibraryBooks } from 'react-icons/md';
-import { useUserStatsContext } from '@/contexts/userStats.context';
+import { useUserStatsContext } from '../../contexts/userStats.context';
+
 
 export const BottomRightStats = () => {
     const { userStats, isLoading } = useUserStatsContext();

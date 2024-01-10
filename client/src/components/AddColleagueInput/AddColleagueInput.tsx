@@ -2,10 +2,10 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import styles from './addColleagueInput.module.css';
 import { EmailInput } from '../EmailInput/EmailInput';
-import { useUserContext } from '@/contexts/user.context';
-import { useErrorContext } from '@/contexts/error.context';
+import { useUserContext } from '../../contexts/user.context';
+import { useErrorContext } from '../../contexts/error.context';
 import { ListContainer } from '../ListContainer/ListContainer';
-import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
+import { METHODS, USER_ENDPOINTS, request } from '../../utils/requester';
 
 export interface IUser {
     id: number;

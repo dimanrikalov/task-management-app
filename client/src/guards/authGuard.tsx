@@ -1,15 +1,17 @@
-import { ROUTES } from '@/router';
+
+import { ROUTES } from '../router';
 import { useState, useEffect } from 'react';
-import { useErrorContext } from '@/contexts/error.context';
-import { useModalsContext } from '@/contexts/modals.context';
-import { IUserData, useUserContext } from '@/contexts/user.context';
-import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
-import { deleteTokens, extractTokens, isAccessTokenValid } from '../utils';
-import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
+import { useErrorContext } from '../contexts/error.context';
+import { useModalsContext } from '../contexts/modals.context';
+import { IUserData, useUserContext } from '../contexts/user.context';
+import { METHODS, USER_ENDPOINTS, request } from '../utils/requester';
+import { deleteTokens, getTokens, isAccessTokenValid } from '../utils';
+import { LoadingOverlay } from '../components/LoadingOverlay/LoadingOverlay';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { CreateBoardModal } from '@/components/CreateBoardModal/CreateBoardModal';
-import { EditProfileModal } from '@/components/EditProfileModal/EditProfileModal';
-import { CreateWorkspaceModal } from '@/components/CreateWorkspaceModal/CreateWorkspaceModal';
+import { EditProfileModal } from '../components/EditProfileModal/EditProfileModal';
+import { CreateBoardModal } from '../components/CreateBoardModal/CreateBoardModal';
+import { CreateWorkspaceModal } from '../components/CreateWorkspaceModal/CreateWorkspaceModal';
+
 
 export interface IOutletContext {
     data: IUserData;
@@ -29,7 +31,7 @@ export const AuthGuard = () => {
     const { data: user, setUserData } = useUserContext();
 
     useEffect(() => {
-        const tokens = extractTokens();
+        const tokens = getTokens();
 
         const refreshTokens = async () => {
             const data = await request({

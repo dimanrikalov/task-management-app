@@ -1,5 +1,6 @@
 import styles from './errorNotification.module.css';
-import { useErrorContext } from '@/contexts/error.context';
+import { useErrorContext } from '../../contexts/error.context';
+
 
 export const ErrorNotification = () => {
     const { errorMsg, showErrorMsg } = useErrorContext();

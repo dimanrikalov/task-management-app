@@ -1,6 +1,6 @@
 import { useErrorContext } from "./error.context";
 import { IUserContextSecure, useUserContext } from "./user.context";
-import { METHODS, USER_ENDPOINTS, request } from "@/utils/requester";
+import { METHODS, USER_ENDPOINTS, request } from "../utils/requester";
 import { createContext, useContext, useEffect, useState } from "react";
 
 interface IUserStats {

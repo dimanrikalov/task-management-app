@@ -1,4 +1,5 @@
-import { deleteTokens } from "@/utils";
+
+import { deleteTokens } from "../utils";
 import { createContext, useContext, useState } from "react";
 
 export interface IUserData {
@@ -38,10 +39,7 @@ const UserContext = createContext<IUserContext>({
 
 export const useUserContext = () => useContext<IUserContext>(UserContext);
 
-/*
-decode token check exp date and compare to date now, if expired make request to 
-refresh tokens they will be set as cookies automatically, set tokens as cookies as well
-*/
+
 export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
     children
 }) => {

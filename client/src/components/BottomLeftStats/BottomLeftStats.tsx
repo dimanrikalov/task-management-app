@@ -5,7 +5,8 @@ import styles from './bottomLeftStats.module.css';
 import { FaRegSquareCheck } from "react-icons/fa6";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { MdOutlinePendingActions } from 'react-icons/md';
-import { useUserStatsContext } from '@/contexts/userStats.context';
+import { useUserStatsContext } from '../../contexts/userStats.context';
+
 
 export const BottomLeftStats = () => {
     const { userStats, isLoading } = useUserStatsContext();

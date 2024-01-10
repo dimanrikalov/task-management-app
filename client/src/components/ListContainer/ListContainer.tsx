@@ -1,7 +1,7 @@
 import styles from './listContainer.module.css';
 import { UserEntry } from '../UserEntry/UserEntry';
 import { StepEntry } from '../StepEntry/StepEntry';
-import { IStep } from '@/hooks/useStepsOperations';
+import { IStep } from '../../hooks/useStepsOperations';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 
 type TListMode = 'users' | 'steps';

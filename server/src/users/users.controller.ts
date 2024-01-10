@@ -96,8 +96,13 @@ export class UsersController {
     async createUser(@Res() res: Response, @Body() userBody: CreateUserDto) {
         try {
             await this.usersService.signUp(userBody);
-            await this.usersService.signIn(res, userBody);
-            return res.status(200).json({ message: 'Signed-up successfully!' });
+            const { accessToken, refreshToken } =
+                await this.usersService.signIn(res, userBody);
+            return res.status(200).json({
+                accessToken,
+                refreshToken,
+                message: 'Signed-up successfully!'
+            });
         } catch (err: any) {
             const { statusCode, message: errorMessage } = err.response;
             return res.status(statusCode).json({ errorMessage });
@@ -107,8 +112,13 @@ export class UsersController {
     @Post('/users/sign-in')
     async loginUser(@Res() res: Response, @Body() userBody: LoginUserDto) {
         try {
-            await this.usersService.signIn(res, userBody);
-            res.status(200).json({ message: 'Signed-in successfully!' });
+            const { accessToken, refreshToken } =
+                await this.usersService.signIn(res, userBody);
+            res.status(200).json({
+                accessToken,
+                refreshToken,
+                message: 'Signed-in successfully!'
+            });
         } catch (err: any) {
             const { statusCode, message: errorMessage } = err.response;
             return res.status(statusCode).json({ errorMessage });
@@ -172,6 +182,7 @@ export class UsersController {
         }
     }
 
+    //FIX AUTH LOGIC
     @Get('/users/refresh')
     async refreshUserTokens(@Req() req: Request, @Res() res: Response) {
         try {
@@ -184,15 +195,12 @@ export class UsersController {
                     refreshToken,
                     payload: { userData: body }
                 });
-            res.cookie('accessToken', newAccessToken, {
-                maxAge: Number(process.env.ACCESS_TOKEN_EXPIRES_IN)
+
+            return res.status(200).json({
+                acessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+                message: 'Tokens refreshed successfully!'
             });
-            res.cookie('refreshToken', newRefreshToken, {
-                maxAge: Number(process.env.REFRESH_TOKEN_EXPIRES_IN)
-            });
-            return res
-                .status(200)
-                .json({ message: 'Tokens refreshed successfully!' });
         } catch (err: any) {
             console.log(err.message);
             return res.status(400).json({

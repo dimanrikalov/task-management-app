@@ -3,24 +3,24 @@ import { ITokens } from './guards/authGuard';
 
 interface IJWTPayload {
     id: number;
-    first_name: string;
-    last_name: string;
     iat: number;
     exp: number;
+    last_name: string;
+    first_name: string;
 }
 
-export const extractTokens = (): ITokens => {
-    const pattern = /(accessToken|refreshToken)=([^;]*)/g;
-    let matches: RegExpExecArray | null;
-    let tokens: { [key: string]: string } = {};
-    while ((matches = pattern.exec(document.cookie)) !== null) {
-        let tokenType: string = matches[1].trim();
-        let tokenValue: string = matches[2].trim();
-        tokens[tokenType] = tokenValue;
-    }
+export const setTokens = ({ accessToken, refreshToken }: ITokens) => {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+};
+
+export const getTokens = (): ITokens => {
+    const accessToken = localStorage.getItem('accessToken')!;
+    const refreshToken = localStorage.getItem('refreshToken')!;
+
     return {
-        accessToken: tokens['accessToken'],
-        refreshToken: tokens['refreshToken']
+        accessToken,
+        refreshToken
     };
 };
 
@@ -45,16 +45,5 @@ export const isAccessTokenValid = (accessToken: string) => {
 };
 
 export const deleteTokens = () => {
-    document.cookie.split(';').forEach(function (c) {
-        document.cookie = c
-            .replace(/^ +/, '')
-            .replace(
-                /=.*/,
-                '=;expires=' + new Date().toUTCString() + ';path=/'
-            );
-    });
-};
-
-export const deleteAccessToken = () => {
-    document.cookie = `accessToken=;expires=${new Date().toUTCString()};path=/`;
+    localStorage.clear();
 };

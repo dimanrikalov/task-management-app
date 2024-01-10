@@ -78,7 +78,7 @@ export const request = async ({
 
     const request: RequestInit = {
         headers,
-        credentials: 'include',
+        // credentials: 'include',
         method: method || METHODS.GET
     };
 

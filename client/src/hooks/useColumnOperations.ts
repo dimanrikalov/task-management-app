@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useEditBoard } from './useEditBoard';
-import { ITask } from '@/components/Task/Task';
-import { useBoardContext } from '@/contexts/board.context';
-import { useErrorContext } from '@/contexts/error.context';
-import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
-import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
+import { ITask } from '../components/Task/Task';
+import { useBoardContext } from '../contexts/board.context';
+import { useErrorContext } from '../contexts/error.context';
+import { COLUMN_ENDPOINTS, METHODS, request } from '../utils/requester';
+import { IUserContextSecure, useUserContext } from '../contexts/user.context';
+
 
 const defaultColumnNames = ['to do', 'doing', 'done'];
 const defaultNewColumnName = import.meta.env.VITE_DEFAULT_COLUMN_NAME as string;

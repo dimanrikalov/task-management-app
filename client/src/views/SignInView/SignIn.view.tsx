@@ -4,9 +4,10 @@ import { FaUnlock } from 'react-icons/fa6';
 import { FaEnvelope } from 'react-icons/fa';
 import { FaEnvelopeOpen } from 'react-icons/fa';
 import { useSignInViewmodel } from './SignIn.viewmodel';
-import { BackButton } from '@/components/BackButton/BackButton';
-import { IntroInput } from '@/components/IntroInput/IntroInput';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { BackButton } from '../../components/BackButton/BackButton';
+import { IntroInput } from '../../components/IntroInput/IntroInput';
+import { IntroButton } from '../../components/Buttons/IntroButton/IntroButton';
+
 
 export const SignInView = () => {
     const { state, operations } = useSignInViewmodel();

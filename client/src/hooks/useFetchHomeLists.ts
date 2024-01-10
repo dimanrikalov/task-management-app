@@ -1,79 +1,79 @@
 import {
-    request,
-    METHODS,
-    BOARD_ENDPOINTS,
-    WORKSPACE_ENDPOINTS
-} from '@/utils/requester';
+	request,
+	METHODS,
+	BOARD_ENDPOINTS,
+	WORKSPACE_ENDPOINTS,
+} from '../utils/requester';
 import { useEffect, useState } from 'react';
-import { useErrorContext } from '@/contexts/error.context';
-import { ENTRIES_TYPES } from '@/views/HomeView/Home.viewmodel';
-import { IUserContextSecure, useUserContext } from '@/contexts/user.context';
+import { useErrorContext } from '../contexts/error.context';
+import { ENTRIES_TYPES } from '../views/HomeView/Home.viewmodel';
+import { IUserContextSecure, useUserContext } from '../contexts/user.context';
 
 export interface IHomeBoardEntry {
-    id: number;
-    name: string;
-    usersCount: number;
-    workspaceName: string;
+	id: number;
+	name: string;
+	usersCount: number;
+	workspaceName: string;
 }
 
 export interface IHomeWorkspaceEntry {
-    id: number;
-    name: string;
-    ownerName: string;
-    usersCount: number;
+	id: number;
+	name: string;
+	ownerName: string;
+	usersCount: number;
 }
 
 export interface ILists {
-    boards: IHomeBoardEntry[] | null;
-    workspaces: IHomeWorkspaceEntry[] | null;
+	boards: IHomeBoardEntry[] | null;
+	workspaces: IHomeWorkspaceEntry[] | null;
 }
 
 export const useFetchHomeLists = () => {
-    const { showError } = useErrorContext();
-    const { accessToken } = useUserContext() as IUserContextSecure;
-    const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(true);
-    const [isLoadingWorkspaces, setIsLoadingWorkspaces] =
-        useState<boolean>(true);
-    const [lists, setLists] = useState<ILists>({
-        boards: null,
-        workspaces: null
-    });
+	const { showError } = useErrorContext();
+	const { accessToken } = useUserContext() as IUserContextSecure;
+	const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(true);
+	const [isLoadingWorkspaces, setIsLoadingWorkspaces] =
+		useState<boolean>(true);
+	const [lists, setLists] = useState<ILists>({
+		boards: null,
+		workspaces: null,
+	});
 
-    //fetching boards
-    useEffect(() => {
-        setIsLoadingBoards(true);
-        fetchEntries(ENTRIES_TYPES.BOARDS);
-    }, [accessToken]);
+	//fetching boards
+	useEffect(() => {
+		setIsLoadingBoards(true);
+		fetchEntries(ENTRIES_TYPES.BOARDS);
+	}, [accessToken]);
 
-    //fetching workspaces
-    useEffect(() => {
-        setIsLoadingWorkspaces(true);
-        fetchEntries(ENTRIES_TYPES.WORKSPACES);
-    }, [accessToken]);
+	//fetching workspaces
+	useEffect(() => {
+		setIsLoadingWorkspaces(true);
+		fetchEntries(ENTRIES_TYPES.WORKSPACES);
+	}, [accessToken]);
 
-    const fetchEntries = async (entries: ENTRIES_TYPES) => {
-        try {
-            const data = await request({
-                accessToken,
-                method: METHODS.GET,
-                endpoint:
-                    entries === ENTRIES_TYPES.BOARDS
-                        ? BOARD_ENDPOINTS.BASE
-                        : WORKSPACE_ENDPOINTS.BASE
-            });
+	const fetchEntries = async (entries: ENTRIES_TYPES) => {
+		try {
+			const data = await request({
+				accessToken,
+				method: METHODS.GET,
+				endpoint:
+					entries === ENTRIES_TYPES.BOARDS
+						? BOARD_ENDPOINTS.BASE
+						: WORKSPACE_ENDPOINTS.BASE,
+			});
 
-            setLists((prev) => ({ ...prev, [entries]: data }));
-        } catch (err: any) {
-            console.log(err.message);
-            showError(err.message);
-        }
-    };
+			setLists((prev) => ({ ...prev, [entries]: data }));
+		} catch (err: any) {
+			console.log(err.message);
+			showError(err.message);
+		}
+	};
 
-    return {
-        lists,
-        isLoadingBoards,
-        setIsLoadingBoards,
-        isLoadingWorkspaces,
-        setIsLoadingWorkspaces
-    };
+	return {
+		lists,
+		isLoadingBoards,
+		setIsLoadingBoards,
+		isLoadingWorkspaces,
+		setIsLoadingWorkspaces,
+	};
 };

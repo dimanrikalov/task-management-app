@@ -7,7 +7,7 @@ import ConfettiExplosion from 'react-confetti-explosion';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
-import { useColumnOperations } from '@/hooks/useColumnOperations';
+import { useColumnOperations } from '../../hooks/useColumnOperations';
 
 export interface IColumnProps {
     id: number;

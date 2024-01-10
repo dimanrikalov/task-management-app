@@ -10,9 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-dist-electron
-release
 *.local
+src-tauri/icons/default-icons
 
 # Editor directories and files
 .vscode/*

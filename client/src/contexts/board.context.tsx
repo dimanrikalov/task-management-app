@@ -1,8 +1,10 @@
-import { ITask } from '@/components/Task/Task';
-import { useConfetti } from '@/hooks/useConfetti';
+
+import { ITask } from '../components/Task/Task';
+import { useConfetti } from '../hooks/useConfetti';
 import { createContext, useContext, useState } from 'react';
-import { IUser } from '@/components/AddColleagueInput/AddColleagueInput';
-import { IBoardData, useFetchBoardData } from '@/hooks/useFetchBoardData';
+import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
+import { IBoardData, useFetchBoardData } from '../hooks/useFetchBoardData';
+
 
 interface IBoardContext {
     isLoading: boolean;

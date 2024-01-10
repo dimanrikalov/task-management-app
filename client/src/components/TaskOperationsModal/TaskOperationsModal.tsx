@@ -1,15 +1,15 @@
 import classNames from 'classnames';
+import { Modal } from '../Modal/Modal';
 import { IoAdd } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { FaXmark } from 'react-icons/fa6';
 import { FcAddImage } from 'react-icons/fc';
-import { Modal } from '@/components/Modal/Modal';
 import styles from './taskOperationsModal.module.css';
-import { useBoardContext } from '@/contexts/board.context';
-import { EmailInput } from '@/components/EmailInput/EmailInput';
-import { IntroInput } from '@/components/IntroInput/IntroInput';
-import { ListContainer } from '@/components/ListContainer/ListContainer';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { IntroInput } from '../IntroInput/IntroInput';
+import { EmailInput } from '../EmailInput/EmailInput';
+import { useBoardContext } from '../../contexts/board.context';
+import { ListContainer } from '../ListContainer/ListContainer';
+import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { useCreateTaskOperations } from '../../hooks/useCreateTaskOperations';
 
 export const TaskOperationsModal = () => {

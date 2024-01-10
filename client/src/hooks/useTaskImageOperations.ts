@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useTaskModalContext } from '@/contexts/taskModal.context';
+import { useTaskModalContext } from '../contexts/taskModal.context';
+
 
 export const useTaskImageOperations = () => {
     const { inputValues, setInputValues } = useTaskModalContext();

@@ -1,13 +1,11 @@
-import {
-    IHomeBoardEntry,
-    IHomeWorkspaceEntry
-} from '@/hooks/useFetchHomeLists';
+
 import { Lists } from '../Lists/Lists';
 import styles from './homeDashboard.module.css';
 import { Operations } from '../Operations/Operations';
-import { ISearchInputs } from '@/views/HomeView/Home.viewmodel';
+import { ISearchInputs } from '../../views/HomeView/Home.viewmodel';
 import { BottomLeftStats } from '../BottomLeftStats/BottomLeftStats';
 import { BottomRightStats } from '../BottomRightStats/BottomRightStats';
+import { IHomeBoardEntry, IHomeWorkspaceEntry } from '../../hooks/useFetchHomeLists';
 
 interface IHomeGridStatsProps {
     isLoadingBoards: boolean;
