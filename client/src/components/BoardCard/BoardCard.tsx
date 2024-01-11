@@ -13,9 +13,9 @@ export const BoardCard = ({
 }: IBoardCardProps) => {
 	return (
 		<button
-			style={{ fontSize: fontSize ? fontSize : 24 }}
-			className={styles.background}
 			onClick={onClickHandler}
+			className={styles.background}
+			style={{ fontSize: fontSize ? fontSize : 24 }}
 		>
 			{boardName}
 		</button>

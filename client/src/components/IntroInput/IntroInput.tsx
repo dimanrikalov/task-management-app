@@ -14,7 +14,7 @@ interface IIntroInputProps {
 	name: string;
 	type: string;
 	value: string;
-	onLoad?(): any; //fix
+	onLoad?(): any;
 	disabled?: boolean;
 	placeholder: string;
 	Icon?: React.FC<IIconProps>;
@@ -57,7 +57,6 @@ export const IntroInput = ({
 			<input
 				type={type}
 				name={name}
-				// tabIndex={-1}
 				value={value}
 				onLoad={onLoad}
 				disabled={disabled}
