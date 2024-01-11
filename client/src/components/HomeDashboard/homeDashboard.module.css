@@ -41,7 +41,6 @@
 	.background > * {
 		min-height: 50vh;
 	}
-	.bottomLeftStats,
 	.bottomRightStats {
 		padding-bottom: 16px;
 	}
