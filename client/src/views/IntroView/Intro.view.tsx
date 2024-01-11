@@ -35,7 +35,7 @@ export const IntroView = () => {
 				<img
 					alt="greeting-img"
 					className={styles.img}
-					src="/imgs/intro-img-compressed.webp"
+					src="./imgs/intro-img-compressed.webp"
 				/>
 			</div>
 		</div>

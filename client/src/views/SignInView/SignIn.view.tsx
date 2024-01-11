@@ -21,7 +21,7 @@ export const SignInView = () => {
 					/>
 				</div>
 				<div className={styles.leftSide}>
-					<img alt="sign-in-img" src="/imgs/sign-in-img.png" />
+					<img alt="sign-in-img" src="./imgs/sign-in-img.png" />
 				</div>
 				<div className={styles.rightSide}>
 					<div className={styles.titleContainer}>

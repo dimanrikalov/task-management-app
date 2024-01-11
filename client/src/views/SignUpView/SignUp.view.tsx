@@ -73,7 +73,7 @@ export const SignUpView = () => {
 				<div className={styles.rightSide}>
 					<img
 						alt="sign-up-img"
-						src="/imgs/sign-up-img-compressed.webp"
+						src="./imgs/sign-up-img-compressed.webp"
 					/>
 				</div>
 			</div>
