@@ -127,7 +127,7 @@ export const BoardView = () => {
 							)}
 							<EntryModificationButton onClick={() => {}}>
 								<VscGraph
-									size={21}
+									size={22}
 									className={classNames(
 										styles.icon,
 										styles.graphIcon
