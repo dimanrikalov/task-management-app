@@ -56,7 +56,7 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 			if (Object.values(inputFields).some((value) => value === '')) {
 				throw new Error('All fields are required!');
 			}
-			console.log(USER_ENDPOINTS.SIGN_IN);
+
 			const data = await request({
 				body: inputFields,
 				method: METHODS.POST,
