@@ -11,8 +11,8 @@ import { SelectedWorkspaceContextProvider } from './contexts/selectedWorkspace.c
 function App() {
 	return (
 		<div className={styles.background}>
-			<UserContextProvider>
-				<ErrorContextProvider>
+			<ErrorContextProvider>
+				<UserContextProvider>
 					<NotificationContextProvider>
 						<ModalsContextProvider>
 							<SelectedWorkspaceContextProvider>
@@ -22,8 +22,8 @@ function App() {
 						<Notification />
 					</NotificationContextProvider>
 					<ErrorNotification />
-				</ErrorContextProvider>
-			</UserContextProvider>
+				</UserContextProvider>
+			</ErrorContextProvider>
 		</div>
 	);
 }

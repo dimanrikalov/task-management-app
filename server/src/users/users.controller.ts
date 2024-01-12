@@ -24,6 +24,7 @@ import { extractJWTData } from 'src/jwt/extractJWTData';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { EditProfleImgDto } from './dtos/editProfleImg.dto';
 import { validateJWTToken } from 'src/jwt/validateJWTToken';
+import { RefreshTokensDto } from './dtos/refreshTokens.dto';
 import { Headers, UploadedFile } from '@nestjs/common/decorators';
 
 @Controller('')
@@ -182,12 +183,13 @@ export class UsersController {
 		}
 	}
 
-	//FIX AUTH LOGIC
-	@Get('/users/refresh')
-	async refreshUserTokens(@Req() req: Request, @Res() res: Response) {
+	@Post('/users/refresh')
+	async refreshUserTokens(
+		@Body() body: RefreshTokensDto,
+		@Res() res: Response
+	) {
+		const refreshToken = body.refreshToken;
 		try {
-			const refreshToken = req.cookies['refreshToken'];
-
 			const body = extractJWTData(refreshToken);
 
 			const { newAccessToken, newRefreshToken } =
@@ -197,7 +199,7 @@ export class UsersController {
 				});
 
 			return res.status(200).json({
-				acessToken: newAccessToken,
+				accessToken: newAccessToken,
 				refreshToken: newRefreshToken,
 				message: 'Tokens refreshed successfully!'
 			});

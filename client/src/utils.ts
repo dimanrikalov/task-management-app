@@ -1,5 +1,4 @@
 import { jwtDecode } from 'jwt-decode';
-import { ITokens } from './guards/authGuard';
 
 interface IJWTPayload {
 	id: number;
@@ -8,21 +7,6 @@ interface IJWTPayload {
 	last_name: string;
 	first_name: string;
 }
-
-export const setTokens = ({ accessToken, refreshToken }: ITokens) => {
-	localStorage.setItem('accessToken', accessToken);
-	localStorage.setItem('refreshToken', refreshToken);
-};
-
-export const getTokens = (): ITokens => {
-	const accessToken = localStorage.getItem('accessToken')!;
-	const refreshToken = localStorage.getItem('refreshToken')!;
-
-	return {
-		accessToken,
-		refreshToken
-	};
-};
 
 export const isAccessTokenValid = (accessToken: string) => {
 	try {
@@ -44,6 +28,14 @@ export const isAccessTokenValid = (accessToken: string) => {
 	}
 };
 
-export const deleteTokens = () => {
-	localStorage.clear();
+export const clearRefreshToken = () => {
+	document.cookie = `refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 };
+
+export const setRefreshToken = (refreshToken: string) => {
+	document.cookie = `refreshToken=${refreshToken}`
+}
+
+export const getRefreshToken = () => {
+	return document.cookie.split('; ')[0].split('=')[1];
+}

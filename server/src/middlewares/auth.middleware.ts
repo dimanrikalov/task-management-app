@@ -48,8 +48,7 @@ export class AuthMiddleware implements NestMiddleware {
 			next();
 		} catch (err: any) {
 			console.log(err.message);
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode || 400).json({ errorMessage });
+			return res.status(401).json({ errorMessage: err.message });
 		}
 	}
 }

@@ -1,8 +1,6 @@
-import { ROUTES } from '../router';
-import { deleteTokens } from '../utils';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useErrorContext } from '../contexts/error.context';
+import { convertImageToBase64 } from '@/utils/convertImages';
 import { useModalsContext } from '../contexts/modals.context';
 import { METHODS, USER_ENDPOINTS, request } from '../utils/requester';
 import { useNotificationContext } from '../contexts/notification.context';
@@ -25,14 +23,17 @@ interface IInputValues {
 }
 
 export const useEditProfileModal = () => {
-	const navigate = useNavigate();
+	const {
+		logout,
+		setData,
+		accessToken,
+		data: userData
+	} = useUserContext() as IUserContextSecure;
 	const { showError } = useErrorContext();
 	const { toggleModal } = useModalsContext();
 	const { showNotification } = useNotificationContext();
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
 	const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
-	const { data: userData, accessToken } =
-		useUserContext() as IUserContextSecure;
 	const [inputValues, setInputValues] = useState<IInputValues>({
 		lastName: '',
 		password: '',
@@ -65,11 +66,10 @@ export const useEditProfileModal = () => {
 			} else {
 				await requestCredentialUpdate(inputField);
 			}
-
 			setProfileImgPath(null);
 			setInputValues((prev) => ({ ...prev, profileImg: null }));
+
 			showNotification('Update successful!');
-			navigate(ROUTES.HOME); // cause refetching of user data through the guard
 		} catch (err: any) {
 			console.log(err.message);
 			setInputValues((prev) => ({
@@ -114,6 +114,10 @@ export const useEditProfileModal = () => {
 			endpoint: USER_ENDPOINTS.EDIT,
 			body: { [inputField]: inputValues[inputField] }
 		});
+
+		setData({ ...userData, [inputField]: inputValues[inputField] });
+
+		setInputValues((prev) => ({ ...prev, [inputField]: '' }));
 	};
 
 	const requestProfileImgUpdate = async () => {
@@ -132,6 +136,15 @@ export const useEditProfileModal = () => {
 			method: METHODS.POST,
 			endpoint: USER_ENDPOINTS.PROFILE_IMG_EDIT
 		});
+
+		const profileImagePath = await convertImageToBase64(
+			inputValues.profileImg
+		);
+
+		setData({
+			...userData,
+			profileImagePath: `data:image/png;base64,${profileImagePath}`
+		});
 	};
 
 	const deleteUser = async () => {
@@ -141,8 +154,7 @@ export const useEditProfileModal = () => {
 				method: METHODS.DELETE,
 				endpoint: USER_ENDPOINTS.DELETE
 			});
-			deleteTokens();
-			navigate(ROUTES.HOME); // force refetching of user through the guard
+			logout();
 			toggleIsEditProfileModalOpen();
 		} catch (err: any) {
 			showError(err.message);

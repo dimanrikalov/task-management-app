@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ROUTES } from '../../router';
-import { setTokens } from '../../utils';
+import { setRefreshToken } from '@/utils';
 import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '@/contexts/user.context';
 import { useErrorContext } from '../../contexts/error.context';
 import { METHODS, USER_ENDPOINTS, request } from '../../utils/requester';
 import { ViewModelReturnType } from '../../interfaces/viewModel.interface';
@@ -30,6 +31,7 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 > => {
 	const navigate = useNavigate();
 	const { showError } = useErrorContext();
+	const { setAccessToken } = useUserContext();
 	const [inputFields, setInputFields] = useState<IInputFields>({
 		email: '',
 		lastName: '',
@@ -72,10 +74,8 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 				throw new Error(data.errorMessage);
 			}
 
-			setTokens({
-				accessToken: data.accessToken,
-				refreshToken: data.refreshToken
-			});
+			setAccessToken(data.accessToken);
+			setRefreshToken(data.refreshToken);
 
 			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {

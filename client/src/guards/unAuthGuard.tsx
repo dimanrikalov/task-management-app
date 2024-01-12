@@ -1,11 +1,11 @@
 import { ROUTES } from '../router';
-import { getTokens } from '../utils';
 import { Navigate, Outlet } from 'react-router-dom';
+import { useUserContext } from '@/contexts/user.context';
 
 export const UnAuthGuard = () => {
-	const { accessToken, refreshToken } = getTokens();
+	const { accessToken, data: user } = useUserContext();
 
-	if (accessToken || refreshToken) {
+	if (user || accessToken) {
 		return <Navigate to={ROUTES.DASHBOARD} />;
 	}
 
