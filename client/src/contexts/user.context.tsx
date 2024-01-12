@@ -1,8 +1,14 @@
+import {
+	generateImgUrl,
+	setRefreshToken,
+	getRefreshToken,
+	clearRefreshToken,
+	isAccessTokenValid,
+} from '../utils';
 import { jwtDecode } from 'jwt-decode';
 import { useErrorContext } from './error.context';
 import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { clearRefreshToken, getRefreshToken, isAccessTokenValid, setRefreshToken } from '../utils';
 
 export interface IUserData {
 	id: number;
@@ -99,7 +105,7 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
 				setData({
 					...data,
-					profileImagePath: `data:image/png;base64,${data.profileImg}`
+					profileImagePath: generateImgUrl(data.profileImg)
 				});
 				setRefreshAfter(timeRemaining);
 			} catch (err: any) {

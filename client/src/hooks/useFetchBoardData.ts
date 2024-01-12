@@ -1,3 +1,4 @@
+import { generateImgUrl } from '@/utils';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ITask } from '../components/Task/Task';
@@ -53,7 +54,7 @@ export const useFetchBoardData = () => {
 					.filter((user) => user.id !== userData.id)
 					.map((user) => ({
 						...user,
-						profileImagePath: `data:image/png;base64,${user.profileImagePath}`
+						profileImagePath: generateImgUrl(user.profileImagePath)
 					}));
 
 				/* 
@@ -79,7 +80,7 @@ export const useFetchBoardData = () => {
 					})
 					.map((user) => ({
 						...user,
-						profileImagePath: `data:image/png;base64,${user.profileImagePath}`
+						profileImagePath: generateImgUrl(user.profileImagePath)
 					}));
 
 				setBoardData({

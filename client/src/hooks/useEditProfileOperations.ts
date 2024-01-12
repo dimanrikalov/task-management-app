@@ -1,3 +1,4 @@
+import { generateImgUrl } from '@/utils';
 import { useEffect, useState } from 'react';
 import { useErrorContext } from '../contexts/error.context';
 import { convertImageToBase64 } from '@/utils/convertImages';
@@ -143,7 +144,7 @@ export const useEditProfileModal = () => {
 
 		setData({
 			...userData,
-			profileImagePath: `data:image/png;base64,${profileImagePath}`
+			profileImagePath: generateImgUrl(profileImagePath)
 		});
 	};
 

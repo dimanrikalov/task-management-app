@@ -33,9 +33,13 @@ export const clearRefreshToken = () => {
 };
 
 export const setRefreshToken = (refreshToken: string) => {
-	document.cookie = `refreshToken=${refreshToken}`
-}
+	document.cookie = `refreshToken=${refreshToken}`;
+};
 
 export const getRefreshToken = () => {
 	return document.cookie.split('; ')[0].split('=')[1];
-}
+};
+
+export const generateImgUrl = (imageBinary: string) => {
+	return `data:image/png;base64,${imageBinary}`;
+};

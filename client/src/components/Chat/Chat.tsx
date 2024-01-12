@@ -4,6 +4,7 @@ import {
 } from '../../contexts/user.context';
 import classNames from 'classnames';
 import styles from './chat.module.css';
+import { generateImgUrl } from '@/utils';
 import { VscSend } from 'react-icons/vsc';
 import { useEffect, useState } from 'react';
 import { Message } from '../Message/Message';
@@ -50,7 +51,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 				});
 
 				const messages = data.map((message: any) => {
-					const profileImgPath = `data:image/png;base64,${message.profileImgPath}`;
+					const profileImgPath = generateImgUrl(message.profileImgPath)
 					return {
 						...message,
 						profileImgPath

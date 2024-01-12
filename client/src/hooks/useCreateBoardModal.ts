@@ -5,6 +5,7 @@ import {
 	WORKSPACE_ENDPOINTS
 } from '../utils/requester';
 import { ROUTES } from '../router';
+import { generateImgUrl } from '@/utils';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useErrorContext } from '../contexts/error.context';
@@ -102,7 +103,7 @@ export const useCreateBoardModal = () => {
 					.filter((user) => user.id !== userData.id)
 					.map((user) => ({
 						...user,
-						profileImagePath: `data:image/png;base64,${user.profileImagePath}`
+						profileImagePath: generateImgUrl(user.profileImagePath)
 					}));
 
 				/* 

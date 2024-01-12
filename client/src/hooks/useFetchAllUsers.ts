@@ -1,3 +1,4 @@
+import { generateImgUrl } from '@/utils';
 import { useEffect, useState } from 'react';
 import { useErrorContext } from '../contexts/error.context';
 import { METHODS, USER_ENDPOINTS, request } from '../utils/requester';
@@ -22,7 +23,7 @@ export const useFetchAllUsers = () => {
 
 				const users = data.map((user) => ({
 					...user,
-					profileImagePath: `data:image/png;base64,${user.profileImagePath}`
+					profileImagePath: generateImgUrl(user.profileImagePath)
 				}));
 				setAllUsers(users);
 			} catch (err: any) {

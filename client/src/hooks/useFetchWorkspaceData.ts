@@ -1,3 +1,4 @@
+import { generateImgUrl } from '@/utils';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useErrorContext } from '../contexts/error.context';
@@ -33,7 +34,7 @@ export const useFetchWorkspaceData = () => {
 					.filter((user) => user.id !== userData.id)
 					.map((user) => ({
 						...user,
-						profileImagePath: `data:image/png;base64,${user.profileImagePath}`
+						profileImagePath: generateImgUrl(user.profileImagePath)
 					}));
 
 				/* 

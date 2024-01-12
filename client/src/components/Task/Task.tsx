@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import styles from './task.module.css';
 import { FaCheck } from 'react-icons/fa';
+import { generateImgUrl } from '@/utils';
 import { Draggable } from 'react-beautiful-dnd';
 import { IStep } from '../../hooks/useStepsOperations';
 
@@ -61,7 +62,7 @@ export const Task = React.memo(
 							<div className={styles.taskImg}>
 								<img
 									alt="task-img"
-									src={`data:image/png;base64,${task.attachmentImgPath}`}
+									src={generateImgUrl(task.attachmentImgPath)}
 								/>
 							</div>
 						)}

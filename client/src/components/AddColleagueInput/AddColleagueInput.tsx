@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { generateImgUrl } from '@/utils';
 import React, { useEffect, useState } from 'react';
 import styles from './addColleagueInput.module.css';
 import { EmailInput } from '../EmailInput/EmailInput';
@@ -60,7 +61,7 @@ export const AddColleagueInput = ({
 
 				const matchesData = data.map((match) => ({
 					...match,
-					profileImagePath: `data:image/png;base64,${match.profileImagePath}`
+					profileImagePath: generateImgUrl(match.profileImagePath)
 				}));
 
 				setMatches(matchesData);

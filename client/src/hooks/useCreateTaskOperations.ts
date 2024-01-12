@@ -2,6 +2,7 @@ import {
 	IInputState,
 	useTaskModalContext
 } from '../contexts/taskModal.context';
+import { generateImgUrl } from '@/utils';
 import { useState, useEffect } from 'react';
 import { ITask } from '../components/Task/Task';
 import { useTaskOperations } from './useTaskOperations';
@@ -111,7 +112,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 		setSteps(sortedSteps);
 
 		if (task.attachmentImgPath) {
-			setTaskImagePath(`data:image/png;base64,${task.attachmentImgPath}`);
+			setTaskImagePath(generateImgUrl(task.attachmentImgPath));
 		} else {
 			setTaskImagePath(null);
 			setInputValues((prev) => ({ ...prev, image: null }));
