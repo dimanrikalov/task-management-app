@@ -43,13 +43,13 @@ export const useFetchHomeLists = () => {
 	useEffect(() => {
 		setIsLoadingBoards(true);
 		fetchEntries(ENTRIES_TYPES.BOARDS);
-	}, [accessToken]);
+	}, []);
 
 	//fetching workspaces
 	useEffect(() => {
 		setIsLoadingWorkspaces(true);
 		fetchEntries(ENTRIES_TYPES.WORKSPACES);
-	}, [accessToken]);
+	}, []);
 
 	const fetchEntries = async (entries: ENTRIES_TYPES) => {
 		try {

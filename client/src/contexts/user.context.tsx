@@ -120,7 +120,7 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
 	}, [accessToken]);
 
 	const refreshTokens = async () => {
-		const refreshToken = document.cookie.split('; ')[0].split('=')[1]
+		const refreshToken = getRefreshToken();
 
 		if (!refreshToken || !isAccessTokenValid(refreshToken)) {
 			logout();
@@ -141,7 +141,7 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
 			showError(err.message);
 			logout();
 		}
-	}
+	};
 
 	const logout = () => {
 		clearRefreshToken();

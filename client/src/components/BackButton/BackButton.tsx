@@ -10,8 +10,8 @@ interface IBackButtonProps {
 }
 
 export const BackButton = ({
-	onClick,
 	style,
+	onClick,
 	iconSize = 18,
 	reverse = false
 }: IBackButtonProps) => {

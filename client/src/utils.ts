@@ -33,7 +33,14 @@ export const clearRefreshToken = () => {
 };
 
 export const setRefreshToken = (refreshToken: string) => {
-	document.cookie = `refreshToken=${refreshToken}`;
+	const data = jwtDecode(refreshToken);
+	let expirationDate;
+	if (data.exp) {
+		expirationDate = new Date(data.exp! * 1000); // Convert seconds to milliseconds
+	}
+	document.cookie = `refreshToken=${refreshToken}; ${
+		expirationDate && `expires=${expirationDate.toUTCString()}; `
+	}path=/`;
 };
 
 export const getRefreshToken = () => {

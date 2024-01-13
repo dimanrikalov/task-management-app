@@ -74,14 +74,14 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 
 	const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (!inputValue) return;
+		if (!inputValue.trim()) return;
 
 		try {
 			await request({
 				accessToken,
 				method: METHODS.POST,
-				body: { boardId, content: inputValue },
-				endpoint: MESSAGE_ENDPOINTS.BASE(boardId)
+				endpoint: MESSAGE_ENDPOINTS.BASE(boardId),
+				body: { boardId, content: inputValue.trim() },
 			});
 
 			setInputValue('');
@@ -144,10 +144,10 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 				<button
 					className={classNames(
 						styles.sendBtn,
-						inputValue !== '' && styles.enable
+						inputValue.trim() !== '' && styles.enable
 					)}
 				>
-					<VscSend disabled={inputValue == ''} />
+					<VscSend disabled={inputValue.trim() == ''} />
 				</button>
 			</form>
 		</div>

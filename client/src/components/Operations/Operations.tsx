@@ -13,10 +13,6 @@ export const Operations = () => {
 	const { toggleModal } = useModalsContext();
 	const { clearWorkspaceName } = useSelectedWorkspaceContext();
 
-	const handleLogout = () => {
-		logout();
-	};
-
 	const toggleisWorkspaceModalOpen = () => {
 		toggleModal('showCreateWorkspaceModal');
 	};
@@ -33,7 +29,7 @@ export const Operations = () => {
 	return (
 		<div className={styles.background}>
 			<div
-				onClick={handleLogout}
+				onClick={logout}
 				className={classNames(styles.operation, styles.logout)}
 			>
 				<PiSignOutBold className={styles.logoutIcon} />

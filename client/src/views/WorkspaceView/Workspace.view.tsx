@@ -101,7 +101,7 @@ export const WorkspaceView = () => {
 								}
 							/>
 						) : state.workspaceData.name.toLowerCase().trim() !==
-						  'personal workspace' ? (
+							'personal workspace' ? (
 							<h2
 								className={styles.workspaceName}
 								onDoubleClick={operations.toggleIsInputModeOn}
@@ -116,33 +116,33 @@ export const WorkspaceView = () => {
 						<BackButton onClick={operations.backBtnHandler} />
 						{state.workspaceData.name.toLowerCase().trim() !==
 							'personal workspace' && (
-							<>
-								<EntryModificationButton
-									onClick={() =>
-										operations.toggleModal(
-											MODAL_STATES_KEYS.EDIT_COLLEAGUES
-										)
-									}
-								>
-									<FaUsersCog
-										className={styles.icon}
-										size={24}
-									/>
-								</EntryModificationButton>
-								<EntryModificationButton
-									onClick={() =>
-										operations.toggleModal(
-											MODAL_STATES_KEYS.DELETE_WORKSPACE
-										)
-									}
-								>
-									<MdDeleteForever
-										className={styles.icon}
-										size={26}
-									/>
-								</EntryModificationButton>
-							</>
-						)}
+								<>
+									<EntryModificationButton
+										onClick={() =>
+											operations.toggleModal(
+												MODAL_STATES_KEYS.EDIT_COLLEAGUES
+											)
+										}
+									>
+										<FaUsersCog
+											className={styles.icon}
+											size={24}
+										/>
+									</EntryModificationButton>
+									<EntryModificationButton
+										onClick={() =>
+											operations.toggleModal(
+												MODAL_STATES_KEYS.DELETE_WORKSPACE
+											)
+										}
+									>
+										<MdDeleteForever
+											className={styles.icon}
+											size={26}
+										/>
+									</EntryModificationButton>
+								</>
+							)}
 					</div>
 				</div>
 				<div className={styles.titleContainer}>
