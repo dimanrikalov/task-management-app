@@ -11,6 +11,7 @@ export const TASK_ENDPOINTS = {
 	BASE: `${BASE_URL}/tasks`,
 	MOVE: `${BASE_URL}/tasks/move`,
 	EDIT: (taskId: number) => `${BASE_URL}/tasks/${taskId}`,
+	COMPLETE: (taskId: number) => `${BASE_URL}/tasks/${taskId}/complete`,
 	UPLOAD_IMG: (taskId: number) => `${BASE_URL}/tasks/${taskId}/upload-image`
 };
 

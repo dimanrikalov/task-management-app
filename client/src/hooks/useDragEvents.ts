@@ -188,7 +188,7 @@ export const useDragEvents = () => {
 					});
 				}
 
-				//make request
+				//move task
 				const res = await request({
 					accessToken,
 					method: METHODS.PUT,
@@ -203,8 +203,57 @@ export const useDragEvents = () => {
 				if (res.errorMessage) {
 					throw new Error(res.errorMessage);
 				}
-				if (srcColumn.name !== 'Done' && destColumn.name === 'Done') {
-					callForConfetti();
+
+				if (destColumn.name === 'Done') {
+					if (srcColumn.name !== 'Done') {
+						callForConfetti();
+					}
+
+					setBoardData((prev) => {
+						if (!prev) {
+							return null;
+						}
+
+						const updatedColumns = prev.columns.map((col) => {
+							const task = col.tasks.find(
+								(task) => task.id === Number(draggableId)
+							);
+							if (task) {
+								return {
+									...col,
+									tasks: col.tasks.map((task) => {
+										if (task.id === Number(draggableId)) {
+											return {
+												...task,
+												steps: task.steps.map(
+													(step) => ({
+														...step,
+														isComplete: true
+													})
+												),
+												progress: 100
+											};
+										}
+										return { ...task };
+									})
+								};
+							}
+							return col;
+						});
+
+						return { ...prev, columns: updatedColumns };
+					});
+				}
+
+				//set steps to 100%
+				const data = await request({
+					accessToken,
+					method: METHODS.PUT,
+					endpoint: TASK_ENDPOINTS.COMPLETE(Number(draggableId))
+				});
+
+				if (data.errorMessage) {
+					throw new Error(data.errorMessage);
 				}
 			}
 		} catch (err: any) {

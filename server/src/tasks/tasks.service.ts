@@ -15,6 +15,7 @@ import { StepsService } from 'src/steps/steps.service';
 import { DeleteTasksDto } from './dtos/deleteTask.dto';
 import { extractJWTData } from 'src/jwt/extractJWTData';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CompleteTaskDto } from './dtos/completeTask.dto';
 import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
 
 const unlink = promisify(fs.unlink);
@@ -329,7 +330,6 @@ export class TasksService {
 		});
 	}
 
-	//task steps are updated separately!
 	async edit(body: ModifyTaskDto) {
 		//check for any task other than the one being updated for having the same title
 		const isTaskTitleTaken = !!(await this.prismaService.task.findFirst({
@@ -420,6 +420,26 @@ export class TasksService {
 		});
 
 		return { ...task, steps };
+	}
+
+	async complete(body: CompleteTaskDto) {
+		await this.prismaService.step.updateMany({
+			where: {
+				taskId: body.taskData.id
+			},
+			data: {
+				isComplete: true
+			}
+		});
+
+		await this.prismaService.task.update({
+			where: {
+				id: body.taskData.id
+			},
+			data: {
+				progress: 100
+			}
+		});
 	}
 
 	async move(body: MoveTaskDto) {

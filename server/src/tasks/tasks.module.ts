@@ -39,7 +39,8 @@ export class TasksModule implements NestModule {
 				{ path: 'tasks', method: RequestMethod.PUT },
 				{ path: 'tasks/move', method: RequestMethod.PUT },
 				{ path: 'tasks/:taskId', method: RequestMethod.PUT },
-				{ path: 'tasks/:taskId', method: RequestMethod.DELETE }
+				{ path: 'tasks/:taskId', method: RequestMethod.DELETE },
+				{ path: 'tasks/:taskId/complete', method: RequestMethod.PUT }
 			);
 	}
 }

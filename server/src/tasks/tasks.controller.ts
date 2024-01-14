@@ -19,6 +19,7 @@ import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
 import { DeleteTasksDto } from './dtos/deleteTask.dto';
+import { CompleteTaskDto } from './dtos/completeTask.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { validateJWTToken } from 'src/jwt/validateJWTToken';
 import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
@@ -63,6 +64,21 @@ export class TasksController {
 			return res.status(200).json({
 				task,
 				message: 'Task modified successfully!'
+			});
+		} catch (err: any) {
+			console.log(err.message);
+			const { statusCode, message: errorMessage } = err.response;
+			return res.status(statusCode || 400).json({ errorMessage });
+		}
+	}
+
+	@Put('/:taskId/complete')
+	async complete(@Res() res: Response, @Body() body: CompleteTaskDto) {
+		try {
+			const task = await this.tasksService.complete(body);
+			return res.status(200).json({
+				task,
+				message: 'Task completed successfully!'
 			});
 		} catch (err: any) {
 			console.log(err.message);

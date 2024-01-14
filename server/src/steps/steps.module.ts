@@ -27,7 +27,10 @@ export class StepsModule implements NestModule {
 				ColumnCheckMiddleware,
 				BoardCheckMiddleware
 			)
-			.forRoutes({ path: 'steps', method: RequestMethod.POST });
+			.forRoutes(
+				{ path: 'steps', method: RequestMethod.POST },
+				{ path: 'steps/all', method: RequestMethod.PUT }
+			);
 
 		consumer
 			.apply(
