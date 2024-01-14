@@ -19,8 +19,7 @@ export class MessagesService {
 				writtenBy: true,
 				User: {
 					select: {
-						lastName: true,
-						firstName: true,
+						username: true,
 						profileImagePath: true
 					}
 				}
@@ -38,8 +37,7 @@ export class MessagesService {
 			const data = {
 				...message,
 				profileImgPath: imageBinary,
-				lastName: message.User.lastName,
-				firstName: message.User.firstName
+				username: message.User.username
 			};
 
 			delete data.User;

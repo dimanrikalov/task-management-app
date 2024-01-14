@@ -45,6 +45,7 @@ export class BoardCheckMiddleware implements NestMiddleware {
 
 			if (
 				!userIsWorkspaceOwner &&
+				!req.body.colleagueId &&
 				req.method.toUpperCase() === 'DELETE'
 			) {
 				throw new UnauthorizedException(

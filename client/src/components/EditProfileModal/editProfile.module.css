@@ -145,3 +145,8 @@
 	flex-direction: column;
 	justify-content: space-between;
 }
+
+.currentEmail {
+	color: grey;
+	font-size: 14px;
+}

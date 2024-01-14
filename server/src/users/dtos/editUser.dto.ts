@@ -1,16 +1,25 @@
 import { BaseUsersDto } from './base.dto';
-import { IsString, Matches, MinLength, IsOptional } from 'class-validator';
+import {
+	Length,
+	IsEmail,
+	Matches,
+	IsString,
+	MinLength,
+	IsOptional
+} from 'class-validator';
 
 export class EditUserDto extends BaseUsersDto {
 	@IsOptional()
-	@IsString()
-	@MinLength(2, { message: 'First name must be at least 2 characters long!' })
-	firstName?: string;
+	@IsEmail({}, { message: 'Invalid email format!' })
+	@MinLength(3, { message: 'Email must be at least 3 characters long!' })
+	email: string;
 
 	@IsOptional()
-	@IsString()
-	@MinLength(2, { message: 'Last name must be at least 2 characters long!' })
-	lastName?: string;
+	@IsString({ message: 'Username must be a string' })
+	@Length(2, 128, {
+		message: 'Username must be between 2 and 128 characters long!'
+	})
+	username: string;
 
 	@IsOptional()
 	@MinLength(4)

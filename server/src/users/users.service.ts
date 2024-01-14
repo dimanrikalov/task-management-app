@@ -39,13 +39,20 @@ export class UsersService {
 		});
 	}
 
+	async findUserByUsername(username: string): Promise<IUser> {
+		return await this.prismaService.user.findFirst({
+			where: {
+				username
+			}
+		});
+	}
+
 	async getAllUsers() {
 		const matches = await this.prismaService.user.findMany({
 			select: {
 				id: true,
 				email: true,
-				lastName: true,
-				firstName: true,
+				username: true,
 				profileImagePath: true
 			}
 		});
@@ -72,8 +79,8 @@ export class UsersService {
 						}
 					},
 					{
-						email: {
-							contains: body.email,
+						username: {
+							contains: body.username,
 							mode: 'insensitive'
 						}
 					}
@@ -82,8 +89,7 @@ export class UsersService {
 			select: {
 				id: true,
 				email: true,
-				firstName: true,
-				lastName: true,
+				username: true,
 				profileImagePath: true
 			}
 		});
@@ -233,6 +239,11 @@ export class UsersService {
 			throw new ConflictException('Email is already taken!');
 		}
 
+		const isUsernameTaken = await this.findUserByUsername(body.username);
+		if (isUsernameTaken) {
+			throw new ConflictException('Username is already taken!');
+		}
+
 		// Hash the password before saving it
 		const hashedPassword = await bcrypt.hash(
 			body.password,
@@ -241,9 +252,8 @@ export class UsersService {
 
 		const userData = {
 			email: body.email,
-			lastName: body.lastName,
+			username: body.username,
 			password: hashedPassword,
-			firstName: body.firstName,
 			profileImagePath: process.env.DEFAULT_PROFILE_IMG_URL
 		};
 
@@ -296,9 +306,9 @@ export class UsersService {
 			: undefined;
 
 		const data = {
-			...(body.lastName && { lastName: body.lastName }),
-			...(hashedPassword && { password: hashedPassword }),
-			...(body.firstName && { firstName: body.firstName })
+			...(body.email && { email: body.email }),
+			...(body.username && { username: body.username }),
+			...(hashedPassword && { password: hashedPassword })
 		};
 
 		await this.prismaService.user.update({
@@ -361,10 +371,9 @@ export class UsersService {
 			deletedUser = await this.prismaService.user.create({
 				data: {
 					id: 0,
-					lastName: 'User',
 					password: '*******',
-					firstName: 'Deleted',
-					email: 'Deleted_User',
+					email: 'DELETED_USER',
+					username: 'DELETED_USER',
 					profileImagePath: process.env.DEFAULT_PROFILE_IMG_URL
 				}
 			});

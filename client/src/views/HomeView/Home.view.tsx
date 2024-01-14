@@ -11,8 +11,7 @@ export const HomeView = () => {
 			<div className={styles.mainContainer}>
 				<HomeHeader
 					date={state.date}
-					lastName={state.userData.lastName}
-					firstName={state.userData.firstName}
+					username={state.userData.username}
 					profileImgPath={state.userData.profileImagePath}
 				/>
 				<HomeDashboard

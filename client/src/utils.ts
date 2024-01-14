@@ -4,8 +4,6 @@ interface IJWTPayload {
 	id: number;
 	iat: number;
 	exp: number;
-	last_name: string;
-	first_name: string;
 }
 
 export const isAccessTokenValid = (accessToken: string) => {

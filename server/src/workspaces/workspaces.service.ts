@@ -48,8 +48,7 @@ export class WorkspacesService {
 				User: {
 					select: {
 						id: true,
-						lastName: true,
-						firstName: true
+						username: true
 					}
 				},
 				_count: {
@@ -64,7 +63,7 @@ export class WorkspacesService {
 		return workspaces.map((workspace) => {
 			const res = {
 				...workspace,
-				ownerName: `${workspace.User.firstName} ${workspace.User.lastName}`,
+				ownerName: workspace.User.username,
 				usersCount: workspace._count.User_Workspace + 1 //workspace owner also has access to the workspace
 			};
 
@@ -90,7 +89,7 @@ export class WorkspacesService {
 					User: {
 						select: {
 							id: true,
-							email: true,
+							username: true,
 							profileImagePath: true
 						}
 					}
@@ -112,7 +111,7 @@ export class WorkspacesService {
 			},
 			select: {
 				id: true,
-				email: true,
+				username: true,
 				profileImagePath: true
 			}
 		});

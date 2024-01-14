@@ -2,8 +2,8 @@ import classNames from 'classnames';
 import { generateImgUrl } from '@/utils';
 import React, { useEffect, useState } from 'react';
 import styles from './addColleagueInput.module.css';
-import { EmailInput } from '../EmailInput/EmailInput';
 import { useUserContext } from '../../contexts/user.context';
+import { UsernameInput } from '../UsernameInput/UsernameInput';
 import { useErrorContext } from '../../contexts/error.context';
 import { ListContainer } from '../ListContainer/ListContainer';
 import { METHODS, USER_ENDPOINTS, request } from '../../utils/requester';
@@ -11,6 +11,7 @@ import { METHODS, USER_ENDPOINTS, request } from '../../utils/requester';
 export interface IUser {
 	id: number;
 	email: string;
+	username: string;
 	profileImagePath: string;
 }
 
@@ -24,7 +25,7 @@ interface IAddColleagueInputProps {
 }
 
 interface IFetchUsersPayload {
-	email: string;
+	username: string;
 	notIn: number[];
 }
 
@@ -47,7 +48,7 @@ export const AddColleagueInput = ({
 			setIsLoading(true);
 
 			const body: IFetchUsersPayload = {
-				email: inputValue.trim(),
+				username: inputValue.trim(),
 				notIn: (colleagues || []).map((colleague) => colleague.id)
 			};
 
@@ -105,7 +106,7 @@ export const AddColleagueInput = ({
 				className={classNames(styles.top, enableFlex && styles.topFlex)}
 			>
 				<h2>Add Colleagues</h2>
-				<EmailInput
+				<UsernameInput
 					matches={matches}
 					addUser={addUser}
 					isLoading={isLoading}

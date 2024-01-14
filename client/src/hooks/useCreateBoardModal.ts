@@ -112,8 +112,9 @@ export const useCreateBoardModal = () => {
 				*/
 
 				workspaceUsers.unshift({
-					email: 'Me',
+					username: 'Me',
 					id: userData.id,
+					email: userData.email,
 					profileImagePath: userData.profileImagePath
 				});
 

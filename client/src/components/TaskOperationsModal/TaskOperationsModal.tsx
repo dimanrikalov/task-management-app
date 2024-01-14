@@ -6,7 +6,7 @@ import { FaXmark } from 'react-icons/fa6';
 import { FcAddImage } from 'react-icons/fc';
 import styles from './taskOperationsModal.module.css';
 import { IntroInput } from '../IntroInput/IntroInput';
-import { EmailInput } from '../EmailInput/EmailInput';
+import { UsernameInput } from '../UsernameInput/UsernameInput';
 import { useBoardContext } from '../../contexts/board.context';
 import { ListContainer } from '../ListContainer/ListContainer';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
@@ -243,11 +243,11 @@ export const TaskOperationsModal = () => {
 										? 'Edit assignee '
 										: 'Choose assignee'}
 								</h2>
-								<EmailInput
+								<UsernameInput
 									isLoading={false}
 									matches={state.matches}
 									addUser={operations.selectAssignee}
-									inputValue={state.inputValues.email}
+									inputValue={state.inputValues.username}
 									onChange={operations.handleInputChange}
 								/>
 							</div>

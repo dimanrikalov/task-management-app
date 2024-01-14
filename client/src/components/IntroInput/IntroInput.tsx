@@ -3,10 +3,12 @@ import classNames from 'classnames';
 import styles from './introInput.module.css';
 
 interface IIconProps {
+	size?: number;
 	className?: string;
 }
 
 interface IToggleIconProps {
+	size?: number;
 	className?: string;
 }
 
@@ -15,6 +17,8 @@ interface IIntroInputProps {
 	type: string;
 	value: string;
 	onLoad?(): any;
+	iconSize?: number;
+	condition?: boolean;
 	disabled?: boolean;
 	placeholder: string;
 	Icon?: React.FC<IIconProps>;
@@ -29,6 +33,8 @@ export const IntroInput = ({
 	value,
 	onLoad,
 	onChange,
+	iconSize,
+	condition,
 	ToggleIcon,
 	placeholder,
 	disabled = false
@@ -38,21 +44,23 @@ export const IntroInput = ({
 	return (
 		<div className={styles.inputContainer}>
 			<div className={styles.iconContainer}>
-				{value
+				{condition
 					? ToggleIcon && (
-							<ToggleIcon
-								className={classNames(
-									isIconColored && styles.colorIcon
-								)}
-							/>
-						)
+						<ToggleIcon
+							size={iconSize || 16}
+							className={classNames(
+								isIconColored && styles.colorIcon
+							)}
+						/>
+					)
 					: Icon && (
-							<Icon
-								className={classNames(
-									isIconColored && styles.colorIcon
-								)}
-							/>
-						)}
+						<Icon
+							size={iconSize || 16}
+							className={classNames(
+								isIconColored && styles.colorIcon
+							)}
+						/>
+					)}
 			</div>
 			<input
 				type={type}

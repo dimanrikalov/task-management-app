@@ -26,8 +26,8 @@ export const useTaskAssigneeOperations = () => {
 	useEffect(() => {
 		const assignee = matches.find(
 			(user) =>
-				user.email.trim().toLowerCase() ===
-				inputValues.email.trim().toLowerCase()
+				user.username.trim().toLowerCase() ===
+				inputValues.username.trim().toLowerCase()
 		);
 
 		if (assignee) {
@@ -35,11 +35,11 @@ export const useTaskAssigneeOperations = () => {
 			return;
 		}
 		setAssigneeId(null);
-	}, [inputValues.email]);
+	}, [inputValues.username]);
 
 	const selectAssignee = (user: IUser) => {
 		setAssigneeId(user.id);
-		setInputValues((prev) => ({ ...prev, email: user.email }));
+		setInputValues((prev) => ({ ...prev, username: user.username }));
 	};
 
 	return { selectAssignee };

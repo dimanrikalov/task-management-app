@@ -60,6 +60,7 @@
 	height: 100%;
 	padding: 16px;
 	display: flex;
+	overflow-x: hidden;
 	overflow-y: scroll;
 	flex-direction: column;
 	background-color: var(--white-secondary);

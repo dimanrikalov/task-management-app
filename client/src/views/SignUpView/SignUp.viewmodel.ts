@@ -9,9 +9,8 @@ import { ViewModelReturnType } from '../../interfaces/viewModel.interface';
 
 interface IInputFields {
 	email: string;
-	lastName: string;
+	username: string;
 	password: string;
-	firstName: string;
 	[key: string]: string; // Add this index signature
 }
 interface ISignUpViewModelState {
@@ -34,9 +33,8 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 	const { setAccessToken } = useUserContext();
 	const [inputFields, setInputFields] = useState<IInputFields>({
 		email: '',
-		lastName: '',
-		password: '',
-		firstName: ''
+		username: '',
+		password: ''
 	});
 
 	const goToInitialView = () => {
@@ -57,7 +55,7 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 
 	const signUp = async (e: React.FormEvent) => {
 		e.preventDefault();
-
+		console.log(inputFields);
 		try {
 			if (Object.values(inputFields).some((value) => value === '')) {
 				throw new Error('All fields are required!');

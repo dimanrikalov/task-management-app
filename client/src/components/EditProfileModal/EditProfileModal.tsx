@@ -51,7 +51,7 @@ export const EditProfileModal = () => {
 					<div className={styles.header}></div>
 					<div className={styles.main}>
 						<div className={styles.leftSide}>
-							<h3>Edit profile image</h3>
+							<h3>Edit Profile Image</h3>
 							<label
 								className={styles.imgInput}
 								htmlFor={'imgInput'}
@@ -91,7 +91,7 @@ export const EditProfileModal = () => {
 												styles.submitBtn,
 												styles.imgOperationBtn,
 												!inputValues.profileImg &&
-													styles.disabled
+												styles.disabled
 											)}
 										/>
 									</button>
@@ -105,7 +105,7 @@ export const EditProfileModal = () => {
 												styles.resetBtn,
 												styles.imgOperationBtn,
 												!inputValues.profileImg &&
-													styles.disabled
+												styles.disabled
 											)}
 										/>
 									</button>
@@ -131,41 +131,45 @@ export const EditProfileModal = () => {
 							</div>
 						</div>
 						<div className={styles.rightSide}>
+
 							<div className={styles.formContainer}>
-								<h3>Edit first name</h3>
+								<h3>Edit Username</h3>
 								<form
-									name="firstName"
+									name="username"
 									className={styles.form}
 									onSubmit={updateUserData}
 								>
 									<IntroInput
 										type="text"
-										name="firstName"
-										placeholder="New first name"
-										value={inputValues.firstName}
+										name="username"
+										placeholder="New username"
+										value={inputValues.username}
 										onChange={inputChangeHandler}
 									/>
-									<IntroButton
-										message={'Change First Name'}
-									/>
+									<IntroButton message={'Change Username'} />
 								</form>
 							</div>
 
 							<div className={styles.formContainer}>
-								<h3>Edit last name</h3>
+								<h3>Edit Email</h3>
+								<p className={styles.currentEmail}>
+									Current email: {userData.email}
+								</p>
 								<form
-									name="lastName"
+									name="email"
 									className={styles.form}
 									onSubmit={updateUserData}
 								>
 									<IntroInput
-										type="text"
-										name="lastName"
-										placeholder="New last name"
-										value={inputValues.lastName}
+										type="email"
+										name="email"
+										placeholder="New Email"
+										value={inputValues.email}
 										onChange={inputChangeHandler}
 									/>
-									<IntroButton message={'Change Last Name'} />
+									<IntroButton
+										message={'Change Email'}
+									/>
 								</form>
 							</div>
 

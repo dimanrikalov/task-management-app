@@ -103,9 +103,9 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 		setInputValues((prev) => ({
 			...prev,
 			image,
-			email:
+			username:
 				workspaceUsers.find((user) => user.id === task.assigneeId)
-					?.email || ''
+					?.username || ''
 		}));
 
 		// Set the sorted steps

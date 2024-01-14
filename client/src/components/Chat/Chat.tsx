@@ -19,9 +19,8 @@ export interface IMessage {
 	id: number;
 	timestamp: Date;
 	content: string;
-	lastName: string;
+	username: string;
 	writtenBy: number;
-	firstName: string;
 	profileImgPath: string;
 }
 
@@ -126,6 +125,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen }: IChatProps) => {
 						<Message
 							key={message.id}
 							content={message.content}
+							username={message.username}
 							profileImgPath={message.profileImgPath}
 							isUser={message.writtenBy === userData.id}
 						/>

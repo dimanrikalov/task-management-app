@@ -13,8 +13,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 export interface IUserData {
 	id: number;
 	email: string;
-	lastName: string;
-	firstName: string;
+	username: string;
 	profileImg: Buffer;
 	profileImagePath: string;
 }

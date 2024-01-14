@@ -1,6 +1,6 @@
-import { FaUser } from 'react-icons/fa';
 import styles from './signUp.module.css';
-import { FaUsers } from 'react-icons/fa6';
+import { FaUserTimes } from 'react-icons/fa';
+import { FaUserCheck } from "react-icons/fa";
 import { useSignUpViewModel } from './SignUp.viewmodel';
 import { BackButton } from '../../components/BackButton/BackButton';
 import { IntroInput } from '../../components/IntroInput/IntroInput';
@@ -24,27 +24,21 @@ export const SignUpView = () => {
 						<h1>Taskify</h1>
 						<h2>Sign up</h2>
 					</div>
-					<form className={styles.form} onSubmit={operations.signUp}>
-						<div className={styles.nameInputContainer}>
-							<IntroInput
-								type={'text'}
-								Icon={FaUser}
-								name={'firstName'}
-								ToggleIcon={FaUser}
-								placeholder={'Name'}
-								value={state.inputFields.firstName}
-								onChange={operations.handleInputChange}
-							/>
-							<IntroInput
-								type={'text'}
-								Icon={FaUsers}
-								name={'lastName'}
-								ToggleIcon={FaUsers}
-								placeholder={'Surname'}
-								value={state.inputFields.lastName}
-								onChange={operations.handleInputChange}
-							/>
-						</div>
+					<form
+						className={styles.form}
+						onSubmit={operations.signUp}
+					>
+						<IntroInput
+							iconSize={20}
+							name={'username'}
+							type={'username'}
+							Icon={FaUserTimes}
+							ToggleIcon={FaUserCheck}
+							placeholder={'Username'}
+							value={state.inputFields.username}
+							onChange={operations.handleInputChange}
+							condition={state.inputFields.username.length > 1}
+						/>
 						<IntroInput
 							name={'email'}
 							type={'email'}
@@ -52,6 +46,7 @@ export const SignUpView = () => {
 							placeholder={'Email'}
 							ToggleIcon={FaEnvelope}
 							value={state.inputFields.email}
+							condition={!!state.inputFields.email}
 							onChange={operations.handleInputChange}
 						/>
 						<IntroInput
@@ -62,6 +57,7 @@ export const SignUpView = () => {
 							placeholder={'Password'}
 							value={state.inputFields.password}
 							onChange={operations.handleInputChange}
+							condition={!!state.inputFields.password}
 						/>
 						<IntroButton message="Sign Up" />
 					</form>

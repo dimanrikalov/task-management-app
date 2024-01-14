@@ -2,15 +2,13 @@ import styles from './homeHeader.module.css';
 
 interface IHomeHeaderProps {
 	date: string;
-	lastName: string;
-	firstName: string;
+	username: string
 	profileImgPath: string;
 }
 
 export const HomeHeader = ({
 	date,
-	lastName,
-	firstName,
+	username,
 	profileImgPath
 }: IHomeHeaderProps) => {
 	return (
@@ -23,7 +21,7 @@ export const HomeHeader = ({
 					</div>
 					<p
 						className={styles.fullName}
-					>{`${firstName} ${lastName}`}</p>
+					>{username}</p>
 				</div>
 				<h4 className={styles.date}>{date}</h4>
 			</div>

@@ -1,13 +1,13 @@
 import { useBoardContext } from './board.context';
+import { generateFileFromBase64 } from '../utils/convertImages';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
-import { generateFileFromBase64 } from '../utils/convertImages';
 
 export interface IInputState {
 	title: string;
 	step: string;
-	email: string;
 	effort: string;
+	username: string;
 	priority: string;
 	image: File | null;
 	hoursSpent: string;
@@ -43,9 +43,9 @@ export const TaskModalContextProvider: React.FC<{
 	const [inputValues, setInputValues] = useState<IInputState>({
 		step: '',
 		title: '',
-		email: '',
 		effort: '',
 		image: null,
+		username: '',
 		priority: '',
 		hoursSpent: '',
 		description: '',
@@ -56,19 +56,19 @@ export const TaskModalContextProvider: React.FC<{
 
 	useEffect(() => {
 		if (!selectedTask) return;
-		const email =
+		const username =
 			boardUsers.find((user) => user.id === selectedTask.assigneeId)
-				?.email || '';
+				?.username || '';
 		const image = selectedTask.attachmentImgPath
 			? generateFileFromBase64(
-					selectedTask.attachmentImgPath,
-					'image/png',
-					'task-img'
-				)
+				selectedTask.attachmentImgPath,
+				'image/png',
+				'task-img'
+			)
 			: null;
 		setInputValues({
-			email,
 			image,
+			username,
 			step: '',
 			title: selectedTask.title,
 			description: selectedTask.description,

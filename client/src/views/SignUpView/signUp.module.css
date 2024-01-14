@@ -63,11 +63,6 @@
 	flex-direction: column;
 }
 
-.nameInputContainer {
-	gap: 16px;
-	display: flex;
-}
-
 .haveAnAccount {
 	color: white;
 	text-align: center;

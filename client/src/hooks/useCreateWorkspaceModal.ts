@@ -15,7 +15,7 @@ export const useCreateWorkspaceModal = () => {
 	const { data: userData, accessToken } =
 		useUserContext() as IUserContextSecure;
 	const [colleagues, setColleagues] = useState<IUser[]>([
-		{ ...userData, email: 'Me' }
+		{ ...userData, username: 'Me' }
 	]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

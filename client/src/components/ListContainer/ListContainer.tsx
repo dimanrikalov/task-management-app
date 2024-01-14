@@ -44,9 +44,9 @@ export const ListContainer = ({
 									) {
 										return (
 											<UserEntry
-												key={colleague.id}
 												showBtn={false}
-												email={colleague.email}
+												key={colleague.id}
+												username={colleague.username}
 												profileImgPath={
 													colleague.profileImagePath
 												}
@@ -59,7 +59,7 @@ export const ListContainer = ({
 									return (
 										<UserEntry
 											key={colleague.id}
-											email={colleague.email}
+											username={colleague.username}
 											profileImgPath={
 												colleague.profileImagePath
 											}

@@ -44,7 +44,7 @@ export class BoardsService {
 					User: {
 						select: {
 							id: true,
-							email: true,
+							username: true,
 							profileImagePath: true
 						}
 					}
@@ -67,7 +67,7 @@ export class BoardsService {
 			},
 			select: {
 				id: true,
-				email: true,
+				username: true,
 				profileImagePath: true
 			}
 		});
@@ -224,7 +224,7 @@ export class BoardsService {
 				User: {
 					select: {
 						id: true,
-						email: true,
+						username: true,
 						profileImagePath: true
 					}
 				}

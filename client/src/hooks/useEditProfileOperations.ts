@@ -10,16 +10,16 @@ import { IUserContextSecure, useUserContext } from '../contexts/user.context';
 const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z]).{4,}$/;
 
 enum INPUT_FIELDS {
+	EMAIL = 'email',
 	PASSWORD = 'password',
-	LAST_NAME = 'lastName',
-	FIRST_NAME = 'firstName',
+	USERNAME = 'username',
 	PROFILE_IMG = 'profileImg'
 }
 
 interface IInputValues {
+	email: string;
 	password: string;
-	lastName: string;
-	firstName: string;
+	username: string;
 	profileImg: File | null;
 }
 
@@ -36,9 +36,9 @@ export const useEditProfileModal = () => {
 	const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
 	const [profileImgPath, setProfileImgPath] = useState<string | null>(null);
 	const [inputValues, setInputValues] = useState<IInputValues>({
-		lastName: '',
+		email: '',
+		username: '',
 		password: '',
-		firstName: '',
 		profileImg: null
 	});
 
@@ -88,18 +88,18 @@ export const useEditProfileModal = () => {
 
 	const requestCredentialUpdate = async (inputField: INPUT_FIELDS) => {
 		if (
-			[INPUT_FIELDS.FIRST_NAME, INPUT_FIELDS.LAST_NAME].includes(
-				inputField
-			) &&
+			inputField === INPUT_FIELDS.USERNAME &&
 			(inputValues[inputField] as string).length < 2
 		) {
-			throw new Error(
-				`${
-					inputField === INPUT_FIELDS.FIRST_NAME ? 'First' : 'Last'
-				} name must be at least 2 characters long!`
-			);
+			throw new Error(`New username must be at least 2 characters long!`);
 		}
-
+		if (
+			inputField === INPUT_FIELDS.EMAIL &&
+			(!(inputValues[inputField] as string).includes('@') ||
+				(inputValues[inputField] as string).length < 3)
+		) {
+			throw new Error(`New email must be valid!`);
+		}
 		if (
 			inputField === INPUT_FIELDS.PASSWORD &&
 			!passwordRegex.test(inputValues[inputField] as string)

@@ -105,6 +105,7 @@ export class UsersController {
 				message: 'Signed-up successfully!'
 			});
 		} catch (err: any) {
+			console.log(err.message);
 			const { statusCode, message: errorMessage } = err.response;
 			return res.status(statusCode).json({ errorMessage });
 		}

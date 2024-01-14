@@ -63,8 +63,9 @@ export const useFetchBoardData = () => {
 				*/
 
 				workspaceUsers.unshift({
-					email: 'Me',
+					username: 'Me',
 					id: userData.id,
+					email: userData.email,
 					profileImagePath: userData.profileImagePath
 				});
 
