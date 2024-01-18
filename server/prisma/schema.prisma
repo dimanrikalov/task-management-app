@@ -68,10 +68,11 @@ model Task {
 }
 
 model Notification {
-  id      Int    @id @default(autoincrement())
-  message String @db.VarChar(512)
-  userId  Int    @map("user_id")
-  User    User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id        Int       @id @default(autoincrement())
+  message   String    @db.VarChar(512)
+  timestamp DateTime? @default(now()) @db.Timestamptz(6)
+  userId    Int       @map("user_id")
+  User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model User {

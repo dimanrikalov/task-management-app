@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ColumnsModule } from './columns/columns.module';
 import { MessagesModule } from './messages/messages.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
 		ColumnsModule,
 		MessagesModule,
 		WorkspacesModule,
+		NotificationsModule,
 		ConfigModule.forRoot()
 	],
 	providers: [AppService],

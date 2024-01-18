@@ -1,6 +1,6 @@
 {
-"private": true,
-"version": "1.0.0",
+    "private": true,
+    "version": "1.0.0",
     "license": "UNLICENSED",
     "author": "Diman Rikalov",
     "name": "taskify-back-end",
@@ -39,7 +39,7 @@
         "uuidv4": "^6.2.13"
     },
     "devDependencies": {
-        "@nestjs/cli": "^10.0.0",
+        "@nestjs/cli": "^10.3.0",
         "@nestjs/schematics": "^10.0.0",
         "@nestjs/testing": "^10.0.0",
         "@types/bcrypt": "^5.0.1",

@@ -243,17 +243,53 @@ export const useDragEvents = () => {
 
 						return { ...prev, columns: updatedColumns };
 					});
-				}
 
-				//set steps to 100%
-				const data = await request({
-					accessToken,
-					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.COMPLETE(Number(draggableId))
-				});
+					//set steps to 100%
+					const data = await request({
+						accessToken,
+						method: METHODS.PUT,
+						endpoint: TASK_ENDPOINTS.COMPLETE(Number(draggableId))
+					});
 
-				if (data.errorMessage) {
-					throw new Error(data.errorMessage);
+					if (data.errorMessage) {
+						throw new Error(data.errorMessage);
+					}
+				} else if (destColumn.name !== 'Done') {
+					if (srcColumn.name === 'Done') {
+						setBoardData((prev) => {
+							if (!prev) {
+								return null;
+							}
+
+							const updatedColumns = prev.columns.map((col) => {
+								const task = col.tasks.find(
+									(task) => task.id === Number(draggableId)
+								);
+								if (task) {
+									if (task.steps.length === 0) {
+										return {
+											...col,
+											tasks: col.tasks.map((task) => {
+												if (
+													task.id ===
+													Number(draggableId)
+												) {
+													return {
+														...task,
+														progress: 0
+													};
+												}
+												return { ...task };
+											})
+										};
+									}
+								}
+								return col;
+							});
+
+							return { ...prev, columns: updatedColumns };
+						});
+					}
 				}
 			}
 		} catch (err: any) {

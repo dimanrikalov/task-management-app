@@ -1,0 +1,40 @@
+.notification {
+	gap: 4px;
+	display: flex;
+	position: relative;
+	border-radius: 16px;
+	align-items: center;
+	justify-content: center;
+	padding: 24px 16px 16px 16px;
+	color: var(--white-main);
+	background-color: var(--blue-main);
+	box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
+	-webkit-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
+}
+
+.message {
+	width: 95%;
+}
+
+.clearButton {
+	top: 9px;
+	right: 9px;
+	border: none;
+	display: flex;
+	cursor: pointer;
+	border-radius: 50%;
+	position: absolute;
+	align-items: center;
+	justify-content: center;
+	color: var(--white-main);
+	padding: 2px;
+	background-color: transparent;
+	transition: 200ms ease-in-out;
+}
+
+.clearButton:hover {
+	font-size: 18px;
+	color: var(--blue-main);
+	background-color: var(--white-main);
+}

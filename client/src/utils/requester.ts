@@ -15,6 +15,12 @@ export const TASK_ENDPOINTS = {
 	UPLOAD_IMG: (taskId: number) => `${BASE_URL}/tasks/${taskId}/upload-image`
 };
 
+export const NOTIFICATIONS_ENDPOINTS = {
+	BASE: `${BASE_URL}/notifications`,
+	EDIT: (notificationId: number) =>
+		`${BASE_URL}/notifications/${notificationId}`
+};
+
 export const STEP_ENDPOINTS = {
 	BASE: `${BASE_URL}/steps`
 };

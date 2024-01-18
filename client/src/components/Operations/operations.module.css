@@ -5,8 +5,8 @@
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	grid-template-areas:
-		'logout       create-workspace create-board'
-		'edit-profile create-workspace create-board';
+		'logout       create-workspace notifications'
+		'edit-profile create-board notifications';
 }
 
 .operation {
@@ -61,4 +61,10 @@
 
 .editProfile {
 	grid-area: edit-profile;
+}
+
+.notifications {
+	height: 100%;
+	overflow-y: hidden;
+	grid-area: notifications;
 }

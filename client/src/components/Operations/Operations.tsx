@@ -6,12 +6,15 @@ import { HiDocumentAdd } from 'react-icons/hi';
 import { PiSignOutBold } from 'react-icons/pi';
 import { useUserContext } from '../../contexts/user.context';
 import { useModalsContext } from '../../contexts/modals.context';
+import { NotificationList } from '../NotificationList/NotificationList';
+import { useNotificationContext } from '@/contexts/notification.context';
 import { useSelectedWorkspaceContext } from '../../contexts/selectedWorkspace.context';
 
 export const Operations = () => {
 	const { logout } = useUserContext();
 	const { toggleModal } = useModalsContext();
 	const { clearWorkspaceName } = useSelectedWorkspaceContext();
+	const { notifications, isLoading } = useNotificationContext();
 
 	const toggleisWorkspaceModalOpen = () => {
 		toggleModal('showCreateWorkspaceModal');
@@ -51,6 +54,12 @@ export const Operations = () => {
 				className={classNames(styles.operation, styles.editProfile)}
 			>
 				<FaUserEdit className={styles.icon} />
+			</div>
+			<div className={styles.notifications}>
+				<NotificationList
+					isLoading={isLoading}
+					notifications={notifications}
+				/>
 			</div>
 		</div>
 	);

@@ -43,9 +43,12 @@ export class BoardCheckMiddleware implements NestMiddleware {
 			const userIsWorkspaceOwner =
 				workspace.ownerId === req.body.userData.id;
 
+			/*if user is trying to delete smth that is neither task, nor board, nor colleague*/
 			if (
-				!userIsWorkspaceOwner &&
+				!req.body.taskId &&
+				!req.body.boardId &&
 				!req.body.colleagueId &&
+				!userIsWorkspaceOwner &&
 				req.method.toUpperCase() === 'DELETE'
 			) {
 				throw new UnauthorizedException(

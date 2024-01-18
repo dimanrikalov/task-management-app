@@ -1,15 +1,20 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { INotification, useFetchNotifications } from '@/hooks/useFetchNotifications';
 
 interface INotificationContext {
+	isLoading: boolean;
 	notificationMsg: string;
 	showNotificationMsg: boolean;
+	notifications: INotification[]
 	showNotification(message: string): void;
 }
 
 const NotificationContext = createContext<INotificationContext>({
+	isLoading: true,
+	notifications: [],
 	notificationMsg: '',
 	showNotificationMsg: false,
-	showNotification: () => {}
+	showNotification: () => { }
 });
 
 export const useNotificationContext = () =>
@@ -18,6 +23,7 @@ export const useNotificationContext = () =>
 export const NotificationContextProvider: React.FC<{
 	children: React.ReactNode;
 }> = ({ children }) => {
+	const { notifications, isLoading } = useFetchNotifications();
 	const [notificationMsg, setNotificationMsg] = useState<string>('');
 	const [showNotificationMsg, setShowNotificationMsg] =
 		useState<boolean>(false);
@@ -37,6 +43,8 @@ export const NotificationContextProvider: React.FC<{
 	};
 
 	const data = {
+		isLoading,
+		notifications,
 		notificationMsg,
 		showNotification,
 		showNotificationMsg
