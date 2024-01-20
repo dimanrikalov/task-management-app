@@ -8,9 +8,12 @@ export class BaseColumnsDto {
 
 	@IsObject()
 	workspaceData: IWorkspace;
-
+	
 	@IsBoolean()
 	userIsWorkspaceOwner: boolean;
+
+	@IsBoolean()
+	userHasAccessToBoard: boolean;
 
 	@IsBoolean()
 	userHasAccessToWorkspace: boolean;

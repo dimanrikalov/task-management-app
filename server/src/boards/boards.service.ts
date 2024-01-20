@@ -3,12 +3,10 @@ import {
 	ConflictException,
 	NotFoundException,
 	ForbiddenException,
-	BadRequestException,
-	UnauthorizedException
+	BadRequestException
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
-import { BoardsGateway } from './boards.gateway';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { DeleteBoardDto } from './dtos/deleteboard.dto';
@@ -24,7 +22,6 @@ import { GetWorkspaceDetails } from 'src/workspaces/dtos/getWorkspaceDetails.dto
 export class BoardsService {
 	constructor(
 		private readonly prismaService: PrismaService,
-		private readonly boardsGateway: BoardsGateway,
 		private readonly columnsService: ColumnsService,
 		private readonly messagesService: MessagesService
 	) {}
@@ -378,12 +375,6 @@ export class BoardsService {
 			})
 		);
 
-		//emit an event for created board
-		this.boardsGateway.handleBoardCreated({
-			affectedUserIds: body.colleagues,
-			message: 'New board was created!'
-		});
-
 		return board;
 	}
 
@@ -400,16 +391,6 @@ export class BoardsService {
 	}
 
 	async delete(body: DeleteBoardDto) {
-		//check if the user that deletes the board owns the workspace where the board is located
-		const userIsWorkspaceOwner =
-			body.userData.id === body.workspaceData.ownerId;
-
-		if (!userIsWorkspaceOwner) {
-			throw new UnauthorizedException(
-				'You must own the workspace to delete this board!'
-			);
-		}
-
 		//delete the relationship entries concerning the board to be deleted
 		await this.prismaService.user_Board.deleteMany({
 			where: {
@@ -532,12 +513,6 @@ export class BoardsService {
 				boardId: body.boardData.id
 			}
 		});
-
-		//trigger a socket event
-		this.boardsGateway.handleUserAddedToBoard({
-			message: 'You have been added to a board!',
-			affectedUserId: body.colleagueId
-		});
 	}
 
 	async removeColleague(body: EditBoardColleagueDto) {
@@ -598,12 +573,6 @@ export class BoardsService {
 			where: {
 				AND: [{ userId: colleagueId }, { boardId: body.boardData.id }]
 			}
-		});
-
-		//trigger a socket event
-		this.boardsGateway.handleUserAddedToBoard({
-			message: 'You have been removed from a board.',
-			affectedUserId: body.colleagueId
 		});
 	}
 }

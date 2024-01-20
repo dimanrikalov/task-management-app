@@ -8,7 +8,6 @@ import {
 import * as fs from 'fs';
 import { join } from 'path';
 import { BaseWorkspaceDto } from './dtos/base.dto';
-import { WorkspacesGateway } from './workspaces.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { BoardsService } from 'src/boards/boards.service';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
@@ -22,8 +21,7 @@ import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
 export class WorkspacesService {
 	constructor(
 		private readonly prismaService: PrismaService,
-		private readonly boardsService: BoardsService,
-		private readonly workspacesGateway: WorkspacesGateway
+		private readonly boardsService: BoardsService
 	) {}
 
 	async getUserWorkspaces(body: BaseWorkspaceDto): Promise<any[]> {
@@ -190,10 +188,6 @@ export class WorkspacesService {
 
 		console.log('Emitting an event...');
 		//trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
-		this.workspacesGateway.handleWorkspaceCreated({
-			affectedUserIds: body.colleagues,
-			message: 'New workspace created.'
-		});
 
 		return workspace;
 	}
@@ -329,10 +323,6 @@ export class WorkspacesService {
 		});
 
 		//trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
-		this.workspacesGateway.handleUserAddedToWorkspace({
-			message: 'You were added to a workspace.',
-			affectedUserId: body.colleagueId
-		});
 	}
 
 	async removeColleague(body: EditWorkspaceColleagueDto) {

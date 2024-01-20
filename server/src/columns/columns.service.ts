@@ -1,9 +1,9 @@
 import {
 	Injectable,
 	ConflictException,
-	ForbiddenException
+	ForbiddenException,
+	UnauthorizedException
 } from '@nestjs/common';
-import { ColumnsGateway } from './columns.gateway';
 import { MoveColumnDto } from './dtos/moveColumn.dto';
 import { TasksService } from 'src/tasks/tasks.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -18,7 +18,6 @@ export class ColumnsService {
 	constructor(
 		private readonly tasksService: TasksService,
 		private readonly prismaService: PrismaService,
-		private readonly columnsGateway: ColumnsGateway
 	) {}
 
 	async create(body: CreateColumnDto) {
@@ -56,11 +55,6 @@ export class ColumnsService {
 
 		//emit event to anyone inside the board that the board view must be refreshed
 		//check on the client side inside board view if the boardId === affectedBoardId, if yes trigger refetching request
-		this.columnsGateway.handleColumnCreated({
-			message: 'New column added.',
-			affectedBoardId: body.boardData.id
-		});
-
 		return id;
 	}
 

@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { promisify } from 'util';
-import { TasksGateway } from './tasks.gateway';
 import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
@@ -23,7 +22,6 @@ const unlink = promisify(fs.unlink);
 @Injectable()
 export class TasksService {
 	constructor(
-		private readonly tasksGateway: TasksGateway,
 		private readonly stepsService: StepsService,
 		private readonly prismaService: PrismaService
 	) {}
@@ -231,11 +229,8 @@ export class TasksService {
 		await this.stepsService.createMany(body.steps, task.id);
 
 		// Emit event with boardId to cause everyone on the board to refetch
-		this.tasksGateway.handleTaskCreated({
-			message: 'New task created.',
-			affectedBoardId: body.boardData.id
-		});
 
+		
 		return { ...task, steps: body.steps };
 	}
 

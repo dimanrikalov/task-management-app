@@ -7,31 +7,23 @@ import {
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TasksService } from 'src/tasks/tasks.service';
-import { TasksGateway } from 'src/tasks/tasks.gateway';
 import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { BoardsService } from 'src/boards/boards.service';
-import { BoardsGateway } from 'src/boards/boards.gateway';
-import { ColumnsGateway } from 'src/columns/columns.gateway';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { WorkspacesGateway } from 'src/workspaces/workspaces.gateway';
 
 @Module({
 	providers: [
 		UsersService,
 		TasksService,
-		TasksGateway,
 		StepsService,
 		BoardsService,
-		BoardsGateway,
-		ColumnsGateway,
 		ColumnsService,
 		MessagesService,
-		WorkspacesService,
-		WorkspacesGateway
+		WorkspacesService
 	],
 	imports: [PrismaModule],
 	controllers: [UsersController]

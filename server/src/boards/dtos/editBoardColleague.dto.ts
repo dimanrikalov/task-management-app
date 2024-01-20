@@ -17,5 +17,8 @@ export class EditBoardColleagueDto extends BaseBoardsDto {
 	userIsWorkspaceOwner: boolean;
 
 	@IsBoolean()
+	userHasAccessToBoard: boolean;
+
+	@IsBoolean()
 	userHasAccessToWorkspace: boolean;
 }

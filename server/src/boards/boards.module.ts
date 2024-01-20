@@ -5,13 +5,10 @@ import {
 	MiddlewareConsumer
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
-import { BoardsGateway } from './boards.gateway';
 import { BoardsController } from './boards.controller';
 import { TasksService } from 'src/tasks/tasks.service';
-import { TasksGateway } from 'src/tasks/tasks.gateway';
 import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { ColumnsGateway } from 'src/columns/columns.gateway';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
@@ -21,12 +18,9 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
 @Module({
 	providers: [
 		TasksService,
-		TasksGateway,
 		StepsService,
 		BoardsService,
-		BoardsGateway,
 		ColumnsService,
-		ColumnsGateway,
 		MessagesService
 	],
 	imports: [PrismaModule],

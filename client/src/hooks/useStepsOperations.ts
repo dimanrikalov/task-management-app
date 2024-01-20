@@ -13,22 +13,28 @@ export interface IEditStep extends IStep {
 
 export const useStepsOperations = () => {
 	const { selectedTask } = useBoardContext();
+	const [steps, setSteps] = useState<IStep[]>([]);
 	const [progress, setProgress] = useState<number>(0);
 	const { inputValues, setInputValues } = useTaskModalContext();
-	const [steps, setSteps] = useState<IStep[]>(selectedTask?.steps || []);
 
 	useEffect(() => {
+		if (!selectedTask) return;
+		setSteps(selectedTask.steps);
+	}, [selectedTask]);
+
+	useEffect(() => {
+		if (!selectedTask) return;
+		if (selectedTask.steps.length === 0 && steps.length === 0) {
+			setProgress(selectedTask.progress);
+			return;
+		}
+
 		const completedCount = steps.reduce(
 			(acc, x) => acc + Number(x.isComplete),
 			0
 		);
 		setProgress(Math.round((completedCount / steps.length) * 100) || 0);
 	}, [steps]);
-
-	useEffect(() => {
-		if (!selectedTask) return;
-		setSteps(selectedTask.steps);
-	}, [selectedTask]);
 
 	const addStep = () => {
 		if (!inputValues.step) return;

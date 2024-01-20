@@ -5,9 +5,7 @@ import {
 	MiddlewareConsumer
 } from '@nestjs/common';
 import { ColumnsService } from './columns.service';
-import { ColumnsGateway } from './columns.gateway';
 import { StepsService } from 'src/steps/steps.service';
-import { TasksGateway } from 'src/tasks/tasks.gateway';
 import { TasksService } from 'src/tasks/tasks.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { ColumnsController } from './columns.controller';
@@ -19,8 +17,6 @@ import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
 	providers: [
 		TasksService,
 		StepsService,
-		TasksGateway,
-		ColumnsGateway,
 		ColumnsService
 	],
 	imports: [PrismaModule],

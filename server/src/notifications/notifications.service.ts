@@ -12,7 +12,7 @@ export class NotificationsService {
 	constructor(private readonly prismaService: PrismaService) {}
 
 	async getAll(body: BaseNotificationsDto) {
-		await this.prismaService.notification.findMany({
+		return await this.prismaService.notification.findMany({
 			where: {
 				userId: body.userData.id
 			},

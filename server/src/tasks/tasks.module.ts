@@ -5,7 +5,6 @@ import {
 	MiddlewareConsumer
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { TasksGateway } from './tasks.gateway';
 import { TasksController } from './tasks.controller';
 import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
@@ -17,7 +16,7 @@ import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
 @Module({
 	imports: [PrismaModule],
 	controllers: [TasksController],
-	providers: [TasksService, TasksGateway, StepsService]
+	providers: [TasksService, StepsService]
 })
 export class TasksModule implements NestModule {
 	configure(consumer: MiddlewareConsumer) {

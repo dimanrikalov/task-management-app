@@ -44,18 +44,17 @@ export class BoardCheckMiddleware implements NestMiddleware {
 				workspace.ownerId === req.body.userData.id;
 
 			/*if user is trying to delete smth that is neither task, nor board, nor colleague*/
-			if (
-				!req.body.taskId &&
-				!req.body.boardId &&
-				!req.body.colleagueId &&
-				!userIsWorkspaceOwner &&
-				req.method.toUpperCase() === 'DELETE'
-			) {
-				throw new UnauthorizedException(
-					'You do not have permission to delete in this workspace!'
-				);
-			}
-
+			// if (
+			// 	!req.body.taskId &&
+			// 	!req.body.boardId &&
+			// 	!req.body.colleagueId &&
+			// 	!userIsWorkspaceOwner &&
+			// 	req.method.toUpperCase() === 'DELETE'
+			// ) {
+			// 	throw new UnauthorizedException(
+			// 		'You do not have permission to delete in this workspace!'
+			// 	);
+			// }
 			const userHasAccessToWorkspace =
 				!!(await this.prismaService.user_Workspace.findFirst({
 					where: {
@@ -90,6 +89,7 @@ export class BoardCheckMiddleware implements NestMiddleware {
 			req.body.boardData = board;
 			req.body.workspaceData = workspace;
 			req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
+			req.body.userHasAccessToBoard = userHasAccessToBoard;
 			req.body.userHasAccessToWorkspace = userHasAccessToWorkspace;
 
 			next();
