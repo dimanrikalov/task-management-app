@@ -75,6 +75,7 @@
 }
 
 .sendBtn {
+	z-index: 1;
 	border: none;
 	cursor: pointer;
 	font-size: 36px;
@@ -92,10 +93,11 @@
 	gap: 9px;
 	width: 100%;
 	z-index: 0.5;
-	bottom: 72px;
 	display: flex;
+	bottom: -152px;
 	position: absolute;
 	flex-direction: column;
+	transition: 200ms ease-in-out;
 }
 
 .dropdown {
@@ -111,4 +113,8 @@
 	color: grey;
 	text-align: center;
 	align-self: center;
+}
+
+.showDropdown {
+	bottom: 72px;
 }

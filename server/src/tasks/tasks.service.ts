@@ -333,7 +333,7 @@ export class TasksService {
 		if (body.userData.id !== body.taskData.assigneeId) {
 			await this.notificationsService.addNotification({
 				userId: body.taskData.assigneeId,
-				message: `${body.userData.username} has deleted task - "${body.taskData.title}"
+				message: `${body.userData.username} has deleted task "${body.taskData.title}"
 				 which was assigned to you inside board "${body.boardData.name}".`
 			});
 		}
@@ -506,7 +506,7 @@ export class TasksService {
 		) {
 			await this.notificationsService.addNotification({
 				userId: body.payload.assigneeId,
-				message: `${body.userData.username} has modified task - "${body.taskData.title}"
+				message: `${body.userData.username} has modified task "${body.taskData.title}"
 				 which was assigned to you inside board "${body.boardData.name}".`
 			});
 		} else if (
@@ -515,7 +515,7 @@ export class TasksService {
 		) {
 			await this.notificationsService.addNotification({
 				userId: body.taskData.assigneeId,
-				message: `${body.userData.username} has modified task - "${body.taskData.title}"
+				message: `${body.userData.username} has modified task "${body.taskData.title}"
 				 which was assigned to you inside board "${body.boardData.name}".`
 			});
 		}
@@ -554,7 +554,7 @@ export class TasksService {
 				boardUsersId.map(async (userId) => {
 					await this.notificationsService.addNotification({
 						userId,
-						message: `${body.userData.id} has marked task - "${body.taskData.title}"
+						message: `${body.userData.id} has marked task "${body.taskData.title}"
 							inside board "${body.boardData.name}" as complete.`
 					});
 				})

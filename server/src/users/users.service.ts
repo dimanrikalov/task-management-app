@@ -381,8 +381,8 @@ export class UsersService {
 					id: 0,
 					password: '*******',
 					email: 'DELETED_USER',
-					username: 'DELETED_USER',
-					profileImagePath: process.env.DEFAULT_PROFILE_IMG_URL
+					username: 'Deleted User',
+					profileImagePath: process.env.DELETED_PROFILE_IMG_URL
 				}
 			});
 		}

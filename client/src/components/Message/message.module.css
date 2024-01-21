@@ -43,8 +43,9 @@
 }
 
 .username {
-	top: 80px;
+	width: 100%;
 	left: -150px;
+	bottom: -46px;
 	position: absolute;
 	color: transparent;
 	pointer-events: none;

@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import classNames from 'classnames';
 import styles from './message.module.css';
-import { useState } from 'react';
 
 interface IMessageProps {
 	content: string;
@@ -25,7 +25,7 @@ export const Message = ({ content, profileImgPath, username, isUser }: IMessageP
 
 				{content.startsWith('http://') || content.startsWith('https://')
 					?
-					<a href={content}  target="_blank" className={classNames(styles.text, isUser && styles.invert)}>
+					<a href={content} target="_blank" className={classNames(styles.text, isUser && styles.invert)}>
 						{content}
 					</a>
 					:

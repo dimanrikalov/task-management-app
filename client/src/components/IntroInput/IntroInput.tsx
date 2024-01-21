@@ -24,6 +24,8 @@ interface IIntroInputProps {
 	Icon?: React.FC<IIconProps>;
 	ToggleIcon?: React.FC<IToggleIconProps>;
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
+	handleSelect: React.ReactEventHandler<HTMLInputElement>;
+	inputRef?: React.MutableRefObject<HTMLInputElement | null>;
 }
 
 export const IntroInput = ({
@@ -32,11 +34,13 @@ export const IntroInput = ({
 	type,
 	value,
 	onLoad,
+	inputRef,
 	onChange,
 	iconSize,
 	condition,
 	ToggleIcon,
 	placeholder,
+	handleSelect,
 	disabled = false
 }: IIntroInputProps) => {
 	const [isIconColored, setIsIconColored] = useState(false);
@@ -66,9 +70,11 @@ export const IntroInput = ({
 				type={type}
 				name={name}
 				value={value}
+				ref={inputRef}
 				onLoad={onLoad}
 				disabled={disabled}
 				onChange={onChange}
+				onSelect={handleSelect}
 				className={styles.input}
 				placeholder={placeholder}
 				onBlur={() => setIsIconColored(false)}
