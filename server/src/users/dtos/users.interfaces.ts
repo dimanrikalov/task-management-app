@@ -1,6 +1,10 @@
-import { BaseUsersDto } from './base.dto';
+import { IJWTPayload } from 'src/jwt/jwt.interfaces';
+
+interface IUserData {
+	userData: IJWTPayload;
+}
 
 export interface IRefreshTokensBody {
-	payload: BaseUsersDto;
+	payload: IUserData;
 	refreshToken: string;
 }

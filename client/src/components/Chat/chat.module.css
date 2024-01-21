@@ -87,3 +87,28 @@
 .enable {
 	color: var(--blue-main);
 }
+
+.dropdownWrapper {
+	gap: 9px;
+	width: 100%;
+	z-index: 0.5;
+	bottom: 72px;
+	display: flex;
+	position: absolute;
+	flex-direction: column;
+}
+
+.dropdown {
+	width: 86%;
+	padding: 12px;
+	overflow-y: auto;
+	max-height: 164px;
+	border-radius: 16px;
+	background-color: var(--white-main);
+}
+
+.noMatches {
+	color: grey;
+	text-align: center;
+	align-self: center;
+}

@@ -2,10 +2,14 @@ import * as fs from 'fs';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dtos/createMessage.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class MessagesService {
-	constructor(private readonly prismaService: PrismaService) {}
+	constructor(
+		private readonly prismaService: PrismaService,
+		private readonly notificationsService: NotificationsService
+	) {}
 
 	async getAllByBoardId(boardId: number) {
 		const messages = await this.prismaService.message.findMany({
@@ -54,6 +58,15 @@ export class MessagesService {
 				timestamp: new Date(Date.now())
 			}
 		});
+
+		await Promise.all(
+			body.taggedUsers.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has tagged you inside board "${body.boardData.name}".`
+				});
+			})
+		);
 	}
 
 	async deleteAll(boardId: number) {

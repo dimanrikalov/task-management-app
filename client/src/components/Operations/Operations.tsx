@@ -11,10 +11,15 @@ import { useNotificationContext } from '@/contexts/notification.context';
 import { useSelectedWorkspaceContext } from '../../contexts/selectedWorkspace.context';
 
 export const Operations = () => {
-	const { logout } = useUserContext();
+	const {
+		isLoading,
+		notifications,
+		deleteNotification,
+		deleteNotifications
+	} = useNotificationContext();
+	const { data, logout } = useUserContext();
 	const { toggleModal } = useModalsContext();
 	const { clearWorkspaceName } = useSelectedWorkspaceContext();
-	const { notifications, isLoading } = useNotificationContext();
 
 	const toggleisWorkspaceModalOpen = () => {
 		toggleModal('showCreateWorkspaceModal');
@@ -58,7 +63,10 @@ export const Operations = () => {
 			<div className={styles.notifications}>
 				<NotificationList
 					isLoading={isLoading}
+					username={data!.username}
 					notifications={notifications}
+					clearNotification={deleteNotification}
+					clearNotifications={deleteNotifications}
 				/>
 			</div>
 		</div>

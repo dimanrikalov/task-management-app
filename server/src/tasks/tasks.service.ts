@@ -10,12 +10,15 @@ import { promisify } from 'util';
 import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
+import { IBoard } from 'src/boards/boards.interfaces';
 import { StepsService } from 'src/steps/steps.service';
 import { DeleteTasksDto } from './dtos/deleteTask.dto';
 import { extractJWTData } from 'src/jwt/extractJWTData';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CompleteTaskDto } from './dtos/completeTask.dto';
 import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
+import { IWorkspace } from 'src/workspaces/workspace.interfaces';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 const unlink = promisify(fs.unlink);
 
@@ -23,8 +26,38 @@ const unlink = promisify(fs.unlink);
 export class TasksService {
 	constructor(
 		private readonly stepsService: StepsService,
-		private readonly prismaService: PrismaService
+		private readonly prismaService: PrismaService,
+		private readonly notificationsService: NotificationsService
 	) {}
+
+	async getBoardUsers(
+		boardData: IBoard,
+		workspaceData: IWorkspace,
+		excludeId: number
+	) {
+		const boardUsers = await this.prismaService.user_Board.findMany({
+			where: {
+				boardId: boardData.id
+			}
+		});
+
+		const workspaceUsers = await this.prismaService.user_Workspace.findMany(
+			{
+				where: {
+					workspaceId: workspaceData.id
+				}
+			}
+		);
+
+		const boardUserIds = boardUsers.map((user) => user.userId);
+		const workspaceUserIds = workspaceUsers.map((user) => user.userId);
+
+		return [
+			...boardUserIds,
+			...workspaceUserIds,
+			workspaceData.ownerId
+		].filter((userId) => userId !== excludeId);
+	}
 
 	async validateUserAccessToBoard({ task, token }) {
 		const userData = extractJWTData(token);
@@ -228,9 +261,17 @@ export class TasksService {
 		// Create steps
 		await this.stepsService.createMany(body.steps, task.id);
 
+		//if user is not assigning themselves create a notification
+		if (body.userData.id !== body.assigneeId) {
+			await this.notificationsService.addNotification({
+				userId: body.assigneeId,
+				message: `${body.userData.username} has assigned you to task
+				 - "${body.title}" inside board "${body.boardData.name}".`
+			});
+		}
+
 		// Emit event with boardId to cause everyone on the board to refetch
 
-		
 		return { ...task, steps: body.steps };
 	}
 
@@ -287,6 +328,15 @@ export class TasksService {
 				id: body.taskData.id
 			}
 		});
+
+		//if the user that deletes the task is different than the assignee, notify the assignee
+		if (body.userData.id !== body.taskData.assigneeId) {
+			await this.notificationsService.addNotification({
+				userId: body.taskData.assigneeId,
+				message: `${body.userData.username} has deleted task - "${body.taskData.title}"
+				 which was assigned to you inside board "${body.boardData.name}".`
+			});
+		}
 	}
 
 	async deleteMany(columnId: number) {
@@ -414,6 +464,62 @@ export class TasksService {
 			where: { taskId: task.id }
 		});
 
+		const oldAssignee = await this.prismaService.user.findFirst({
+			where: {
+				id: body.taskData.assigneeId
+			}
+		});
+
+		const newAssignee = await this.prismaService.user.findFirst({
+			where: {
+				id: body.payload.assigneeId
+			}
+		});
+
+		if (
+			body.userData.id !== body.payload.assigneeId &&
+			body.payload.assigneeId !== body.taskData.assigneeId
+		) {
+			//notify the user that is no longer assigned to the task
+			await this.notificationsService.addNotification({
+				userId: body.taskData.assigneeId,
+				message: `Task "${body.taskData.title}" which was previously
+				 assigned to you is now assigned to ${newAssignee.username}.`
+			});
+
+			//notify the user that is newly assigned to the task
+			await this.notificationsService.addNotification({
+				userId: newAssignee.id,
+				message: `Task "${body.taskData.title}" which was previously
+				assigned to ${oldAssignee.username} is now assigned to you.`
+			});
+		}
+
+		//if the user that edits the task is different than the assignee, notify the assignee
+		// using body.taskData.assigneeId ensures we send the notification to the previous assignee
+		const isThereNewAssignee =
+			body.payload.assigneeId !== body.taskData.assigneeId;
+
+		if (
+			isThereNewAssignee &&
+			body.userData.id !== body.payload.assigneeId
+		) {
+			await this.notificationsService.addNotification({
+				userId: body.payload.assigneeId,
+				message: `${body.userData.username} has modified task - "${body.taskData.title}"
+				 which was assigned to you inside board "${body.boardData.name}".`
+			});
+		} else if (
+			!isThereNewAssignee &&
+			body.userData.id !== body.taskData.assigneeId
+		) {
+			await this.notificationsService.addNotification({
+				userId: body.taskData.assigneeId,
+				message: `${body.userData.username} has modified task - "${body.taskData.title}"
+				 which was assigned to you inside board "${body.boardData.name}".`
+			});
+		}
+
 		return { ...task, steps };
 	}
 
@@ -435,6 +541,25 @@ export class TasksService {
 				progress: 100
 			}
 		});
+
+		const boardUsersId = await this.getBoardUsers(
+			body.boardData,
+			body.workspaceData,
+			body.userData.id
+		);
+
+		//notify the assignee if someone else moves their task as complete
+		if (body.userData.id !== body.taskData.assigneeId) {
+			await Promise.all(
+				boardUsersId.map(async (userId) => {
+					await this.notificationsService.addNotification({
+						userId,
+						message: `${body.userData.id} has marked task - "${body.taskData.title}"
+							inside board "${body.boardData.name}" as complete.`
+					});
+				})
+			);
+		}
 	}
 
 	async move(body: MoveTaskDto) {

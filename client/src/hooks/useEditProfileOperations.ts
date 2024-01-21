@@ -94,6 +94,12 @@ export const useEditProfileModal = () => {
 			throw new Error(`New username must be at least 2 characters long!`);
 		}
 		if (
+			inputField === INPUT_FIELDS.USERNAME &&
+			(inputValues[inputField] as string).includes(' ')
+		) {
+			throw new Error('Username cannot contain whitespaces!');
+		}
+		if (
 			inputField === INPUT_FIELDS.EMAIL &&
 			(!(inputValues[inputField] as string).includes('@') ||
 				(inputValues[inputField] as string).length < 3)
@@ -179,7 +185,10 @@ export const useEditProfileModal = () => {
 	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValues((prev) => ({
 			...prev,
-			[e.target.name]: e.target.value
+			[e.target.name]:
+				e.target.name === INPUT_FIELDS.USERNAME
+					? e.target.value.trim()
+					: e.target.value
 		}));
 	};
 

@@ -1,5 +1,5 @@
-import { IJWTPayload } from 'src/jwt/jwt.interfaces';
+import { IUser } from 'src/users/users.interfaces';
 
 export class BaseWorkspaceDto {
-	userData: IJWTPayload;
+	userData: IUser;
 }

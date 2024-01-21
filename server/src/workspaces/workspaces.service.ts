@@ -16,13 +16,36 @@ import { RenameWorkspaceDto } from './dtos/renameWorkspace.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { GetWorkspaceDetails } from './dtos/getWorkspaceDetails.dto';
 import { EditWorkspaceColleagueDto } from './dtos/editWorkspaceColleague.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class WorkspacesService {
 	constructor(
 		private readonly prismaService: PrismaService,
-		private readonly boardsService: BoardsService
+		private readonly boardsService: BoardsService,
+		private readonly notificationsService: NotificationsService
 	) {}
+
+	async getWorkspaceUserIds(
+		workspaceId: number,
+		excludeId: number
+	): Promise<number[]> {
+		const colleagues = await this.prismaService.user_Workspace.findMany({
+			where: {
+				workspaceId
+			}
+		});
+		const workspace = await this.prismaService.workspace.findFirst({
+			where: {
+				id: workspaceId
+			}
+		});
+
+		return [
+			workspace.ownerId,
+			...colleagues.map((colleague) => colleague.userId)
+		].filter((userId) => userId !== excludeId);
+	}
 
 	async getUserWorkspaces(body: BaseWorkspaceDto): Promise<any[]> {
 		const workspaces = await this.prismaService.workspace.findMany({
@@ -186,6 +209,21 @@ export class WorkspacesService {
 			data: payload
 		});
 
+		const usersToNotify = await this.getWorkspaceUserIds(
+			workspace.id,
+			body.userData.id
+		);
+
+		//generate notifications
+		await Promise.all(
+			usersToNotify.map(async (colleagueId) => {
+				await this.notificationsService.addNotification({
+					userId: colleagueId,
+					message: `${body.userData.username} has created and added you to workspace "${body.name}".`
+				});
+			})
+		);
+
 		console.log('Emitting an event...');
 		//trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
 
@@ -214,6 +252,21 @@ export class WorkspacesService {
 				name: body.newName
 			}
 		});
+
+		const usersToNotify = await this.getWorkspaceUserIds(
+			body.workspaceData.id,
+			body.userData.id
+		);
+
+		await Promise.all(
+			usersToNotify.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has renamed workspace 
+					"${body.workspaceData.name}" to "${body.newName}".`
+				});
+			})
+		);
 	}
 
 	async delete(body: DeleteWorkspaceDto) {
@@ -232,6 +285,11 @@ export class WorkspacesService {
 			);
 		}
 
+		const usersToNotify = await this.getWorkspaceUserIds(
+			body.workspaceData.id,
+			body.userData.id
+		);
+
 		//delete cascadingly
 		await this.boardsService.deleteMany(body.workspaceData.id);
 
@@ -248,6 +306,16 @@ export class WorkspacesService {
 				id: body.workspaceData.id
 			}
 		});
+
+		await Promise.all(
+			usersToNotify.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has
+					 deleted workspace "${body.workspaceData.name}".`
+				});
+			})
+		);
 	}
 
 	async deleteMany(userId: number) {
@@ -322,6 +390,27 @@ export class WorkspacesService {
 			}
 		});
 
+		const workspaceUserIds = await this.getWorkspaceUserIds(
+			body.workspaceData.id,
+			body.userData.id
+		);
+
+		const colleague = await this.prismaService.user.findFirst({
+			where: {
+				id: body.colleagueId
+			}
+		});
+
+		await Promise.all(
+			workspaceUserIds.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has added ${colleague.username}
+					 to workspace "${body.workspaceData.name}".`
+				});
+			})
+		);
+
 		//trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
 	}
 
@@ -350,6 +439,27 @@ export class WorkspacesService {
 				'You cannot remove yourself from the workspace!'
 			);
 		}
+
+		const workspaceUserIds = await this.getWorkspaceUserIds(
+			body.workspaceData.id,
+			body.userData.id
+		);
+
+		const colleague = await this.prismaService.user.findFirst({
+			where: {
+				id: body.colleagueId
+			}
+		});
+
+		await Promise.all(
+			workspaceUserIds.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has removed ${colleague.username}
+					 from workspace "${body.workspaceData.name}".`
+				});
+			})
+		);
 
 		// deleteMany will not throw error in case of no matching colleagueId record
 		await this.prismaService.user_Workspace.deleteMany({

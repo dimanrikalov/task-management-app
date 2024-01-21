@@ -14,6 +14,7 @@ import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Module({
 	providers: [
@@ -23,7 +24,8 @@ import { WorkspacesService } from 'src/workspaces/workspaces.service';
 		BoardsService,
 		ColumnsService,
 		MessagesService,
-		WorkspacesService
+		WorkspacesService,
+		NotificationsService
 	],
 	imports: [PrismaModule],
 	controllers: [UsersController]

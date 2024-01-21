@@ -13,6 +13,7 @@ import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middleware';
 
 @Module({
@@ -21,7 +22,8 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
 		StepsService,
 		BoardsService,
 		ColumnsService,
-		MessagesService
+		MessagesService,
+		NotificationsService
 	],
 	imports: [PrismaModule],
 	controllers: [BoardsController]

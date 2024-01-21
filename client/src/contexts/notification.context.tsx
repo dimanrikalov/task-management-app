@@ -1,4 +1,7 @@
+import { useUserContext } from './user.context';
+import { useErrorContext } from './error.context';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { METHODS, NOTIFICATIONS_ENDPOINTS, request } from '@/utils/requester';
 import { INotification, useFetchNotifications } from '@/hooks/useFetchNotifications';
 
 interface INotificationContext {
@@ -6,7 +9,9 @@ interface INotificationContext {
 	notificationMsg: string;
 	showNotificationMsg: boolean;
 	notifications: INotification[]
+	deleteNotifications(): Promise<void>;
 	showNotification(message: string): void;
+	deleteNotification(notificationId: number): Promise<void>;
 }
 
 const NotificationContext = createContext<INotificationContext>({
@@ -14,7 +19,9 @@ const NotificationContext = createContext<INotificationContext>({
 	notifications: [],
 	notificationMsg: '',
 	showNotificationMsg: false,
-	showNotification: () => { }
+	showNotification: () => { },
+	deleteNotification: async () => { },
+	deleteNotifications: async () => { }
 });
 
 export const useNotificationContext = () =>
@@ -23,8 +30,10 @@ export const useNotificationContext = () =>
 export const NotificationContextProvider: React.FC<{
 	children: React.ReactNode;
 }> = ({ children }) => {
-	const { notifications, isLoading } = useFetchNotifications();
+	const { showError } = useErrorContext();
+	const { accessToken } = useUserContext();
 	const [notificationMsg, setNotificationMsg] = useState<string>('');
+	const { notifications, isLoading, setNotifications } = useFetchNotifications();
 	const [showNotificationMsg, setShowNotificationMsg] =
 		useState<boolean>(false);
 
@@ -42,11 +51,57 @@ export const NotificationContextProvider: React.FC<{
 		setShowNotificationMsg(true);
 	};
 
+	const deleteNotification = async (notificationId: number) => {
+		try {
+			const res = await request({
+				accessToken,
+				method: METHODS.DELETE,
+				endpoint: NOTIFICATIONS_ENDPOINTS.EDIT(notificationId),
+			});
+
+			if (res.errorMessage) {
+				throw new Error(res.errorMessage);
+			}
+
+			setNotifications((prev) =>
+				prev.filter((notification) => notification.id !== notificationId)
+			);
+		} catch (err: any) {
+			console.log(err.message);
+			showError(err.message);
+		}
+	}
+
+	const deleteNotifications = async () => {
+		if (notifications.length === 0) {
+			return;
+		}
+
+		try {
+			const res = await request({
+				accessToken,
+				method: METHODS.DELETE,
+				endpoint: NOTIFICATIONS_ENDPOINTS.BASE,
+			});
+
+			if (res.errorMessage) {
+				throw new Error(res.errorMessage);
+			}
+
+			setNotifications([]);
+		} catch (err: any) {
+			console.log(err.message);
+			showError(err.message);
+		}
+	}
+
 	const data = {
 		isLoading,
 		notifications,
 		notificationMsg,
 		showNotification,
+		deleteNotification,
+		deleteNotifications,
 		showNotificationMsg
 	};
 

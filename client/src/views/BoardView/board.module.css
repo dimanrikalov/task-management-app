@@ -63,7 +63,7 @@
 .columnsContainer {
 	width: 100%;
 	display: flex;
-	overflow-x: auto;
+	overflow-x: scroll;
 	padding: 12px 6px 18px 6px;
 	height: calc(100vh - 108px);
 }

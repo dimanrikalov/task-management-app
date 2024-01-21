@@ -6,10 +6,9 @@ import {
 	MinLength,
 	IsOptional
 } from 'class-validator';
-import { Column, Task } from '@prisma/client';
+import { Task } from '@prisma/client';
+import { BaseTasksDto } from './base.dto';
 import { IStep } from 'src/steps/steps.service';
-import { IBoard } from 'src/boards/boards.interfaces';
-import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 
 export interface IEditStep extends IStep {
 	id: number;
@@ -72,10 +71,7 @@ class ModifyTaskPayloadDto {
 	steps: IEditStep[];
 }
 
-export class ModifyTaskDto {
+export class ModifyTaskDto extends BaseTasksDto {
 	taskData: Task;
-	columnData: Column;
-	boardData: IBoard;
-	workspaceData: IWorkspace;
 	payload: ModifyTaskPayloadDto;
 }

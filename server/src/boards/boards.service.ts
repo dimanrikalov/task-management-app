@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
+import { TasksService } from 'src/tasks/tasks.service';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
 import { DeleteBoardDto } from './dtos/deleteboard.dto';
@@ -16,14 +17,17 @@ import { GetBoardDetails } from './dtos/getBoardDetails.dto';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { GetWorkspaceDetails } from 'src/workspaces/dtos/getWorkspaceDetails.dto';
 
 @Injectable()
 export class BoardsService {
 	constructor(
+		private readonly tasksService: TasksService,
 		private readonly prismaService: PrismaService,
 		private readonly columnsService: ColumnsService,
-		private readonly messagesService: MessagesService
+		private readonly messagesService: MessagesService,
+		private readonly notificationsService: NotificationsService
 	) {}
 
 	async getWorkpaceByIdLocal(body: GetWorkspaceDetails) {
@@ -375,6 +379,22 @@ export class BoardsService {
 			})
 		);
 
+		//create notifications
+		const usersToNotify = await this.tasksService.getBoardUsers(
+			board,
+			body.workspaceData,
+			body.userData.id
+		);
+
+		await Promise.all(
+			usersToNotify.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has created and added you to board "${body.name}"`
+				});
+			})
+		);
+
 		return board;
 	}
 
@@ -388,9 +408,31 @@ export class BoardsService {
 				name: body.newName
 			}
 		});
+
+		const usersToNotify = await this.tasksService.getBoardUsers(
+			body.boardData,
+			body.workspaceData,
+			body.userData.id
+		);
+
+		await Promise.all(
+			usersToNotify.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has renamed
+					 board "${body.boardData.name}" to "${body.newName}".`
+				});
+			})
+		);
 	}
 
 	async delete(body: DeleteBoardDto) {
+		const usersToNotify = await this.tasksService.getBoardUsers(
+			body.boardData,
+			body.workspaceData,
+			body.userData.id
+		);
+
 		//delete the relationship entries concerning the board to be deleted
 		await this.prismaService.user_Board.deleteMany({
 			where: {
@@ -410,6 +452,16 @@ export class BoardsService {
 				id: body.boardData.id
 			}
 		});
+
+		await Promise.all(
+			usersToNotify.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has
+					 deleted board "${body.boardData.name}".`
+				});
+			})
+		);
 	}
 
 	async deleteMany(workspaceId: number) {
@@ -513,6 +565,28 @@ export class BoardsService {
 				boardId: body.boardData.id
 			}
 		});
+
+		const boardUserIds = await this.tasksService.getBoardUsers(
+			body.boardData,
+			body.workspaceData,
+			body.userData.id
+		);
+
+		const colleague = await this.prismaService.user.findFirst({
+			where: {
+				id: body.colleagueId
+			}
+		});
+
+		await Promise.all(
+			boardUserIds.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has added
+					 ${colleague.username} to board "${body.boardData.name}".`
+				});
+			})
+		);
 	}
 
 	async removeColleague(body: EditBoardColleagueDto) {
@@ -568,6 +642,28 @@ export class BoardsService {
 		if (!colleagueIsPartOfBoard) {
 			throw new BadRequestException('User is not part of the board!');
 		}
+
+		const boardUserIds = await this.tasksService.getBoardUsers(
+			body.boardData,
+			body.workspaceData,
+			body.userData.id
+		);
+
+		const colleague = await this.prismaService.user.findFirst({
+			where: {
+				id: body.colleagueId
+			}
+		});
+
+		await Promise.all(
+			boardUserIds.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has removed
+					 ${colleague.username} from board "${body.boardData.name}".`
+				});
+			})
+		);
 
 		await this.prismaService.user_Board.deleteMany({
 			where: {

@@ -45,6 +45,7 @@ export const useFetchNotifications = () => {
 
 	return {
 		isLoading,
-		notifications
+		notifications,
+		setNotifications
 	};
 };

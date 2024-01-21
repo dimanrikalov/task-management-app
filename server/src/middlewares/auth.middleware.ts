@@ -30,19 +30,19 @@ export class AuthMiddleware implements NestMiddleware {
 			const decodedToken: IJWTPayload =
 				extractJWTData(authorizationToken);
 
-			// check if the token is valid by checking if user with same id and email exists
-			const user = !!(await this.prismaService.user.findUnique({
+			// check if the token is valid by checking if user with same id exists
+			const user = await this.prismaService.user.findUnique({
 				where: {
 					id: decodedToken.id
 				}
-			}));
+			});
 
-			if (!user) {
+			if (!user.id) {
 				throw new UnauthorizedException('Invalid JWT token!');
 			}
 
 			//add the decodedUserData to the body
-			req.body.userData = decodedToken;
+			req.body.userData = user;
 
 			//proceed accessing the endpoint
 			next();

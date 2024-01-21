@@ -9,8 +9,9 @@
 .header {
 	display: flex;
 	line-height: 2;
-    margin-left: 8px;
+    margin: 0px 8px;
 	align-items: center;
+	justify-content: space-between;
 }
 
 .notificationsList {
@@ -29,4 +30,9 @@
     text-align: center;
 	align-items: center;
 	justify-content: center;
+}
+
+.icon {
+	font-size: 24px;
+	transition: 200ms ease-in-out;
 }

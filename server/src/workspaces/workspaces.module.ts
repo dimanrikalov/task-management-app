@@ -8,6 +8,7 @@ import { WorkspacesController } from './workspaces.controller';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middleware';
 
 @Module({
@@ -17,7 +18,8 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
 		BoardsService,
 		ColumnsService,
 		MessagesService,
-		WorkspacesService
+		WorkspacesService,
+		NotificationsService
 	],
 	imports: [PrismaModule],
 	controllers: [WorkspacesController]

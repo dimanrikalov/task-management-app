@@ -12,12 +12,14 @@ import { ColumnsController } from './columns.controller';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
 import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Module({
 	providers: [
 		TasksService,
 		StepsService,
-		ColumnsService
+		ColumnsService,
+		NotificationsService
 	],
 	imports: [PrismaModule],
 	controllers: [ColumnsController]

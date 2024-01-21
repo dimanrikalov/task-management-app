@@ -21,12 +21,32 @@ export class NotificationsController {
 		}
 	}
 
+	@Delete()
+	async deleteAll(@Res() res: Response, @Body() body: BaseNotificationsDto) {
+		try {
+			await this.notificationsService.deleteAllNotifications(
+				body.userData.id
+			);
+			return res.status(200).json({
+				message: 'All notifications deleted successfully!'
+			});
+		} catch (err: any) {
+			console.log(err.message);
+			return res.status(400).json({
+				errorMessage: err.message
+			});
+		}
+	}
+
 	@Delete('/:notificationId')
 	async delete(@Res() res: Response, @Body() body: DeleteNotificationDto) {
 		try {
 			await this.notificationsService.deleteNotification(
 				body.notificationData.id
 			);
+			return res.status(200).json({
+				message: 'Notification deleted successfully!'
+			});
 		} catch (err: any) {
 			console.log(err.message);
 			return res.status(400).json({

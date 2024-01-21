@@ -1,7 +1,8 @@
 import {
 	Injectable,
 	ConflictException,
-	NotFoundException
+	NotFoundException,
+	NotAcceptableException
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { promisify } from 'util';
@@ -21,6 +22,7 @@ import { refreshJWTTokens } from 'src/jwt/refreshJWTTokens';
 import { IRefreshTokensBody } from './dtos/users.interfaces';
 import { generateJWTTokens } from 'src/jwt/generateJWTTokens';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 const unlink = promisify(fs.unlink);
 
@@ -28,7 +30,8 @@ const unlink = promisify(fs.unlink);
 export class UsersService {
 	constructor(
 		private readonly prismaService: PrismaService,
-		private readonly workspaceService: WorkspacesService
+		private readonly workspaceService: WorkspacesService,
+		private readonly notificationsService: NotificationsService
 	) {}
 
 	async findUserByEmail(email: string): Promise<IUser> {
@@ -301,6 +304,11 @@ export class UsersService {
 	}
 
 	async update(body: EditUserDto): Promise<void> {
+		if (body.username.trim().includes(' ')) {
+			throw new NotAcceptableException(
+				'Username cannot contain whitespaces!'
+			);
+		}
 		const hashedPassword = body.password
 			? await bcrypt.hash(body.password, Number(process.env.SALT_ROUNDS))
 			: undefined;
@@ -430,6 +438,9 @@ export class UsersService {
 		) {
 			await unlink(userToDelete.profileImagePath);
 		}
+
+		//delete all user notifications
+		await this.notificationsService.deleteAllNotifications(userToDelete.id);
 
 		//delete the user
 		await this.prismaService.user.delete({

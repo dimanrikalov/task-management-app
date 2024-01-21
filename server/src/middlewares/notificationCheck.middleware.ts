@@ -25,7 +25,7 @@ export class NotificationCheckMiddleware implements NestMiddleware {
 					}
 				});
 			if (!notification) {
-				throw new NotFoundException('Invalid step ID!');
+				throw new NotFoundException('Invalid notification ID!');
 			}
 
 			if (notification.userId !== req.body.userData.id) {

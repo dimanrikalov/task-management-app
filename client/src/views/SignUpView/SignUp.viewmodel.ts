@@ -47,10 +47,12 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		setInputFields((prevInputFields) => ({
-			...prevInputFields,
-			[name]: value
-		}));
+		setInputFields((prevInputFields) => {
+			return {
+				...prevInputFields,
+				[name]: name === 'password' ? value : value.trim()
+			};
+		});
 	};
 
 	const signUp = async (e: React.FormEvent) => {
@@ -59,6 +61,10 @@ export const useSignUpViewModel = (): ViewModelReturnType<
 		try {
 			if (Object.values(inputFields).some((value) => value === '')) {
 				throw new Error('All fields are required!');
+			}
+
+			if (inputFields.username.includes(' ')) {
+				throw new Error('Username must be one word!');
 			}
 
 			const data = await request({

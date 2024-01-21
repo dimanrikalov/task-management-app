@@ -4,11 +4,12 @@ import { MessagesController } from './messages.controller';
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Module({
 	imports: [PrismaModule],
-	providers: [MessagesService],
-	controllers: [MessagesController]
+	controllers: [MessagesController],
+	providers: [MessagesService, NotificationsService]
 })
 export class MessagesModule {
 	configure(consumer: MiddlewareConsumer) {

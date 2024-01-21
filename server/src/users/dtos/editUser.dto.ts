@@ -1,4 +1,3 @@
-import { BaseUsersDto } from './base.dto';
 import {
 	Length,
 	IsEmail,
@@ -7,6 +6,7 @@ import {
 	MinLength,
 	IsOptional
 } from 'class-validator';
+import { BaseUsersDto } from './base.dto';
 
 export class EditUserDto extends BaseUsersDto {
 	@IsOptional()

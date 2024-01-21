@@ -79,6 +79,7 @@ export const BoardView = () => {
 			<div className={styles.background}>
 				<Chat
 					isChatOpen={state.isChatOpen}
+					boardUsers={state.boardData.boardUsers}
 					toggleIsChatOpen={operations.toggleIsChatOpen}
 				/>
 				<div
