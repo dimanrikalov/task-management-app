@@ -31,7 +31,7 @@ export const useFetchNotifications = () => {
 				if (data.errorMessage) {
 					throw new Error(data.errorMessage);
 				}
-				console.log(data);
+
 				setNotifications(data);
 			} catch (err: any) {
 				showError(err.message);

@@ -236,7 +236,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen, boardUsers }: IChatProps) =
 							styles.showDropdown
 						)}
 					>
-						<h3>Tag user</h3>
+						<h4>Tag user(s)</h4>
 						<div className={styles.dropdown}>
 							{
 								boardUsers.filter
@@ -251,6 +251,7 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen, boardUsers }: IChatProps) =
 										)
 										.map((match) => (
 											<UserEntry
+												tagMode={true}
 												key={match.id}
 												showBtn={false}
 												username={match.username}

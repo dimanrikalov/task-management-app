@@ -91,20 +91,24 @@
 
 .dropdownWrapper {
 	gap: 9px;
-	width: 100%;
+	width: 86%;
 	z-index: 0.5;
 	display: flex;
-	bottom: -152px;
+	bottom: -162px;
+	max-height: 164px;
+	visibility: hidden;
 	position: absolute;
+	border-radius: 16px;
 	flex-direction: column;
+	padding: 16px 8px 16px 16px;
 	transition: 200ms ease-in-out;
+	background-color: var(--white-main);
 }
 
 .dropdown {
-	width: 86%;
-	padding: 12px;
+	width: 100%;
 	overflow-y: auto;
-	max-height: 164px;
+	padding-right: 8px;
 	border-radius: 16px;
 	background-color: var(--white-main);
 }
@@ -117,4 +121,5 @@
 
 .showDropdown {
 	bottom: 72px;
+	visibility: visible;
 }
