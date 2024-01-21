@@ -239,9 +239,29 @@ export class TasksService {
 			}
 		});
 
+		let startedAt = null;
+		let completedAt = null;
+
+		switch (body.columnData.name) {
+			case 'To Do':
+				startedAt = null;
+				completedAt = null;
+				break;
+			case 'Done':
+				startedAt = new Date(Date.now());
+				completedAt = new Date(Date.now());
+				break;
+			default:
+				completedAt = null;
+				startedAt = new Date(Date.now());
+				break;
+		}
+
 		// Create task
 		const task = await this.prismaService.task.create({
 			data: {
+				startedAt,
+				completedAt,
 				title: body.title,
 				effort: body.effort,
 				position: tasksCount,
@@ -638,12 +658,31 @@ export class TasksService {
 				})
 			);
 
+			let startedAt = body.taskData.startedAt;
+			let completedAt = body.taskData.completedAt;
+
+			switch (destinationColumn.name) {
+				case 'To Do':
+					startedAt = null;
+					completedAt = null;
+					break;
+				case 'Done':
+					completedAt = new Date(Date.now());
+					break;
+				default:
+					completedAt = null;
+					startedAt = startedAt || new Date(Date.now());
+					break;
+			}
+
 			//update the task
 			await this.prismaService.task.update({
 				where: {
 					id: body.taskData.id
 				},
 				data: {
+					startedAt,
+					completedAt,
 					columnId: body.destinationColumnId,
 					position: body.destinationPosition
 				}
