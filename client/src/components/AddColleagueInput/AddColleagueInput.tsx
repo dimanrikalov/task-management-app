@@ -1,16 +1,17 @@
 import classNames from 'classnames';
-import { useOutletContext } from 'react-router-dom';
+import { generateImgUrl } from '@/utils';
+import React, { useEffect, useState } from 'react';
 import styles from './addColleagueInput.module.css';
-import { IOutletContext } from '@/guards/authGuard';
-import { EmailInput } from '../EmailInput/EmailInput';
+import { useUserContext } from '../../contexts/user.context';
+import { UsernameInput } from '../UsernameInput/UsernameInput';
+import { useErrorContext } from '../../contexts/error.context';
 import { ListContainer } from '../ListContainer/ListContainer';
-import React, { useContext, useEffect, useState } from 'react';
-import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
+import { METHODS, USER_ENDPOINTS, request } from '../../utils/requester';
 
 export interface IUser {
 	id: number;
 	email: string;
+	username: string;
 	profileImagePath: string;
 }
 
@@ -24,7 +25,7 @@ interface IAddColleagueInputProps {
 }
 
 interface IFetchUsersPayload {
-	email: string;
+	username: string;
 	notIn: number[];
 }
 
@@ -34,41 +35,40 @@ export const AddColleagueInput = ({
 	enableFlex = false,
 	addColleagueHandler,
 	removeColleagueHandler,
-	disableDeletionFor = [],
+	disableDeletionFor = []
 }: IAddColleagueInputProps) => {
+	const { showError } = useErrorContext();
+	const { accessToken } = useUserContext();
 	const [inputValue, setInputValue] = useState('');
 	const [matches, setMatches] = useState<IUser[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const { accessToken } = useOutletContext<IOutletContext>();
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
 
 	useEffect(() => {
 		const fetchUsers = async () => {
 			setIsLoading(true);
 
 			const body: IFetchUsersPayload = {
-				email: inputValue.trim(),
-				notIn: (colleagues || []).map(colleague => colleague.id)
-			}
+				username: inputValue.trim(),
+				notIn: (colleagues || []).map((colleague) => colleague.id)
+			};
 
 			try {
-				const data = await request({
+				const data = (await request({
 					body,
 					accessToken,
 					method: METHODS.POST,
-					endpoint: USER_ENDPOINTS.BASE,
-				}) as IUser[];
+					endpoint: USER_ENDPOINTS.BASE
+				})) as IUser[];
 
 				const matchesData = data.map((match) => ({
 					...match,
-					profileImagePath:
-						`data:image/png;base64,${match.profileImagePath}`
+					profileImagePath: generateImgUrl(match.profileImagePath)
 				}));
 
 				setMatches(matchesData);
 			} catch (err: any) {
 				console.log(err.message);
-				setErrorMessage(err.message);
+				showError(err.message);
 			}
 			setIsLoading(false);
 		};
@@ -81,8 +81,6 @@ export const AddColleagueInput = ({
 		return () => clearTimeout(timeout);
 	}, [inputValue]);
 
-
-
 	const addUser = (colleague: IUser) => {
 		addColleagueHandler(colleague);
 		setInputValue('');
@@ -92,26 +90,23 @@ export const AddColleagueInput = ({
 		removeColleagueHandler(colleague);
 	};
 
-	const inputChangeHandler =
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			setIsLoading(true);
-			setInputValue(e.target.value);
-		};
+	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setIsLoading(true);
+		setInputValue(e.target.value);
+	};
 
 	return (
-		<div className={
-			classNames(styles.background,
+		<div
+			className={classNames(
+				styles.background,
 				enableFlex && styles.backgroundFlex
-			)
-		}>
-			<div className={
-				classNames(
-					styles.top,
-					enableFlex && styles.topFlex
-				)
-			}>
+			)}
+		>
+			<div
+				className={classNames(styles.top, enableFlex && styles.topFlex)}
+			>
 				<h2>Add Colleagues</h2>
-				<EmailInput
+				<UsernameInput
 					matches={matches}
 					addUser={addUser}
 					isLoading={isLoading}
@@ -119,11 +114,9 @@ export const AddColleagueInput = ({
 					onChange={inputChangeHandler}
 				/>
 			</div>
-			<div className={
-				classNames(enableFlex && styles.bottomFlex)
-			}>
+			<div className={classNames(enableFlex && styles.bottomFlex)}>
 				<ListContainer
-					mode='users'
+					mode="users"
 					title={title}
 					removeUser={removeUser}
 					colleagues={colleagues}

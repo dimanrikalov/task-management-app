@@ -1,9 +1,9 @@
 .container {
-	width: 85%;
-	align-self: flex-start;
-	display: flex;
-	flex-direction: column;
 	gap: 9px;
+	width: 85%;
+	display: flex;
+	align-self: flex-start;
+	flex-direction: column;
 }
 
 .container.invert {
@@ -14,25 +14,65 @@
 	padding: 16px;
 	max-width: 93%;
 	margin-left: 32px;
+	position: relative;
 	width: fit-content;
 	align-self: flex-start;
 	border-radius: 16px 16px 16px 0px;
 	background-color: var(--white-main);
 	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
 .message.invert {
 	margin-left: unset;
 	margin-right: 32px;
 	align-self: flex-end;
-	background-color: var(--blue-main);
 	border-radius: 16px 16px 0px 16px;
+	background-color: var(--blue-main);
+}
+
+.userInfo {
+	gap: 16px;
+	display: flex;
+	align-items: flex-end;
+}
+
+.userInfo.invert {
+	align-self: flex-end;
+}
+
+.username {
+	width: 100%;
+	left: -150px;
+	bottom: -46px;
+	text-align: start;
+	position: absolute;
+	color: transparent;
+	pointer-events: none;
+	transition: 200ms ease-in-out;
+}
+
+.showUsername {
+	left: 16px;
+	z-index: 1;
+	color: grey;
+}
+
+.username.invert {
+	left: 150px;
+	text-align: end;
+}
+
+.showUsername.invert {
+	left: -16px;
 }
 
 .text {
 	font-weight: 500;
+	user-select: text;
+	-moz-user-select: text;
+	-webkit-user-select: text;
 	color: var(--blue-main);
 }
 
@@ -43,11 +83,12 @@
 .author {
 	width: 36px;
 	height: 36px;
-	border-radius: 50%;
+	cursor: pointer;
 	overflow: hidden;
+	border-radius: 50%;
 	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
-	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
 }
 
 .author.invert {

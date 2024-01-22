@@ -35,6 +35,9 @@
 
 .addTask {
 	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .changeNameContainer {
@@ -96,4 +99,9 @@
 	color: var(--white-main);
 	cursor: pointer !important;
 	transition: 200ms ease-in-out;
+}
+
+.confetti {
+	left: 150px;
+	position: relative;
 }

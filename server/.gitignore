@@ -1,8 +1,6 @@
 # compiled output
 /dist
 /node_modules
-/uploaded-imgs
-
 # Logs
 logs
 *.log
@@ -27,6 +25,13 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
+
+# Default Images
+/uploaded-imgs/profile-imgs/*
+!/uploaded-imgs/profile-imgs/default-profile-img.png
+!/uploaded-imgs/profile-imgs/deleted-profile-img.png
+
+/uploaded-imgs/task-imgs
 
 # IDE - VSCode
 .vscode/*

@@ -1,54 +1,95 @@
 import {
-    ENTRIES_TYPES,
-    IHomeBoardEntry,
-    IHomeWorkspaceEntry
-} from "@/views/HomeView/Home.viewmodel"
-import { useNavigate } from "react-router-dom";
-import { HomeCard } from "../HomeCard/HomeCard"
-import styles from '../HomeDashboard/homeDashboard.module.css';
+	IHomeBoardEntry,
+	IHomeWorkspaceEntry
+} from '../../hooks/useFetchHomeLists';
+import {
+	ISearchInputs,
+	ENTRIES_TYPES
+} from '../../views/HomeView/Home.viewmodel';
+import styles from './homeList.module.css';
+import { useNavigate } from 'react-router-dom';
+import { HomeCard } from '../HomeCard/HomeCard';
+import { IntroInput } from '../IntroInput/IntroInput';
+import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 
 type TEntries = IHomeWorkspaceEntry[] | IHomeBoardEntry[];
 
-
-interface IHomeListProps {
-    entries: TEntries;
-    type: ENTRIES_TYPES;
+export interface IHomeListProps {
+	entries: TEntries;
+	isLoading: boolean;
+	type: ENTRIES_TYPES;
+	searchInputs: ISearchInputs;
+	filterHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
-export const HomeList = ({ entries, type }: IHomeListProps) => {
-    const navigate = useNavigate();
+export const HomeList = ({
+	type,
+	entries,
+	isLoading,
+	searchInputs,
+	filterHandler
+}: IHomeListProps) => {
+	const navigate = useNavigate();
 
-    const extractSubtitle = (entry: IHomeBoardEntry | IHomeWorkspaceEntry) => {
-        if ('ownerName' in entry) {
-            return entry.ownerName;
-        } else {
-            return entry.workspaceName
-        }
-    }
+	const extractSubtitle = (entry: IHomeBoardEntry | IHomeWorkspaceEntry) => {
+		if ('ownerName' in entry) {
+			return entry.ownerName;
+		} else {
+			return entry.workspaceName;
+		}
+	};
 
-    return (
-        <div className={styles.list}>
-            {
-                entries.length > 0 ?
-                    entries.map((entry) =>
-                        <HomeCard
-                            key={entry.id}
-                            isWorkspaceBtn={true}
-                            title={entry.name}
-                            userCount={entry.usersCount}
-                            subtitle={extractSubtitle(entry)}
-                            onClick={() => navigate(`/${type}/${entry.id}`)}
-                        />
-                    ) :
-                    <h1
-                        className={
-                            type === ENTRIES_TYPES.BOARDS ?
-                                styles.noBoards : styles.noWorkspaces
-                        }
-                    >
-                        {`You don't have access to any ${type} yet...`}
-                    </h1>
-            }
-        </div>
-    )
-}
+	return (
+		<div className={styles.background}>
+			<div className={styles.filter}>
+				<h3>
+					{type === ENTRIES_TYPES.BOARDS ? 'Boards' : 'Workspaces'}
+				</h3>
+				<div className={styles.filterInput}>
+					<IntroInput
+						type={'text'}
+						onChange={filterHandler}
+						name={
+							type === ENTRIES_TYPES.BOARDS
+								? 'searchBoards'
+								: 'searchWorkspaces'
+						}
+						placeholder={`Filter ${
+							type === ENTRIES_TYPES.BOARDS
+								? 'board'
+								: 'workspace'
+						}s`}
+						value={
+							type === ENTRIES_TYPES.BOARDS
+								? searchInputs.searchBoards
+								: searchInputs.searchWorkspaces
+						}
+					/>
+				</div>
+			</div>
+			{isLoading ? (
+				<div className={styles.noEntriesContainer}>
+					<LoadingOverlay />
+				</div>
+			) : entries.length > 0 ? (
+				<div className={styles.list}>
+					{entries.map((entry) => (
+						<HomeCard
+							key={entry.id}
+							title={entry.name}
+							userCount={entry.usersCount}
+							subtitle={extractSubtitle(entry)}
+							onClick={() => navigate(`/${type}/${entry.id}`)}
+						/>
+					))}
+				</div>
+			) : (
+				<div className={styles.noEntriesContainer}>
+					<h3 className={styles.noEntriesMsg}>
+						{`No ${type} to show yet...`}
+					</h3>
+				</div>
+			)}
+		</div>
+	);
+};

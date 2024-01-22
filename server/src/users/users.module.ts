@@ -1,48 +1,46 @@
 import {
-    Module,
-    NestModule,
-    RequestMethod,
-    MiddlewareConsumer,
+	Module,
+	NestModule,
+	RequestMethod,
+	MiddlewareConsumer
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TasksService } from 'src/tasks/tasks.service';
-import { TasksGateway } from 'src/tasks/tasks.gateway';
 import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { BoardsService } from 'src/boards/boards.service';
-import { BoardsGateway } from 'src/boards/boards.gateway';
-import { ColumnsGateway } from 'src/columns/columns.gateway';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { WorkspacesGateway } from 'src/workspaces/workspaces.gateway';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Module({
-    providers: [
-        UsersService,
-        TasksService,
-        TasksGateway,
-        StepsService,
-        BoardsService,
-        BoardsGateway,
-        ColumnsGateway,
-        ColumnsService,
-        MessagesService,
-        WorkspacesService,
-        WorkspacesGateway,
-    ],
-    imports: [PrismaModule],
-    controllers: [UsersController],
+	providers: [
+		UsersService,
+		TasksService,
+		StepsService,
+		BoardsService,
+		ColumnsService,
+		MessagesService,
+		WorkspacesService,
+		NotificationsService
+	],
+	imports: [PrismaModule],
+	controllers: [UsersController]
 })
 export class UsersModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer //exclude sign-in, sign-up refresh endpoints
-            .apply(AuthMiddleware)
-            .forRoutes('user', 'users/stats', 'users/edit*', 'users/delete', {
-                path: 'users',
-                method: RequestMethod.POST,
-            });
-    }
+	configure(consumer: MiddlewareConsumer) {
+		consumer //exclude sign-in, sign-up refresh endpoints
+			.apply(AuthMiddleware)
+			.forRoutes(
+				'user',
+				'users/edit*',
+				'users/stats',
+				'users/delete',
+				{ path: 'users', method: RequestMethod.GET },
+				{ path: 'users', method: RequestMethod.POST }
+			);
+	}
 }

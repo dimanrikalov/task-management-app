@@ -1,162 +1,101 @@
+import React from 'react';
 import { FaEdit } from 'react-icons/fa';
 import styles from './column.module.css';
 import { ITask, Task } from '../Task/Task';
-import { MdDeleteOutline } from "react-icons/md";
-import { useOutletContext } from 'react-router-dom';
-import { IOutletContext } from '@/guards/authGuard';
-import { useContext, useEffect, useState } from 'react';
+import { MdDeleteOutline } from 'react-icons/md';
+import { colors } from '../../hooks/useConfetti';
+import { IntroInput } from '../IntroInput/IntroInput';
+import ConfettiExplosion from 'react-confetti-explosion';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { IntroInput } from '../Inputs/IntroInput/IntroInput';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
-import { COLUMN_ENDPOINTS, METHODS, request } from '@/utils/requester';
+import { useColumnOperations } from '../../hooks/useColumnOperations';
 
-interface IColumnProps {
+export interface IColumnProps {
 	id: number;
 	index: number;
 	title: string;
 	tasks: ITask[];
 	users: IUser[];
-	callForRefresh(): void;
-	onTaskClick(task: ITask): void;
-	onClick(columnId: number): void;
-	updateColumn(columnId: number, columnName: string): void;
+	hasDragStarted: boolean;
+	shouldConfettiExplode: boolean;
 }
 
-export const Column = ({
-	id,
-	index,
-	users,
-	title,
-	tasks,
-	onClick,
-	onTaskClick,
-	updateColumn,
-	callForRefresh,
-}: IColumnProps) => {
-	const [inputValue, setInputValue] = useState<string>('');
-	const [isInputModeOn, setIsInputModeOn] = useState(false);
-	const { accessToken } = useOutletContext<IOutletContext>();
-	const [showDeleteBtn, setShowDeleteBtn] = useState<boolean>(false);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
+export const Column = React.memo(
+	({
+		id,
+		index,
+		users,
+		title,
+		tasks,
+		hasDragStarted,
+		shouldConfettiExplode
+	}: IColumnProps) => {
+		const {
+			onClick,
+			inputValue,
+			showDeleteBtn,
+			isInputModeOn,
+			taskClickHandler,
+			handleInputChange,
+			toggleIsInputModeOn,
+			handleColumnDeletion,
+			toggleSetShowDeleteBtn,
+			handleColumnNameChange
+		} = useColumnOperations({ id, title });
 
-	useEffect(() => {
-		if (!isInputModeOn) return;
-
-		setInputValue(title);
-	}, [isInputModeOn]);
-
-	useEffect(() => {
-		if (showDeleteBtn) return;
-		setIsInputModeOn(false);
-	}, [showDeleteBtn]);
-
-	const toggleSetShowDeleteBtn = () => {
-		setShowDeleteBtn(prev => !prev);
-	}
-
-	const toggleIsInputModeOn = () => {
-		setIsInputModeOn(prev => !prev);
-	}
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInputValue(e.target.value);
-	}
-
-	const handleColumnNameChange = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-
-		if (inputValue === title) {
-			toggleIsInputModeOn();
-			return;
-		};
-
-		const nameBeforeChange = title;
-		try {
-			const res = await request({
-				accessToken,
-				method: METHODS.PUT,
-				endpoint: COLUMN_ENDPOINTS.RENAME(id),
-				body: {
-					newName: inputValue.trim()
-				}
-			})
-
-			if (res.errorMessage) {
-				throw new Error(res.errorMessage);
-			}
-
-			updateColumn(id, inputValue);
-		} catch (err: any) {
-			setErrorMessage(err.message);
-			updateColumn(id, nameBeforeChange);
-		}
-
-		toggleIsInputModeOn();
-	}
-
-	const handleColumnDeletion = async () => {
-		try {
-			const res = await request({
-				accessToken,
-				method: METHODS.DELETE,
-				endpoint: COLUMN_ENDPOINTS.EDIT(id),
-			});
-
-			if (res.errorMessage) {
-				throw new Error(res.errorMessage);
-			}
-
-			callForRefresh();
-		} catch (err: any) {
-			console.log(err.message);
-			setErrorMessage(err.message);
-		}
-	}
-
-
-	return (
-		<Draggable
-			index={index}
-			draggableId={`column-${id}`} // Unique draggableId for columns
-		>
-			{(provided) => (
-				<div
-					ref={provided.innerRef}
-					{...provided.draggableProps}
-					className={styles.background}
+		return (
+			<>
+				{title === 'Done' && shouldConfettiExplode && (
+					<ConfettiExplosion
+						force={0.3}
+						duration={1500}
+						colors={colors}
+						className={styles.confetti}
+					/>
+				)}
+				<Draggable
+					index={index}
+					draggableId={`column-${id}`} // Unique draggableId for columns
+					isDragDisabled={hasDragStarted}
 				>
-					{
-						isInputModeOn ?
-							(
-								showDeleteBtn ?
+					{(provided) => (
+						<div
+							ref={provided.innerRef}
+							{...provided.draggableProps}
+							className={styles.background}
+						>
+							{isInputModeOn ? (
+								showDeleteBtn ? (
 									<button
 										{...provided.dragHandleProps}
 										className={styles.confirmBtn}
 										onClick={handleColumnDeletion}
 										onMouseOut={toggleSetShowDeleteBtn}
 									>
-										Delete column
+										Confirm
 									</button>
-									:
+								) : (
 									<form
 										{...provided.dragHandleProps}
 										onSubmit={handleColumnNameChange}
 										className={styles.changeNameContainer}
 									>
 										<IntroInput
-											type='text'
+											type="text"
 											value={inputValue}
-											name='column-name-input'
+											name="column-name-input"
 											onChange={handleInputChange}
-											placeholder='Enter column name'
+											placeholder="Enter column name"
 										/>
-										<button className={styles.submitBtn} type='submit'>
+										<button
+											className={styles.submitBtn}
+											type="submit"
+										>
 											<FaEdit className={styles.icon} />
 										</button>
 										<button
-											type='button'
+											type="button"
 											className={styles.deleteBtn}
 											onClick={toggleSetShowDeleteBtn}
 										>
@@ -166,56 +105,78 @@ export const Column = ({
 											/>
 										</button>
 									</form>
-							)
-							:
-							<h2 className={styles.title}
-								{...provided.dragHandleProps}
-								onDoubleClick={toggleIsInputModeOn}
-							>
-								{title}
-							</h2>
-					}
-					<Droppable
-						droppableId={`column-${id}`} // Unique droppableId for columns
-						type="task"
-					>
-						{(provided) => (
-							<>
-								<div
-									ref={provided.innerRef}
-									{...provided.droppableProps}
-									className={styles.tasksContainer}
+								)
+							) : (
+								<h2
+									className={styles.title}
+									{...provided.dragHandleProps}
+									onDoubleClick={toggleIsInputModeOn}
 								>
-									{tasks &&
-										tasks.map((task, index) => (
-											<Task
-												task={task}
-												index={index}
-												key={task.id.toString()}
-												onClick={() => onTaskClick(task)}
-												assigneeImgPath={
-													users.find(
-														(user) =>
-															user.id ===
-															task.assigneeId
-													)?.profileImagePath!
-												}
-											/>
-										))}
-									{provided.placeholder}
-								</div>
-							</>
-						)}
-					</Droppable>
-					<div className={styles.addTask}>
-						<IntroButton
-							reverse={true}
-							message={'Add task'}
-							onClick={() => onClick(id)}
-						/>
-					</div>
-				</div>
-			)}
-		</Draggable>
-	);
-};
+									{title}
+								</h2>
+							)}
+							<Droppable
+								type="task"
+								droppableId={`column-${id}`} // Unique droppableId for columns
+							>
+								{(provided) => (
+									<>
+										<div
+											ref={provided.innerRef}
+											{...provided.droppableProps}
+											className={styles.tasksContainer}
+										>
+											{tasks &&
+												tasks.map((task, index) => (
+													<Task
+														task={task}
+														index={index}
+														key={task.id.toString()}
+														hasDragStarted={
+															hasDragStarted
+														}
+														onClick={() =>
+															taskClickHandler(
+																task
+															)
+														}
+														assigneeImgPath={
+															users.find(
+																(user) =>
+																	user.id ===
+																	task.assigneeId
+															)?.profileImagePath!
+														}
+													/>
+												))}
+											{provided.placeholder}
+										</div>
+									</>
+								)}
+							</Droppable>
+							<div className={styles.addTask}>
+								<IntroButton
+									reverse={true}
+									onClick={onClick}
+									message={'Add task'}
+								/>
+							</div>
+						</div>
+					)}
+				</Draggable>
+			</>
+		);
+	},
+	// Use areEqual function to compare props and prevent re-rendering
+	(prevProps, nextProps) => {
+		return (
+			prevProps.id === nextProps.id &&
+			prevProps.index === nextProps.index &&
+			prevProps.title === nextProps.title &&
+			prevProps.tasks === nextProps.tasks &&
+			prevProps.users === nextProps.users &&
+			prevProps.hasDragStarted === nextProps.hasDragStarted &&
+			prevProps.shouldConfettiExplode === nextProps.shouldConfettiExplode
+		);
+	}
+);

@@ -1,111 +1,58 @@
 .background {
-	display: flex;
-	flex-direction: column;
 	gap: 16px;
-}
-
-.noBoards {
-	height: 64px;
-	width: 100%;
-	text-align: center;
-	color: grey;
-	margin: 58px 0px;
-}
-
-.noWorkspaces {
-	width: 100%;
-	height: 64px;
-	color: grey;
-	margin: 182px 0px;
-	text-align: center;
-	align-self: center;
-	justify-content: center;
-}
-
-.grid {
-	height: 100%;
-	width: 100%;
 	display: grid;
-	grid-template-columns: repeat(6, 1fr);
-	gap: 16px;
+	height: calc(100% - 104px);
+	grid-template-rows: repeat(2, 1fr);
+	grid-template-columns: repeat(2, 1fr);
 	grid-template-areas:
-		'boards 	boards 		   boards 		 boards		   boards  boards'
-		'workspaces workspaces     workspaces complete-tasks total-boards   total-workspaces'
-		'workspaces workspaces workspaces pending-tasks  pending-tasks   total-messages';
+		'operations            lists'
+		'bottom-left-stats     bottom-right-stats';
 }
 
-.grid > *:not(.workspaces, .boards) {
-	height: 100%;
-	width: 100%;
-	padding: 32px;
-	border-radius: 16px;
-	color: var(--white-main);
-	transition: 200ms ease-in-out;
-	box-shadow: -1px 2px 9px 0px rgba(0, 0, 0, 0.5);
-	-moz-box-shadow: -1px 2px 9px 0px rgba(0, 0, 0, 0.5);
-	-webkit-box-shadow: -1px 2px 9px 0px rgba(0, 0, 0, 0.5);
+.background > * {
+	min-height: 40vh;
 }
 
-.grid > *:not(.workspaces, .boards):hover {
-	transform: scale(1.03);
+.bottomLeftStats {
+	grid-area: bottom-left-stats;
 }
 
-.completeTasks h3 {
-	align-self: flex-end;
+.lists {
+	grid-area: lists;
 }
 
-.workspaces {
-	grid-area: workspaces;
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-	width: 100%;
+.operations {
+	grid-area: operations;
 }
 
-.header {
-	display: flex;
-	justify-content: space-between;
-	gap: 16px;
+.bottomRightStats {
+	grid-area: bottom-right-stats;
 }
 
-.inputContainer {
-	width: 200px;
-}
-
-.workspaces .list > * {
-	flex: 1;
-}
-
-.workspaces .list {
-	gap: 16px;
-	width: 100%;
-	padding: 6px;
-	display: flex;
-	flex-wrap: wrap;
-	overflow-y: auto;
-	overflow-x: hidden;
-	max-height: 440px;
-	justify-content: space-between;
-}
-
-.boards {
-	grid-area: boards;
-}
-
-.boards .list {
-	display: flex;
-	gap: 16px;
-	padding: 12px;
-	overflow-x: auto;
-}
-
-@media screen and (max-width: 1124px) {
-	.grid {
-		grid-template-columns: repeat(4, 1fr);
+@media screen and (max-width: 1295px) {
+	.background {
+		grid-template-columns: repeat(1, 1fr);
 		grid-template-areas:
-			'boards 	   boards 	        boards 			boards'
-			'workspaces    workspaces       workspaces		complete-tasks'
-			'workspaces    workspaces       workspaces		pending-tasks'
-			'total-boards  total-workspaces total-messages 	total-messages';
+			'lists'
+			'operations'
+			'bottom-left-stats'
+			'bottom-right-stats';
+	}
+	.background > * {
+		min-height: 50vh;
+	}
+	.bottomRightStats {
+		padding-bottom: 16px;
+	}
+}
+
+@media screen and (max-height: 620px) {
+	.background > * {
+		min-height: 100vh;
+	}
+
+	.bottomLeftStats,
+	.bottomRightStats {
+		padding-bottom: 16px;
 	}
 }

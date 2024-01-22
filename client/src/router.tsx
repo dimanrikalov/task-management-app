@@ -5,8 +5,11 @@ import { BoardView } from './views/BoardView/BoardView';
 import { IntroView } from './views/IntroView/Intro.view';
 import { SignUpView } from './views/SignUpView/SignUp.view';
 import { SignInView } from './views/SignInView/SignIn.view';
+import { BoardContextProvider } from './contexts/board.context';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { WorkspaceView } from './views/WorkspaceView/Workspace.view';
+import { WorkspaceContextProvider } from './contexts/workspace.context';
+import { UserStatsContextProvider } from './contexts/userStats.context';
 
 export const ROUTES = {
 	HOME: '/',
@@ -15,7 +18,7 @@ export const ROUTES = {
 	SIGN_UP: '/auth/sign-up',
 	BOARD: (boardId: number) => `/boards/${boardId}`,
 	WORKSPACE: (workspaceId: number) => `/workspaces/${workspaceId}`
-}
+};
 
 const router = createHashRouter([
 	{
@@ -24,16 +27,37 @@ const router = createHashRouter([
 		children: [
 			{ path: '/', element: <IntroView /> },
 			{ path: '/auth/sign-up', element: <SignUpView /> },
-			{ path: '/auth/sign-in', element: <SignInView /> },
+			{ path: '/auth/sign-in', element: <SignInView /> }
 		]
 	},
 	{
 		path: '/',
 		element: <AuthGuard />,
 		children: [
-			{ path: '/dashboard', element: <HomeView /> },
-			{ path: '/boards/:id', element: <BoardView /> },
-			{ path: '/workspaces/:id', element: <WorkspaceView /> },
+			{
+				path: '/dashboard',
+				element: (
+					<UserStatsContextProvider>
+						<HomeView />
+					</UserStatsContextProvider>
+				)
+			},
+			{
+				path: '/boards/:id',
+				element: (
+					<BoardContextProvider>
+						<BoardView />
+					</BoardContextProvider>
+				)
+			},
+			{
+				path: '/workspaces/:id',
+				element: (
+					<WorkspaceContextProvider>
+						<WorkspaceView />
+					</WorkspaceContextProvider>
+				)
+			}
 		]
 	}
 ]);

@@ -2,7 +2,7 @@ export enum METHODS {
 	GET = 'GET',
 	PUT = 'PUT',
 	POST = 'POST',
-	DELETE = 'DELETE',
+	DELETE = 'DELETE'
 }
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL as string;
@@ -11,18 +11,25 @@ export const TASK_ENDPOINTS = {
 	BASE: `${BASE_URL}/tasks`,
 	MOVE: `${BASE_URL}/tasks/move`,
 	EDIT: (taskId: number) => `${BASE_URL}/tasks/${taskId}`,
-	UPLOAD_IMG: (taskId: number) => `${BASE_URL}/tasks/${taskId}/upload-image`,
+	COMPLETE: (taskId: number) => `${BASE_URL}/tasks/${taskId}/complete`,
+	UPLOAD_IMG: (taskId: number) => `${BASE_URL}/tasks/${taskId}/upload-image`
+};
+
+export const NOTIFICATIONS_ENDPOINTS = {
+	BASE: `${BASE_URL}/notifications`,
+	EDIT: (notificationId: number) =>
+		`${BASE_URL}/notifications/${notificationId}`
 };
 
 export const STEP_ENDPOINTS = {
-	BASE: `${BASE_URL}/steps`,
+	BASE: `${BASE_URL}/steps`
 };
 
 export const COLUMN_ENDPOINTS = {
 	BASE: `${BASE_URL}/columns`,
 	MOVE: `${BASE_URL}/columns/move`,
 	EDIT: (columnId: number) => `${BASE_URL}/columns/${columnId}`,
-	RENAME: (columnId: number) => `${BASE_URL}/columns/${columnId}/rename`,
+	RENAME: (columnId: number) => `${BASE_URL}/columns/${columnId}/rename`
 };
 
 export const USER_ENDPOINTS = {
@@ -34,7 +41,7 @@ export const USER_ENDPOINTS = {
 	SIGN_IN: `${BASE_URL}/users/sign-in`,
 	SIGN_UP: `${BASE_URL}/users/sign-up`,
 	REFRESH: `${BASE_URL}/users/refresh`,
-	PROFILE_IMG_EDIT: `${BASE_URL}/users/edit/profile-img`,
+	PROFILE_IMG_EDIT: `${BASE_URL}/users/edit/profile-img`
 };
 
 export const WORKSPACE_ENDPOINTS = {
@@ -45,11 +52,11 @@ export const WORKSPACE_ENDPOINTS = {
 		`${BASE_URL}/workspaces/${workspaceId}/details`,
 	COLLEAGUES: (workspaceId: number) =>
 		`${BASE_URL}/workspaces/${workspaceId}/colleagues`,
-	WORKSPACE: (workspaceId: number) => `${BASE_URL}/workspaces/${workspaceId}`,
+	WORKSPACE: (workspaceId: number) => `${BASE_URL}/workspaces/${workspaceId}`
 };
 
 export const MESSAGE_ENDPOINTS = {
-	BASE: (boardId: number) => `${BASE_URL}/boards/${boardId}/messages`,
+	BASE: (boardId: number) => `${BASE_URL}/boards/${boardId}/messages`
 };
 
 export const BOARD_ENDPOINTS = {
@@ -57,10 +64,10 @@ export const BOARD_ENDPOINTS = {
 	BOARD: (boardId: number) => `${BASE_URL}/boards/${boardId}`,
 	RENAME: (boardId: number) => `${BASE_URL}/boards/${boardId}/rename`,
 	DETAILS: (boardId: number) => `${BASE_URL}/boards/${boardId}/details`,
-	COLLEAGUES: (boardId: number) => `${BASE_URL}/boards/${boardId}/colleagues`,
+	COLLEAGUES: (boardId: number) => `${BASE_URL}/boards/${boardId}/colleagues`
 };
 
-interface IFetcherProps {
+interface IRequestParams {
 	body?: FormData | object;
 	method?: METHODS;
 	endpoint: string;
@@ -71,15 +78,15 @@ export const request = async ({
 	body,
 	method,
 	endpoint,
-	accessToken,
-}: IFetcherProps) => {
+	accessToken
+}: IRequestParams) => {
 	const headers = new Headers();
 	headers.set('Authorization', `Bearer ${accessToken}`);
 
 	const request: RequestInit = {
 		headers,
-		credentials: 'include',
-		method: method || METHODS.GET,
+		// credentials: 'include',
+		method: method || METHODS.GET
 	};
 
 	if (body) {
@@ -93,5 +100,12 @@ export const request = async ({
 
 	const res = await fetch(endpoint, request);
 
-	return await res.json();
+	const data = await res.json();
+
+	//case where the request fails on Dto level
+	if (data.statusCode === 400) {
+		throw new Error(data.message[0]);
+	}
+
+	return data;
 };

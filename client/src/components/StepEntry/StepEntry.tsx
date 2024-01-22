@@ -18,7 +18,8 @@ export const StepEntry = ({
 		<div className={styles.container}>
 			<p>{description}</p>
 			<div className={styles.operations}>
-				<input type="checkbox"
+				<input
+					type="checkbox"
 					onClick={toggleStatus}
 					defaultChecked={isCompleted}
 				/>

@@ -1,5 +1,5 @@
-import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
+import { app, shell, BrowserWindow } from 'electron';
 
 // The built directory structure
 //
@@ -27,13 +27,14 @@ function createWindow() {
 
 	win = new BrowserWindow({
 		icon: iconPath,
+		autoHideMenuBar: true,
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.js'),
+			preload: path.join(__dirname, 'preload.js')
 		},
 		width: 1330,
 		height: 810,
-		minHeight: 445,
-		minWidth: 856,
+		minHeight: 485,
+		minWidth: 856
 	});
 
 	// Test active push message to Renderer-process.
@@ -42,6 +43,11 @@ function createWindow() {
 			'main-process-message',
 			new Date().toLocaleString()
 		);
+	});
+
+	win.webContents.setWindowOpenHandler((details) => {
+		shell.openExternal(details.url); // Open URL in user's browser.
+		return { action: 'deny' }; // Prevent the app from opening the URL.
 	});
 
 	if (VITE_DEV_SERVER_URL) {

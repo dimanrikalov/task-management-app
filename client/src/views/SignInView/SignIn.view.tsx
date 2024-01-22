@@ -1,12 +1,12 @@
 import styles from './signIn.module.css';
-import { FaLock } from "react-icons/fa6";
-import { FaUnlock } from "react-icons/fa6";
-import { FaEnvelope } from "react-icons/fa";
-import { FaEnvelopeOpen } from "react-icons/fa";
+import { FaLock } from 'react-icons/fa6';
+import { FaUnlock } from 'react-icons/fa6';
+import { FaEnvelope } from 'react-icons/fa';
+import { FaEnvelopeOpen } from 'react-icons/fa';
 import { useSignInViewmodel } from './SignIn.viewmodel';
-import { BackButton } from '@/components/BackButton/BackButton';
-import { IntroInput } from '@/components/Inputs/IntroInput/IntroInput';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { BackButton } from '../../components/BackButton/BackButton';
+import { IntroInput } from '../../components/IntroInput/IntroInput';
+import { IntroButton } from '../../components/Buttons/IntroButton/IntroButton';
 
 export const SignInView = () => {
 	const { state, operations } = useSignInViewmodel();
@@ -15,10 +15,13 @@ export const SignInView = () => {
 		<div className={styles.background}>
 			<div className={styles.signInContainer}>
 				<div className={styles.positionBackButton}>
-					<BackButton onClick={operations.goToInitialView} />
+					<BackButton
+						style={{ borderColor: '#fff' }}
+						onClick={operations.goToInitialView}
+					/>
 				</div>
 				<div className={styles.leftSide}>
-					<img src="/imgs/sign-in-img.png" alt="sign-in-img" />
+					<img alt="sign-in-img" src="./imgs/sign-in-img.png" />
 				</div>
 				<div className={styles.rightSide}>
 					<div className={styles.titleContainer}>
@@ -34,14 +37,13 @@ export const SignInView = () => {
 							ToggleIcon={FaEnvelope}
 							value={state.inputFields.email}
 							onChange={operations.handleInputChange}
-
 						/>
 						<IntroInput
 							name={'password'}
 							type={'password'}
 							Icon={FaUnlock}
-							placeholder={'Password'}
 							ToggleIcon={FaLock}
+							placeholder={'Password'}
 							value={state.inputFields.password}
 							onChange={operations.handleInputChange}
 						/>

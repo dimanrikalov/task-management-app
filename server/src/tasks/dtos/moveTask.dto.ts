@@ -3,15 +3,15 @@ import { IsNumber, IsObject } from 'class-validator';
 import { IBoard } from 'src/boards/boards.interfaces';
 
 export class MoveTaskDto {
-    @IsObject()
-    taskData: Task;
+	@IsObject()
+	taskData: Task;
 
-    @IsObject()
-    boardData: IBoard;
+	@IsObject()
+	boardData: IBoard;
 
-    @IsNumber()
-    destinationPosition: number;
+	@IsNumber()
+	destinationPosition: number;
 
-    @IsNumber()
-    destinationColumnId: number;
+	@IsNumber()
+	destinationColumnId: number;
 }

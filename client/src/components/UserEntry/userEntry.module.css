@@ -1,23 +1,30 @@
 .entry {
 	gap: 16px;
 	height: 48px;
+	padding: 16px;
 	display: flex;
-	cursor: pointer;
 	align-items: center;
+	border-radius: 16px;
+	transition: 200ms ease-in-out;
 	justify-content: space-between;
 }
 
+.tagMode:hover {
+	cursor: pointer;
+	color: var(--white-main);
+	background-color: var(--blue-main);
+}
+
 .center {
-	justify-content: unset;
 	gap: 32px;
+	justify-content: unset;
 }
 
 .leftSide {
-	display: flex;
 	gap: 16px;
+	display: flex;
 	align-items: center;
 }
-
 
 .leftSide p {
 	font-size: 14px;
@@ -41,4 +48,3 @@
 .entry .icon:hover {
 	color: var(--red-main);
 }
-

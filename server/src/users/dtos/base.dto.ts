@@ -1,5 +1,5 @@
-import { IJWTPayload } from 'src/jwt/jwt.interfaces';
+import { IUser } from '../users.interfaces';
 
 export class BaseUsersDto {
-    userData: IJWTPayload;
+	userData: IUser;
 }

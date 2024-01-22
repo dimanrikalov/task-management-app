@@ -1,72 +1,52 @@
 import {
-	IUserStats,
-	ISearchInputs,
-	ENTRIES_TYPES,
 	IHomeBoardEntry,
-	IHomeWorkspaceEntry,
-} from '@/views/HomeView/Home.viewmodel';
+	IHomeWorkspaceEntry
+} from '../../hooks/useFetchHomeLists';
+import { Lists } from '../Lists/Lists';
 import styles from './homeDashboard.module.css';
-import { HomeList } from '../HomeList/HomeList';
-import { HomeStats } from '../HomeStats/HomeStats';
-import { IntroInput } from '../Inputs/IntroInput/IntroInput';
+import { Operations } from '../Operations/Operations';
+import { ISearchInputs } from '../../views/HomeView/Home.viewmodel';
+import { BottomLeftStats } from '../BottomLeftStats/BottomLeftStats';
+import { BottomRightStats } from '../BottomRightStats/BottomRightStats';
 
 interface IHomeGridStatsProps {
-	userStats: IUserStats;
+	isLoadingBoards: boolean;
 	boards: IHomeBoardEntry[];
 	searchInputs: ISearchInputs;
+	isLoadingWorkspaces: boolean;
 	workspaces: IHomeWorkspaceEntry[];
 	filterHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
 export const HomeDashboard = ({
 	boards,
-	userStats,
 	workspaces,
 	searchInputs,
 	filterHandler,
+	isLoadingBoards,
+	isLoadingWorkspaces
 }: IHomeGridStatsProps) => {
 	return (
 		<div className={styles.background}>
-			<div className={styles.grid}>
-				<div className={styles.boards}>
-					<div className={styles.header}>
-						<h2>Boards</h2>
-						<div>
-							<IntroInput
-								type="text"
-								name="searchBoards"
-								onChange={filterHandler}
-								placeholder="Enter board name"
-								value={searchInputs.searchBoards}
-							/>
-						</div>
-					</div>
-					<HomeList
-						entries={boards}
-						type={ENTRIES_TYPES.BOARDS}
-					/>
-				</div>
+			<div className={styles.operations}>
+				<Operations />
+			</div>
 
-				<div className={styles.workspaces}>
-					<div className={styles.header}>
-						<h2>Workspaces</h2>
-						<div className={styles.inputContainer}>
-							<IntroInput
-								type="text"
-								name="searchWorkspaces"
-								onChange={filterHandler}
-								placeholder="Enter workspace name"
-								value={searchInputs.searchWorkspaces}
-							/>
-						</div>
-					</div>
-					<HomeList
-						entries={workspaces}
-						type={ENTRIES_TYPES.WORKSPACES}
-					/>
-				</div>
-
-				<HomeStats userStats={userStats} />
+			<div className={styles.lists}>
+				<Lists
+					boards={boards}
+					workspaces={workspaces}
+					searchInputs={searchInputs}
+					filterHandler={filterHandler}
+					isLoadingBoard={isLoadingBoards}
+					isLoadingWorkspaces={isLoadingWorkspaces}
+				/>
+			</div>
+			<div className={styles.bottomLeftStats}>
+				<BottomLeftStats />
+			</div>
+			<div className={styles.bottomRightStats}>
+				<BottomRightStats />
 			</div>
 		</div>
 	);

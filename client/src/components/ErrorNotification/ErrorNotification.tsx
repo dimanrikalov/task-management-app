@@ -1,13 +1,15 @@
-import { useContext } from 'react';
 import styles from './errorNotification.module.css';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
+import { useErrorContext } from '../../contexts/error.context';
 
 export const ErrorNotification = () => {
-    const { error, showErrorMsg } = useContext<IErrorContext>(ErrorContext);
+	const { errorMsg, showErrorMsg } = useErrorContext();
 
-    return (
-        <div className={styles.background} style={{ opacity: Number(showErrorMsg) }}>
-            <h4>{error}</h4>
-        </div>
-    )
-}
+	return (
+		<div
+			className={styles.background}
+			style={{ opacity: Number(showErrorMsg) }}
+		>
+			<h4>{errorMsg}</h4>
+		</div>
+	);
+};

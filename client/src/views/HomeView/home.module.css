@@ -1,25 +1,23 @@
 .background {
-	position: relative;
 	width: 100%;
 	height: 100%;
-	background-color: var(--white-secondary);
 	display: flex;
+	position: relative;
+	background-color: var(--white-secondary);
 }
 
 .mainContainer {
 	width: 100%;
-	overflow-x: auto;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
 	padding: 16px;
-	gap: 56px;
+	display: flex;
+	overflow-x: auto;
+	flex-direction: column;
 	transition: 200ms ease-in-out;
+	justify-content: space-between;
 }
 
-.operationsContainer {
-   position: relative;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
+@media screen and (max-height: 620px) {
+	.mainContainer {
+		padding-bottom: 32px;
+	}
 }

@@ -1,9 +1,11 @@
-import { ROUTES } from '@/router';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
+import { ROUTES } from '../../router';
+import { setRefreshToken } from '@/utils';
 import { useNavigate } from 'react-router-dom';
-import { METHODS, USER_ENDPOINTS, request } from '@/utils/requester';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
-import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+import { useUserContext } from '@/contexts/user.context';
+import { useErrorContext } from '../../contexts/error.context';
+import { METHODS, USER_ENDPOINTS, request } from '../../utils/requester';
+import { ViewModelReturnType } from '../../interfaces/viewModel.interface';
 
 interface IInputFields {
 	email: string;
@@ -26,19 +28,12 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 	ISignInViewmodelOperations
 > => {
 	const navigate = useNavigate();
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
+	const { showError } = useErrorContext();
+	const { setAccessToken } = useUserContext();
 	const [inputFields, setInputFields] = useState<IInputFields>({
 		email: '',
-		password: '',
+		password: ''
 	});
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setInputFields((prevInputFields) => ({
-			...prevInputFields,
-			[name]: value,
-		}));
-	};
 
 	const goToInitialView = () => {
 		navigate(ROUTES.HOME);
@@ -48,41 +43,51 @@ export const useSignInViewmodel = (): ViewModelReturnType<
 		navigate(ROUTES.SIGN_UP);
 	};
 
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setInputFields((prevInputFields) => ({
+			...prevInputFields,
+			[name]: value
+		}));
+	};
+
 	const signIn = async (e: React.FormEvent) => {
 		e.preventDefault();
+
 		try {
+			if (Object.values(inputFields).some((value) => value === '')) {
+				throw new Error('All fields are required!');
+			}
+
 			const data = await request({
+				body: inputFields,
 				method: METHODS.POST,
-				endpoint: USER_ENDPOINTS.SIGN_IN,
-				body: {
-					email: inputFields.email,
-					password: inputFields.password,
-				},
+				endpoint: USER_ENDPOINTS.SIGN_IN
 			});
 
-			if (data.statusCode === 400) {
-				throw new Error(data.message[0]);
-			}
+			//case where the endpoint actually throws an exception
 			if (data.errorMessage) {
 				throw new Error(data.errorMessage);
 			}
 
+			setAccessToken(data.accessToken);
+			setRefreshToken(data.refreshToken);
+
 			navigate(ROUTES.DASHBOARD);
 		} catch (err: any) {
-			console.log(err.message);
-			setErrorMessage(err.message);
+			showError(err.message);
 		}
 	};
 
 	return {
 		state: {
-			inputFields,
+			inputFields
 		},
 		operations: {
 			signIn,
 			goToSignUpView,
 			goToInitialView,
-			handleInputChange,
-		},
+			handleInputChange
+		}
 	};
 };

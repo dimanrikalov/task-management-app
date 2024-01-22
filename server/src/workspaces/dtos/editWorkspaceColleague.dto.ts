@@ -3,12 +3,12 @@ import { IWorkspace } from '../workspace.interfaces';
 import { IsBoolean, IsNumber, IsObject } from 'class-validator';
 
 export class EditWorkspaceColleagueDto extends BaseWorkspaceDto {
-    @IsObject()
-    workspaceData: IWorkspace;
+	@IsObject()
+	workspaceData: IWorkspace;
 
-    @IsBoolean()
-    userIsWorkspaceOwner: boolean;
+	@IsBoolean()
+	userIsWorkspaceOwner: boolean;
 
-    @IsNumber()
-    colleagueId: number;
+	@IsNumber()
+	colleagueId: number;
 }

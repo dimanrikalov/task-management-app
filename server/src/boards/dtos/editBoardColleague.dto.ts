@@ -4,18 +4,21 @@ import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { IsBoolean, IsNotEmptyObject, IsNumber } from 'class-validator';
 
 export class EditBoardColleagueDto extends BaseBoardsDto {
-    @IsNotEmptyObject()
-    boardData: IBoard;
+	@IsNotEmptyObject()
+	boardData: IBoard;
 
-    @IsNumber()
-    colleagueId: number;
+	@IsNumber()
+	colleagueId: number;
 
-    @IsNotEmptyObject()
-    workspaceData: IWorkspace;
+	@IsNotEmptyObject()
+	workspaceData: IWorkspace;
 
-    @IsBoolean()
-    userIsWorkspaceOwner: boolean;
+	@IsBoolean()
+	userIsWorkspaceOwner: boolean;
 
-    @IsBoolean()
-    userHasAccessToWorkspace: boolean;
+	@IsBoolean()
+	userHasAccessToBoard: boolean;
+
+	@IsBoolean()
+	userHasAccessToWorkspace: boolean;
 }

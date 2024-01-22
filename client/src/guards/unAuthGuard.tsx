@@ -1,13 +1,18 @@
-import { ROUTES } from "@/router";
-import { extractTokens } from "@/utils";
-import { Navigate, Outlet } from "react-router-dom";
+import { ROUTES } from '../router';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useUserContext } from '@/contexts/user.context';
+import { LoadingOverlay } from '@/components/LoadingOverlay/LoadingOverlay';
 
 export const UnAuthGuard = () => {
-    const { accessToken, refreshToken } = extractTokens();
+	const { accessToken, data: user, isLoadingData } = useUserContext();
 
-    if (accessToken || refreshToken) {
-        return <Navigate to={ROUTES.DASHBOARD} />
-    }
+	if (isLoadingData) {
+		return <LoadingOverlay />
+	}
 
-    return <Outlet />
-}
+	if (user || accessToken) {
+		return <Navigate to={ROUTES.DASHBOARD} />;
+	}
+
+	return <Outlet />;
+};

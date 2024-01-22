@@ -1,37 +1,28 @@
 .btn {
+	width: 100%;
 	border: none;
-	border-radius: 16px;
 	cursor: pointer;
 	overflow: hidden;
-	background-color: var(--white-main);
+	min-height: 200px;
+	border-radius: 16px;
 	transition: 200ms ease-in-out;
-	width: 100%;
-	box-shadow: -1px 1px 9px 0px rgba(0,0,0,0.2);
-	-webkit-box-shadow: -1px 1px 9px 0px rgba(0,0,0,0.2);
-	-moz-box-shadow: -1px 1px 9px 0px rgba(0,0,0,0.2);
-}
-
-.board-btn {
-	min-height: 170px;
-	min-width: 320px;
-}
-
-.workspace-btn {
-	min-width: 240px;
+	background-color: var(--white-main);
+	box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
+	-webkit-box-shadow: -1px 1px 9px 0px rgba(0, 0, 0, 0.2);
 }
 
 .btn:hover {
 	background-color: var(--blue-main);
-	.title,
 	.icon,
-	.userCount,
-	.subtitle {
+	.title,
+	.subtitle,
+	.userCount {
 		color: var(--white-main);
 	}
 }
 
 .background {
-	height: 100%;
 	width: 100%;
 	padding: 24px;
 	display: flex;
@@ -40,18 +31,18 @@
 }
 
 .header {
+	gap: 6px;
 	display: flex;
 	align-self: flex-start;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 6px;
 }
 
 .title {
-	color: var(--blue-main);
-	font-weight: 600;
 	font-size: 28px;
+	font-weight: 600;
 	text-align: start;
+	color: var(--blue-main);
 	transition: 200ms ease-in-out;
 }
 
@@ -62,11 +53,11 @@
 }
 
 .userCount {
+	display: flex;
 	font-size: 24px;
 	font-weight: 500;
-	align-self: flex-end;
-	display: flex;
 	align-items: center;
+	align-self: flex-end;
 	transition: 200ms ease-in-out;
 }
 

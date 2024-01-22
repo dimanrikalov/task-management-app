@@ -10,20 +10,22 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ColumnsModule } from './columns/columns.module';
 import { MessagesModule } from './messages/messages.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
-    imports: [
-        UsersModule,
-        TasksModule,
-        StepsModule,
-        BoardsModule,
-        PrismaModule,
-        ColumnsModule,
-        MessagesModule,
-        WorkspacesModule,
-        ConfigModule.forRoot(),
-    ],
-    providers: [AppService],
-    controllers: [AppController],
+	imports: [
+		UsersModule,
+		TasksModule,
+		StepsModule,
+		BoardsModule,
+		PrismaModule,
+		ColumnsModule,
+		MessagesModule,
+		WorkspacesModule,
+		NotificationsModule,
+		ConfigModule.forRoot()
+	],
+	providers: [AppService],
+	controllers: [AppController]
 })
 export class AppModule {}

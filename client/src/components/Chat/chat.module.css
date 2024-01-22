@@ -28,17 +28,30 @@
 }
 
 .hideBtn {
-	top: 16px;
-	right: -18px;
-	rotate: 180deg;
+	top: 9px;
+	right: -12px;
+	border: none;
+	display: flex;
+	font-size: 5px;
+	cursor: pointer;
+	border-radius: 9px;
 	position: absolute;
-	border-radius: 16px;
+	align-items: center;
+	justify-content: center;
+	color: var(--white-main);
 	transition: 200ms ease-in-out;
+	background-color: var(--grey-main);
 }
 
-.hideBtn.isOpen {
-	right: 16px;
-	rotate: unset;
+.hideBtn:hover {
+	background-color: var(--blue-main);
+}
+
+.flip {
+	right: 28px;
+	transform: rotate(180deg);
+	color: var(--white-main);
+	background-color: var(--blue-main);
 }
 
 .chat {
@@ -47,6 +60,7 @@
 	height: 100%;
 	padding: 16px;
 	display: flex;
+	overflow-x: hidden;
 	overflow-y: scroll;
 	flex-direction: column;
 	background-color: var(--white-secondary);
@@ -61,6 +75,7 @@
 }
 
 .sendBtn {
+	z-index: 1;
 	border: none;
 	cursor: pointer;
 	font-size: 36px;
@@ -72,4 +87,39 @@
 
 .enable {
 	color: var(--blue-main);
+}
+
+.dropdownWrapper {
+	gap: 9px;
+	width: 86%;
+	z-index: 0.5;
+	display: flex;
+	bottom: -162px;
+	max-height: 164px;
+	visibility: hidden;
+	position: absolute;
+	border-radius: 16px;
+	flex-direction: column;
+	padding: 16px 8px 16px 16px;
+	transition: 200ms ease-in-out;
+	background-color: var(--white-main);
+}
+
+.dropdown {
+	width: 100%;
+	overflow-y: auto;
+	padding-right: 8px;
+	border-radius: 16px;
+	background-color: var(--white-main);
+}
+
+.noMatches {
+	color: grey;
+	text-align: center;
+	align-self: center;
+}
+
+.showDropdown {
+	bottom: 72px;
+	visibility: visible;
 }

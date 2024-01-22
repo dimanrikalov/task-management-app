@@ -1,4 +1,4 @@
 export class EditProfleImgDto {
-    token: string;
-    profileImagePath: string;
+	token: string;
+	profileImagePath: string;
 }

@@ -1,7 +1,7 @@
-import { IJWTPayload } from 'src/jwt/jwt.interfaces';
+import { IUser } from 'src/users/users.interfaces';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 
 export class BaseBoardsDto {
-    userData: IJWTPayload;
-    workspaceData: IWorkspace;
+	userData: IUser;
+	workspaceData: IWorkspace;
 }

@@ -1,27 +1,25 @@
 import {
-	request,
-	METHODS,
-	USER_ENDPOINTS,
-	BOARD_ENDPOINTS,
-	WORKSPACE_ENDPOINTS,
-} from '@/utils/requester';
-import { ROUTES } from '@/router';
-import { deleteTokens } from '@/utils';
-import { useState, useEffect, useContext } from 'react';
-import { IOutletContext, IUserData } from '@/guards/authGuard';
-import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ErrorContext, IErrorContext } from '@/contexts/ErrorContext';
-import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+	IUserData,
+	useUserContext,
+	IUserContextSecure
+} from '../../contexts/user.context';
+import {
+	IHomeBoardEntry,
+	useFetchHomeLists,
+	IHomeWorkspaceEntry
+} from '../../hooks/useFetchHomeLists';
+import { useEffect, useState } from 'react';
+import { ViewModelReturnType } from '../../interfaces/viewModel.interface';
 
 export enum ENTRIES_TYPES {
 	BOARDS = 'boards',
-	WORKSPACES = 'workspaces',
+	WORKSPACES = 'workspaces'
 }
 
 export enum MODALS_STATE_KEYS {
 	CREATE_BOARD_IS_OPEN = 'createBoardIsOpen',
 	EDIT_PROFILE_IS_OPEN = 'editProfileIsOpen',
-	CREATE_WORKSPACE_IS_OPEN = 'createWorkspaceIsOpen',
+	CREATE_WORKSPACE_IS_OPEN = 'createWorkspaceIsOpen'
 }
 
 export interface ISearchInputs {
@@ -29,58 +27,28 @@ export interface ISearchInputs {
 	searchWorkspaces: string;
 }
 
-interface IModalsState {
-	createBoardIsOpen: boolean;
-	editProfileIsOpen: boolean;
-	createWorkspaceIsOpen: boolean;
-}
-
-export interface IHomeBoardEntry {
-	id: number;
-	name: string;
-	usersCount: number;
-	workspaceName: string;
-}
-
-export interface IHomeWorkspaceEntry {
-	id: number;
-	name: string;
-	ownerName: string;
-	usersCount: number;
-}
-
-interface ILists {
+interface IFilteredLists {
 	boards: IHomeBoardEntry[];
 	workspaces: IHomeWorkspaceEntry[];
-}
-
-export interface IUserStats {
-	boardsCount: number;
-	messagesCount: number;
-	workspacesCount: number;
-	pendingTasksCount: number;
-	completedTasksCount: number;
 }
 
 interface IUseHomeViewmodelState {
 	date: string;
 	userData: IUserData;
-	filteredLists: ILists;
-	userStats: IUserStats;
-	modalsState: IModalsState;
+	isLoadingBoards: boolean;
 	searchInputs: ISearchInputs;
+	isLoadingWorkspaces: boolean;
+	filteredLists: IFilteredLists;
 }
 
 const options: Intl.DateTimeFormatOptions = {
 	month: 'long',
 	day: 'numeric',
 	year: 'numeric',
-	weekday: 'long',
+	weekday: 'long'
 };
 
 interface IUserHomeViewmodelOperations {
-	logout(): void;
-	toggleModal(key: MODALS_STATE_KEYS): void;
 	handleFilterInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
@@ -88,91 +56,58 @@ export const useHomeViewModel = (): ViewModelReturnType<
 	IUseHomeViewmodelState,
 	IUserHomeViewmodelOperations
 > => {
-	const navigate = useNavigate();
-	const [lists, setLists] = useState<ILists>({
+	const {
+		lists,
+		isLoadingBoards,
+		setIsLoadingBoards,
+		isLoadingWorkspaces,
+		setIsLoadingWorkspaces
+	} = useFetchHomeLists();
+	const date = new Date()
+		.toLocaleDateString('en-US', options)
+		.split(',')
+		.join(' ');
+	const { data: userData } = useUserContext() as IUserContextSecure;
+	const [filteredLists, setFilteredLists] = useState<IFilteredLists>({
 		boards: [],
-		workspaces: [],
-	});
-	const [filteredLists, setFilteredLists] = useState<ILists>({
-		boards: [],
-		workspaces: [],
+		workspaces: []
 	});
 	const [searchInputs, setSearchInputs] = useState<ISearchInputs>({
 		searchBoards: '',
-		searchWorkspaces: '',
+		searchWorkspaces: ''
 	});
-	const [modalsState, setModalsState] = useState<IModalsState>({
-		createBoardIsOpen: false,
-		editProfileIsOpen: false,
-		createWorkspaceIsOpen: false,
-	});
-	const [userStats, setUserStats] = useState<IUserStats>({
-		boardsCount: -1,
-		messagesCount: -1,
-		workspacesCount: -1,
-		pendingTasksCount: -1,
-		completedTasksCount: -1,
-	});
-	const date = new Date().toLocaleDateString('en-US', options);
-	const { setErrorMessage } = useContext<IErrorContext>(ErrorContext);
-	const { accessToken, userData } = useOutletContext<IOutletContext>();
 
 	useEffect(() => {
-		const fetchUserStats = async () => {
-			try {
-				const data = await request({
-					accessToken,
-					method: METHODS.GET,
-					endpoint: USER_ENDPOINTS.STATS,
-				});
-				setUserStats(data);
-				console.log(data);
-			} catch (err: any) {
-				console.log(err.message);
-				setErrorMessage(err.message);
-			}
-		};
-
-		const fetchEntries = async (entries: ENTRIES_TYPES) => {
-			try {
-				const data = await request({
-					accessToken,
-					method: METHODS.GET,
-					endpoint:
-						entries === ENTRIES_TYPES.BOARDS
-							? BOARD_ENDPOINTS.BASE
-							: WORKSPACE_ENDPOINTS.BASE,
-				});
-
-				setLists((prev) => ({ ...prev, [entries]: data }));
-				console.log(data);
-			} catch (err: any) {
-				console.log(err.message);
-				setErrorMessage(err.message);
-			}
-		};
-
-		fetchUserStats();
-		fetchEntries(ENTRIES_TYPES.BOARDS);
-		fetchEntries(ENTRIES_TYPES.WORKSPACES);
-	}, [accessToken]);
-
-	useEffect(() => {
-		setFilteredLists(() => ({
-			boards: [...lists.boards],
-			workspaces: [...lists.workspaces],
+		if (!lists.boards) return;
+		setFilteredLists((prev) => ({
+			...prev,
+			boards: lists.boards as IHomeBoardEntry[]
 		}));
-		console.log(lists);
+		setIsLoadingBoards(false);
+	}, [lists]);
+
+	useEffect(() => {
+		if (!lists.workspaces) return;
+		setFilteredLists((prev) => ({
+			...prev,
+			workspaces: lists.workspaces as IHomeWorkspaceEntry[]
+		}));
+		setIsLoadingWorkspaces(false);
 	}, [lists]);
 
 	//filter out entries based on search inputs
 	useEffect(() => {
 		const filterBoards = (input: string, entries: IHomeBoardEntry[]) => {
-			return entries.filter((entry) =>
-				entry.name
-					.trim()
-					.toLowerCase()
-					.includes(input.trim().toLowerCase())
+			return entries.filter(
+				(entry) =>
+					entry.name
+						.trim()
+						.toLowerCase()
+						.includes(input.trim().toLowerCase()) ||
+					entry.workspaceName
+						.trim()
+						.toLowerCase()
+						.includes(input.trim().toLowerCase())
 			);
 		};
 
@@ -197,33 +132,25 @@ export const useHomeViewModel = (): ViewModelReturnType<
 
 		setFilteredLists(() => {
 			return {
-				boards: filterBoards(searchInputs.searchBoards, lists.boards),
+				boards: filterBoards(
+					searchInputs.searchBoards,
+					lists.boards || []
+				),
 				workspaces: filterWorkspaces(
 					searchInputs.searchWorkspaces,
-					lists.workspaces
-				),
+					lists.workspaces || []
+				)
 			};
 		});
 	}, [searchInputs]);
 
-	const logout = () => {
-		deleteTokens();
-		navigate(ROUTES.HOME);
-	};
-
-	const toggleModal = (key: MODALS_STATE_KEYS) => {
-		setModalsState((prev) => ({
-			...prev,
-			[key]: !prev[key],
-		}));
-	};
-
 	const handleFilterInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>
 	) => {
-		setSearchInputs((prev) => ({
-			...prev,
-			[e.target.name]: e.target.value,
+		const { name, value } = e.target;
+		setSearchInputs((prevInputFields) => ({
+			...prevInputFields,
+			[name]: value
 		}));
 	};
 
@@ -231,15 +158,13 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		state: {
 			date,
 			userData,
-			userStats,
-			modalsState,
 			searchInputs,
 			filteredLists,
+			isLoadingBoards,
+			isLoadingWorkspaces
 		},
 		operations: {
-			logout,
-			toggleModal,
-			handleFilterInputChange,
-		},
+			handleFilterInputChange
+		}
 	};
 };

@@ -10,7 +10,7 @@ interface IDeleteConfirmationAlert {
 export const DeleteConfirmation = ({
 	onCancel,
 	onConfirm,
-	entityName,
+	entityName
 }: IDeleteConfirmationAlert) => {
 	return (
 		<div className={styles.background}>

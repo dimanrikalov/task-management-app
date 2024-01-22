@@ -1,9 +1,10 @@
 import styles from './intro.module.css';
 import { useIntroViewModel } from './intro.viewmodel';
-import { IntroButton } from '@/components/Buttons/IntroButton/IntroButton';
+import { IntroButton } from '../../components/Buttons/IntroButton/IntroButton';
 
 export const IntroView = () => {
 	const { operations } = useIntroViewModel();
+
 	return (
 		<div className={styles.background}>
 			<div className={styles.leftSide}>
@@ -32,9 +33,9 @@ export const IntroView = () => {
 			</div>
 			<div className={styles.rightSide}>
 				<img
-					className={styles.img}
-					src="/imgs/intro-img-compressed.webp"
 					alt="greeting-img"
+					className={styles.img}
+					src="./imgs/intro-img-compressed.webp"
 				/>
 			</div>
 		</div>

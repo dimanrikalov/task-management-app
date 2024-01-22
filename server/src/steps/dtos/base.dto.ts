@@ -1,9 +1,9 @@
 import { IsBoolean, IsString } from 'class-validator';
 
 export class BaseStepsDto {
-    @IsString()
-    description: string;
+	@IsString()
+	description: string;
 
-    @IsBoolean()
-    isComplete: boolean;
+	@IsBoolean()
+	isComplete: boolean;
 }

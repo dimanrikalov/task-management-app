@@ -1,8 +1,8 @@
 import styles from './listContainer.module.css';
 import { UserEntry } from '../UserEntry/UserEntry';
 import { StepEntry } from '../StepEntry/StepEntry';
+import { IStep } from '../../hooks/useStepsOperations';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
-import { IStep } from '@/views/CreateTaskView/CreateTask.viewmodel';
 
 type TListMode = 'users' | 'steps';
 
@@ -23,7 +23,7 @@ export const ListContainer = ({
 	toggleStatus,
 	mode = 'users',
 	disableDeletionFor,
-	noMarginBottom = false,
+	noMarginBottom = false
 }: IListContainerProps) => {
 	return (
 		<div
@@ -33,50 +33,70 @@ export const ListContainer = ({
 			<h2>{title}</h2>
 			<div className={styles.listWrapper}>
 				<div className={styles.list}>
-					{
-						mode === 'users' && (
-							<>
-								{
-									(colleagues as unknown as IUser[])
-										.map(colleague => {
-											if (disableDeletionFor.includes(colleague.id)) {
-												return <UserEntry
-													key={colleague.id}
-													showBtn={false}
-													email={colleague.email}
-													profileImgPath={colleague.profileImagePath}
-													removeHandler={() => removeUser(colleague)}
-												/>
-											}
-											return <UserEntry
+					{mode === 'users' && (
+						<>
+							{(colleagues as unknown as IUser[]).map(
+								(colleague) => {
+									if (
+										disableDeletionFor.includes(
+											colleague.id
+										)
+									) {
+										return (
+											<UserEntry
+												showBtn={false}
 												key={colleague.id}
-												email={colleague.email}
-												profileImgPath={colleague.profileImagePath}
-												removeHandler={() => removeUser(colleague)}
+												username={colleague.username}
+												profileImgPath={
+													colleague.profileImagePath
+												}
+												removeHandler={() =>
+													removeUser(colleague)
+												}
 											/>
-										})
+										);
+									}
+									return (
+										<UserEntry
+											key={colleague.id}
+											username={colleague.username}
+											profileImgPath={
+												colleague.profileImagePath
+											}
+											removeHandler={() =>
+												removeUser(colleague)
+											}
+										/>
+									);
 								}
-							</>
-						)
-					}
-					{
-						mode === 'steps' && (
-							<>
-								{
-									(colleagues as unknown as IStep[])
-										.map(colleague => {
-											return <StepEntry
-												key={colleague.description}
-												isCompleted={colleague.isComplete}
-												description={colleague.description}
-												onClick={() => removeUser(colleague.description)}
-												toggleStatus={() => toggleStatus!(colleague.description)}
-											/>
-										})
+							)}
+						</>
+					)}
+					{mode === 'steps' && (
+						<>
+							{(colleagues as unknown as IStep[]).map(
+								(colleague) => {
+									return (
+										<StepEntry
+											key={colleague.description}
+											isCompleted={colleague.isComplete}
+											description={colleague.description}
+											onClick={() =>
+												removeUser(
+													colleague.description
+												)
+											}
+											toggleStatus={() =>
+												toggleStatus!(
+													colleague.description
+												)
+											}
+										/>
+									);
 								}
-							</>
-						)
-					}
+							)}
+						</>
+					)}
 				</div>
 			</div>
 		</div>

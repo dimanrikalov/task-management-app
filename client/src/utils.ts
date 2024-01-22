@@ -1,28 +1,10 @@
 import { jwtDecode } from 'jwt-decode';
-import { ITokens } from './guards/authGuard';
 
 interface IJWTPayload {
 	id: number;
-	first_name: string;
-	last_name: string;
 	iat: number;
 	exp: number;
 }
-
-export const extractTokens = (): ITokens => {
-	const pattern = /(accessToken|refreshToken)=([^;]*)/g;
-	let matches: RegExpExecArray | null;
-	let tokens: { [key: string]: string } = {};
-	while ((matches = pattern.exec(document.cookie)) !== null) {
-		let tokenType: string = matches[1].trim();
-		let tokenValue: string = matches[2].trim();
-		tokens[tokenType] = tokenValue;
-	}
-	return {
-		accessToken: tokens['accessToken'],
-		refreshToken: tokens['refreshToken'],
-	};
-};
 
 export const isAccessTokenValid = (accessToken: string) => {
 	try {
@@ -44,17 +26,25 @@ export const isAccessTokenValid = (accessToken: string) => {
 	}
 };
 
-export const deleteTokens = () => {
-	document.cookie.split(';').forEach(function (c) {
-		document.cookie = c
-			.replace(/^ +/, '')
-			.replace(
-				/=.*/,
-				'=;expires=' + new Date().toUTCString() + ';path=/'
-			);
-	});
+export const clearRefreshToken = () => {
+	document.cookie = `refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 };
 
-export const deleteAccessToken = () => {
-	document.cookie = `accessToken=;expires=${new Date().toUTCString()};path=/`;
+export const setRefreshToken = (refreshToken: string) => {
+	const data = jwtDecode(refreshToken);
+	let expirationDate;
+	if (data.exp) {
+		expirationDate = new Date(data.exp! * 1000); // Convert seconds to milliseconds
+	}
+	document.cookie = `refreshToken=${refreshToken}; ${
+		expirationDate && `expires=${expirationDate.toUTCString()}; `
+	}path=/`;
+};
+
+export const getRefreshToken = () => {
+	return document.cookie.split('; ')[0].split('=')[1];
+};
+
+export const generateImgUrl = (imageBinary: string) => {
+	return `data:image/png;base64,${imageBinary}`;
 };

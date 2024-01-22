@@ -1,6 +1,6 @@
-import { ROUTES } from '@/router';
+import { ROUTES } from '../../router';
 import { useNavigate } from 'react-router';
-import { ViewModelReturnType } from '@/interfaces/viewModel.interface';
+import { ViewModelReturnType } from '../../interfaces/viewModel.interface';
 
 interface IIntroViewModelState {}
 
@@ -26,7 +26,7 @@ export const useIntroViewModel = (): ViewModelReturnType<
 		state: {},
 		operations: {
 			signInHandler,
-			signUpHandler,
-		},
+			signUpHandler
+		}
 	};
 };

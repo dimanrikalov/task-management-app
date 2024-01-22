@@ -3,15 +3,18 @@ import { IsBoolean, IsObject } from 'class-validator';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 
 export class BaseColumnsDto {
-    @IsObject()
-    boardData: IBoard;
+	@IsObject()
+	boardData: IBoard;
 
-    @IsObject()
-    workspaceData: IWorkspace;
- 
-    @IsBoolean()
-    userIsWorkspaceOwner: boolean;
+	@IsObject()
+	workspaceData: IWorkspace;
+	
+	@IsBoolean()
+	userIsWorkspaceOwner: boolean;
 
-    @IsBoolean()
-    userHasAccessToWorkspace: boolean;
+	@IsBoolean()
+	userHasAccessToBoard: boolean;
+
+	@IsBoolean()
+	userHasAccessToWorkspace: boolean;
 }

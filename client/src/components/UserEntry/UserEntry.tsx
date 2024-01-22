@@ -3,7 +3,8 @@ import { MdCancel } from 'react-icons/md';
 import styles from './userEntry.module.css';
 
 interface IUserEntryInterface {
-	email: string;
+	tagMode?: boolean;
+	username: string;
 	showBtn?: boolean;
 	addHandler?(): void;
 	removeHandler?(): void;
@@ -11,22 +12,29 @@ interface IUserEntryInterface {
 }
 
 export const UserEntry = ({
-	email,
+	username,
 	addHandler,
 	removeHandler,
 	profileImgPath,
-	showBtn = true
+	showBtn = true,
+	tagMode = false
 }: IUserEntryInterface) => {
 	return (
 		<div
 			onClick={addHandler}
-			className={classNames(styles.entry, !showBtn && styles.center)}
+			className={
+				classNames(styles.entry,
+					tagMode && styles.tagMode,
+					!showBtn && styles.center
+				)}
 		>
 			<div className={styles.leftSide}>
 				<img src={profileImgPath} alt="user-img" />
-				<p>{email}</p>
+				<p>{username}</p>
 			</div>
-			{showBtn && <MdCancel className={styles.icon} onClick={removeHandler} />}
+			{showBtn && (
+				<MdCancel className={styles.icon} onClick={removeHandler} />
+			)}
 		</div>
 	);
 };
