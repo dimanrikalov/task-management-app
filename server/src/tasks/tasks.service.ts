@@ -463,6 +463,9 @@ export class TasksService {
 
 		const progress = Math.round((completeSteps / totalSteps) * 100) || 0;
 
+		const startedAt = body.taskData.startedAt || new Date(Date.now());
+		const completedAt = progress === 100 ? new Date(Date.now()) : null;
+
 		//remove image if the task has one and add it with next request
 		if (body.taskData.attachmentImgPath) {
 			await unlink(body.taskData.attachmentImgPath);
@@ -476,6 +479,8 @@ export class TasksService {
 			data: {
 				...body.payload,
 				progress,
+				startedAt,
+				completedAt,
 				attachmentImgPath: null
 			}
 		});
@@ -684,9 +689,21 @@ export class TasksService {
 					startedAt,
 					completedAt,
 					columnId: body.destinationColumnId,
-					position: body.destinationPosition
+					position: body.destinationPosition,
+					...(destinationColumn.name === 'To Do' && { progress: 0 })
 				}
 			});
+
+			if (destinationColumn.name === 'To Do') {
+				await this.prismaService.step.updateMany({
+					where: {
+						taskId: body.taskData.id
+					},
+					data: {
+						isComplete: false
+					}
+				});
+			}
 			return;
 		}
 

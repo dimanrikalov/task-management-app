@@ -204,6 +204,7 @@ export const useDragEvents = () => {
 					throw new Error(res.errorMessage);
 				}
 
+				//COMPLETE ALL STEPS AUTOMATICALLY
 				if (destColumn.name === 'Done') {
 					if (srcColumn.name !== 'Done') {
 						callForConfetti();
@@ -289,6 +290,50 @@ export const useDragEvents = () => {
 
 							return { ...prev, columns: updatedColumns };
 						});
+					}
+					//RESET THE STEPS AUTOMATICALLY
+					if (destColumn.name === 'To Do') {
+						if (srcColumn.name !== 'To Do') {
+							setBoardData((prev) => {
+								if (!prev) return null;
+
+								const updatedColumns = prev.columns.map(
+									(col) => {
+										const task = col.tasks.find(
+											(task) =>
+												task.id === Number(draggableId)
+										);
+										if (task) {
+											return {
+												...col,
+												tasks: col.tasks.map((task) => {
+													if (
+														task.id ===
+														Number(draggableId)
+													) {
+														return {
+															...task,
+															steps: task.steps.map(
+																(step) => ({
+																	...step,
+																	isComplete:
+																		false
+																})
+															),
+															progress: 0
+														};
+													}
+													return { ...task };
+												})
+											};
+										}
+										return col;
+									}
+								);
+
+								return { ...prev, columns: updatedColumns };
+							});
+						}
 					}
 				}
 			}

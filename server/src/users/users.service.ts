@@ -205,14 +205,45 @@ export class UsersService {
 			}
 		});
 
-		const hoursSpent = userTasks.reduce(
-			(acc, task) => acc + task.hoursSpent,
-			0
-		);
-		const minutesSpent = userTasks.reduce(
-			(acc, task) => acc + task.minutesSpent,
-			0
-		);
+		/*
+		calculate timespent based on this logic:
+			1. check if hours (minutes respectively) is 00 (i.e user hasnt inputted anything)
+			2. if startedAt and completedAt are valid values use them
+			3. if they are not use the 00 value
+		*/
+
+		const hoursSpent = userTasks.reduce((acc, task) => {
+			if (task.hoursSpent !== 0) {
+				return acc + task.hoursSpent;
+			}
+
+			if (task.startedAt && task.completedAt) {
+				const taskDuration =
+					task.completedAt.getTime() - task.startedAt.getTime();
+				const taskHours = Math.floor(taskDuration / (1000 * 60 * 60));
+				return acc + taskHours;
+			}
+
+			return acc;
+		}, 0);
+
+		const minutesSpent = userTasks.reduce((acc, task) => {
+			if (task.minutesSpent !== 0) {
+				return acc + task.minutesSpent;
+			}
+
+			if (task.startedAt && task.completedAt) {
+				const taskDuration =
+					task.completedAt.getTime() - task.startedAt.getTime();
+				const taskMinutes = Math.floor(
+					(taskDuration / (1000 * 60)) % 60
+				);
+				return acc + taskMinutes;
+			}
+
+			return acc;
+		}, 0);
+
 		const columnsCount = await this.prismaService.column.count({
 			where: {
 				boardId: {
