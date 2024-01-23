@@ -24,7 +24,7 @@ interface IIntroInputProps {
 	Icon?: React.FC<IIconProps>;
 	ToggleIcon?: React.FC<IToggleIconProps>;
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
-	handleSelect: React.ReactEventHandler<HTMLInputElement>;
+	handleSelect?: React.ReactEventHandler<HTMLInputElement>;
 	inputRef?: React.MutableRefObject<HTMLInputElement | null>;
 }
 

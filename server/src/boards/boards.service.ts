@@ -390,7 +390,8 @@ export class BoardsService {
 			usersToNotify.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has created and added you to board "${body.name}"`
+					message: `${body.userData.username} has 
+					created and added you to board "${body.name}".`
 				});
 			})
 		);

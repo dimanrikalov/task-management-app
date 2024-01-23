@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { StepsModule } from './steps/steps.module';
 import { UsersModule } from './users/users.module';
 import { TasksModule } from './tasks/tasks.module';
+import { SocketModule } from './socket/socket.module';
 import { BoardsModule } from './boards/boards.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ColumnsModule } from './columns/columns.module';
@@ -17,6 +18,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 		UsersModule,
 		TasksModule,
 		StepsModule,
+		SocketModule,
 		BoardsModule,
 		PrismaModule,
 		ColumnsModule,

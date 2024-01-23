@@ -30,6 +30,10 @@
 	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
+.remove-transitions * {
+	transition: none !important;
+}
+
 h1,
 h2,
 h3,

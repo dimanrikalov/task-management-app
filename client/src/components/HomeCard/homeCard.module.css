@@ -47,22 +47,24 @@
 }
 
 .subtitle {
+	color: grey;
 	font-size: 16px;
 	letter-spacing: 0.2px;
 	transition: 200ms ease-in-out;
 }
 
 .userCount {
+	gap: 6px;
+	color: grey;
 	display: flex;
 	font-size: 24px;
-	font-weight: 500;
-	align-items: center;
 	align-self: flex-end;
+	align-items: flex-end;
 	transition: 200ms ease-in-out;
 }
 
 .icon {
-	font-size: 32px;
+	font-size: 28px;
 	color: var(--blue-main);
 	transition: 200ms ease-in-out;
 }

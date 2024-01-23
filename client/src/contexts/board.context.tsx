@@ -27,12 +27,6 @@ export const useBoardContext = () => useContext<IBoardContext>(BoardContext);
 export const BoardContextProvider: React.FC<{ children: React.ReactNode }> = ({
 	children
 }) => {
-	const { callForConfetti, shouldConfettiExplode } = useConfetti();
-	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
-	const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
-	const [selectedColumnId, setSelectedColumnId] = useState<number | null>(
-		null
-	);
 	const {
 		boardData,
 		isLoading,
@@ -40,6 +34,13 @@ export const BoardContextProvider: React.FC<{ children: React.ReactNode }> = ({
 		workspaceUsers,
 		callForRefresh
 	} = useFetchBoardData();
+	const { callForConfetti, shouldConfettiExplode } = useConfetti();
+	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+	const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
+	const [selectedColumnId, setSelectedColumnId] = useState<number | null>(
+		null
+	);
+
 	const toggleIsTaskModalOpen = () => {
 		setIsTaskModalOpen((prev) => !prev);
 	};

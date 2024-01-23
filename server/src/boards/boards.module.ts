@@ -9,6 +9,7 @@ import { BoardsController } from './boards.controller';
 import { TasksService } from 'src/tasks/tasks.service';
 import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { SocketGateway } from 'src/socket/socket.gateway';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
@@ -21,6 +22,7 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
 		TasksService,
 		StepsService,
 		BoardsService,
+		SocketGateway,
 		ColumnsService,
 		MessagesService,
 		NotificationsService

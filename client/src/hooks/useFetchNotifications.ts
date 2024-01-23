@@ -15,9 +15,12 @@ export const useFetchNotifications = () => {
 	const { accessToken } = useUserContext();
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [notifications, setNotifications] = useState<INotification[]>([]);
+	const [refetchNotifications, setRefetchNotifications] =
+		useState<boolean>(true);
 
 	useEffect(() => {
 		if (!accessToken) return;
+		if (!refetchNotifications) return;
 
 		const fetchNotifications = async () => {
 			setIsLoading(true);
@@ -41,11 +44,17 @@ export const useFetchNotifications = () => {
 		};
 
 		fetchNotifications();
-	}, [accessToken]);
+		setRefetchNotifications(false);
+	}, [accessToken, refetchNotifications]);
+
+	const callForRefresh = () => {
+		setRefetchNotifications(true);
+	};
 
 	return {
 		isLoading,
 		notifications,
+		callForRefresh,
 		setNotifications
 	};
 };

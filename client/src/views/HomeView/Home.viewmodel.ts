@@ -63,6 +63,7 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		isLoadingWorkspaces,
 		setIsLoadingWorkspaces
 	} = useFetchHomeLists();
+
 	const date = new Date()
 		.toLocaleDateString('en-US', options)
 		.split(',')

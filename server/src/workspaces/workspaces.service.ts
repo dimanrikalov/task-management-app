@@ -47,6 +47,20 @@ export class WorkspacesService {
 		].filter((userId) => userId !== excludeId);
 	}
 
+	async getWorkspaceBoardIds(workspaceId: number): Promise<number[]> {
+		const res = await this.prismaService.board.findMany({
+			where: {
+				workspaceId
+			},
+			select: {
+				id: true
+			}
+		});
+		console.log(res);
+
+		return res.map((entry) => entry.id);
+	}
+
 	async getUserWorkspaces(body: BaseWorkspaceDto): Promise<any[]> {
 		const workspaces = await this.prismaService.workspace.findMany({
 			where: {
@@ -219,13 +233,11 @@ export class WorkspacesService {
 			usersToNotify.map(async (colleagueId) => {
 				await this.notificationsService.addNotification({
 					userId: colleagueId,
-					message: `${body.userData.username} has created and added you to workspace "${body.name}".`
+					message: `${body.userData.username} 
+					has created and added you to workspace "${body.name}".`
 				});
 			})
 		);
-
-		console.log('Emitting an event...');
-		//trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
 
 		return workspace;
 	}
@@ -316,6 +328,8 @@ export class WorkspacesService {
 				});
 			})
 		);
+
+		return usersToNotify;
 	}
 
 	async deleteMany(userId: number) {
@@ -411,7 +425,7 @@ export class WorkspacesService {
 			})
 		);
 
-		//trigger a socket event with array of all affected userIds, the client will listen and check if the id from their jwtToken matches any of the array, if yes => make a getWorkspaces request
+		return colleague.username;
 	}
 
 	async removeColleague(body: EditWorkspaceColleagueDto) {
@@ -471,6 +485,6 @@ export class WorkspacesService {
 			}
 		});
 
-		//emit an event to the deleted user and in case they are viewing the workspace
+		return colleague.username;
 	}
 }

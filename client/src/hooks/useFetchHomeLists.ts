@@ -4,6 +4,10 @@ import {
 	BOARD_ENDPOINTS,
 	WORKSPACE_ENDPOINTS
 } from '../utils/requester';
+import {
+	SOCKET_EVENTS,
+	useSocketConnection
+} from '@/contexts/socketConnection.context';
 import { useEffect, useState } from 'react';
 import { useErrorContext } from '../contexts/error.context';
 import { ENTRIES_TYPES } from '../views/HomeView/Home.viewmodel';
@@ -30,8 +34,12 @@ export interface ILists {
 
 export const useFetchHomeLists = () => {
 	const { showError } = useErrorContext();
+	const { socket } = useSocketConnection();
 	const { accessToken } = useUserContext() as IUserContextSecure;
 	const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(true);
+	const [shouldFetchWorkspaces, setShouldFetchWorkspaces] =
+		useState<boolean>(true);
+	const [shouldFetchBoards, setShouldFetchBoards] = useState<boolean>(true);
 	const [isLoadingWorkspaces, setIsLoadingWorkspaces] =
 		useState<boolean>(true);
 	const [lists, setLists] = useState<ILists>({
@@ -39,17 +47,72 @@ export const useFetchHomeLists = () => {
 		workspaces: null
 	});
 
+	useEffect(() => {
+		if (!socket) return;
+
+		const handleWorkspaceModified = () => {
+			setShouldFetchWorkspaces(true);
+		};
+
+		const handleBoardModified = () => {
+			setShouldFetchBoards(true);
+		};
+
+		socket.on(
+			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
+			handleWorkspaceModified
+		);
+		socket.on(
+			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
+			handleWorkspaceModified
+		);
+		socket.on(SOCKET_EVENTS.WORKSPACE_CREATED, handleWorkspaceModified);
+		socket.on(SOCKET_EVENTS.WORKSPACE_DELETED, handleWorkspaceModified);
+		socket.on(SOCKET_EVENTS.WORKSPACE_RENAMED, handleWorkspaceModified);
+
+		socket.on(SOCKET_EVENTS.BOARD_CREATED, handleBoardModified);
+
+		return () => {
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_CREATED,
+				handleWorkspaceModified
+			);
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_DELETED,
+				handleWorkspaceModified
+			);
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_RENAMED,
+				handleWorkspaceModified
+			);
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
+				handleWorkspaceModified
+			);
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
+				handleWorkspaceModified
+			);
+
+			socket.off(SOCKET_EVENTS.BOARD_CREATED, handleBoardModified);
+		};
+	}, [socket]);
+
 	//fetching boards
 	useEffect(() => {
+		if (!shouldFetchBoards) return;
 		setIsLoadingBoards(true);
 		fetchEntries(ENTRIES_TYPES.BOARDS);
-	}, []);
+		setShouldFetchBoards(false);
+	}, [shouldFetchBoards]);
 
 	//fetching workspaces
 	useEffect(() => {
+		if (!shouldFetchWorkspaces) return;
 		setIsLoadingWorkspaces(true);
 		fetchEntries(ENTRIES_TYPES.WORKSPACES);
-	}, []);
+		setShouldFetchWorkspaces(false);
+	}, [shouldFetchWorkspaces]);
 
 	const fetchEntries = async (entries: ENTRIES_TYPES) => {
 		try {

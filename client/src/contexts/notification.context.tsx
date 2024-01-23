@@ -2,6 +2,7 @@ import { useUserContext } from './user.context';
 import { useErrorContext } from './error.context';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { METHODS, NOTIFICATIONS_ENDPOINTS, request } from '@/utils/requester';
+import { SOCKET_EVENTS, useSocketConnection } from './socketConnection.context';
 import { INotification, useFetchNotifications } from '@/hooks/useFetchNotifications';
 
 interface INotificationContext {
@@ -31,11 +32,28 @@ export const NotificationContextProvider: React.FC<{
 	children: React.ReactNode;
 }> = ({ children }) => {
 	const { showError } = useErrorContext();
+	const { socket } = useSocketConnection();
 	const { accessToken } = useUserContext();
 	const [notificationMsg, setNotificationMsg] = useState<string>('');
-	const { notifications, isLoading, setNotifications } = useFetchNotifications();
+	const { notifications, isLoading, setNotifications, callForRefresh } = useFetchNotifications();
 	const [showNotificationMsg, setShowNotificationMsg] =
 		useState<boolean>(false);
+
+	useEffect(() => {
+		if (!socket) return;
+
+		const handleNotification = (data: any) => {
+			callForRefresh();
+			showNotification(data.message)
+		}
+
+		socket.on(SOCKET_EVENTS.NOTIFICATION, handleNotification)
+
+		return () => {
+			socket.off(SOCKET_EVENTS.NOTIFICATION, handleNotification);
+		};
+
+	}, [socket]);
 
 	useEffect(() => {
 		if (!showNotificationMsg) return;

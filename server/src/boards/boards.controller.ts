@@ -1,3 +1,9 @@
+import {
+	EVENTS,
+	SocketGateway,
+	generateBoardRoomName,
+	generateWorkspaceRoomName
+} from 'src/socket/socket.gateway';
 import { Response } from 'express';
 import { BoardsService } from './boards.service';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
@@ -10,7 +16,10 @@ import { Res, Get, Body, Post, Delete, Controller, Put } from '@nestjs/common';
 
 @Controller('boards')
 export class BoardsController {
-	constructor(private readonly boardsService: BoardsService) {}
+	constructor(
+		private readonly socketGateway: SocketGateway,
+		private readonly boardsService: BoardsService
+	) {}
 
 	@Get()
 	async getUserBoards(@Res() res: Response, @Body() body: BaseUsersDto) {
@@ -29,6 +38,60 @@ export class BoardsController {
 	async create(@Res() res: Response, @Body() body: CreateBoardDto) {
 		try {
 			const newBoard = await this.boardsService.create(body);
+
+			// console.log(body.colleagues);
+
+			const boardRoomName = generateBoardRoomName(newBoard.id);
+			const workspaceRoomName = generateWorkspaceRoomName(
+				body.workspaceData.id
+			);
+
+			const boardColleagues = body.colleagues.map((boardCollegue) =>
+				boardCollegue.toString()
+			);
+
+			// filter out the user that creates the board
+			const workspaceRoomMembers = this.socketGateway
+				.getRoomMembers(workspaceRoomName)
+				.filter((id) => id !== body.userData.id.toString());
+
+			// console.log('workspaceRoomMembers', workspaceRoomMembers);
+
+			const usersToAdd = Array.from(
+				new Set([...boardColleagues, ...workspaceRoomMembers])
+			);
+
+			// console.log(usersToAdd);
+
+			// add all users to the new board room
+			usersToAdd.forEach((userId) => {
+				this.socketGateway.addToRoom(userId.toString(), boardRoomName);
+			});
+
+			//emit a notification to users with board access
+			this.socketGateway.server
+				.to(boardRoomName)
+				.emit(EVENTS.BOARD_CREATED);
+
+			//emit a notification to users with workspace access
+			this.socketGateway.server
+				.to(workspaceRoomName)
+				.emit(EVENTS.BOARD_CREATED);
+
+			//emit event that will notify them (for notification)
+			this.socketGateway.server
+				.to(boardRoomName) // board room includes all workspace users too
+				.emit(EVENTS.NOTIFICATION, {
+					message: `${body.userData.username} 
+					has created and added you to board "${body.name}".`
+				});
+
+			//add the current user to the board room only after all events have been emitted
+			this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
+
 			return res.status(200).json({
 				boardId: newBoard.id,
 				message: 'Board created successfully!'
@@ -44,6 +107,35 @@ export class BoardsController {
 	async delete(@Res() res: Response, @Body() body: DeleteBoardDto) {
 		try {
 			await this.boardsService.delete(body);
+
+			const boardRoomName = generateBoardRoomName(body.boardData.id);
+			const workspaceRoomName = generateWorkspaceRoomName(
+				body.workspaceData.id
+			);
+
+			//emit a notification to users with board access
+			this.socketGateway.server
+				.to(boardRoomName)
+				.emit(EVENTS.BOARD_DELETED);
+
+			//emit a notification to users with workspace access
+			this.socketGateway.server
+				.to(workspaceRoomName)
+				.emit(EVENTS.BOARD_DELETED);
+
+			//emit a notification to users with board access
+			this.socketGateway.server
+				.to(boardRoomName) // board room includes all workspace users too
+				.emit(EVENTS.NOTIFICATION, {
+					message: `${body.userData.username} has deleted board 
+					"${body.boardData.name}" inside workspace "${body.workspaceData.name}".`
+				});
+
+			//remove everyone inside that room
+			this.socketGateway.server
+				.in(boardRoomName)
+				.socketsLeave(boardRoomName);
+
 			return res.status(200).json({
 				message: 'Board deleted successfully!'
 			});

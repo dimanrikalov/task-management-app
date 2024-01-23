@@ -9,6 +9,7 @@ import { UsersController } from './users.controller';
 import { TasksService } from 'src/tasks/tasks.service';
 import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { SocketGateway } from 'src/socket/socket.gateway';
 import { BoardsService } from 'src/boards/boards.service';
 import { ColumnsService } from 'src/columns/columns.service';
 import { MessagesService } from 'src/messages/messages.service';
@@ -21,6 +22,7 @@ import { NotificationsService } from 'src/notifications/notifications.service';
 		UsersService,
 		TasksService,
 		StepsService,
+		SocketGateway,
 		BoardsService,
 		ColumnsService,
 		MessagesService,

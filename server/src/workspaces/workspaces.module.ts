@@ -3,6 +3,7 @@ import { StepsService } from 'src/steps/steps.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { WorkspacesService } from './workspaces.service';
 import { BoardsService } from 'src/boards/boards.service';
+import { SocketGateway } from 'src/socket/socket.gateway';
 import { ColumnsService } from 'src/columns/columns.service';
 import { WorkspacesController } from './workspaces.controller';
 import { MessagesService } from 'src/messages/messages.service';
@@ -16,6 +17,7 @@ import { WorkspaceCheckMiddleware } from 'src/middlewares/workspaceCheck.middlew
 		TasksService,
 		StepsService,
 		BoardsService,
+		SocketGateway,
 		ColumnsService,
 		MessagesService,
 		WorkspacesService,

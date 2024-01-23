@@ -8,8 +8,8 @@ import { EDIT_COLLEAGUE_METHOD } from '../views/WorkspaceView/Workspace.viewmode
 
 export const useEditBoardColleagues = () => {
 	const { showError } = useErrorContext();
-	const { accessToken } = useUserContext() as IUserContextSecure;
 	const { boardData, setBoardData } = useBoardContext();
+	const { accessToken } = useUserContext() as IUserContextSecure;
 	const [isEditBoardUsersModalOpen, setIsEditBoardUsersModalOpen] =
 		useState(false);
 
