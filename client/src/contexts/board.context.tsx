@@ -6,7 +6,6 @@ import { IBoardData, useFetchBoardData } from '../hooks/useFetchBoardData';
 
 interface IBoardContext {
 	isLoading: boolean;
-	callForRefresh(): void;
 	workspaceUsers: IUser[];
 	callForConfetti(): void;
 	isTaskModalOpen: boolean;
@@ -32,7 +31,6 @@ export const BoardContextProvider: React.FC<{ children: React.ReactNode }> = ({
 		isLoading,
 		setBoardData,
 		workspaceUsers,
-		callForRefresh
 	} = useFetchBoardData();
 	const { callForConfetti, shouldConfettiExplode } = useConfetti();
 	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
@@ -50,7 +48,6 @@ export const BoardContextProvider: React.FC<{ children: React.ReactNode }> = ({
 		isLoading,
 		setBoardData,
 		selectedTask,
-		callForRefresh,
 		workspaceUsers,
 		callForConfetti,
 		setSelectedTask,

@@ -1,5 +1,8 @@
+import { generateImgUrl } from '@/utils';
+import { useUserContext } from './user.context';
 import { useBoardContext } from './board.context';
 import { generateFileFromBase64 } from '../utils/convertImages';
+import { BOARD_ENDPOINTS, METHODS, request } from '@/utils/requester';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
 
@@ -21,10 +24,10 @@ interface ITaskModalContext {
 	matches: IUser[];
 	inputValues: IInputState;
 	assigneeId: number | null;
+	selectAssignee(user: IUser): void;
 	setMatches: React.Dispatch<React.SetStateAction<IUser[]>>;
 	handleInputChange(e: React.ChangeEvent<HTMLInputElement>): void;
 	setInputValues: React.Dispatch<React.SetStateAction<IInputState>>;
-	setAssigneeId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const TaskModalContext = createContext<any>(null);
@@ -37,8 +40,9 @@ export const TaskModalContextProvider: React.FC<{
 }> = ({ children }) => {
 	const { boardData } = useBoardContext();
 	const { selectedTask } = useBoardContext();
-	const boardUsers = boardData?.boardUsers || [];
-	const [matches, setMatches] = useState<IUser[]>([]);
+	const [matches, setMatches] = useState<IUser[]>([])
+	const { accessToken, data: userData } = useUserContext();
+	const [boardUsers, setBoardUsers] = useState<IUser[]>([]);
 	const [assigneeId, setAssigneeId] = useState<number | null>(null);
 	const [inputValues, setInputValues] = useState<IInputState>({
 		step: '',
@@ -81,6 +85,63 @@ export const TaskModalContextProvider: React.FC<{
 		});
 	}, [selectedTask]);
 
+	useEffect(() => {
+		if (assigneeId) {
+			setMatches([]);
+			return;
+		}
+		setMatches(boardUsers);
+	}, [assigneeId, boardUsers]);
+
+	useEffect(() => {
+		if (!userData || !boardData) return;
+
+		const fetchUsers = async () => {
+			try {
+				const data = (await request({
+					accessToken,
+					method: METHODS.GET,
+					endpoint: BOARD_ENDPOINTS.COLLEAGUES(boardData.id)
+				})) as { users: IUser[] } | { errorMessage: string };
+
+				if ('errorMessage' in data) {
+					throw new Error(data.errorMessage);
+				}
+
+				const users = data.users.map((user) => ({
+					...user,
+					username: user.id === userData.id ? 'Me' : user.username,
+					profileImagePath: generateImgUrl(user.profileImagePath)
+				}));
+				
+				const matchingUsers = users.filter((user) =>
+				user.username.toLowerCase()
+				.includes(inputValues.username.toLowerCase())
+				);
+				
+				setMatches(matchingUsers);
+				setBoardUsers(matchingUsers);
+
+				const assignee = matchingUsers.find(
+					(user) =>
+						user.username.trim().toLowerCase() ===
+						inputValues.username.trim().toLowerCase()
+				);
+
+				if (assignee) {
+					setAssigneeId(assignee.id);
+					return;
+				}
+
+				setAssigneeId(null);
+			} catch (err: any) {
+				console.log(err.message);
+			}
+		};
+
+		fetchUsers();
+	}, [accessToken, userData, inputValues.username]);
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValues((prev) => ({
 			...prev,
@@ -88,13 +149,18 @@ export const TaskModalContextProvider: React.FC<{
 		}));
 	};
 
+	const selectAssignee = (user: IUser) => {
+		setAssigneeId(user.id);
+		setInputValues((prev) => ({ ...prev, username: user.username }));
+	};
+
 	const data: ITaskModalContext = {
 		matches,
 		assigneeId,
 		setMatches,
 		inputValues,
-		setAssigneeId,
 		setInputValues,
+		selectAssignee,
 		handleInputChange
 	};
 	return (

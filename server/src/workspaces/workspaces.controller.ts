@@ -49,16 +49,14 @@ export class WorkspacesController {
 			//generate the workspace room name
 			const workspaceRoomName = generateWorkspaceRoomName(workspace.id);
 
-			//Emit event to all colleagues
-			const newlyAddedUserIds = Array.from(
-				new Set([...body.colleagues, body.userData.id])
+			//get all colleagues (at this point its impossible that user has added themself)
+			const colleaguesToAdd = Array.from(new Set(body.colleagues)).map(
+				String
 			);
 
-			newlyAddedUserIds.forEach((userId) => {
-				this.socketGateway.addToRoom(
-					userId.toString(),
-					workspaceRoomName
-				);
+			//Add users to room and emit event to all colleagues
+			colleaguesToAdd.forEach((userId) => {
+				this.socketGateway.addToRoom(userId, workspaceRoomName);
 			});
 
 			//emit event for workspace created (to cause refetching)
@@ -76,6 +74,12 @@ export class WorkspacesController {
 
 			//".to" excludes the sender
 			//".in" includes everyone in the room
+
+			//add the workspace owner to the room AFTER the events have been emitted
+			this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				workspaceRoomName
+			);
 
 			this.socketGateway.printRooms();
 
@@ -124,23 +128,29 @@ export class WorkspacesController {
 					.in(boardRoomName)
 					.socketsLeave(boardRoomName);
 
-				return users; //this is string[] -> flat === ...users
+				return users; //this is string[] -> flatten === ...users
 			});
 
 			const uniqueBoardUsers = Array.from(
 				new Set([...boardUsers, ...workspaceUserIds])
-			);
+			).map(String);
 
 			//generate a temporary room
 			const tempRoomName = `pre-workspace-${body.workspaceData.id}-deletion`;
 			uniqueBoardUsers.forEach((userId) => {
-				this.socketGateway.addToRoom(userId.toString(), tempRoomName);
+				this.socketGateway.addToRoom(userId, tempRoomName);
 			});
 
 			//emit events
 			this.socketGateway.server
 				.to(tempRoomName)
 				.emit(EVENTS.WORKSPACE_DELETED);
+
+			if (boardRoomNames.length > 0) {
+				this.socketGateway.server
+					.to(tempRoomName)
+					.emit(EVENTS.BOARD_DELETED);
+			}
 
 			this.socketGateway.server
 				.to(tempRoomName)
@@ -184,45 +194,31 @@ export class WorkspacesController {
 	) {
 		try {
 			await this.workspacesService.rename(body);
-			//extract boardIds
+			const workspaceRoomName = generateWorkspaceRoomName(
+				body.workspaceData.id
+			);
 			const boardIds = await this.workspacesService.getWorkspaceBoardIds(
 				body.workspaceData.id
 			);
+			const boardRoomNames = boardIds.map(generateBoardRoomName);
 
 			const workspaceUserIds =
-				await this.workspacesService.getWorkspaceUserIds(
-					body.workspaceData.id,
-					body.userData.id
-				);
-
-			//get all UNIQUE users with access to any board inside the workspace
-			const boardRoomNames = boardIds.map((boardId) =>
-				generateBoardRoomName(boardId)
-			);
-
-			const boardUsers = boardRoomNames.flatMap((boardRoomName) => {
-				//get board room users
-				const users = this.socketGateway.getRoomMembers(boardRoomName);
-
-				//delete board room
-				this.socketGateway.server
-					.in(boardRoomName)
-					.socketsLeave(boardRoomName);
-
-				return users; //this is string[] -> flat === ...users
+				this.socketGateway.getRoomMembers(workspaceRoomName);
+			const boardUserIds = boardRoomNames.flatMap((boardRoomName) => {
+				return this.socketGateway.getRoomMembers(boardRoomName);
 			});
 
-			const uniqueBoardUsers = Array.from(
-				new Set([...boardUsers, ...workspaceUserIds])
+			const uniqueUsers = Array.from(
+				new Set([...workspaceUserIds, ...boardUserIds])
 			);
 
-			//generate a temporary room
-			const tempRoomName = `pre-workspace-${body.workspaceData.id}-update`;
-			uniqueBoardUsers.forEach((userId) => {
-				this.socketGateway.addToRoom(userId.toString(), tempRoomName);
+			//create temp room and fill it
+			const tempRoomName = `pre-workspace-${body.workspaceData.id}-rename`;
+			uniqueUsers.forEach((userId) => {
+				this.socketGateway.addToRoom(userId, tempRoomName);
 			});
 
-			//emit events
+			//inform users
 			this.socketGateway.server
 				.to(tempRoomName)
 				.emit(EVENTS.WORKSPACE_RENAMED);
@@ -230,8 +226,8 @@ export class WorkspacesController {
 			this.socketGateway.server
 				.to(tempRoomName)
 				.emit(EVENTS.NOTIFICATION, {
-					message: `${body.userData.username} has renamed 
-					workspace "${body.workspaceData.name}" to "${body.newName}".`
+					message: `${body.userData.username} has renamed workspace 
+					"${body.workspaceData.name}" to "${body.newName}".`
 				});
 
 			//delete temp room
@@ -259,46 +255,52 @@ export class WorkspacesController {
 			const colleagueUsername =
 				await this.workspacesService.addColleague(body);
 
-			//extract boardIds
-			const boardIds = await this.workspacesService.getWorkspaceBoardIds(
+			//get workspace and all board rooms inside that workspsace
+			const boardRoomIds =
+				await this.workspacesService.getWorkspaceBoardIds(
+					body.workspaceData.id
+				);
+
+			const boardRoomNames = boardRoomIds.map(generateBoardRoomName);
+			const workspaceRoomName = generateWorkspaceRoomName(
 				body.workspaceData.id
 			);
 
-			//extract the userid after adding them to the workspace
-			const workspaceUserIds =
-				await this.workspacesService.getWorkspaceUserIds(
-					body.workspaceData.id,
-					body.userData.id
+			//add the user to all of the rooms above
+			this.socketGateway.addToRoom(
+				body.colleagueId.toString(),
+				workspaceRoomName
+			);
+
+			boardRoomNames.forEach((boardRoomName) => {
+				this.socketGateway.addToRoom(
+					body.colleagueId.toString(),
+					boardRoomName
 				);
-
-			//get all UNIQUE users with access to any board inside the workspace
-			const boardRoomNames = boardIds.map((boardId) =>
-				generateBoardRoomName(boardId)
-			);
-
-			const boardUsers = boardRoomNames.flatMap((boardRoomName) => {
-				//get board room users
-				const users = this.socketGateway.getRoomMembers(boardRoomName);
-
-				//delete board room
-				this.socketGateway.server
-					.in(boardRoomName)
-					.socketsLeave(boardRoomName);
-
-				return users; //this is string[] -> flat === ...users
 			});
 
-			const uniqueBoardUsers = Array.from(
-				new Set([...boardUsers, ...workspaceUserIds])
-			);
-
-			//generate a temporary room
+			//need to not duplicate notification so we create temp room
 			const tempRoomName = `pre-workspace-${body.workspaceData.id}-colleague-addition`;
-			uniqueBoardUsers.forEach((userId) => {
-				this.socketGateway.addToRoom(userId.toString(), tempRoomName);
+
+			const workspaceUserIds =
+				this.socketGateway.getRoomMembers(workspaceRoomName);
+			const boardUserIds = boardRoomNames.flatMap((boardRoomName) => {
+				return this.socketGateway.getRoomMembers(boardRoomName);
 			});
 
-			//emit events
+			const usersToInform = Array.from(
+				new Set(
+					[...workspaceUserIds, ...boardUserIds].filter(
+						(userId) => userId !== body.userData.id.toString()
+					)
+				)
+			);
+
+			usersToInform.forEach((userId) => {
+				this.socketGateway.addToRoom(userId, tempRoomName);
+			});
+
+			//inform the users
 			this.socketGateway.server
 				.to(tempRoomName)
 				.emit(EVENTS.WORKSPACE_COLLEAGUE_ADDED);
@@ -307,7 +309,7 @@ export class WorkspacesController {
 				.to(tempRoomName)
 				.emit(EVENTS.NOTIFICATION, {
 					message: `${body.userData.username} has added
-					 ${colleagueUsername} to workspace "${body.workspaceData.name}".`
+					 ${colleagueUsername} to workspace "${body.workspaceData.name}"`
 				});
 
 			//delete temp room
@@ -331,59 +333,65 @@ export class WorkspacesController {
 		@Body() body: EditWorkspaceColleagueDto
 	) {
 		try {
-			//extract boardIds
-			const boardIds = await this.workspacesService.getWorkspaceBoardIds(
-				body.workspaceData.id
-			);
-
-			const workspaceUserIds =
-				await this.workspacesService.getWorkspaceUserIds(
-					body.workspaceData.id,
-					body.userData.id
-				);
-
-			// remove the colleague only after their id is extracted
 			const colleagueUsername =
 				await this.workspacesService.removeColleague(body);
 
-			//get all UNIQUE users with access to any board inside the workspace
-			const boardRoomNames = boardIds.map((boardId) =>
-				generateBoardRoomName(boardId)
+			//get workspace and all board rooms inside that workspsace
+			const boardRoomIds =
+				await this.workspacesService.getWorkspaceBoardIds(
+					body.workspaceData.id
+				);
+
+			const boardRoomNames = boardRoomIds.map(generateBoardRoomName);
+			const workspaceRoomName = generateWorkspaceRoomName(
+				body.workspaceData.id
 			);
 
-			const boardUsers = boardRoomNames.flatMap((boardRoomName) => {
-				//get board room users
-				const users = this.socketGateway.getRoomMembers(boardRoomName);
-
-				//delete board room
-				this.socketGateway.server
-					.in(boardRoomName)
-					.socketsLeave(boardRoomName);
-
-				return users; //this is string[] -> flat === ...users
-			});
-
-			const uniqueBoardUsers = Array.from(
-				new Set([...boardUsers, ...workspaceUserIds])
-			);
-
-			//generate a temporary room
+			//need to not duplicate notification so we create temp room
 			const tempRoomName = `pre-workspace-${body.workspaceData.id}-colleague-deletion`;
-			uniqueBoardUsers.forEach((userId) => {
-				this.socketGateway.addToRoom(userId.toString(), tempRoomName);
+
+			const workspaceUserIds =
+				this.socketGateway.getRoomMembers(workspaceRoomName);
+			const boardUserIds = boardRoomNames.flatMap((boardRoomName) => {
+				return this.socketGateway.getRoomMembers(boardRoomName);
 			});
 
-			//emit events
+			const usersToInform = Array.from(
+				new Set(
+					[...workspaceUserIds, ...boardUserIds].filter(
+						(userId) => userId !== body.userData.id.toString()
+					)
+				)
+			);
+
+			usersToInform.forEach((userId) => {
+				this.socketGateway.addToRoom(userId, tempRoomName);
+			});
+
+			//inform the users
 			this.socketGateway.server
 				.to(tempRoomName)
-				.emit(EVENTS.WORKSPACE_COLLEAGUE_ADDED);
+				.emit(EVENTS.WORKSPACE_COLLEAGUE_DELETED);
 
 			this.socketGateway.server
 				.to(tempRoomName)
 				.emit(EVENTS.NOTIFICATION, {
-					message: `${body.userData.username} has removed
-					 ${colleagueUsername} from workspace "${body.workspaceData.name}".`
+					message: `${body.userData.username} has deleted
+					 ${colleagueUsername} to workspace "${body.workspaceData.name}"`
 				});
+
+			//delete the removed user from all rooms
+			boardRoomNames.forEach((boardRoomName) => {
+				this.socketGateway.removeFromRoom(
+					body.colleagueId.toString(),
+					boardRoomName
+				);
+			});
+
+			this.socketGateway.removeFromRoom(
+				body.colleagueId.toString(),
+				workspaceRoomName
+			);
 
 			//delete temp room
 			this.socketGateway.server

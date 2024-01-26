@@ -6,12 +6,16 @@ import { createContext, useContext, useEffect, useState } from 'react';
 export enum SOCKET_EVENTS {
 	ANY = '*',
 	USER_CREATED = 'userCreated',
+	USER_DELETED = 'userDeleted',
 	NOTIFICATION = 'notification',
 	BOARD_CREATED = 'boardCreated',
-	BOARD_DELETED = 'boardDeleteEd',
+	BOARD_RENAMED = 'boardRenamed',
+	BOARD_DELETED = 'boardDeleted',
 	WORKSPACE_CREATED = 'workspaceCreated',
-	WORKSPACE_DELETED = 'workspaceDeleted',
 	WORKSPACE_RENAMED = 'workspaceRenamed',
+	WORKSPACE_DELETED = 'workspaceDeleted',
+	BOARD_COLLEAGUE_ADDED = 'boardColleagueAdded',
+	BOARD_COLLEAGUE_DELETED = 'boardColleagueDeleted',
 	WORKSPACE_COLLEAGUE_ADDED = 'workspaceColleagueAdded',
 	WORKSPACE_COLLEAGUE_DELETED = 'workspaceColleagueDeleted'
 }

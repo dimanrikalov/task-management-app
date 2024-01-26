@@ -10,15 +10,14 @@ import { useErrorContext } from '../contexts/error.context';
 import { useBoardContext } from '../contexts/board.context';
 import { generateFileFromBase64 } from '../utils/convertImages';
 import { useTaskImageOperations } from './useTaskImageOperations';
-import { useTaskAssigneeOperations } from './useTaskAssigneeOperations';
 import { ViewModelReturnType } from '../interfaces/viewModel.interface';
 import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
 import { IEditStep, IStep, useStepsOperations } from './useStepsOperations';
 
 interface ICreateTaskOperationsState {
 	steps: IStep[];
-	matches: IUser[];
 	progress: number;
+	matches: IUser[];
 	inputValues: IInputState;
 	assigneeId: number | null;
 	selectedTask: ITask | null;
@@ -38,6 +37,7 @@ interface ICreateTaskOperations {
 	selectAssignee(user: IUser): void;
 	removeStep(description: string): void;
 	toggleStatus(description: string): void;
+	setMatches: React.Dispatch<React.SetStateAction<IUser[]>>;
 	changeTaskImage(e: React.ChangeEvent<HTMLInputElement>): void;
 	handleInputChange(
 		e: React.ChangeEvent<
@@ -53,22 +53,23 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 	const {
 		matches,
 		assigneeId,
+		setMatches,
 		inputValues,
+		selectAssignee,
 		setInputValues,
 		handleInputChange
 	} = useTaskModalContext();
 	const { showError } = useErrorContext();
+	const { workspaceUsers, selectedTask } = useBoardContext();
+	const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
 	const { steps, setSteps, addStep, removeStep, progress, toggleStatus } =
 		useStepsOperations();
-	const { selectAssignee } = useTaskAssigneeOperations();
-	const { workspaceUsers, selectedTask } = useBoardContext();
+	const { taskImagePath, clearTaskImage, changeTaskImage, setTaskImagePath } =
+		useTaskImageOperations();
 	const { editTask, createTask, deleteTask } = useTaskOperations({
 		inputValues,
 		steps
 	});
-	const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
-	const { taskImagePath, clearTaskImage, changeTaskImage, setTaskImagePath } =
-		useTaskImageOperations();
 
 	useEffect(() => {
 		if (!selectedTask) return;
@@ -134,6 +135,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 			addStep,
 			editTask,
 			showError,
+			setMatches,
 			removeStep,
 			deleteTask,
 			createTask,

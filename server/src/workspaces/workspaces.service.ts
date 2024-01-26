@@ -26,6 +26,19 @@ export class WorkspacesService {
 		private readonly notificationsService: NotificationsService
 	) {}
 
+	async getWorkspaceBoardIds(workspaceId: number): Promise<number[]> {
+		const res = await this.prismaService.board.findMany({
+			where: {
+				workspaceId
+			},
+			select: {
+				id: true
+			}
+		});
+
+		return res.map((entry) => entry.id);
+	}
+
 	async getWorkspaceUserIds(
 		workspaceId: number,
 		excludeId: number
@@ -47,18 +60,34 @@ export class WorkspacesService {
 		].filter((userId) => userId !== excludeId);
 	}
 
-	async getWorkspaceBoardIds(workspaceId: number): Promise<number[]> {
-		const res = await this.prismaService.board.findMany({
-			where: {
-				workspaceId
-			},
-			select: {
-				id: true
+	async getWorkspaceBoardUserIds(
+		workspaceId: number,
+		excludeId: number
+	): Promise<number[]> {
+		const usersWithWorkspaceAccess = await this.getWorkspaceUserIds(
+			workspaceId,
+			excludeId
+		);
+		const boardIds = await this.getWorkspaceBoardIds(workspaceId);
+		const usersWithBoardAccessObjs = await this.prismaService.user.findMany(
+			{
+				where: {
+					User_Board: {
+						some: {
+							boardId: {
+								in: boardIds
+							}
+						}
+					}
+				}
 			}
-		});
-		console.log(res);
+		);
 
-		return res.map((entry) => entry.id);
+		const usersWithBoardAccess = usersWithBoardAccessObjs
+			.map((x) => x.id)
+			.filter((x) => x !== excludeId);
+
+		return [...usersWithWorkspaceAccess, ...usersWithBoardAccess];
 	}
 
 	async getUserWorkspaces(body: BaseWorkspaceDto): Promise<any[]> {
@@ -297,11 +326,10 @@ export class WorkspacesService {
 			);
 		}
 
-		const usersToNotify = await this.getWorkspaceUserIds(
+		const usersToNotify = await this.getWorkspaceBoardUserIds(
 			body.workspaceData.id,
 			body.userData.id
 		);
-
 		//delete cascadingly
 		await this.boardsService.deleteMany(body.workspaceData.id);
 
@@ -397,10 +425,25 @@ export class WorkspacesService {
 			);
 		}
 
+		//add colleague to workspace but remove from any board inside the workspace
 		await this.prismaService.user_Workspace.create({
 			data: {
 				userId: body.colleagueId,
 				workspaceId: body.workspaceData.id
+			}
+		});
+		const boardIds = await this.getWorkspaceBoardIds(body.workspaceData.id);
+
+		await this.prismaService.user_Board.deleteMany({
+			where: {
+				AND: [
+					{ userId: body.colleagueId },
+					{
+						boardId: {
+							in: boardIds
+						}
+					}
+				]
 			}
 		});
 
@@ -470,7 +513,7 @@ export class WorkspacesService {
 				await this.notificationsService.addNotification({
 					userId,
 					message: `${body.userData.username} has removed ${colleague.username}
-					 from workspace "${body.workspaceData.name}".`
+					 from workspace "${body.workspaceData.name}" and from all its boards.`
 				});
 			})
 		);

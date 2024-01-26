@@ -12,6 +12,7 @@ import { DeleteBoardDto } from './dtos/deleteboard.dto';
 import { RenameBoardDto } from './dtos/renameBoard.dto';
 import { GetBoardDetails } from './dtos/getBoardDetails.dto';
 import { EditBoardColleagueDto } from './dtos/editBoardColleague.dto';
+import { GetBoardColleaguesDto } from './dtos/getBoardColleagues.dto';
 import { Res, Get, Body, Post, Delete, Controller, Put } from '@nestjs/common';
 
 @Controller('boards')
@@ -39,54 +40,41 @@ export class BoardsController {
 		try {
 			const newBoard = await this.boardsService.create(body);
 
-			// console.log(body.colleagues);
-
 			const boardRoomName = generateBoardRoomName(newBoard.id);
 			const workspaceRoomName = generateWorkspaceRoomName(
 				body.workspaceData.id
 			);
 
-			const boardColleagues = body.colleagues.map((boardCollegue) =>
-				boardCollegue.toString()
-			);
+			const boardColleagues = body.colleagues.map(String);
 
 			// filter out the user that creates the board
 			const workspaceRoomMembers = this.socketGateway
 				.getRoomMembers(workspaceRoomName)
 				.filter((id) => id !== body.userData.id.toString());
 
-			// console.log('workspaceRoomMembers', workspaceRoomMembers);
-
 			const usersToAdd = Array.from(
 				new Set([...boardColleagues, ...workspaceRoomMembers])
 			);
-
-			// console.log(usersToAdd);
 
 			// add all users to the new board room
 			usersToAdd.forEach((userId) => {
 				this.socketGateway.addToRoom(userId.toString(), boardRoomName);
 			});
 
-			//emit a notification to users with board access
+			//emit a notification to users with workspace and board access
 			this.socketGateway.server
 				.to(boardRoomName)
 				.emit(EVENTS.BOARD_CREATED);
 
-			//emit a notification to users with workspace access
+			//emit event that will notify them
 			this.socketGateway.server
-				.to(workspaceRoomName)
-				.emit(EVENTS.BOARD_CREATED);
-
-			//emit event that will notify them (for notification)
-			this.socketGateway.server
-				.to(boardRoomName) // board room includes all workspace users too
+				.to(boardRoomName)
 				.emit(EVENTS.NOTIFICATION, {
 					message: `${body.userData.username} 
 					has created and added you to board "${body.name}".`
 				});
 
-			//add the current user to the board room only after all events have been emitted
+			//add the current user to the board room AFTER all events have been emitted
 			this.socketGateway.addToRoom(
 				body.userData.id.toString(),
 				boardRoomName
@@ -108,24 +96,17 @@ export class BoardsController {
 		try {
 			await this.boardsService.delete(body);
 
+			//board room already includes workspace users
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
-			const workspaceRoomName = generateWorkspaceRoomName(
-				body.workspaceData.id
-			);
 
 			//emit a notification to users with board access
 			this.socketGateway.server
 				.to(boardRoomName)
 				.emit(EVENTS.BOARD_DELETED);
 
-			//emit a notification to users with workspace access
+			//emit a notification to users with board and workspace access
 			this.socketGateway.server
-				.to(workspaceRoomName)
-				.emit(EVENTS.BOARD_DELETED);
-
-			//emit a notification to users with board access
-			this.socketGateway.server
-				.to(boardRoomName) // board room includes all workspace users too
+				.to(boardRoomName)
 				.emit(EVENTS.NOTIFICATION, {
 					message: `${body.userData.username} has deleted board 
 					"${body.boardData.name}" inside workspace "${body.workspaceData.name}".`
@@ -160,8 +141,45 @@ export class BoardsController {
 	async renameBoard(@Res() res: Response, @Body() body: RenameBoardDto) {
 		try {
 			await this.boardsService.rename(body);
+
+			//board room already includes workspace users
+			const boardRoomName = generateBoardRoomName(body.boardData.id);
+
+			//cause refetch
+			this.socketGateway.server
+				.to(boardRoomName)
+				.emit(EVENTS.BOARD_RENAMED);
+
+			//show notification
+			this.socketGateway.server
+				.to(boardRoomName)
+				.emit(EVENTS.NOTIFICATION, {
+					message: `${body.userData.username} has renamed
+					board "${body.boardData.name}" to "${body.newName}".`
+				});
+
 			return res.status(200).json({
 				message: 'Board renamed successfully!'
+			});
+		} catch (err: any) {
+			console.log(err.message);
+			return res.status(400).json({
+				errorMessage: err.message
+			});
+		}
+	}
+
+	@Get('/:boardId/colleagues')
+	async getColleagues(
+		@Res() res: Response,
+		@Body() body: GetBoardColleaguesDto
+	) {
+		try {
+			const users = await this.boardsService.getBoardUsers(body.boardData);
+
+			return res.status(200).json({
+				users,
+				message: 'Users fetched successfully!'
 			});
 		} catch (err: any) {
 			console.log(err.message);
@@ -177,7 +195,29 @@ export class BoardsController {
 		@Body() body: EditBoardColleagueDto
 	) {
 		try {
-			await this.boardsService.addColleague(body);
+			const colleagueUsername =
+				await this.boardsService.addColleague(body);
+
+			const boardRoomName = generateBoardRoomName(body.boardData.id);
+
+			//add new colleague BEFORE the events have been emitted
+			this.socketGateway.addToRoom(
+				body.colleagueId.toString(),
+				boardRoomName
+			);
+
+			//emit events to the board users
+			this.socketGateway.server
+				.to(boardRoomName)
+				.emit(EVENTS.BOARD_COLLEAGUE_ADDED);
+
+			this.socketGateway.server
+				.to(boardRoomName)
+				.emit(EVENTS.NOTIFICATION, {
+					message: `${body.userData.username} has added
+					 ${colleagueUsername} to board "${body.boardData.name}".`
+				});
+
 			return res.status(200).json({
 				message: 'Colleague added to board successfully!'
 			});
@@ -194,7 +234,28 @@ export class BoardsController {
 		@Body() body: EditBoardColleagueDto
 	) {
 		try {
-			await this.boardsService.removeColleague(body);
+			const colleagueUsername =
+				await this.boardsService.removeColleague(body);
+
+			const boardRoomName = generateBoardRoomName(body.boardData.id);
+
+			this.socketGateway.server
+				.to(boardRoomName)
+				.emit(EVENTS.BOARD_COLLEAGUE_DELETED);
+
+			this.socketGateway.server
+				.to(boardRoomName)
+				.emit(EVENTS.NOTIFICATION, {
+					message: `${body.userData.username} has removed
+					 ${colleagueUsername} from board "${body.boardData.name}".`
+				});
+
+			//remove user from room AFTER they have received the notifications
+			this.socketGateway.removeFromRoom(
+				body.colleagueId.toString(),
+				boardRoomName
+			);
+
 			return res.status(200).json({
 				message: 'Colleague removed from board successfully!'
 			});

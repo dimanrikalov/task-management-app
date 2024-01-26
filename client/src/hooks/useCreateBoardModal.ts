@@ -144,7 +144,6 @@ export const useCreateBoardModal = () => {
 
 	const createBoard = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log(selectedWorkspace);
 
 		if (!selectedWorkspace) {
 			showError('Workspace is required!');

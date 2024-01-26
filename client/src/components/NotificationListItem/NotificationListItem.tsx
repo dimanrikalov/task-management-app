@@ -7,7 +7,9 @@ interface INotificationListItemProps {
     onClick(): Promise<void>;
 }
 
-export const NotificationListItem = ({ username, message, onClick }: INotificationListItemProps) => {
+export const NotificationListItem = ({
+    username, message, onClick
+}: INotificationListItemProps) => {
 
     return (
         <div className={styles.notification}>
@@ -17,7 +19,9 @@ export const NotificationListItem = ({ username, message, onClick }: INotificati
             >
                 <FaXmark size={18} />
             </button>
-            <p className={styles.message}>{message.replace(username, 'you')}</p>
+            <p className={styles.message}>
+                {message.replace(username, 'you')}
+            </p>
         </div>
     )
 }

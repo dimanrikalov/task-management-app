@@ -1,7 +1,11 @@
+import {
+	SOCKET_EVENTS,
+	useSocketConnection
+} from '@/contexts/socketConnection.context';
 import { generateImgUrl } from '@/utils';
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { ITask } from '../components/Task/Task';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useErrorContext } from '../contexts/error.context';
 import { IDetailedWorkspace } from '../contexts/workspace.context';
 import { BOARD_ENDPOINTS, METHODS, request } from '../utils/requester';
@@ -26,17 +30,71 @@ export interface IBoardData {
 }
 
 export const useFetchBoardData = () => {
+	const navigate = useNavigate();
 	const { pathname } = useLocation();
 	const { showError } = useErrorContext();
+	const { socket } = useSocketConnection();
 	const boardId = Number(pathname.split('/').pop());
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
+	const [shouldRefetch, setShouldRefetch] = useState<boolean>(true);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
 	const { data: userData, accessToken } =
 		useUserContext() as IUserContextSecure;
 
 	useEffect(() => {
+		if (!socket) return;
+
+		const handleBoardModified = () => {
+			console.log('updating board');
+			setShouldRefetch(true);
+		};
+
+		/*
+		listen for 
+			task created / deleted / modified / moved 
+			column created / deleted / modified / moved
+
+		*/
+		socket.on(
+			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
+			handleBoardModified
+		);
+		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+		
+		//NOT A GOOD IDEA
+		// socket.on(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED, handleBoardModified);
+		// socket.on(SOCKET_EVENTS.WORKSPACE_DELETED, handleBoardModified);
+		// socket.on(SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED, handleBoardModified);
+
+		return () => {
+			//NOT A GOOD IDEA
+			socket.off(
+				SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED,
+				handleBoardModified
+			);
+			socket.off(
+				SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED,
+				handleBoardModified
+			);
+			// socket.off(
+			// 	SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
+			// 	handleBoardModified
+			// );
+			// socket.off(
+			// 	SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
+			// 	handleBoardModified
+			// );
+			// socket.off(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.WORKSPACE_DELETED, handleBoardModified);
+		};
+	}, [socket]);
+
+	useEffect(() => {
+		if (!shouldRefetch) return;
 		const fetchBoardData = async () => {
 			try {
 				setIsLoading(true);
@@ -44,7 +102,15 @@ export const useFetchBoardData = () => {
 					accessToken,
 					method: METHODS.GET,
 					endpoint: BOARD_ENDPOINTS.DETAILS(boardId)
-				})) as IBoardData;
+				})) as IBoardData | { errorMessage: string };
+
+				if ('errorMessage' in newBoardData) {
+					throw new Error(
+						`${newBoardData.errorMessage}. 
+						Check your notifications for 
+						potential modifications to this board.`
+					);
+				}
 
 				//add workspace owner to the users with access to the workspace, and filter out the currently logged user
 				const workspaceUsers = [
@@ -90,27 +156,22 @@ export const useFetchBoardData = () => {
 				});
 
 				setWorkspaceUsers(workspaceUsers);
-				setShouldRefresh(false);
 			} catch (err: any) {
 				console.log(err.message);
 				showError(err.message);
+				navigate(-1);
 			}
 			setIsLoading(false);
 		};
 
-		if (!shouldRefresh) return;
 		fetchBoardData();
-	}, [shouldRefresh]);
-
-	const callForRefresh = () => {
-		setShouldRefresh(true);
-	};
+		setShouldRefetch(false);
+	}, [shouldRefetch]);
 
 	return {
 		isLoading,
 		boardData,
 		setBoardData,
-		workspaceUsers,
-		callForRefresh
+		workspaceUsers
 	};
 };

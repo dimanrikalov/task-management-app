@@ -27,19 +27,21 @@ export const useFetchWorkspaceData = () => {
 		if (!socket) return;
 
 		const handleWorkspaceModified = () => {
-			console.log('updaing workspace')
+			console.log('updating workspace');
 			setShouldRefetch(true);
 		};
 
-		/*
-		listen for 
-			workspace renamed
-			colleague added to workspace
-			colleague removed to workspace	
-			board created inside
-		*/
-
+		socket.on(
+			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
+			handleWorkspaceModified
+		);
+		socket.on(
+			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
+			handleWorkspaceModified
+		);
+		// socket.on(SOCKET_EVENTS.USER_DELETED, handleWorkspaceModified);
 		socket.on(SOCKET_EVENTS.BOARD_CREATED, handleWorkspaceModified);
+		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleWorkspaceModified);
 		socket.on(SOCKET_EVENTS.WORKSPACE_DELETED, handleWorkspaceModified);
 		socket.on(SOCKET_EVENTS.WORKSPACE_RENAMED, handleWorkspaceModified);
 
@@ -52,6 +54,16 @@ export const useFetchWorkspaceData = () => {
 				SOCKET_EVENTS.WORKSPACE_RENAMED,
 				handleWorkspaceModified
 			);
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
+				handleWorkspaceModified
+			);
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
+				handleWorkspaceModified
+			);
+			// socket.off(SOCKET_EVENTS.USER_DELETED, handleWorkspaceModified);
+			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleWorkspaceModified);
 			socket.off(SOCKET_EVENTS.BOARD_CREATED, handleWorkspaceModified);
 		};
 	}, [socket]);

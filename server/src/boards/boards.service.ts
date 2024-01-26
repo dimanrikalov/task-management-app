@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
+import { IBoard } from './boards.interfaces';
 import { TasksService } from 'src/tasks/tasks.service';
 import { BaseUsersDto } from 'src/users/dtos/base.dto';
 import { CreateBoardDto } from './dtos/createBoard.dto';
@@ -29,6 +30,53 @@ export class BoardsService {
 		private readonly messagesService: MessagesService,
 		private readonly notificationsService: NotificationsService
 	) {}
+
+	async getBoardUsers(boardData: IBoard) {
+		const boardUsers = await this.prismaService.user.findMany({
+			where: {
+				User_Board: {
+					some: {
+						boardId: boardData.id
+					}
+				}
+			}
+		});
+
+		const workspaceUsers = await this.prismaService.user.findMany({
+			where: {
+				User_Workspace: {
+					some: {
+						workspaceId: boardData.workspaceId
+					}
+				}
+			}
+		});
+
+		const workspace = await this.prismaService.workspace.findFirst({
+			where: {
+				id: boardData.workspaceId
+			}
+		});
+
+		const workspaceOwner = await this.prismaService.user.findFirst({
+			where: {
+				id: workspace.ownerId
+			}
+		});
+
+		return Array.from(
+			new Set([workspaceOwner, ...workspaceUsers, ...boardUsers])
+		).map((match) => {
+			const imageBuffer = fs.readFileSync(match.profileImagePath);
+
+			const imageBinary = Buffer.from(imageBuffer).toString('base64');
+
+			return {
+				...match,
+				profileImagePath: imageBinary
+			};
+		});
+	}
 
 	async getWorkpaceByIdLocal(body: GetWorkspaceDetails) {
 		const workspaceBoards = await this.prismaService.board.findMany({
@@ -441,6 +489,8 @@ export class BoardsService {
 			}
 		});
 
+		console.log(usersToNotify);
+
 		//deletes all columns, tasks and steps cascadingly
 		await this.columnsService.deleteMany(body.boardData.id);
 
@@ -455,11 +505,11 @@ export class BoardsService {
 		});
 
 		await Promise.all(
-			usersToNotify.map(async (userId) => {
+			Array.from(new Set(usersToNotify)).map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has
-					 deleted board "${body.boardData.name}".`
+					message: `${body.userData.username} has deleted board 
+					"${body.boardData.name}" inside workspace "${body.workspaceData.name}".`
 				});
 			})
 		);
@@ -588,6 +638,8 @@ export class BoardsService {
 				});
 			})
 		);
+
+		return colleague.username;
 	}
 
 	async removeColleague(body: EditBoardColleagueDto) {
@@ -671,5 +723,7 @@ export class BoardsService {
 				AND: [{ userId: colleagueId }, { boardId: body.boardData.id }]
 			}
 		});
+
+		return colleague.username;
 	}
 }

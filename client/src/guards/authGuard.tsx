@@ -30,6 +30,7 @@ export const AuthGuard = () => {
 
 	return (
 		<>
+		
 			{modalsState.showEditProfileModal && <EditProfileModal />}
 			{modalsState.showCreateBoardModal && <CreateBoardModal />}
 			{modalsState.showCreateWorkspaceModal && <CreateWorkspaceModal />}

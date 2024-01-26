@@ -52,11 +52,13 @@ export class TasksService {
 		const boardUserIds = boardUsers.map((user) => user.userId);
 		const workspaceUserIds = workspaceUsers.map((user) => user.userId);
 
-		return [
-			...boardUserIds,
-			...workspaceUserIds,
-			workspaceData.ownerId
-		].filter((userId) => userId !== excludeId);
+		return Array.from(
+			new Set([
+				...boardUserIds,
+				...workspaceUserIds,
+				workspaceData.ownerId
+			])
+		).filter((userId) => userId !== excludeId);
 	}
 
 	async validateUserAccessToBoard({ task, token }) {

@@ -51,6 +51,7 @@ export const useFetchHomeLists = () => {
 		if (!socket) return;
 
 		const handleWorkspaceModified = () => {
+			setShouldFetchBoards(true);
 			setShouldFetchWorkspaces(true);
 		};
 
@@ -71,6 +72,10 @@ export const useFetchHomeLists = () => {
 		socket.on(SOCKET_EVENTS.WORKSPACE_RENAMED, handleWorkspaceModified);
 
 		socket.on(SOCKET_EVENTS.BOARD_CREATED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED, handleBoardModified);
 
 		return () => {
 			socket.off(
@@ -94,7 +99,17 @@ export const useFetchHomeLists = () => {
 				handleWorkspaceModified
 			);
 
+			socket.off(
+				SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED,
+				handleBoardModified
+			);
+			socket.off(
+				SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED,
+				handleBoardModified
+			);
 			socket.off(SOCKET_EVENTS.BOARD_CREATED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
 		};
 	}, [socket]);
 

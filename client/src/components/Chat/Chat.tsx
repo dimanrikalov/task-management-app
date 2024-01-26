@@ -32,7 +32,11 @@ interface IChatProps {
 	toggleIsChatOpen(): void;
 }
 
-export const Chat = ({ isChatOpen, toggleIsChatOpen, boardUsers }: IChatProps) => {
+export const Chat = ({
+	isChatOpen,
+	boardUsers,
+	toggleIsChatOpen
+}: IChatProps) => {
 	const { showError } = useErrorContext();
 	const { data: userData, accessToken } =
 		useUserContext() as IUserContextSecure;
@@ -115,6 +119,14 @@ export const Chat = ({ isChatOpen, toggleIsChatOpen, boardUsers }: IChatProps) =
 					method: METHODS.GET,
 					endpoint: MESSAGE_ENDPOINTS.BASE(boardId)
 				});
+
+				if ('errorMessage' in data) {
+					throw new Error(
+						`${data.errorMessage}. 
+						Check your notifications for 
+						potential modifications to this board.`
+					);
+				}
 
 				const messages = data.map((message: any) => {
 					const profileImgPath = generateImgUrl(message.profileImgPath)

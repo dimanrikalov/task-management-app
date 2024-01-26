@@ -92,7 +92,6 @@
 .dropdownWrapper {
 	gap: 9px;
 	width: 86%;
-	z-index: 0.5;
 	display: flex;
 	bottom: -162px;
 	max-height: 164px;
