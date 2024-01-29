@@ -55,9 +55,14 @@ export class WorkspacesController {
 			);
 
 			//Add users to room and emit event to all colleagues
-			colleaguesToAdd.forEach((userId) => {
-				this.socketGateway.addToRoom(userId, workspaceRoomName);
-			});
+			await Promise.all(
+				colleaguesToAdd.map(async (userId) => {
+					await this.socketGateway.addToRoom(
+						userId,
+						workspaceRoomName
+					);
+				})
+			);
 
 			//emit event for workspace created (to cause refetching)
 			this.socketGateway.server
@@ -76,7 +81,7 @@ export class WorkspacesController {
 			//".in" includes everyone in the room
 
 			//add the workspace owner to the room AFTER the events have been emitted
-			this.socketGateway.addToRoom(
+			await this.socketGateway.addToRoom(
 				body.userData.id.toString(),
 				workspaceRoomName
 			);
@@ -125,9 +130,7 @@ export class WorkspacesController {
 				const users = this.socketGateway.getRoomMembers(boardRoomName);
 
 				//delete board room
-				this.socketGateway.server
-					.in(boardRoomName)
-					.socketsLeave(boardRoomName);
+				this.socketGateway.clearRoom(boardRoomName);
 
 				return users; //this is string[] -> flatten === ...users
 			});
@@ -138,9 +141,11 @@ export class WorkspacesController {
 
 			//generate a temporary room
 			const tempRoomName = `pre-workspace-${body.workspaceData.id}-deletion`;
-			uniqueBoardUsers.forEach((userId) => {
-				this.socketGateway.addToRoom(userId, tempRoomName);
-			});
+			await Promise.all(
+				uniqueBoardUsers.map(async (userId) => {
+					await this.socketGateway.addToRoom(userId, tempRoomName);
+				})
+			);
 
 			//emit events
 			this.socketGateway.server
@@ -161,9 +166,7 @@ export class WorkspacesController {
 				});
 
 			//delete temp room
-			this.socketGateway.server
-				.in(tempRoomName)
-				.socketsLeave(tempRoomName);
+			this.socketGateway.clearRoom(tempRoomName);
 
 			return res.status(200).json({
 				message: 'Workspace successfully deleted!'
@@ -216,9 +219,11 @@ export class WorkspacesController {
 
 			//create temp room and fill it
 			const tempRoomName = `pre-workspace-${body.workspaceData.id}-rename`;
-			uniqueUsers.forEach((userId) => {
-				this.socketGateway.addToRoom(userId, tempRoomName);
-			});
+			await Promise.all(
+				uniqueUsers.map(async (userId) => {
+					await this.socketGateway.addToRoom(userId, tempRoomName);
+				})
+			);
 
 			//inform users
 			this.socketGateway.server
@@ -233,9 +238,7 @@ export class WorkspacesController {
 				});
 
 			//delete temp room
-			this.socketGateway.server
-				.in(tempRoomName)
-				.socketsLeave(tempRoomName);
+			this.socketGateway.clearRoom(tempRoomName);
 
 			return res.status(200).json({
 				message: 'Workspace renamed successfully!'
@@ -269,17 +272,19 @@ export class WorkspacesController {
 			);
 
 			//add the user to all of the rooms above
-			this.socketGateway.addToRoom(
+			await this.socketGateway.addToRoom(
 				body.colleagueId.toString(),
 				workspaceRoomName
 			);
 
-			boardRoomNames.forEach((boardRoomName) => {
-				this.socketGateway.addToRoom(
-					body.colleagueId.toString(),
-					boardRoomName
-				);
-			});
+			await Promise.all(
+				boardRoomNames.map(async (boardRoomName) => {
+					await this.socketGateway.addToRoom(
+						body.colleagueId.toString(),
+						boardRoomName
+					);
+				})
+			);
 
 			//need to not duplicate notification so we create temp room
 			const tempRoomName = `pre-workspace-${body.workspaceData.id}-colleague-addition`;
@@ -298,9 +303,11 @@ export class WorkspacesController {
 				)
 			);
 
-			usersToInform.forEach((userId) => {
-				this.socketGateway.addToRoom(userId, tempRoomName);
-			});
+			await Promise.all(
+				usersToInform.map(async (userId) => {
+					await this.socketGateway.addToRoom(userId, tempRoomName);
+				})
+			);
 
 			//inform the users
 			this.socketGateway.server
@@ -315,9 +322,7 @@ export class WorkspacesController {
 				});
 
 			//delete temp room
-			this.socketGateway.server
-				.in(tempRoomName)
-				.socketsLeave(tempRoomName);
+			this.socketGateway.clearRoom(tempRoomName);
 
 			return res.status(200).json({
 				message: 'Colleague added to workspace.'
@@ -367,9 +372,11 @@ export class WorkspacesController {
 				)
 			);
 
-			usersToInform.forEach((userId) => {
-				this.socketGateway.addToRoom(userId, tempRoomName);
-			});
+			await Promise.all(
+				usersToInform.map(async (userId) => {
+					await this.socketGateway.addToRoom(userId, tempRoomName);
+				})
+			);
 
 			//inform the users
 			this.socketGateway.server
@@ -379,27 +386,27 @@ export class WorkspacesController {
 			this.socketGateway.server
 				.to(tempRoomName)
 				.emit(EVENTS.NOTIFICATION, {
-					message: `${body.userData.username} has deleted
-					 ${colleagueUsername} to workspace "${body.workspaceData.name}"`
+					message: `${body.userData.username} has removed
+					 ${colleagueUsername} from workspace "${body.workspaceData.name}"`
 				});
 
 			//delete the removed user from all rooms
-			boardRoomNames.forEach((boardRoomName) => {
-				this.socketGateway.removeFromRoom(
-					body.colleagueId.toString(),
-					boardRoomName
-				);
-			});
+			await Promise.all(
+				boardRoomNames.map(async (boardRoomName) => {
+					await this.socketGateway.removeFromRoom(
+						body.colleagueId.toString(),
+						boardRoomName
+					);
+				})
+			);
 
-			this.socketGateway.removeFromRoom(
+			await this.socketGateway.removeFromRoom(
 				body.colleagueId.toString(),
 				workspaceRoomName
 			);
 
 			//delete temp room
-			this.socketGateway.server
-				.in(tempRoomName)
-				.socketsLeave(tempRoomName);
+			this.socketGateway.clearRoom(tempRoomName);
 
 			return res.status(200).json({
 				message: 'Colleague removed from workspace.'

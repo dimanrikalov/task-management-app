@@ -46,12 +46,14 @@ export class MessagesController {
 				.emit(EVENTS.MESSAGE_SENT);
 
 			//add to temp tagged room
-			body.taggedUsers.forEach((taggedUser) => {
-				this.socketGateway.addToRoom(
-					taggedUser.toString(),
-					tempRoomName
-				);
-			});
+			await Promise.all(
+				body.taggedUsers.map(async (taggedUser) => {
+					await this.socketGateway.addToRoom(
+						taggedUser.toString(),
+						tempRoomName
+					);
+				})
+			);
 
 			this.socketGateway.server
 				.to(tempRoomName)

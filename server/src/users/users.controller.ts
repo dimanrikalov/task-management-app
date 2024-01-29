@@ -231,9 +231,14 @@ export class UsersController {
 
 			//create temp room and add users to it
 			const tempRoomName = `user-${body.userData.id}-deletion-affected-users`;
-			affectedUserIds.forEach((userId) => {
-				this.socketGateway.addToRoom(userId.toString(), tempRoomName);
-			});
+			await Promise.all(
+				affectedUserIds.map(async (userId) => {
+					await this.socketGateway.addToRoom(
+						userId.toString(),
+						tempRoomName
+					);
+				})
+			);
 
 			//emit event
 			this.socketGateway.server
@@ -248,9 +253,7 @@ export class UsersController {
 				});
 
 			//delete temp room
-			this.socketGateway.server
-				.in(tempRoomName)
-				.socketsLeave(tempRoomName);
+			this.socketGateway.clearRoom(tempRoomName);
 
 			//emit to user colleagues from other boards and workspaces
 			affectedWorkspaceIds.forEach((workspaceId) => {
@@ -267,18 +270,6 @@ export class UsersController {
 					.to(boardRoomName)
 					.emit(EVENTS.USER_DELETED);
 			});
-
-			//remove the socket from any room
-			const rooms = this.socketGateway.server.sockets.adapter.rooms;
-			rooms.forEach((_, room) => {
-				this.socketGateway.removeFromRoom(
-					body.userData.id.toString(),
-					room
-				);
-			});
-
-			//remove the deleted user
-			delete this.socketGateway.clients[body.userData.id];
 
 			return res.status(200).json({
 				message: 'User deleted successfully!'

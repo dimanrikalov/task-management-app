@@ -66,6 +66,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			where: { id: userId }
 		});
 
+		//Add client entry inside server list of connections (stored only while the server is up)
+		this.clients[user.id.toString()] = {
+			socket: client,
+			userId: user.id,
+			socketId: client.id
+		};
+
 		// Check if the user has access to any workspaces
 		const accessibleWorkspaces =
 			await this.prismaService.workspace.findMany({
@@ -120,23 +127,20 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		// Create/Join each accessible workspace room
 		await Promise.all(
 			accessibleWorkspaces.map(async (workspace) => {
-				await client.join(generateWorkspaceRoomName(workspace.id));
+				const workspaceRoomName = generateWorkspaceRoomName(
+					workspace.id
+				);
+				await this.addToRoom(user.id.toString(), workspaceRoomName);
 			})
 		);
 
 		// Create/Join each accessible board room
 		await Promise.all(
 			accessibleBoards.map(async (board) => {
-				await client.join(generateBoardRoomName(board.id));
+				const boardRoomName = generateBoardRoomName(board.id);
+				await this.addToRoom(user.id.toString(), boardRoomName);
 			})
 		);
-
-		//Add client entry inside server list of connections (stored only while the server is up)
-		this.clients[user.id] = {
-			socket: client,
-			userId: user.id,
-			socketId: client.id
-		};
 
 		this.printRooms();
 
@@ -149,27 +153,37 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		});
 	}
 
-	handleDisconnect(client: Socket) {
+	async handleDisconnect(client: Socket) {
 		// Remove client data on disconnect
 		const user = this.getUserBySocketId(client.id);
+
+		//remove from rooms
+		const rooms = Array.from(this.server.sockets.adapter.rooms.keys());
+
+		await Promise.all(
+			rooms.map(async (room) => {
+				console.log(room);
+				await this.removeFromRoom(user.userId.toString(), room);
+			})
+		);
 
 		if (user) {
 			delete this.clients[user.userId];
 		}
 	}
 
-	addToRoom(clientId: string, roomId: string) {
+	async addToRoom(clientId: string, roomId: string) {
 		const clientSocket = this.clients[clientId];
 		if (!clientSocket) return;
 		//add client to the room
-		clientSocket.socket.join(roomId);
+		await clientSocket.socket.join(roomId);
 	}
 
-	removeFromRoom(clientId: string, roomId: string) {
+	async removeFromRoom(clientId: string, roomId: string) {
 		const clientSocket = this.clients[clientId];
 		if (!clientSocket) return;
 		//add client to the room
-		clientSocket.socket.leave(roomId);
+		await clientSocket.socket.leave(roomId);
 	}
 
 	printRooms() {
@@ -179,10 +193,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			console.log(`Room: ${roomId}`);
 			const clients = this.getRoomMembers(roomId);
 			clients.forEach((clientId: string) => {
-				const client = this.clients[clientId];
-				console.log(
-					`  Client ID: ${clientId}, User ID: ${client.userId}`
-				);
+				if (clientId) {
+					const client = this.clients[clientId];
+					console.log(
+						`Client ID: ${clientId}, User ID: ${client.userId}`
+					);
+				}
 			});
 		});
 	}
@@ -194,16 +210,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const socketIds = Array.from(room);
 
 		return Object.entries(this.clients).map(([key, value]) => {
-			// console.log(key, value);
 			if (socketIds.some((socketId) => socketId === value.socketId)) {
 				return key;
 			}
 		});
 	}
 
-	getClientSocket(userId: number) {
-		const client = this.clients[userId.toString()];
-		return client.socketId;
+	clearRoom(roomName: string) {
+		this.server.in(roomName).socketsLeave(roomName);
 	}
 
 	private getUserBySocketId(socketId: string): ClientData | undefined {

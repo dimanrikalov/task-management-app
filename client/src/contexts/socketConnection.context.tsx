@@ -46,8 +46,12 @@ export const SocketConnectionProvider: React.FC<{
 
 	// socket.io inital subscription to all accessible entries inside (workspaces, boards) collections
 	useEffect(() => {
-		if (!data) return;
-		console.log('useEffect executed');
+		if (!data || !accessToken) {
+			if (!socket) return;
+			console.log('disconnecting');
+			socket.disconnect();
+			return;
+		}
 
 		const newSocket = io(import.meta.env.VITE_SERVER_URL, {
 			extraHeaders: {

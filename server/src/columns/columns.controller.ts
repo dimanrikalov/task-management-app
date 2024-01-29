@@ -28,7 +28,10 @@ export class ColumnsController {
 			const tempRoom = `temp-column-creation-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -36,7 +39,7 @@ export class ColumnsController {
 				.emit(EVENTS.COLUMN_CREATED);
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				columnId,
@@ -60,7 +63,10 @@ export class ColumnsController {
 			const tempRoom = `temp-move-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -68,7 +74,7 @@ export class ColumnsController {
 				.emit(EVENTS.COLUMN_MOVED);
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Column moved successfully!'
@@ -91,7 +97,10 @@ export class ColumnsController {
 			const tempRoom = `temp-rename-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -99,7 +108,7 @@ export class ColumnsController {
 				.emit(EVENTS.COLUMN_RENAMED);
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Column renamed succesfully!'
@@ -122,14 +131,19 @@ export class ColumnsController {
 			const tempRoom = `temp-delete-room-${body.userData.id}`;
 			const affectedUsersRoom = `affected-users-room-${body.columnData.id}`;
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
-			affectedUsers.forEach((userId) => {
-				this.socketGateway.addToRoom(
-					userId.toString(),
-					affectedUsersRoom
-				);
-			});
+			await Promise.all(
+				affectedUsers.map(async (userId) => {
+					await this.socketGateway.addToRoom(
+						userId.toString(),
+						affectedUsersRoom
+					);
+				})
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -144,7 +158,7 @@ export class ColumnsController {
 				});
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Column deleted successfully!'

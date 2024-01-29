@@ -47,7 +47,10 @@ export class TasksController {
 			const tempRoom = `temp-creation-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -64,7 +67,7 @@ export class TasksController {
 			}
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				task,
@@ -89,7 +92,10 @@ export class TasksController {
 			const tempRoom = `temp-task-move-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			// Emit TASK_MOVED event to all clients in the board room except the temp room
 			this.socketGateway.server
@@ -116,7 +122,7 @@ export class TasksController {
 			}
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Task moved successfully!'
@@ -141,7 +147,10 @@ export class TasksController {
 			const tempRoom = `temp-task-modification-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			// Emit TASK_MOVED event to all clients in the board room except the temp room
 			this.socketGateway.server
@@ -155,7 +164,7 @@ export class TasksController {
 			});
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				task,
@@ -241,7 +250,7 @@ export class TasksController {
 			const tempRoom = `temp-task-image-upload-room-${user.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(user.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(user.id.toString(), tempRoom);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -251,7 +260,7 @@ export class TasksController {
 			await this.tasksService.uploadTaskImg(body);
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Task image updated successfully!'
@@ -275,7 +284,10 @@ export class TasksController {
 			const tempRoom = `temp-task-deletion-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -292,7 +304,7 @@ export class TasksController {
 			}
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Task deleted successfully!'

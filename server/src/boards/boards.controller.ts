@@ -57,9 +57,14 @@ export class BoardsController {
 			);
 
 			// add all users to the new board room
-			usersToAdd.forEach((userId) => {
-				this.socketGateway.addToRoom(userId.toString(), boardRoomName);
-			});
+			await Promise.all(
+				usersToAdd.map(async (userId) => {
+					await this.socketGateway.addToRoom(
+						userId.toString(),
+						boardRoomName
+					);
+				})
+			);
 
 			//emit a notification to users with workspace and board access
 			this.socketGateway.server
@@ -75,7 +80,7 @@ export class BoardsController {
 				});
 
 			//add the current user to the board room AFTER all events have been emitted
-			this.socketGateway.addToRoom(
+			await this.socketGateway.addToRoom(
 				body.userData.id.toString(),
 				boardRoomName
 			);
@@ -104,7 +109,10 @@ export class BoardsController {
 			const tempRoom = `temp-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -120,12 +128,10 @@ export class BoardsController {
 				});
 
 			//remove everyone inside that room
-			this.socketGateway.server
-				.in(boardRoomName)
-				.socketsLeave(boardRoomName);
+			this.socketGateway.clearRoom(boardRoomName);
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Board deleted successfully!'
@@ -160,7 +166,10 @@ export class BoardsController {
 			const tempRoom = `temp-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -176,7 +185,7 @@ export class BoardsController {
 				});
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Board renamed successfully!'
@@ -226,10 +235,13 @@ export class BoardsController {
 			const tempRoom = `temp-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			//add new colleague BEFORE the events have been emitted
-			this.socketGateway.addToRoom(
+			await this.socketGateway.addToRoom(
 				body.colleagueId.toString(),
 				boardRoomName
 			);
@@ -247,7 +259,7 @@ export class BoardsController {
 				});
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Colleague added to board successfully!'
@@ -275,7 +287,10 @@ export class BoardsController {
 			const tempRoom = `temp-room-${body.userData.id}`;
 
 			// Add user ID to the temporary room
-			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				tempRoom
+			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
@@ -290,13 +305,13 @@ export class BoardsController {
 				});
 
 			//remove user from room AFTER they have received the notifications
-			this.socketGateway.removeFromRoom(
+			await this.socketGateway.removeFromRoom(
 				body.colleagueId.toString(),
 				boardRoomName
 			);
 
 			// Leave the temporary room after emitting events
-			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Colleague removed from board successfully!'

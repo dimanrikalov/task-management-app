@@ -156,12 +156,13 @@ export const useEditProfileModal = () => {
 
 	const deleteUser = async () => {
 		try {
+			const accessTokenTemp = accessToken;
+			logout();
 			await request({
-				accessToken,
 				method: METHODS.DELETE,
+				accessToken: accessTokenTemp,
 				endpoint: USER_ENDPOINTS.DELETE
 			});
-			logout();
 			toggleIsEditProfileModalOpen();
 		} catch (err: any) {
 			showError(err.message);
