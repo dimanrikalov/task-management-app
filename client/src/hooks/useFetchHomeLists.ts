@@ -59,6 +59,17 @@ export const useFetchHomeLists = () => {
 			setShouldFetchBoards(true);
 		};
 
+		//USER EVENT
+		socket.on(SOCKET_EVENTS.USER_DELETED, handleWorkspaceModified);
+
+		//BOARD EVENTS
+		socket.on(SOCKET_EVENTS.BOARD_CREATED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED, handleBoardModified);
+
+		//WORKSPACE EVENTS
 		socket.on(
 			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
 			handleWorkspaceModified
@@ -71,13 +82,24 @@ export const useFetchHomeLists = () => {
 		socket.on(SOCKET_EVENTS.WORKSPACE_DELETED, handleWorkspaceModified);
 		socket.on(SOCKET_EVENTS.WORKSPACE_RENAMED, handleWorkspaceModified);
 
-		socket.on(SOCKET_EVENTS.BOARD_CREATED, handleBoardModified);
-		socket.on(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
-		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
-		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED, handleBoardModified);
-		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED, handleBoardModified);
-
 		return () => {
+			//USER EVENT
+			socket.off(SOCKET_EVENTS.USER_DELETED, handleWorkspaceModified);
+
+			//BOARD EVENTS
+			socket.off(
+				SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED,
+				handleBoardModified
+			);
+			socket.off(
+				SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED,
+				handleBoardModified
+			);
+			socket.off(SOCKET_EVENTS.BOARD_CREATED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
+
+			//WORKSPACE EVENTS
 			socket.off(
 				SOCKET_EVENTS.WORKSPACE_CREATED,
 				handleWorkspaceModified
@@ -98,25 +120,15 @@ export const useFetchHomeLists = () => {
 				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
 				handleWorkspaceModified
 			);
-
-			socket.off(
-				SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED,
-				handleBoardModified
-			);
-			socket.off(
-				SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED,
-				handleBoardModified
-			);
-			socket.off(SOCKET_EVENTS.BOARD_CREATED, handleBoardModified);
-			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
-			socket.off(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
 		};
 	}, [socket]);
 
 	//fetching boards
 	useEffect(() => {
 		if (!shouldFetchBoards) return;
-		setIsLoadingBoards(true);
+		if (!lists.boards) {
+			setIsLoadingBoards(true);
+		}
 		fetchEntries(ENTRIES_TYPES.BOARDS);
 		setShouldFetchBoards(false);
 	}, [shouldFetchBoards]);
@@ -124,7 +136,9 @@ export const useFetchHomeLists = () => {
 	//fetching workspaces
 	useEffect(() => {
 		if (!shouldFetchWorkspaces) return;
-		setIsLoadingWorkspaces(true);
+		if (!lists.workspaces) {
+			setIsLoadingWorkspaces(true);
+		}
 		fetchEntries(ENTRIES_TYPES.WORKSPACES);
 		setShouldFetchWorkspaces(false);
 	}, [shouldFetchWorkspaces]);

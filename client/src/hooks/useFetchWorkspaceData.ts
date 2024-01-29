@@ -31,6 +31,15 @@ export const useFetchWorkspaceData = () => {
 			setShouldRefetch(true);
 		};
 
+		//USER EVENT
+		socket.on(SOCKET_EVENTS.USER_DELETED, handleWorkspaceModified);
+
+		//BOARD EVENTS
+		socket.on(SOCKET_EVENTS.BOARD_CREATED, handleWorkspaceModified);
+		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleWorkspaceModified);
+		socket.on(SOCKET_EVENTS.BOARD_RENAMED, handleWorkspaceModified);
+
+		//WORKSPACE EVENTS
 		socket.on(
 			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
 			handleWorkspaceModified
@@ -39,21 +48,20 @@ export const useFetchWorkspaceData = () => {
 			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
 			handleWorkspaceModified
 		);
-		// socket.on(SOCKET_EVENTS.USER_DELETED, handleWorkspaceModified);
-		socket.on(SOCKET_EVENTS.BOARD_CREATED, handleWorkspaceModified);
-		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleWorkspaceModified);
+
 		socket.on(SOCKET_EVENTS.WORKSPACE_DELETED, handleWorkspaceModified);
 		socket.on(SOCKET_EVENTS.WORKSPACE_RENAMED, handleWorkspaceModified);
 
 		return () => {
-			socket.off(
-				SOCKET_EVENTS.WORKSPACE_DELETED,
-				handleWorkspaceModified
-			);
-			socket.off(
-				SOCKET_EVENTS.WORKSPACE_RENAMED,
-				handleWorkspaceModified
-			);
+			//USER EVENT
+			socket.off(SOCKET_EVENTS.USER_DELETED, handleWorkspaceModified);
+
+			//BOARD EVENTS
+			socket.off(SOCKET_EVENTS.BOARD_CREATED, handleWorkspaceModified);
+			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleWorkspaceModified);
+			socket.off(SOCKET_EVENTS.BOARD_RENAMED, handleWorkspaceModified);
+
+			//WORKSPACE EVENTS
 			socket.off(
 				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
 				handleWorkspaceModified
@@ -62,17 +70,27 @@ export const useFetchWorkspaceData = () => {
 				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
 				handleWorkspaceModified
 			);
-			// socket.off(SOCKET_EVENTS.USER_DELETED, handleWorkspaceModified);
-			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleWorkspaceModified);
-			socket.off(SOCKET_EVENTS.BOARD_CREATED, handleWorkspaceModified);
+
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_DELETED,
+				handleWorkspaceModified
+			);
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_RENAMED,
+				handleWorkspaceModified
+			);
 		};
 	}, [socket]);
+
+	useEffect(() => {
+		if (!workspaceData) return;
+		setIsLoading(false);
+	}, [workspaceData]);
 
 	useEffect(() => {
 		if (!shouldRefetch) return;
 
 		const fetchWorkspace = async () => {
-			setIsLoading(true);
 			try {
 				const workspaceData = (await request({
 					accessToken,
@@ -121,6 +139,10 @@ export const useFetchWorkspaceData = () => {
 			}
 			setIsLoading(false);
 		};
+
+		if (!workspaceData) {
+			setIsLoading(true);
+		}
 
 		fetchWorkspace();
 		setShouldRefetch(false);

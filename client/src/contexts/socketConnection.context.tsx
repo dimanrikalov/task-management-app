@@ -2,15 +2,22 @@ import { Socket, io } from 'socket.io-client';
 import { useUserContext } from './user.context';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-
 export enum SOCKET_EVENTS {
-	ANY = '*',
+	TASK_MOVED = 'taskMoved',
+	MESSAGE_SENT = 'messageSent',
+	TASK_CREATED = 'taskCreated',
+	TASK_DELETED = 'taskDeleted',
+	COLUMN_MOVED = 'columnMoved',
 	USER_CREATED = 'userCreated',
 	USER_DELETED = 'userDeleted',
+	TASK_MODIFIED = 'taskModifed',
 	NOTIFICATION = 'notification',
 	BOARD_CREATED = 'boardCreated',
 	BOARD_RENAMED = 'boardRenamed',
 	BOARD_DELETED = 'boardDeleted',
+	COLUMN_RENAMED = 'columnRenamed',
+	COLUMN_DELETED = 'columnDeleted',
+	COLUMN_CREATED = 'columnCreated',
 	WORKSPACE_CREATED = 'workspaceCreated',
 	WORKSPACE_RENAMED = 'workspaceRenamed',
 	WORKSPACE_DELETED = 'workspaceDeleted',

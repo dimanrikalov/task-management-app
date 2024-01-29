@@ -82,7 +82,6 @@ export class WorkspacesService {
 				}
 			}
 		);
-
 		const usersWithBoardAccess = usersWithBoardAccessObjs
 			.map((x) => x.id)
 			.filter((x) => x !== excludeId);
@@ -367,6 +366,17 @@ export class WorkspacesService {
 				ownerId: userId
 			}
 		});
+
+		const affectedUserIds = await Promise.all(
+			workspaces.flatMap(async (workspace) => {
+				return await this.getWorkspaceBoardUserIds(
+					workspace.id,
+					workspace.ownerId
+				);
+			})
+		);
+		const flattenedUserIds = affectedUserIds.flat();
+
 		//delete all boards inside of all user's workspaces
 		await Promise.all(
 			workspaces.map(async (workspace) => {
@@ -389,6 +399,8 @@ export class WorkspacesService {
 				ownerId: userId
 			}
 		});
+
+		return Array.from(new Set(flattenedUserIds));
 	}
 
 	async addColleague(body: EditWorkspaceColleagueDto) {

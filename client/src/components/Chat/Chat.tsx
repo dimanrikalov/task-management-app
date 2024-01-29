@@ -16,13 +16,14 @@ import { useErrorContext } from '../../contexts/error.context';
 import { TbLayoutSidebarLeftExpandFilled } from 'react-icons/tb';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { MESSAGE_ENDPOINTS, METHODS, request } from '../../utils/requester';
+import { SOCKET_EVENTS, useSocketConnection } from '@/contexts/socketConnection.context';
 
 export interface IMessage {
 	id: number;
-	timestamp: Date;
 	content: string;
 	username: string;
 	writtenBy: number;
+	timestamp: string;
 	profileImgPath: string;
 }
 
@@ -38,6 +39,7 @@ export const Chat = ({
 	toggleIsChatOpen
 }: IChatProps) => {
 	const { showError } = useErrorContext();
+	const { socket } = useSocketConnection();
 	const { data: userData, accessToken } =
 		useUserContext() as IUserContextSecure;
 	const inputRef = useRef<HTMLInputElement | null>(null);
@@ -49,6 +51,22 @@ export const Chat = ({
 	const [refetchMessages, setRefetchMessages] = useState<boolean>(true);
 	const [showTagsDropdown, setShowTagsDropdown] = useState<boolean>(false)
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+
+
+	useEffect(() => {
+		if (!socket) return;
+
+		const handleChatModified = () => {
+			setRefetchMessages(true);
+		}
+
+		socket.on(SOCKET_EVENTS.MESSAGE_SENT, handleChatModified)
+
+		return () => {
+			socket.off(SOCKET_EVENTS.MESSAGE_SENT, handleChatModified)
+		}
+	}, [socket]);
+
 
 	useEffect(() => {
 		if (!inputRef.current) return;
@@ -111,7 +129,8 @@ export const Chat = ({
 	}, [inputValue, boardUsers]);
 
 	useEffect(() => {
-		setIsLoading(true);
+		if (!refetchMessages) return;
+
 		const getChatMessages = async () => {
 			try {
 				const data = await request({
@@ -122,7 +141,7 @@ export const Chat = ({
 
 				if ('errorMessage' in data) {
 					throw new Error(
-						`${data.errorMessage}. 
+						`${data.errorMessage} 
 						Check your notifications for 
 						potential modifications to this board.`
 					);
@@ -135,7 +154,7 @@ export const Chat = ({
 						profileImgPath
 					};
 				});
-
+				console.log(messages);
 				setChatMessages(messages);
 			} catch (err: any) {
 				console.log(err.message);
@@ -143,12 +162,9 @@ export const Chat = ({
 			}
 		};
 
-		if (refetchMessages) {
-			getChatMessages();
-			setRefetchMessages(false);
-		}
-
+		getChatMessages();
 		setIsLoading(false);
+		setRefetchMessages(false);
 	}, [refetchMessages]);
 
 	const handleSelect: React.ReactEventHandler<HTMLInputElement> =

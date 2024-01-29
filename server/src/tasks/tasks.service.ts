@@ -120,6 +120,8 @@ export class TasksService {
 				'You do not have access to this board!'
 			);
 		}
+
+		return { user: userData, board };
 	}
 
 	async getById(id: number) {
@@ -292,8 +294,6 @@ export class TasksService {
 			});
 		}
 
-		// Emit event with boardId to cause everyone on the board to refetch
-
 		return { ...task, steps: body.steps };
 	}
 
@@ -352,7 +352,10 @@ export class TasksService {
 		});
 
 		//if the user that deletes the task is different than the assignee, notify the assignee
-		if (body.userData.id !== body.taskData.assigneeId) {
+		if (
+			body.userData.id !== body.taskData.assigneeId &&
+			body.taskData.assigneeId !== 0
+		) {
 			await this.notificationsService.addNotification({
 				userId: body.taskData.assigneeId,
 				message: `${body.userData.username} has deleted task "${body.taskData.title}"
@@ -395,6 +398,8 @@ export class TasksService {
 				columnId
 			}
 		});
+
+		return Array.from(new Set(tasks.map((task) => task.assigneeId)));
 	}
 
 	async edit(body: ModifyTaskDto) {
@@ -503,51 +508,49 @@ export class TasksService {
 			}
 		});
 
-		if (
-			body.userData.id !== body.payload.assigneeId &&
-			body.payload.assigneeId !== body.taskData.assigneeId
-		) {
+		//if the task has a new assignee
+		const isThereNewAssignee = oldAssignee.id !== newAssignee.id;
+		const isUserNewAssignee = body.userData.id === newAssignee.id;
+		const isTaskAssigneeModifyingTask = body.userData.id === oldAssignee.id;
+
+		const userIdsToNotify: { userId: number; message: string }[] = [];
+
+		if (isThereNewAssignee) {
 			//notify the user that is no longer assigned to the task
+			const message = `Task "${body.taskData.title}" which was previously
+			assigned to you is now assigned to ${newAssignee.username}.`;
 			await this.notificationsService.addNotification({
-				userId: body.taskData.assigneeId,
-				message: `Task "${body.taskData.title}" which was previously
-				 assigned to you is now assigned to ${newAssignee.username}.`
+				message,
+				userId: body.taskData.assigneeId
 			});
+			userIdsToNotify.push({ userId: oldAssignee.id, message });
 
-			//notify the user that is newly assigned to the task
-			await this.notificationsService.addNotification({
-				userId: newAssignee.id,
-				message: `Task "${body.taskData.title}" which was previously
-				assigned to ${oldAssignee.username} is now assigned to you.`
-			});
+			if (!isUserNewAssignee) {
+				const message = `Task "${body.taskData.title}" which was previously
+				assigned to ${oldAssignee.username} is now assigned to you.`;
+				//notify the user that is newly assigned to the task
+				await this.notificationsService.addNotification({
+					message,
+					userId: newAssignee.id
+				});
+				userIdsToNotify.push({ userId: newAssignee.id, message });
+			}
+		} else {
+			if (!isTaskAssigneeModifyingTask) {
+				const message = `Task "${body.taskData.title}" assigned
+				to you was modified by ${body.userData.username}.`;
+				await this.notificationsService.addNotification({
+					message,
+					userId: body.taskData.assigneeId
+				});
+				userIdsToNotify.push({ userId: oldAssignee.id, message });
+			}
 		}
 
-		//if the user that edits the task is different than the assignee, notify the assignee
-		// using body.taskData.assigneeId ensures we send the notification to the previous assignee
-		const isThereNewAssignee =
-			body.payload.assigneeId !== body.taskData.assigneeId;
-
-		if (
-			isThereNewAssignee &&
-			body.userData.id !== body.payload.assigneeId
-		) {
-			await this.notificationsService.addNotification({
-				userId: body.payload.assigneeId,
-				message: `${body.userData.username} has modified task "${body.taskData.title}"
-				 which was assigned to you inside board "${body.boardData.name}".`
-			});
-		} else if (
-			!isThereNewAssignee &&
-			body.userData.id !== body.taskData.assigneeId
-		) {
-			await this.notificationsService.addNotification({
-				userId: body.taskData.assigneeId,
-				message: `${body.userData.username} has modified task "${body.taskData.title}"
-				 which was assigned to you inside board "${body.boardData.name}".`
-			});
-		}
-
-		return { ...task, steps };
+		return {
+			userIdsToNotify,
+			task: { ...task, steps }
+		};
 	}
 
 	async complete(body: CompleteTaskDto) {
@@ -569,23 +572,13 @@ export class TasksService {
 			}
 		});
 
-		const boardUsersId = await this.getBoardUsers(
-			body.boardData,
-			body.workspaceData,
-			body.userData.id
-		);
-
 		//notify the assignee if someone else moves their task as complete
 		if (body.userData.id !== body.taskData.assigneeId) {
-			await Promise.all(
-				boardUsersId.map(async (userId) => {
-					await this.notificationsService.addNotification({
-						userId,
-						message: `${body.userData.id} has marked task "${body.taskData.title}"
-							inside board "${body.boardData.name}" as complete.`
-					});
-				})
-			);
+			this.notificationsService.addNotification({
+				userId: body.taskData.assigneeId,
+				message: `${body.userData.username} has marked task
+				 "${body.taskData.title}" that was assigned to you as complete.`
+			});
 		}
 	}
 
@@ -811,5 +804,9 @@ export class TasksService {
 				position: body.destinationPosition
 			}
 		});
+	}
+
+	async sendNotification(userId: number, message: string) {
+		await this.notificationsService.addNotification({ userId, message });
 	}
 }

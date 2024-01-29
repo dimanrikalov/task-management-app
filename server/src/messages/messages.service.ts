@@ -29,7 +29,7 @@ export class MessagesService {
 				}
 			},
 			orderBy: {
-				timestamp: { sort: 'asc' }
+				timestamp: { sort: 'desc' }
 			}
 		});
 
@@ -50,7 +50,7 @@ export class MessagesService {
 	}
 
 	async create(body: CreateMessageDto) {
-		await this.prismaService.message.create({
+		const message = await this.prismaService.message.create({
 			data: {
 				content: body.content,
 				boardId: body.boardData.id,
@@ -67,6 +67,7 @@ export class MessagesService {
 				});
 			})
 		);
+		return message;
 	}
 
 	async deleteAll(boardId: number) {

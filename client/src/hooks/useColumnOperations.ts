@@ -37,6 +37,11 @@ export const useColumnOperations = ({
 
 	const isDefaultColumn = defaultColumnNames.includes(title.toLowerCase());
 
+	//handle the case where some other user changes the column name
+	useEffect(() => {
+		setIsInputModeOn(title === defaultNewColumnName);
+	}, [title]);
+
 	useEffect(() => {
 		if (!isInputModeOn || title === defaultNewColumnName) return;
 		setInputValue(title);

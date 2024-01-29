@@ -3,8 +3,8 @@
 	height: 38px;
 	display: flex;
 	cursor: pointer;
-	align-items: center;
 	border-radius: 9px;
+	align-items: center;
 	justify-content: center;
 	transition: 200ms ease-in-out;
 	background-color: var(--blue-main);

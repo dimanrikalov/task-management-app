@@ -34,13 +34,13 @@ export const Message = ({ content, profileImgPath, username, isUser }: IMessageP
 					</p>
 				}
 
-				<p className={classNames(
-					styles.username, isUser && styles.invert,
-					showUsername && styles.showUsername
-				)}
-				>{username}
-				</p>
 			</div>
+			<p className={classNames(
+				styles.username, isUser && styles.invert,
+				showUsername && styles.showUsername
+			)}
+			>{username}
+			</p>
 			<div className={classNames(styles.userInfo, isUser && styles.invert)}>
 
 				<div

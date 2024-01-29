@@ -9,6 +9,7 @@ import { StepsService } from 'src/steps/steps.service';
 import { TasksService } from 'src/tasks/tasks.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { ColumnsController } from './columns.controller';
+import { SocketGateway } from 'src/socket/socket.gateway';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { BoardCheckMiddleware } from 'src/middlewares/boardCheck.middleware';
 import { ColumnCheckMiddleware } from 'src/middlewares/columnCheck.middleware';
@@ -18,6 +19,7 @@ import { NotificationsService } from 'src/notifications/notifications.service';
 	providers: [
 		TasksService,
 		StepsService,
+		SocketGateway,
 		ColumnsService,
 		NotificationsService
 	],

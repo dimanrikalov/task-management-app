@@ -1,8 +1,7 @@
 import {
 	Injectable,
 	ConflictException,
-	ForbiddenException,
-	UnauthorizedException
+	ForbiddenException
 } from '@nestjs/common';
 import { MoveColumnDto } from './dtos/moveColumn.dto';
 import { TasksService } from 'src/tasks/tasks.service';
@@ -10,6 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateColumnDto } from './dtos/createColumn.dto';
 import { RenameColumnDto } from './dtos/renameColumn.dto';
 import { DeleteColumnDto } from './dtos/deleteColumn.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 const defaultColumnNames = ['to do', 'doing', 'done'];
 
@@ -18,6 +18,7 @@ export class ColumnsService {
 	constructor(
 		private readonly tasksService: TasksService,
 		private readonly prismaService: PrismaService,
+		private readonly notificationsService: NotificationsService
 	) {}
 
 	async create(body: CreateColumnDto) {
@@ -83,12 +84,30 @@ export class ColumnsService {
 		});
 
 		//the task deletion is cascading
-		await this.tasksService.deleteMany(body.columnData.id);
+		const affectedUsers = await this.tasksService.deleteMany(
+			body.columnData.id
+		);
 		await this.prismaService.column.delete({
 			where: {
 				id: body.columnData.id
 			}
 		});
+
+		const uniqueAffectedUsers = affectedUsers.filter(
+			(userId) => userId !== body.userData.id
+		);
+
+		await Promise.all(
+			uniqueAffectedUsers.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has deleted
+					 a column that contains a task assigned to you.`
+				});
+			})
+		);
+
+		return uniqueAffectedUsers;
 	}
 
 	async deleteMany(boardId: number) {

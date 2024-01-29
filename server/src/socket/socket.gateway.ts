@@ -24,13 +24,21 @@ export const generateBoardRoomName = (boardId: number) => {
 };
 
 export enum EVENTS {
-	ANY = '*',
+	TASK_MOVED = 'taskMoved',
+	MESSAGE_SENT = 'messageSent',
+	TASK_CREATED = 'taskCreated',
+	TASK_DELETED = 'taskDeleted',
+	COLUMN_MOVED = 'columnMoved',
 	USER_CREATED = 'userCreated',
 	USER_DELETED = 'userDeleted',
+	TASK_MODIFIED = 'taskModifed',
 	NOTIFICATION = 'notification',
 	BOARD_CREATED = 'boardCreated',
 	BOARD_RENAMED = 'boardRenamed',
 	BOARD_DELETED = 'boardDeleted',
+	COLUMN_RENAMED = 'columnRenamed',
+	COLUMN_DELETED = 'columnDeleted',
+	COLUMN_CREATED = 'columnCreated',
 	WORKSPACE_CREATED = 'workspaceCreated',
 	WORKSPACE_RENAMED = 'workspaceRenamed',
 	WORKSPACE_DELETED = 'workspaceDeleted',
@@ -130,26 +138,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			socketId: client.id
 		};
 
-		// console.log(this.clients);
-
-		console.log(
-			'Workspace rooms created:',
-			accessibleWorkspaces
-				.map((workspace) => `workspace-${workspace.id}`)
-				.join(', ')
-		);
-
-		console.log(
-			'Boards rooms created:',
-			accessibleBoards.map((board) => `board-${board.id}`).join(', ')
-		);
+		this.printRooms();
 
 		client.emit('connected', {
 			message: 'You are now connected!',
 			user: {
 				userId: user.id,
 				username: user.username
-				// Add any other user data you want to send
 			}
 		});
 	}
@@ -178,7 +173,18 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	printRooms() {
-		console.log(this.server.sockets.adapter.rooms);
+		const rooms = this.server.sockets.adapter.rooms;
+
+		rooms.forEach((_, roomId) => {
+			console.log(`Room: ${roomId}`);
+			const clients = this.getRoomMembers(roomId);
+			clients.forEach((clientId: string) => {
+				const client = this.clients[clientId];
+				console.log(
+					`  Client ID: ${clientId}, User ID: ${client.userId}`
+				);
+			});
+		});
 	}
 
 	getRoomMembers(roomId: string) {
@@ -188,11 +194,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const socketIds = Array.from(room);
 
 		return Object.entries(this.clients).map(([key, value]) => {
-			console.log(key, value);
+			// console.log(key, value);
 			if (socketIds.some((socketId) => socketId === value.socketId)) {
 				return key;
 			}
 		});
+	}
+
+	getClientSocket(userId: number) {
+		const client = this.clients[userId.toString()];
+		return client.socketId;
 	}
 
 	private getUserBySocketId(socketId: string): ClientData | undefined {

@@ -1,7 +1,6 @@
 import {
 	Get,
 	Put,
-	Req,
 	Res,
 	Post,
 	Body,
@@ -13,7 +12,13 @@ import {
 import * as fs from 'fs';
 import { join } from 'path';
 import { v4 as uuid } from 'uuid';
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import {
+	EVENTS,
+	SocketGateway,
+	generateBoardRoomName,
+	generateWorkspaceRoomName
+} from 'src/socket/socket.gateway';
 import { BaseUsersDto } from './dtos/base.dto';
 import { UsersService } from './users.service';
 import { FindUserDto } from './dtos/findUser.dto';
@@ -29,7 +34,10 @@ import { Headers, UploadedFile } from '@nestjs/common/decorators';
 
 @Controller('')
 export class UsersController {
-	constructor(private readonly usersService: UsersService) {}
+	constructor(
+		private readonly usersService: UsersService,
+		private readonly socketGateway: SocketGateway
+	) {}
 
 	@Get('/user')
 	async getUser(@Res() res: Response, @Body() body: BaseUsersDto) {
@@ -106,8 +114,9 @@ export class UsersController {
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode).json({ errorMessage });
+			return res
+				.status(err.response?.statusCode || 400)
+				.json({ errorMessage: err.message });
 		}
 	}
 
@@ -122,8 +131,9 @@ export class UsersController {
 				message: 'Signed-in successfully!'
 			});
 		} catch (err: any) {
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode).json({ errorMessage });
+			return res
+				.status(err.response?.statusCode || 400)
+				.json({ errorMessage: err.message });
 		}
 	}
 
@@ -179,8 +189,9 @@ export class UsersController {
 				message: 'User image updated successfully!'
 			});
 		} catch (err: any) {
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode || 400).json({ errorMessage });
+			return res
+				.status(err.response?.statusCode || 400)
+				.json({ errorMessage: err.message });
 		}
 	}
 
@@ -215,7 +226,60 @@ export class UsersController {
 	@Delete('/users/delete')
 	async deleteUser(@Res() res: Response, @Body() body: BaseUsersDto) {
 		try {
-			await this.usersService.delete(body);
+			const { affectedUserIds, affectedWorkspaceIds, affectedBoardIds } =
+				await this.usersService.delete(body);
+
+			//create temp room and add users to it
+			const tempRoomName = `user-${body.userData.id}-deletion-affected-users`;
+			affectedUserIds.forEach((userId) => {
+				this.socketGateway.addToRoom(userId.toString(), tempRoomName);
+			});
+
+			//emit event
+			this.socketGateway.server
+				.to(tempRoomName)
+				.emit(EVENTS.USER_DELETED);
+
+			this.socketGateway.server
+				.to(tempRoomName)
+				.emit(EVENTS.NOTIFICATION, {
+					message: `${body.userData.username} has deleted their
+					 profile and all of their workspaces and boards respectively.`
+				});
+
+			//delete temp room
+			this.socketGateway.server
+				.in(tempRoomName)
+				.socketsLeave(tempRoomName);
+
+			//emit to user colleagues from other boards and workspaces
+			affectedWorkspaceIds.forEach((workspaceId) => {
+				const workspaceRoomName =
+					generateWorkspaceRoomName(workspaceId);
+				this.socketGateway.server
+					.to(workspaceRoomName)
+					.emit(EVENTS.USER_DELETED);
+			});
+
+			affectedBoardIds.forEach((boardId) => {
+				const boardRoomName = generateBoardRoomName(boardId);
+				this.socketGateway.server
+					.to(boardRoomName)
+					.emit(EVENTS.USER_DELETED);
+			});
+
+			//remove the socket from any room
+			const rooms = this.socketGateway.server.sockets.adapter.rooms;
+			rooms.forEach((_, room) => {
+				this.socketGateway.removeFromRoom(
+					body.userData.id.toString(),
+					room
+				);
+			});
+
+			//remove the deleted user
+			delete this.socketGateway.clients[body.userData.id];
+
 			return res.status(200).json({
 				message: 'User deleted successfully!'
 			});

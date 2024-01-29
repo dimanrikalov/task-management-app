@@ -23,7 +23,6 @@ export const useFetchNotifications = () => {
 		if (!refetchNotifications) return;
 
 		const fetchNotifications = async () => {
-			setIsLoading(true);
 			try {
 				const data = await request({
 					accessToken,
@@ -40,10 +39,10 @@ export const useFetchNotifications = () => {
 				showError(err.message);
 				console.log(err.message);
 			}
-			setIsLoading(false);
 		};
 
 		fetchNotifications();
+		setIsLoading(false);
 		setRefetchNotifications(false);
 	}, [accessToken, refetchNotifications]);
 

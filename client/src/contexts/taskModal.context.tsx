@@ -38,13 +38,7 @@ export const useTaskModalContext = () =>
 export const TaskModalContextProvider: React.FC<{
 	children: React.ReactNode;
 }> = ({ children }) => {
-	const { boardData } = useBoardContext();
-	const { selectedTask } = useBoardContext();
-	const [matches, setMatches] = useState<IUser[]>([])
-	const { accessToken, data: userData } = useUserContext();
-	const [boardUsers, setBoardUsers] = useState<IUser[]>([]);
-	const [assigneeId, setAssigneeId] = useState<number | null>(null);
-	const [inputValues, setInputValues] = useState<IInputState>({
+	const initalState = {
 		step: '',
 		title: '',
 		effort: '',
@@ -56,13 +50,22 @@ export const TaskModalContextProvider: React.FC<{
 		minutesSpent: '',
 		estimatedHours: '',
 		estimatedMinutes: ''
-	});
+	}
+	const { boardData } = useBoardContext();
+	const { selectedTask } = useBoardContext();
+	const [matches, setMatches] = useState<IUser[]>([])
+	const { accessToken, data: userData } = useUserContext();
+	const [boardUsers, setBoardUsers] = useState<IUser[]>([]);
+	const [isFirstTime, setIsFirstTime] = useState<boolean>(true);
+	const [assigneeId, setAssigneeId] = useState<number | null>(null);
+	const [inputValues, setInputValues] = useState<IInputState>(initalState);
 
 	useEffect(() => {
 		if (!selectedTask) return;
 		const username =
-			boardUsers.find((user) => user.id === selectedTask.assigneeId)
-				?.username || '';
+			boardUsers.find((user) =>
+				user.id === selectedTask.assigneeId
+			)?.username || '';
 		const image = selectedTask.attachmentImgPath
 			? generateFileFromBase64(
 				selectedTask.attachmentImgPath,
@@ -83,7 +86,7 @@ export const TaskModalContextProvider: React.FC<{
 			estimatedHours: selectedTask.estimatedHours.toString(),
 			estimatedMinutes: selectedTask.estimatedMinutes.toString()
 		});
-	}, [selectedTask]);
+	}, [selectedTask, boardUsers]);
 
 	useEffect(() => {
 		if (assigneeId) {
@@ -91,7 +94,7 @@ export const TaskModalContextProvider: React.FC<{
 			return;
 		}
 		setMatches(boardUsers);
-	}, [assigneeId, boardUsers]);
+	}, [assigneeId]);
 
 	useEffect(() => {
 		if (!userData || !boardData) return;
@@ -113,14 +116,11 @@ export const TaskModalContextProvider: React.FC<{
 					username: user.id === userData.id ? 'Me' : user.username,
 					profileImagePath: generateImgUrl(user.profileImagePath)
 				}));
-				
+
 				const matchingUsers = users.filter((user) =>
-				user.username.toLowerCase()
-				.includes(inputValues.username.toLowerCase())
+					user.username.toLowerCase()
+						.includes(inputValues.username.toLowerCase())
 				);
-				
-				setMatches(matchingUsers);
-				setBoardUsers(matchingUsers);
 
 				const assignee = matchingUsers.find(
 					(user) =>
@@ -128,8 +128,16 @@ export const TaskModalContextProvider: React.FC<{
 						inputValues.username.trim().toLowerCase()
 				);
 
+				if (isFirstTime) {
+					setBoardUsers(users);
+					setIsFirstTime(false);
+				}
+
+				setMatches(matchingUsers);
+
 				if (assignee) {
 					setAssigneeId(assignee.id);
+					setMatches([]);
 					return;
 				}
 

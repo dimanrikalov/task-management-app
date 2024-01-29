@@ -30,7 +30,7 @@ export const BoardContextProvider: React.FC<{ children: React.ReactNode }> = ({
 		boardData,
 		isLoading,
 		setBoardData,
-		workspaceUsers,
+		workspaceUsers
 	} = useFetchBoardData();
 	const { callForConfetti, shouldConfettiExplode } = useConfetti();
 	const [selectedTask, setSelectedTask] = useState<ITask | null>(null);

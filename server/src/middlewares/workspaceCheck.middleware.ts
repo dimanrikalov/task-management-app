@@ -56,8 +56,9 @@ export class WorkspaceCheckMiddleware implements NestMiddleware {
 			req.body.userIsWorkspaceOwner = userIsWorkspaceOwner;
 			next();
 		} catch (err: any) {
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode || 400).json({ errorMessage });
+			return res
+				.status(err.response?.statusCode || 400)
+				.json({ errorMessage: err.message });
 		}
 	}
 }

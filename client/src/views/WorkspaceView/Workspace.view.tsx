@@ -129,18 +129,21 @@ export const WorkspaceView = () => {
 											size={24}
 										/>
 									</EntryModificationButton>
-									<EntryModificationButton
-										onClick={() =>
-											operations.toggleModal(
-												MODAL_STATES_KEYS.DELETE_WORKSPACE
-											)
-										}
-									>
-										<MdDeleteForever
-											className={styles.icon}
-											size={26}
-										/>
-									</EntryModificationButton>
+									{
+										state.userData.id === state.workspaceData.workspaceOwner.id &&
+										<EntryModificationButton
+											onClick={() =>
+												operations.toggleModal(
+													MODAL_STATES_KEYS.DELETE_WORKSPACE
+												)
+											}
+										>
+											<MdDeleteForever
+												className={styles.icon}
+												size={26}
+											/>
+										</EntryModificationButton>
+									}
 								</>
 							)}
 					</div>

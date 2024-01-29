@@ -438,6 +438,27 @@ export class UsersService {
 			}
 		});
 
+		//get the rooms of all boards and workspaces the user took part in
+		const affectedWorkspaceIds = await this.prismaService.user_Workspace
+			.findMany({
+				where: {
+					userId: body.userData.id
+				}
+			})
+			.then((userWorkspaces) =>
+				userWorkspaces.map((userWorkspace) => userWorkspace.workspaceId)
+			);
+
+		const affectedBoardIds = await this.prismaService.user_Board
+			.findMany({
+				where: {
+					userId: body.userData.id
+				}
+			})
+			.then((userBoards) =>
+				userBoards.map((userBoards) => userBoards.boardId)
+			);
+
 		//delete all relationships with other users' boards
 		await this.prismaService.user_Board.deleteMany({
 			where: {
@@ -453,7 +474,9 @@ export class UsersService {
 		});
 
 		//delete user workspaces
-		await this.workspaceService.deleteMany(body.userData.id);
+		const affectedUserIds = await this.workspaceService.deleteMany(
+			body.userData.id
+		);
 
 		//delete user image if they have one
 		const userToDelete = await this.prismaService.user.findUnique({
@@ -479,5 +502,17 @@ export class UsersService {
 				id: body.userData.id
 			}
 		});
+
+		Promise.all(
+			affectedUserIds.map(async (userId) => {
+				await this.notificationsService.addNotification({
+					userId,
+					message: `${body.userData.username} has deleted their
+					 profile and all of their workspaces and boards respectively.`
+				});
+			})
+		);
+
+		return { affectedUserIds, affectedWorkspaceIds, affectedBoardIds };
 	}
 }

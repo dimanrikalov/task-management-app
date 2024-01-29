@@ -35,7 +35,7 @@ export const useFetchBoardData = () => {
 	const { showError } = useErrorContext();
 	const { socket } = useSocketConnection();
 	const boardId = Number(pathname.split('/').pop());
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [shouldRefetch, setShouldRefetch] = useState<boolean>(true);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
@@ -50,27 +50,54 @@ export const useFetchBoardData = () => {
 			setShouldRefetch(true);
 		};
 
-		/*
-		listen for 
-			task created / deleted / modified / moved 
-			column created / deleted / modified / moved
+		//USER EVENT
+		socket.on(SOCKET_EVENTS.USER_DELETED, handleBoardModified);
 
-		*/
+		//TASK EVENTS
+		socket.on(SOCKET_EVENTS.TASK_MOVED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.TASK_CREATED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.TASK_DELETED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.TASK_MODIFIED, handleBoardModified);
+
+		//COLUMN EVENTS
+		socket.on(SOCKET_EVENTS.COLUMN_MOVED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.COLUMN_RENAMED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.COLUMN_CREATED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.COLUMN_DELETED, handleBoardModified);
+
+		//BOARD EVENTS
+		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED, handleBoardModified);
+
+		//WORKSPACE EVENTS
 		socket.on(
 			SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
 			handleBoardModified
 		);
-		socket.on(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
-		
-		//NOT A GOOD IDEA
-		// socket.on(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
-		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED, handleBoardModified);
-		socket.on(SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED, handleBoardModified);
-		// socket.on(SOCKET_EVENTS.WORKSPACE_DELETED, handleBoardModified);
-		// socket.on(SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.WORKSPACE_DELETED, handleBoardModified);
+		socket.on(SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED, handleBoardModified);
 
 		return () => {
-			//NOT A GOOD IDEA
+			//USER EVENT
+			socket.off(SOCKET_EVENTS.USER_DELETED, handleBoardModified);
+
+			//TASK EVENTS
+			socket.off(SOCKET_EVENTS.TASK_MOVED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.TASK_CREATED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.TASK_DELETED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.TASK_MODIFIED, handleBoardModified);
+
+			//COLUMN EVENTS
+			socket.off(SOCKET_EVENTS.COLUMN_MOVED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.COLUMN_RENAMED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.COLUMN_CREATED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.COLUMN_DELETED, handleBoardModified);
+
+			//BOARD EVENTS
+			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+			socket.off(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
 			socket.off(
 				SOCKET_EVENTS.BOARD_COLLEAGUE_ADDED,
 				handleBoardModified
@@ -79,25 +106,32 @@ export const useFetchBoardData = () => {
 				SOCKET_EVENTS.BOARD_COLLEAGUE_DELETED,
 				handleBoardModified
 			);
-			// socket.off(
-			// 	SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
-			// 	handleBoardModified
-			// );
-			// socket.off(
-			// 	SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
-			// 	handleBoardModified
-			// );
-			// socket.off(SOCKET_EVENTS.BOARD_RENAMED, handleBoardModified);
-			socket.off(SOCKET_EVENTS.BOARD_DELETED, handleBoardModified);
+
+			//WORKSPACE EVENTS
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_DELETED,
+				handleBoardModified
+			);
 			socket.off(SOCKET_EVENTS.WORKSPACE_DELETED, handleBoardModified);
+			socket.off(
+				SOCKET_EVENTS.WORKSPACE_COLLEAGUE_ADDED,
+				handleBoardModified
+			);
 		};
 	}, [socket]);
+
+	useEffect(() => {
+		if (!boardData) {
+			setIsLoading(true);
+			return;
+		}
+		setIsLoading(false);
+	}, [boardData]);
 
 	useEffect(() => {
 		if (!shouldRefetch) return;
 		const fetchBoardData = async () => {
 			try {
-				setIsLoading(true);
 				const newBoardData = (await request({
 					accessToken,
 					method: METHODS.GET,
@@ -106,7 +140,7 @@ export const useFetchBoardData = () => {
 
 				if ('errorMessage' in newBoardData) {
 					throw new Error(
-						`${newBoardData.errorMessage}. 
+						`${newBoardData.errorMessage} 
 						Check your notifications for 
 						potential modifications to this board.`
 					);
@@ -161,12 +195,11 @@ export const useFetchBoardData = () => {
 				showError(err.message);
 				navigate(-1);
 			}
-			setIsLoading(false);
 		};
 
 		fetchBoardData();
 		setShouldRefetch(false);
-	}, [shouldRefetch]);
+	}, [shouldRefetch, boardData]);
 
 	return {
 		isLoading,

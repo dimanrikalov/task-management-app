@@ -91,15 +91,17 @@ export const BoardView = () => {
 					<div className={styles.header}>
 						<div className={styles.titleDiv}>
 							{state.isInputModeOn ? (
-								<EntryModificationForm
-									name="board-name-input"
-									value={state.boardNameInput}
-									placeholder="Enter board name"
-									onSubmit={operations.handleBoardNameChange}
-									onChange={
-										operations.handleBoardNameInputChange
-									}
-								/>
+								<div>
+									<EntryModificationForm
+										name="board-name-input"
+										value={state.boardNameInput}
+										placeholder="Enter board name"
+										onSubmit={operations.handleBoardNameChange}
+										onChange={
+											operations.handleBoardNameInputChange
+										}
+									/>
+								</div>
 							) : (
 								<h2
 									className={styles.boardName}
@@ -115,18 +117,18 @@ export const BoardView = () => {
 							<BackButton onClick={operations.goBack} />
 							{state.boardData.workspace.name !==
 								'Personal Workspace' && (
-								<EntryModificationButton
-									onClick={
-										operations.toggleIsEditBoardUsersModalOpen
-									}
-								>
-									<FaUsersCog
-										className={styles.icon}
-										size={24}
-									/>
-								</EntryModificationButton>
-							)}
-							<EntryModificationButton onClick={() => {}}>
+									<EntryModificationButton
+										onClick={
+											operations.toggleIsEditBoardUsersModalOpen
+										}
+									>
+										<FaUsersCog
+											className={styles.icon}
+											size={24}
+										/>
+									</EntryModificationButton>
+								)}
+							<EntryModificationButton onClick={() => { }}>
 								<VscGraph
 									size={22}
 									className={classNames(

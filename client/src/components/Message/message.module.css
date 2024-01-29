@@ -2,6 +2,7 @@
 	gap: 9px;
 	width: 85%;
 	display: flex;
+	position: relative;
 	align-self: flex-start;
 	flex-direction: column;
 }
@@ -14,7 +15,6 @@
 	padding: 16px;
 	max-width: 93%;
 	margin-left: 32px;
-	position: relative;
 	width: fit-content;
 	align-self: flex-start;
 	border-radius: 16px 16px 16px 0px;
@@ -44,8 +44,8 @@
 
 .username {
 	width: 100%;
+	bottom: 0px;
 	left: -150px;
-	bottom: -46px;
 	text-align: start;
 	position: absolute;
 	color: transparent;
@@ -54,7 +54,7 @@
 }
 
 .showUsername {
-	left: 16px;
+	left: 50px;
 	color: grey;
 }
 
@@ -64,7 +64,7 @@
 }
 
 .showUsername.invert {
-	left: -16px;
+	left: -50px;
 }
 
 .text {

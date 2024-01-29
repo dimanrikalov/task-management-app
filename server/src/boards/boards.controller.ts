@@ -86,8 +86,9 @@ export class BoardsController {
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode || 400).json({ errorMessage });
+			return res
+				.status(err.response?.statusCode || 400)
+				.json({ errorMessage: err.message });
 		}
 	}
 
@@ -99,9 +100,15 @@ export class BoardsController {
 			//board room already includes workspace users
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			//emit a notification to users with board access
+			// Create a temporary room
+			const tempRoom = `temp-room-${body.userData.id}`;
+
+			// Add user ID to the temporary room
+			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+
 			this.socketGateway.server
 				.to(boardRoomName)
+				.except(tempRoom)
 				.emit(EVENTS.BOARD_DELETED);
 
 			//emit a notification to users with board and workspace access
@@ -117,13 +124,17 @@ export class BoardsController {
 				.in(boardRoomName)
 				.socketsLeave(boardRoomName);
 
+			// Leave the temporary room after emitting events
+			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+
 			return res.status(200).json({
 				message: 'Board deleted successfully!'
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode || 400).json({ errorMessage });
+			return res
+				.status(err.response?.statusCode || 400)
+				.json({ errorMessage: err.message });
 		}
 	}
 
@@ -145,9 +156,15 @@ export class BoardsController {
 			//board room already includes workspace users
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			//cause refetch
+			// Create a temporary room
+			const tempRoom = `temp-room-${body.userData.id}`;
+
+			// Add user ID to the temporary room
+			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+
 			this.socketGateway.server
 				.to(boardRoomName)
+				.except(tempRoom)
 				.emit(EVENTS.BOARD_RENAMED);
 
 			//show notification
@@ -157,6 +174,9 @@ export class BoardsController {
 					message: `${body.userData.username} has renamed
 					board "${body.boardData.name}" to "${body.newName}".`
 				});
+
+			// Leave the temporary room after emitting events
+			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
 
 			return res.status(200).json({
 				message: 'Board renamed successfully!'
@@ -175,7 +195,9 @@ export class BoardsController {
 		@Body() body: GetBoardColleaguesDto
 	) {
 		try {
-			const users = await this.boardsService.getBoardUsers(body.boardData);
+			const users = await this.boardsService.getBoardUsers(
+				body.boardData
+			);
 
 			return res.status(200).json({
 				users,
@@ -200,15 +222,21 @@ export class BoardsController {
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
+			// Create a temporary room
+			const tempRoom = `temp-room-${body.userData.id}`;
+
+			// Add user ID to the temporary room
+			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+
 			//add new colleague BEFORE the events have been emitted
 			this.socketGateway.addToRoom(
 				body.colleagueId.toString(),
 				boardRoomName
 			);
 
-			//emit events to the board users
 			this.socketGateway.server
 				.to(boardRoomName)
+				.except(tempRoom)
 				.emit(EVENTS.BOARD_COLLEAGUE_ADDED);
 
 			this.socketGateway.server
@@ -218,13 +246,17 @@ export class BoardsController {
 					 ${colleagueUsername} to board "${body.boardData.name}".`
 				});
 
+			// Leave the temporary room after emitting events
+			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+
 			return res.status(200).json({
 				message: 'Colleague added to board successfully!'
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode || 400).json({ errorMessage });
+			return res
+				.status(err.response?.statusCode || 400)
+				.json({ errorMessage: err.message });
 		}
 	}
 
@@ -239,8 +271,15 @@ export class BoardsController {
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
+			// Create a temporary room
+			const tempRoom = `temp-room-${body.userData.id}`;
+
+			// Add user ID to the temporary room
+			this.socketGateway.addToRoom(body.userData.id.toString(), tempRoom);
+
 			this.socketGateway.server
 				.to(boardRoomName)
+				.except(tempRoom)
 				.emit(EVENTS.BOARD_COLLEAGUE_DELETED);
 
 			this.socketGateway.server
@@ -256,13 +295,17 @@ export class BoardsController {
 				boardRoomName
 			);
 
+			// Leave the temporary room after emitting events
+			this.socketGateway.server.in(tempRoom).socketsLeave(tempRoom);
+
 			return res.status(200).json({
 				message: 'Colleague removed from board successfully!'
 			});
 		} catch (err: any) {
 			console.log(err.message);
-			const { statusCode, message: errorMessage } = err.response;
-			return res.status(statusCode || 400).json({ errorMessage });
+			return res
+				.status(err.response?.statusCode || 400)
+				.json({ errorMessage: err.message });
 		}
 	}
 }
