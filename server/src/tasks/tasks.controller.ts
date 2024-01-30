@@ -58,7 +58,8 @@ export class TasksController {
 				.emit(EVENTS.TASK_CREATED);
 
 			if (body.userData.id !== body.assigneeId) {
-				const clientEntry = this.socketGateway.clients[body.assigneeId];
+				const clientEntry =
+					this.socketGateway.clients[body.assigneeId.toString()];
 
 				clientEntry?.socket.emit(EVENTS.NOTIFICATION, {
 					message: `${body.userData.username} has assigned you
@@ -103,9 +104,22 @@ export class TasksController {
 				.except(tempRoom)
 				.emit(EVENTS.TASK_MOVED);
 
-			if (body.userData.id !== body.taskData.assigneeId) {
+			//Make sure to only notify assignee if they still have access to the board
+			const roomMembers =
+				this.socketGateway.getRoomMembers(boardRoomName);
+
+			const isAssigneePartOfBoard = roomMembers.some(
+				(userId) => userId === body.taskData.assigneeId.toString()
+			);
+
+			if (
+				body.userData.id !== body.taskData.assigneeId &&
+				isAssigneePartOfBoard
+			) {
 				const clientEntry =
-					this.socketGateway.clients[body.taskData.assigneeId];
+					this.socketGateway.clients[
+						body.taskData.assigneeId.toString()
+					];
 
 				// Create notification entry
 				await this.tasksService.sendNotification(
@@ -159,7 +173,8 @@ export class TasksController {
 				.emit(EVENTS.TASK_MODIFIED);
 
 			userIdsToNotify.forEach(({ userId, message }) => {
-				const clientEntry = this.socketGateway.clients[userId];
+				const clientEntry =
+					this.socketGateway.clients[userId.toString()];
 				clientEntry?.socket.emit(EVENTS.NOTIFICATION, { message });
 			});
 
@@ -183,9 +198,24 @@ export class TasksController {
 		try {
 			const task = await this.tasksService.complete(body);
 
-			if (body.userData.id !== body.taskData.assigneeId) {
+			const boardRoomName = generateBoardRoomName(body.boardData.id);
+
+			//Make sure to only notify assignee if they still have access to the board
+			const roomMembers =
+				this.socketGateway.getRoomMembers(boardRoomName);
+
+			const isAssigneePartOfBoard = roomMembers.some(
+				(userId) => userId === body.taskData.assigneeId.toString()
+			);
+
+			if (
+				body.userData.id !== body.taskData.assigneeId &&
+				isAssigneePartOfBoard
+			) {
 				const clientEntry =
-					this.socketGateway.clients[body.taskData.assigneeId];
+					this.socketGateway.clients[
+						body.taskData.assigneeId.toString()
+					];
 				clientEntry?.socket.emit(EVENTS.NOTIFICATION, {
 					message: `${body.userData.username} has marked task
 				 		 "${body.taskData.title}" that was assigned to you as complete.`
@@ -294,9 +324,22 @@ export class TasksController {
 				.except(tempRoom)
 				.emit(EVENTS.TASK_DELETED);
 
-			if (body.userData.id !== body.taskData.assigneeId) {
+			//Make sure to only notify assignee if they still have access to the board
+			const roomMembers =
+				this.socketGateway.getRoomMembers(boardRoomName);
+
+			const isAssigneePartOfBoard = roomMembers.some(
+				(userId) => userId === body.taskData.assigneeId.toString()
+			);
+
+			if (
+				body.userData.id !== body.taskData.assigneeId &&
+				isAssigneePartOfBoard
+			) {
 				const clientEntry =
-					this.socketGateway.clients[body.taskData.assigneeId];
+					this.socketGateway.clients[
+						body.taskData.assigneeId.toString()
+					];
 				clientEntry?.socket.emit(EVENTS.NOTIFICATION, {
 					message: `${body.userData.username} has deleted task
 							  "${body.taskData.title}" that was assigned to you.`

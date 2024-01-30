@@ -163,12 +163,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		await Promise.all(
 			rooms.map(async (room) => {
 				console.log(room);
-				await this.removeFromRoom(user.userId.toString(), room);
+				await this.removeFromRoom(user?.userId.toString(), room);
 			})
 		);
 
 		if (user) {
-			delete this.clients[user.userId];
+			delete this.clients[user.userId.toString()];
 		}
 	}
 

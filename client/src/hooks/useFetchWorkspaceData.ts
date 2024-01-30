@@ -100,7 +100,7 @@ export const useFetchWorkspaceData = () => {
 
 				if ('errorMessage' in workspaceData) {
 					throw new Error(
-						`${workspaceData.errorMessage}. 
+						`${workspaceData.errorMessage} 
 						Check your notifications for 
 						potential modifications to this workspace.`
 					);

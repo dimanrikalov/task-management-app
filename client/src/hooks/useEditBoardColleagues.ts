@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { filterUniqueUserIds } from '@/utils';
 import { useErrorContext } from '../contexts/error.context';
 import { useBoardContext } from '../contexts/board.context';
 import { BOARD_ENDPOINTS, METHODS, request } from '../utils/requester';
@@ -44,9 +45,12 @@ export const useEditBoardColleagues = () => {
 		setBoardData((prev) => {
 			if (!prev) return null;
 
+			const boardUsers = 
+				filterUniqueUserIds([...prev.boardUsers, colleague]);
+
 			return {
 				...prev,
-				boardUsers: [...prev.boardUsers, colleague]
+				boardUsers
 			};
 		});
 	};

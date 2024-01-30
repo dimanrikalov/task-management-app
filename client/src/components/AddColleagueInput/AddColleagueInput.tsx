@@ -79,7 +79,7 @@ export const AddColleagueInput = ({
 		}, 100);
 
 		return () => clearTimeout(timeout);
-	}, [inputValue]);
+	}, [inputValue, colleagues]);
 
 	const addUser = (colleague: IUser) => {
 		addColleagueHandler(colleague);

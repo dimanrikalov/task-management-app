@@ -1,7 +1,8 @@
+import { filterUniqueUserIds } from '@/utils';
 import { useErrorContext } from '../contexts/error.context';
-import { METHODS, WORKSPACE_ENDPOINTS, request } from '../utils/requester';
 import { useWorkspaceContext } from '../contexts/workspace.context';
 import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
+import { METHODS, WORKSPACE_ENDPOINTS, request } from '../utils/requester';
 import { IUserContextSecure, useUserContext } from '../contexts/user.context';
 import { EDIT_COLLEAGUE_METHOD } from '../views/WorkspaceView/Workspace.viewmodel';
 
@@ -38,9 +39,13 @@ export const useEditWorkspaceColleagues = () => {
 		await editWorkspaceColleague(colleague, METHODS.POST);
 		setWorkspaceData((prev) => {
 			if (!prev) return null;
+
+			const workspaceUsers =
+				filterUniqueUserIds([...prev.workspaceUsers, colleague]);
+
 			return {
 				...prev,
-				workspaceUsers: [...prev.workspaceUsers, colleague]
+				workspaceUsers
 			};
 		});
 	};

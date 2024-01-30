@@ -515,15 +515,27 @@ export class TasksService {
 
 		const userIdsToNotify: { userId: number; message: string }[] = [];
 
+		const boardUsers = await this.getBoardUsers(
+			body.boardData,
+			body.workspaceData,
+			body.userData.id
+		);
+
+		const isOldAssigneePartOfBoard = boardUsers.some(
+			(userId) => userId === oldAssignee.id
+		);
+
 		if (isThereNewAssignee) {
-			//notify the user that is no longer assigned to the task
-			const message = `Task "${body.taskData.title}" which was previously
-			assigned to you is now assigned to ${newAssignee.username}.`;
-			await this.notificationsService.addNotification({
-				message,
-				userId: body.taskData.assigneeId
-			});
-			userIdsToNotify.push({ userId: oldAssignee.id, message });
+			if (isOldAssigneePartOfBoard) {
+				//notify the user that is no longer assigned to the task
+				const message = `Task "${body.taskData.title}" which was previously
+				assigned to you is now assigned to ${newAssignee.username}.`;
+				await this.notificationsService.addNotification({
+					message,
+					userId: body.taskData.assigneeId
+				});
+				userIdsToNotify.push({ userId: oldAssignee.id, message });
+			}
 
 			if (!isUserNewAssignee) {
 				const message = `Task "${body.taskData.title}" which was previously
@@ -536,7 +548,7 @@ export class TasksService {
 				userIdsToNotify.push({ userId: newAssignee.id, message });
 			}
 		} else {
-			if (!isTaskAssigneeModifyingTask) {
+			if (!isTaskAssigneeModifyingTask && isOldAssigneePartOfBoard) {
 				const message = `Task "${body.taskData.title}" assigned
 				to you was modified by ${body.userData.username}.`;
 				await this.notificationsService.addNotification({
