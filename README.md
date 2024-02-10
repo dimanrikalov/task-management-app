@@ -1,2 +1,2 @@
 # task-management-app
-A graduation project for the end of my 4th year in Computer Engineering.
+My final year graduation project for my bachelor's degree in computer engineering.

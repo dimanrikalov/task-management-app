@@ -1,0 +1,20 @@
+.form {
+	gap: 16px;
+	width: 100%;
+	display: flex;
+}
+
+.input {
+	width: 64%;
+	outline: none;
+	font-size: 18px;
+	padding: 0px 9px;
+	border-radius: 9px;
+	border: 1px solid var(--blue-main);
+	background-color: var(--white-main);
+}
+
+.icon {
+	font-size: 21px;
+	transition: 200ms ease-in-out;
+}

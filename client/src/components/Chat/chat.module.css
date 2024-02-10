@@ -1,0 +1,124 @@
+.chatContainer {
+	top: 0;
+	gap: 16px;
+	left: -385px;
+	width: 400px;
+	height: 100vh;
+	display: flex;
+	position: absolute;
+	align-items: center;
+	flex-direction: column;
+	padding: 0px 16px 16px 0px;
+	justify-content: space-evenly;
+	transition: 200ms ease-in-out;
+	border-radius: 0px 16px 16px 0px;
+	background-color: var(--white-secondary);
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+}
+
+.chatContainer.isOpen {
+	left: 0;
+}
+
+.header {
+	width: 100%;
+	padding: 16px;
+}
+
+.hideBtn {
+	top: 9px;
+	right: -12px;
+	border: none;
+	display: flex;
+	font-size: 5px;
+	cursor: pointer;
+	border-radius: 9px;
+	position: absolute;
+	align-items: center;
+	justify-content: center;
+	color: var(--white-main);
+	transition: 200ms ease-in-out;
+	background-color: var(--grey-main);
+}
+
+.hideBtn:hover {
+	background-color: var(--blue-main);
+}
+
+.flip {
+	right: 28px;
+	transform: rotate(180deg);
+	color: var(--white-main);
+	background-color: var(--blue-main);
+}
+
+.chat {
+	gap: 32px;
+	width: 100%;
+	height: 100%;
+	padding: 16px;
+	display: flex;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	flex-direction: column-reverse;
+	background-color: var(--white-secondary);
+}
+
+.inputContainer {
+	gap: 32px;
+	width: 100%;
+	display: flex;
+	padding-left: 16px;
+	justify-content: space-between;
+}
+
+.sendBtn {
+	z-index: 1;
+	border: none;
+	cursor: pointer;
+	font-size: 36px;
+	border-radius: 6px;
+	color: var(--grey-main);
+	background-color: transparent;
+	transition: 200ms ease-in-out;
+}
+
+.enable {
+	color: var(--blue-main);
+}
+
+.dropdownWrapper {
+	gap: 9px;
+	width: 86%;
+	display: flex;
+	bottom: -162px;
+	max-height: 164px;
+	visibility: hidden;
+	position: absolute;
+	border-radius: 16px;
+	flex-direction: column;
+	padding: 16px 8px 16px 16px;
+	transition: 200ms ease-in-out;
+	background-color: var(--white-main);
+}
+
+.dropdown {
+	width: 100%;
+	overflow-y: auto;
+	padding-right: 8px;
+	border-radius: 16px;
+	background-color: var(--white-main);
+}
+
+.noMatches {
+	color: grey;
+	text-align: center;
+	align-self: center;
+}
+
+.showDropdown {
+	bottom: 72px;
+	visibility: visible;
+}

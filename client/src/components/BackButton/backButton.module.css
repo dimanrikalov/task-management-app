@@ -1,0 +1,30 @@
+.backBtn {
+	width: 38px;
+	height: 38px;
+	padding: 6px;
+	display: flex;
+	cursor: pointer;
+	border-radius: 9px;
+	align-items: center;
+	justify-content: center;
+	color: var(--white-main);
+	transition: 200ms ease-in-out;
+	background-color: var(--blue-main);
+	border: 1px solid var(--blue-main);
+}
+
+.backBtn:hover {
+	color: var(--blue-main);
+	background-color: var(--white-main);
+}
+
+.reverse {
+	color: var(--blue-main);
+	background-color: var(--white-main);
+	border: 1px solid var(--blue-main);
+}
+
+.reverse:hover {
+	color: var(--white-main);
+	background-color: var(--blue-main);
+}

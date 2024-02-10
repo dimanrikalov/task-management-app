@@ -1,0 +1,101 @@
+.container {
+	gap: 9px;
+	width: 85%;
+	display: flex;
+	position: relative;
+	align-self: flex-start;
+	flex-direction: column;
+}
+
+.container.invert {
+	align-self: flex-end;
+}
+
+.message {
+	padding: 16px;
+	max-width: 93%;
+	margin-left: 32px;
+	width: fit-content;
+	align-self: flex-start;
+	border-radius: 16px 16px 16px 0px;
+	background-color: var(--white-main);
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+}
+
+.message.invert {
+	margin-left: unset;
+	margin-right: 32px;
+	align-self: flex-end;
+	border-radius: 16px 16px 0px 16px;
+	background-color: var(--blue-main);
+}
+
+.userInfo {
+	gap: 16px;
+	display: flex;
+	align-items: flex-end;
+}
+
+.userInfo.invert {
+	align-self: flex-end;
+}
+
+.username {
+	width: 100%;
+	bottom: 0px;
+	left: -150px;
+	text-align: start;
+	position: absolute;
+	color: transparent;
+	pointer-events: none;
+	transition: 200ms ease-in-out;
+}
+
+.showUsername {
+	left: 50px;
+	color: grey;
+}
+
+.username.invert {
+	left: 150px;
+	text-align: end;
+}
+
+.showUsername.invert {
+	left: -50px;
+}
+
+.text {
+	font-weight: 500;
+	user-select: text;
+	-moz-user-select: text;
+	-webkit-user-select: text;
+	color: var(--blue-main);
+}
+
+.text.invert {
+	color: var(--white-main);
+}
+
+.author {
+	width: 36px;
+	height: 36px;
+	cursor: pointer;
+	overflow: hidden;
+	border-radius: 50%;
+	box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-moz-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+	-webkit-box-shadow: 0px 5px 7px 0px rgba(170, 170, 170, 0.75);
+}
+
+.author.invert {
+	align-self: flex-end;
+}
+
+.author img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
