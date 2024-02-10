@@ -5,6 +5,7 @@ import { BoardView } from './views/BoardView/BoardView';
 import { IntroView } from './views/IntroView/Intro.view';
 import { SignUpView } from './views/SignUpView/SignUp.view';
 import { SignInView } from './views/SignInView/SignIn.view';
+import { ErrorView } from './components/ErrorView/Error.view';
 import { BoardContextProvider } from './contexts/board.context';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 import { WorkspaceView } from './views/WorkspaceView/Workspace.view';
@@ -28,7 +29,8 @@ const router = createHashRouter([
 			{ path: '/', element: <IntroView /> },
 			{ path: '/auth/sign-up', element: <SignUpView /> },
 			{ path: '/auth/sign-in', element: <SignInView /> }
-		]
+		],
+		errorElement: <ErrorView path={'/'} />
 	},
 	{
 		path: '/',
@@ -40,7 +42,8 @@ const router = createHashRouter([
 					<UserStatsContextProvider>
 						<HomeView />
 					</UserStatsContextProvider>
-				)
+				),
+				errorElement: <ErrorView path={'/dashboard'} />
 			},
 			{
 				path: '/boards/:id',
@@ -48,7 +51,8 @@ const router = createHashRouter([
 					<BoardContextProvider>
 						<BoardView />
 					</BoardContextProvider>
-				)
+				),
+				errorElement: <ErrorView path={'/dashboard'} />
 			},
 			{
 				path: '/workspaces/:id',
@@ -56,9 +60,14 @@ const router = createHashRouter([
 					<WorkspaceContextProvider>
 						<WorkspaceView />
 					</WorkspaceContextProvider>
-				)
+				),
+				errorElement: <ErrorView path={'/dashboard'} />
 			}
 		]
+	},
+	{
+		path: '/#/*',
+		element: <ErrorView path={'/dashboard'} />
 	}
 ]);
 

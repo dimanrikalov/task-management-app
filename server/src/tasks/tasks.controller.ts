@@ -43,18 +43,14 @@ export class TasksController {
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-creation-room-${body.userData.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.TASK_CREATED);
 
 			if (body.userData.id !== body.assigneeId) {
@@ -67,8 +63,11 @@ export class TasksController {
 				});
 			}
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				task,
@@ -89,20 +88,14 @@ export class TasksController {
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-task-move-room-${body.userData.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			// Emit TASK_MOVED event to all clients in the board room except the temp room
-			this.socketGateway.server
-				.to(boardRoomName)
-				.except(tempRoom)
-				.emit(EVENTS.TASK_MOVED);
+			this.socketGateway.server.to(boardRoomName).emit(EVENTS.TASK_MOVED);
 
 			//Make sure to only notify assignee if they still have access to the board
 			const roomMembers =
@@ -135,8 +128,11 @@ export class TasksController {
 				});
 			}
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				message: 'Task moved successfully!'
@@ -157,19 +153,16 @@ export class TasksController {
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-task-modification-room-${body.userData.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			// Emit TASK_MOVED event to all clients in the board room except the temp room
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
+
 				.emit(EVENTS.TASK_MODIFIED);
 
 			userIdsToNotify.forEach(({ userId, message }) => {
@@ -178,8 +171,11 @@ export class TasksController {
 				clientEntry?.socket.emit(EVENTS.NOTIFICATION, { message });
 			});
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				task,
@@ -276,21 +272,22 @@ export class TasksController {
 
 			const boardRoomName = generateBoardRoomName(board.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-task-image-upload-room-${user.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(user.id.toString(), tempRoom);
-
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
+				user.id.toString(),
+				boardRoomName
+			);
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.TASK_MODIFIED);
 
 			await this.tasksService.uploadTaskImg(body);
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				user.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				message: 'Task image updated successfully!'
@@ -310,18 +307,13 @@ export class TasksController {
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-task-deletion-room-${body.userData.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
-
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.TASK_DELETED);
 
 			//Make sure to only notify assignee if they still have access to the board
@@ -346,9 +338,11 @@ export class TasksController {
 				});
 			}
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
-
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 			return res.status(200).json({
 				message: 'Task deleted successfully!'
 			});

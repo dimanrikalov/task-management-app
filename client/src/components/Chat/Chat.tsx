@@ -124,7 +124,10 @@ export const Chat = ({
 				tempArr.push(userFound);
 			}
 		})
-		setTaggedUsers(Array.from(new Set(tempArr)));
+		setTaggedUsers(
+			Array.from(new Set(tempArr))
+				.filter(user => user !== undefined)
+		);
 
 	}, [inputValue, boardUsers]);
 

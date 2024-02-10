@@ -400,7 +400,9 @@ export class WorkspacesService {
 			}
 		});
 
-		return Array.from(new Set(flattenedUserIds));
+		return Array.from(new Set(flattenedUserIds)).filter(
+			(userId) => userId !== undefined
+		);
 	}
 
 	async addColleague(body: EditWorkspaceColleagueDto) {

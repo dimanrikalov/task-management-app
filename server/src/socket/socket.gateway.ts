@@ -182,7 +182,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async removeFromRoom(clientId: string, roomId: string) {
 		const clientSocket = this.clients[clientId];
 		if (!clientSocket) return;
-		//add client to the room
+		//remove client from the room
 		await clientSocket.socket.leave(roomId);
 	}
 

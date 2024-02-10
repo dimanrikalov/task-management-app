@@ -50,9 +50,9 @@ export class WorkspacesController {
 			const workspaceRoomName = generateWorkspaceRoomName(workspace.id);
 
 			//get all colleagues (at this point its impossible that user has added themself)
-			const colleaguesToAdd = Array.from(new Set(body.colleagues)).map(
-				String
-			);
+			const colleaguesToAdd = Array.from(new Set(body.colleagues))
+				.filter((col) => col !== undefined)
+				.map(String);
 
 			//Add users to room and emit event to all colleagues
 			await Promise.all(
@@ -76,9 +76,6 @@ export class WorkspacesController {
 					message: `${body.userData.username} 
 					has created and added you to workspace "${body.name}".`
 				});
-
-			//".to" excludes the sender
-			//".in" includes everyone in the room
 
 			//add the workspace owner to the room AFTER the events have been emitted
 			await this.socketGateway.addToRoom(
@@ -132,12 +129,18 @@ export class WorkspacesController {
 				//delete board room
 				this.socketGateway.clearRoom(boardRoomName);
 
-				return users; //this is string[] -> flatten === ...users
+				return users.map(Number); //this is string[] -> flatten === ...users
 			});
 
+			//make sure owner does not receive event
 			const uniqueBoardUsers = Array.from(
 				new Set([...boardUsers, ...workspaceUserIds])
-			).map(String);
+			)
+				.filter(
+					(userId) =>
+						userId !== undefined && userId !== body.userData.id
+				)
+				.map(String);
 
 			//generate a temporary room
 			const tempRoomName = `pre-workspace-${body.workspaceData.id}-deletion`;
@@ -213,8 +216,13 @@ export class WorkspacesController {
 				return this.socketGateway.getRoomMembers(boardRoomName);
 			});
 
+			//make sure current user does not receive event
 			const uniqueUsers = Array.from(
 				new Set([...workspaceUserIds, ...boardUserIds])
+			).filter(
+				(userId) =>
+					userId !== undefined &&
+					userId !== body.userData.id.toString()
 			);
 
 			//create temp room and fill it
@@ -301,7 +309,7 @@ export class WorkspacesController {
 						(userId) => userId !== body.userData.id.toString()
 					)
 				)
-			);
+			).filter((userId) => userId !== undefined);
 
 			await Promise.all(
 				usersToInform.map(async (userId) => {
@@ -370,7 +378,7 @@ export class WorkspacesController {
 						(userId) => userId !== body.userData.id.toString()
 					)
 				)
-			);
+			).filter((userId) => userId !== undefined);
 
 			await Promise.all(
 				usersToInform.map(async (userId) => {

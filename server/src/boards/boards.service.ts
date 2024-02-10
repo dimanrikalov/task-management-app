@@ -66,16 +66,18 @@ export class BoardsService {
 
 		return Array.from(
 			new Set([workspaceOwner, ...workspaceUsers, ...boardUsers])
-		).map((match) => {
-			const imageBuffer = fs.readFileSync(match.profileImagePath);
+		)
+			.filter((user) => user !== undefined)
+			.map((match) => {
+				const imageBuffer = fs.readFileSync(match.profileImagePath);
 
-			const imageBinary = Buffer.from(imageBuffer).toString('base64');
+				const imageBinary = Buffer.from(imageBuffer).toString('base64');
 
-			return {
-				...match,
-				profileImagePath: imageBinary
-			};
-		});
+				return {
+					...match,
+					profileImagePath: imageBinary
+				};
+			});
 	}
 
 	async getWorkpaceByIdLocal(body: GetWorkspaceDetails) {
@@ -505,13 +507,15 @@ export class BoardsService {
 		});
 
 		await Promise.all(
-			Array.from(new Set(usersToNotify)).map(async (userId) => {
-				await this.notificationsService.addNotification({
-					userId,
-					message: `${body.userData.username} has deleted board 
+			Array.from(new Set(usersToNotify))
+				.filter((user) => user !== undefined)
+				.map(async (userId) => {
+					await this.notificationsService.addNotification({
+						userId,
+						message: `${body.userData.username} has deleted board 
 					"${body.boardData.name}" inside workspace "${body.workspaceData.name}".`
-				});
-			})
+					});
+				})
 		);
 	}
 

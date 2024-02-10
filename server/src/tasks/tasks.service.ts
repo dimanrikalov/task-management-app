@@ -58,7 +58,7 @@ export class TasksService {
 				...workspaceUserIds,
 				workspaceData.ownerId
 			])
-		).filter((userId) => userId !== excludeId);
+		).filter((userId) => userId !== excludeId && userId !== undefined);
 	}
 
 	async validateUserAccessToBoard({ task, token }) {
@@ -399,7 +399,9 @@ export class TasksService {
 			}
 		});
 
-		return Array.from(new Set(tasks.map((task) => task.assigneeId)));
+		return Array.from(new Set(tasks.map((task) => task.assigneeId))).filter(
+			(task) => task !== undefined
+		);
 	}
 
 	async edit(body: ModifyTaskDto) {

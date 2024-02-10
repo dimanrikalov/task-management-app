@@ -39,6 +39,8 @@ export const useFetchBoardData = () => {
 	const [shouldRefetch, setShouldRefetch] = useState<boolean>(true);
 	const [workspaceUsers, setWorkspaceUsers] = useState<IUser[]>([]);
 	const [boardData, setBoardData] = useState<IBoardData | null>(null);
+	const [shouldBlockRefetch, setShouldBlockRefetch] =
+		useState<boolean>(false);
 	const { data: userData, accessToken } =
 		useUserContext() as IUserContextSecure;
 
@@ -46,7 +48,7 @@ export const useFetchBoardData = () => {
 		if (!socket) return;
 
 		const handleBoardModified = () => {
-			console.log('updating board');
+			console.log('event received');
 			setShouldRefetch(true);
 		};
 
@@ -129,7 +131,7 @@ export const useFetchBoardData = () => {
 	}, [boardData]);
 
 	useEffect(() => {
-		if (!shouldRefetch) return;
+		if (!shouldRefetch || shouldBlockRefetch) return;
 		const fetchBoardData = async () => {
 			try {
 				const newBoardData = (await request({
@@ -196,15 +198,30 @@ export const useFetchBoardData = () => {
 				navigate(-1);
 			}
 		};
-
+		console.log('updating board...');
 		fetchBoardData();
 		setShouldRefetch(false);
-	}, [shouldRefetch, boardData]);
+	}, [shouldRefetch, shouldBlockRefetch, boardData]);
+
+	const callForRefetch = () => {
+		setShouldRefetch(true);
+	};
+
+	const blockRefetch = () => {
+		setShouldBlockRefetch(true);
+	};
+
+	const unblockRefetch = () => {
+		setShouldBlockRefetch(false);
+	};
 
 	return {
 		isLoading,
 		boardData,
 		setBoardData,
+		blockRefetch,
+		unblockRefetch,
+		callForRefetch,
 		workspaceUsers
 	};
 };

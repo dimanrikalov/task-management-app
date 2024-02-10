@@ -54,7 +54,7 @@ export class BoardsController {
 
 			const usersToAdd = Array.from(
 				new Set([...boardColleagues, ...workspaceRoomMembers])
-			);
+			).filter((userId) => userId !== undefined);
 
 			// add all users to the new board room
 			await Promise.all(
@@ -79,7 +79,7 @@ export class BoardsController {
 					has created and added you to board "${body.name}".`
 				});
 
-			//add the current user to the board room AFTER all events have been emitted
+			//add current user back to the room
 			await this.socketGateway.addToRoom(
 				body.userData.id.toString(),
 				boardRoomName
@@ -105,18 +105,14 @@ export class BoardsController {
 			//board room already includes workspace users
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-room-${body.userData.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//remove the user that deletes the board from the room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.BOARD_DELETED);
 
 			//emit a notification to users with board and workspace access
@@ -129,9 +125,6 @@ export class BoardsController {
 
 			//remove everyone inside that room
 			this.socketGateway.clearRoom(boardRoomName);
-
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
 
 			return res.status(200).json({
 				message: 'Board deleted successfully!'
@@ -162,18 +155,14 @@ export class BoardsController {
 			//board room already includes workspace users
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-room-${body.userData.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.BOARD_RENAMED);
 
 			//show notification
@@ -184,8 +173,11 @@ export class BoardsController {
 					board "${body.boardData.name}" to "${body.newName}".`
 				});
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				message: 'Board renamed successfully!'
@@ -231,13 +223,10 @@ export class BoardsController {
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-room-${body.userData.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			//add new colleague BEFORE the events have been emitted
@@ -248,7 +237,6 @@ export class BoardsController {
 
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.BOARD_COLLEAGUE_ADDED);
 
 			this.socketGateway.server
@@ -258,8 +246,11 @@ export class BoardsController {
 					 ${colleagueUsername} to board "${body.boardData.name}".`
 				});
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				message: 'Colleague added to board successfully!'
@@ -283,18 +274,14 @@ export class BoardsController {
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
 
-			// Create a temporary room
-			const tempRoom = `temp-room-${body.userData.id}`;
-
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.BOARD_COLLEAGUE_DELETED);
 
 			this.socketGateway.server
@@ -310,8 +297,11 @@ export class BoardsController {
 				boardRoomName
 			);
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				message: 'Colleague removed from board successfully!'

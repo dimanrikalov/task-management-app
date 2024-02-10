@@ -4,7 +4,7 @@ import {
 	TASK_ENDPOINTS,
 	COLUMN_ENDPOINTS
 } from '../utils/requester';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useErrorContext } from '../contexts/error.context';
 import { useBoardContext } from '../contexts/board.context';
 import { IResult } from '../views/BoardView/Board.viewmodel';
@@ -14,7 +14,24 @@ export const useDragEvents = () => {
 	const { showError } = useErrorContext();
 	const { accessToken } = useUserContext() as IUserContextSecure;
 	const [hasDragStarted, setHasDragStarted] = useState<boolean>(false);
-	const { boardData, setBoardData, callForConfetti } = useBoardContext();
+	const {
+		boardData,
+		setBoardData,
+		blockRefetch,
+		callForRefetch,
+		unblockRefetch,
+		callForConfetti
+	} = useBoardContext();
+
+	useEffect(() => {
+		if (!hasDragStarted) {
+			unblockRefetch();
+			callForRefetch();
+			return;
+		}
+		blockRefetch();
+	}, [hasDragStarted]);
+
 	const toggleHasDragStarted = () => {
 		setHasDragStarted((prev) => !prev);
 	};

@@ -24,22 +24,22 @@ export class ColumnsController {
 			const columnId = await this.columnsService.create(body);
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
-			// Create a temporary room
-			const tempRoom = `temp-column-creation-room-${body.userData.id}`;
 
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.COLUMN_CREATED);
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				columnId,
@@ -59,22 +59,23 @@ export class ColumnsController {
 			await this.columnsService.move(body);
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
-			// Create a temporary room
-			const tempRoom = `temp-move-room-${body.userData.id}`;
 
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
+
 				.emit(EVENTS.COLUMN_MOVED);
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				message: 'Column moved successfully!'
@@ -93,22 +94,23 @@ export class ColumnsController {
 			await this.columnsService.rename(body);
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
-			// Create a temporary room
-			const tempRoom = `temp-rename-room-${body.userData.id}`;
 
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
 				body.userData.id.toString(),
-				tempRoom
+				boardRoomName
 			);
 
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
+
 				.emit(EVENTS.COLUMN_RENAMED);
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			//add current user back to the room
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				message: 'Column renamed succesfully!'
@@ -127,14 +129,8 @@ export class ColumnsController {
 			const affectedUsers = await this.columnsService.delete(body);
 
 			const boardRoomName = generateBoardRoomName(body.boardData.id);
-			// Create a temporary room
-			const tempRoom = `temp-delete-room-${body.userData.id}`;
+
 			const affectedUsersRoom = `affected-users-room-${body.columnData.id}`;
-			// Add user ID to the temporary room
-			await this.socketGateway.addToRoom(
-				body.userData.id.toString(),
-				tempRoom
-			);
 
 			await Promise.all(
 				affectedUsers.map(async (userId) => {
@@ -145,9 +141,14 @@ export class ColumnsController {
 				})
 			);
 
+			//temporary remove the current user from the board room
+			await this.socketGateway.removeFromRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
+
 			this.socketGateway.server
 				.to(boardRoomName)
-				.except(tempRoom)
 				.emit(EVENTS.COLUMN_DELETED);
 
 			this.socketGateway.server
@@ -157,8 +158,10 @@ export class ColumnsController {
 					 a column that contains a task assigned to you.`
 				});
 
-			// Leave the temporary room after emitting events
-			this.socketGateway.clearRoom(tempRoom);
+			await this.socketGateway.addToRoom(
+				body.userData.id.toString(),
+				boardRoomName
+			);
 
 			return res.status(200).json({
 				message: 'Column deleted successfully!'
