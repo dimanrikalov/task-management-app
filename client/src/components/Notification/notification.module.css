@@ -13,3 +13,8 @@
 	transition: opacity 1s ease;
 	background-color: var(--blue-main);
 }
+
+.moveToLeft {
+	left: 32px;
+	right: unset;
+}
