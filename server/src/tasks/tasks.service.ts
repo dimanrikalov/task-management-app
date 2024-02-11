@@ -682,6 +682,7 @@ export class TasksService {
 					break;
 				case 'Done':
 					completedAt = new Date(Date.now());
+					startedAt = startedAt || new Date(Date.now());
 					break;
 				default:
 					completedAt = null;

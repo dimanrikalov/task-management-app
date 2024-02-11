@@ -335,7 +335,7 @@ export class UsersService {
 	}
 
 	async update(body: EditUserDto): Promise<void> {
-		if (body.username.trim().includes(' ')) {
+		if (body.username && body.username.trim().includes(' ')) {
 			throw new NotAcceptableException(
 				'Username cannot contain whitespaces!'
 			);
