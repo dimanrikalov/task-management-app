@@ -62,6 +62,8 @@ export class MessagesController {
 					 you inside board chat "${body.boardData.name}"`
 				});
 
+			this.socketGateway.clearRoom(boardRoomName);
+
 			return res.status(200).json({
 				message: 'Message sent successfully!'
 			});
