@@ -12,10 +12,7 @@ export const generateJWTTokens = (payload: IJWTPayload): IGenerateTokens => {
 
 	const refreshToken = jwt.sign(
 		{ id: payload.id },
-		process.env.REFRESH_TOKEN_SECRET,
-		{
-			expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN //in ms
-		}
+		process.env.REFRESH_TOKEN_SECRET
 	);
 
 	return { accessToken, refreshToken };

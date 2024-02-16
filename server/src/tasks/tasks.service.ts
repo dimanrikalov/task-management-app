@@ -682,6 +682,7 @@ export class TasksService {
 					break;
 				case 'Done':
 					completedAt = new Date(Date.now());
+					startedAt = startedAt || new Date(Date.now());
 					break;
 				default:
 					completedAt = null;
@@ -713,6 +714,8 @@ export class TasksService {
 					}
 				});
 			}
+
+			await this.optimizeTaskPositions(body.boardData.id);
 			return;
 		}
 
@@ -818,6 +821,37 @@ export class TasksService {
 				position: body.destinationPosition
 			}
 		});
+
+		await this.optimizeTaskPositions(body.boardData.id);
+	}
+
+	async optimizeTaskPositions(boardId: number) {
+		const columns = await this.prismaService.column.findMany({
+			include: {
+				Task: {
+					orderBy: {
+						position: 'asc'
+					}
+				}
+			},
+			where: {
+				boardId
+			}
+		});
+
+		for (const column of columns) {
+			const tasks = column.Task.sort((a, b) => a.position - b.position);
+
+			for (let i = 0; i < tasks.length; i++) {
+				await this.prismaService.task.update({
+					where: {
+						id: tasks[i].id
+					},
+					data: { position: i }
+				});
+			}
+		}
+		console.log('columns updated');
 	}
 
 	async sendNotification(userId: number, message: string) {

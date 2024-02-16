@@ -212,14 +212,15 @@ export class UsersService {
 			3. if they are not use the 00 value
 		*/
 
-		const hoursSpent = userTasks.reduce((acc, task) => {
+		let hoursSpent = userTasks.reduce((acc, task) => {
 			if (task.hoursSpent !== 0) {
 				return acc + task.hoursSpent;
 			}
 
-			if (task.startedAt && task.completedAt) {
-				const taskDuration =
-					task.completedAt.getTime() - task.startedAt.getTime();
+			if (task.startedAt) {
+				const taskDuration = task.completedAt
+					? task.completedAt.getTime() - task.startedAt.getTime()
+					: new Date().getTime() - task.startedAt.getTime();
 				const taskHours = Math.floor(taskDuration / (1000 * 60 * 60));
 				return acc + taskHours;
 			}
@@ -227,14 +228,15 @@ export class UsersService {
 			return acc;
 		}, 0);
 
-		const minutesSpent = userTasks.reduce((acc, task) => {
+		let minutesSpent = userTasks.reduce((acc, task) => {
 			if (task.minutesSpent !== 0) {
 				return acc + task.minutesSpent;
 			}
 
-			if (task.startedAt && task.completedAt) {
-				const taskDuration =
-					task.completedAt.getTime() - task.startedAt.getTime();
+			if (task.startedAt) {
+				const taskDuration = task.completedAt
+					? task.completedAt.getTime() - task.startedAt.getTime()
+					: new Date().getTime() - task.startedAt.getTime();
 				const taskMinutes = Math.floor(
 					(taskDuration / (1000 * 60)) % 60
 				);
@@ -243,6 +245,9 @@ export class UsersService {
 
 			return acc;
 		}, 0);
+
+		hoursSpent += Math.floor(minutesSpent / 60);
+		minutesSpent %= 60;
 
 		const columnsCount = await this.prismaService.column.count({
 			where: {
@@ -335,7 +340,7 @@ export class UsersService {
 	}
 
 	async update(body: EditUserDto): Promise<void> {
-		if (body.username.trim().includes(' ')) {
+		if (body.username && body.username.trim().includes(' ')) {
 			throw new NotAcceptableException(
 				'Username cannot contain whitespaces!'
 			);

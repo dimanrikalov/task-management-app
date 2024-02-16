@@ -9,7 +9,7 @@ interface IErrorContext {
 const ErrorContext = createContext<IErrorContext>({
 	errorMsg: '',
 	showErrorMsg: false,
-	showError: () => {}
+	showError: () => { }
 });
 
 export const useErrorContext = () => useContext<IErrorContext>(ErrorContext);

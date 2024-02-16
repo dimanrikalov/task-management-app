@@ -114,7 +114,7 @@ export const useEditProfileModal = () => {
 				'Password must conform to the rules:at least 4 characters long, at least 1 capital letter and 1 non-alphabetic symbol.'
 			);
 		}
-
+		console.log('heree');
 		await request({
 			accessToken,
 			method: METHODS.PUT,
