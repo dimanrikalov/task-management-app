@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import classNames from 'classnames';
 import { FaUserEdit } from 'react-icons/fa';
 import styles from './operations.module.css';
@@ -14,12 +15,18 @@ export const Operations = () => {
 	const {
 		isLoading,
 		notifications,
+		callForRefresh,
 		deleteNotification,
-		deleteNotifications
+		deleteNotifications,
 	} = useNotificationContext();
 	const { data, logout } = useUserContext();
 	const { toggleModal } = useModalsContext();
 	const { clearWorkspaceName } = useSelectedWorkspaceContext();
+
+	//call notifications fetching
+	useEffect(() => {
+		callForRefresh();
+	}, []);
 
 	const toggleisWorkspaceModalOpen = () => {
 		toggleModal('showCreateWorkspaceModal');
