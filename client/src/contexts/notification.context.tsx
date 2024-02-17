@@ -7,6 +7,7 @@ import { INotification, useFetchNotifications } from '@/hooks/useFetchNotificati
 
 interface INotificationContext {
 	isLoading: boolean;
+	callForRefresh(): void;
 	notificationMsg: string;
 	showNotificationMsg: boolean;
 	notifications: INotification[]
@@ -19,6 +20,7 @@ const NotificationContext = createContext<INotificationContext>({
 	isLoading: true,
 	notifications: [],
 	notificationMsg: '',
+	callForRefresh: () => { },
 	showNotificationMsg: false,
 	showNotification: () => { },
 	deleteNotification: async () => { },
@@ -116,6 +118,7 @@ export const NotificationContextProvider: React.FC<{
 	const data = {
 		isLoading,
 		notifications,
+		callForRefresh,
 		notificationMsg,
 		showNotification,
 		deleteNotification,
