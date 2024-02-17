@@ -48,7 +48,7 @@ export const AddColleagueInput = ({
 			setIsLoading(true);
 
 			const body: IFetchUsersPayload = {
-				username: inputValue.trim(),
+				username: inputValue,
 				notIn: (colleagues || []).map((colleague) => colleague.id)
 			};
 
@@ -91,8 +91,12 @@ export const AddColleagueInput = ({
 	};
 
 	const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setIsLoading(true);
-		setInputValue(e.target.value);
+		setInputValue(prev => {
+			if (prev !== e.target.value.trim()) {
+				setIsLoading(true);
+			}
+			return e.target.value.trim()
+		});
 	};
 
 	return (
