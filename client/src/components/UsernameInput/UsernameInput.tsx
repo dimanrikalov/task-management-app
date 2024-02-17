@@ -8,7 +8,7 @@ interface IUsernameInputProps {
 	matches: IUser[];
 	isLoading: boolean;
 	inputValue: string;
-	taskModalMode: boolean;
+	taskModalMode?: boolean;
 	addUser(colleague: IUser): void;
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
