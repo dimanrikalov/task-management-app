@@ -90,11 +90,8 @@ export const TaskModalContextProvider: React.FC<{
 	}, [selectedTask, boardUsers]);
 
 	useEffect(() => {
-		if (assigneeId) {
-			setMatches([]);
-			return;
-		}
-		setMatches(boardUsers);
+		if (!assigneeId) return;
+		setMatches([]);
 	}, [assigneeId]);
 
 	useEffect(() => {
@@ -154,7 +151,8 @@ export const TaskModalContextProvider: React.FC<{
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValues((prev) => ({
 			...prev,
-			[e.target.name]: e.target.value
+			[e.target.name]: e.target.name === 'username' ?
+				e.target.value.trim() : e.target.value
 		}));
 	};
 
