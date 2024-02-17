@@ -5,8 +5,10 @@ import {
 	NotAcceptableException
 } from '@nestjs/common';
 import * as fs from 'fs';
+import { join } from 'path';
 import { promisify } from 'util';
 import * as bcrypt from 'bcrypt';
+import { v4 as uuid } from 'uuid';
 import { Response } from 'express';
 import { IUser } from './users.interfaces';
 import { BaseUsersDto } from './dtos/base.dto';
@@ -14,10 +16,8 @@ import { EditUserDto } from './dtos/editUser.dto';
 import { FindUserDto } from './dtos/findUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
-import { extractJWTData } from 'src/jwt/extractJWTData';
 import { IGenerateTokens } from 'src/jwt/jwt.interfaces';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { EditProfleImgDto } from './dtos/editProfleImg.dto';
 import { refreshJWTTokens } from 'src/jwt/refreshJWTTokens';
 import { IRefreshTokensBody } from './dtos/users.interfaces';
 import { generateJWTTokens } from 'src/jwt/generateJWTTokens';
@@ -349,54 +349,49 @@ export class UsersService {
 			? await bcrypt.hash(body.password, Number(process.env.SALT_ROUNDS))
 			: undefined;
 
-		const data = {
+		const data: any = {
 			...(body.email && { email: body.email }),
 			...(body.username && { username: body.username }),
 			...(hashedPassword && { password: hashedPassword })
 		};
+
+		//image upload logic
+		if (body.profileImg) {
+			//check if there is already uploaded image to delete before setting the new one
+			if (
+				fs.existsSync(body.userData.profileImagePath) &&
+				body.userData.profileImagePath !==
+					process.env.DEFAULT_PROFILE_IMG_URL
+			) {
+				try {
+					// Delete the existing file
+					await unlink(body.userData.profileImagePath);
+					console.log('File deleted successfully');
+				} catch (error) {
+					console.error('Error deleting file:', error);
+				}
+			}
+
+			const uploadDir = process.env.PROFILE_IMGS_URL;
+
+			if (!fs.existsSync(uploadDir)) {
+				fs.mkdirSync(uploadDir, { recursive: true });
+			}
+
+			const fileName = `profile-img-${uuid()}`;
+			const filePath = join(uploadDir, fileName);
+
+			//write to file
+			fs.writeFileSync(filePath, body.profileImg, 'base64');
+
+			data.profileImagePath = filePath;
+		}
 
 		await this.prismaService.user.update({
 			where: {
 				id: body.userData.id
 			},
 			data
-		});
-	}
-
-	async updateProfileImg(body: EditProfleImgDto): Promise<void> {
-		const { id } = extractJWTData(body.token);
-		const userData = await this.prismaService.user.findUnique({
-			where: {
-				id
-			}
-		});
-
-		if (!userData) {
-			throw new Error('User not found');
-		}
-
-		// Check if the file exists before attempting to delete it
-		if (
-			fs.existsSync(userData.profileImagePath) &&
-			userData.profileImagePath !== process.env.DEFAULT_PROFILE_IMG_URL
-		) {
-			try {
-				// Delete the existing file
-				await unlink(userData.profileImagePath);
-				console.log('File deleted successfully');
-			} catch (error) {
-				console.error('Error deleting file:', error);
-			}
-		}
-
-		// Update the user's profile image path
-		await this.prismaService.user.update({
-			where: {
-				id: userData.id
-			},
-			data: {
-				profileImagePath: body.profileImagePath
-			}
 		});
 	}
 

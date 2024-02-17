@@ -1,23 +1,8 @@
 import {
-	Put,
-	Res,
-	Post,
-	Body,
-	Param,
-	Delete,
-	Headers,
-	Controller,
-	UploadedFile,
-	UseInterceptors
-} from '@nestjs/common';
-import * as fs from 'fs';
-import { join } from 'path';
-import {
 	EVENTS,
 	SocketGateway,
 	generateBoardRoomName
 } from 'src/socket/socket.gateway';
-import { v4 as uuid } from 'uuid';
 import { Response } from 'express';
 import { TasksService } from './tasks.service';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
@@ -25,9 +10,7 @@ import { CreateTaskDto } from './dtos/createTask.dto';
 import { MoveTaskDtoRich } from './dtos/moveTask.dto';
 import { DeleteTasksDto } from './dtos/deleteTask.dto';
 import { CompleteTaskDto } from './dtos/completeTask.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { validateJWTToken } from 'src/jwt/validateJWTToken';
-import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
+import { Put, Res, Post, Body, Delete, Controller } from '@nestjs/common';
 
 @Controller('tasks')
 export class TasksController {
@@ -221,76 +204,6 @@ export class TasksController {
 			return res.status(200).json({
 				task,
 				message: 'Task completed successfully!'
-			});
-		} catch (err: any) {
-			console.log(err.message);
-			return res
-				.status(err.response?.statusCode || 400)
-				.json({ errorMessage: err.message });
-		}
-	}
-
-	@Put('/:taskId/upload-image')
-	@UseInterceptors(FileInterceptor('taskImg'))
-	async uploadTaskImage(
-		@Res() res: Response,
-		@Headers() headers: any,
-		@UploadedFile() file: any,
-		@Param('taskId') taskId: string
-	) {
-		try {
-			const token = headers.authorization.split(' ')[1];
-			if (!token || !validateJWTToken(token)) {
-				throw new Error('Unauthorized access!');
-			}
-
-			const task = await this.tasksService.getById(Number(taskId));
-
-			//check if user has access to the board
-			const { board, user } =
-				await this.tasksService.validateUserAccessToBoard({
-					task,
-					token
-				});
-
-			const uploadDir = process.env.TASK_IMGS_URL;
-
-			if (!fs.existsSync(uploadDir)) {
-				fs.mkdirSync(uploadDir, { recursive: true });
-			}
-
-			const fileName = `task-img-${uuid()}`;
-			const filePath = join(uploadDir, fileName);
-
-			fs.writeFileSync(filePath, file.buffer);
-
-			const body: UploadTaskImgDto = {
-				task,
-				token,
-				taskImagePath: filePath
-			};
-
-			const boardRoomName = generateBoardRoomName(board.id);
-
-			//temporary remove the current user from the board room
-			await this.socketGateway.removeFromRoom(
-				user.id.toString(),
-				boardRoomName
-			);
-			this.socketGateway.server
-				.to(boardRoomName)
-				.emit(EVENTS.TASK_MODIFIED);
-
-			await this.tasksService.uploadTaskImg(body);
-
-			//add current user back to the room
-			await this.socketGateway.addToRoom(
-				user.id.toString(),
-				boardRoomName
-			);
-
-			return res.status(200).json({
-				message: 'Task image updated successfully!'
 			});
 		} catch (err: any) {
 			console.log(err.message);

@@ -186,6 +186,17 @@ export const useFetchBoardData = () => {
 						profileImagePath: generateImgUrl(user.profileImagePath)
 					}));
 
+				//convert task images
+				newBoardData.columns.forEach((col) => {
+					col.tasks.forEach((task) => {
+						if (task.attachmentImgPath) {
+							task.attachmentImgPath = generateImgUrl(
+								task.attachmentImgPath
+							);
+						}
+					});
+				});
+
 				setBoardData({
 					...newBoardData,
 					boardUsers: [...workspaceUsers, ...boardUsers]

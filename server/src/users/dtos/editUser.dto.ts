@@ -25,4 +25,8 @@ export class EditUserDto extends BaseUsersDto {
 	@MinLength(4)
 	@Matches(/^(?=.*[A-Z])(?=.*[^A-Za-z]{1,}).{4,}$/)
 	password?: string;
+
+	@IsOptional()
+	@IsString({ message: 'Profile image must be a base64 formatted string!' })
+	profileImg: string;
 }

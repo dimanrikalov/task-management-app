@@ -23,8 +23,11 @@ export const useStepsOperations = () => {
 	}, [selectedTask]);
 
 	useEffect(() => {
-		if (!selectedTask) return;
-		if (selectedTask.steps.length === 0 && steps.length === 0) {
+		if (
+			selectedTask &&
+			selectedTask.steps.length === 0 &&
+			steps.length === 0
+		) {
 			setProgress(selectedTask.progress);
 			return;
 		}

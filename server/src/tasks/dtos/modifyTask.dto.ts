@@ -38,7 +38,7 @@ class ModifyTaskPayloadDto {
 
 	@IsOptional()
 	@IsString()
-	attachmentImgPath: string | null;
+	attachmentImg?: string;
 
 	@IsOptional()
 	@IsNumber()
@@ -92,7 +92,7 @@ class ModifyTaskPayloadDto {
 
 export class ModifyTaskDto extends BaseTasksDto {
 	taskData: Task;
-	@ValidateNested({each: true})
+	@ValidateNested({ each: true })
 	@Type(() => ModifyTaskPayloadDto)
 	payload: ModifyTaskPayloadDto;
 }

@@ -2,7 +2,6 @@ import {
 	IInputState,
 	useTaskModalContext
 } from '../contexts/taskModal.context';
-import { generateImgUrl } from '@/utils';
 import { useState, useEffect } from 'react';
 import { ITask } from '../components/Task/Task';
 import { useTaskOperations } from './useTaskOperations';
@@ -95,12 +94,14 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 			}));
 		});
 
-		const image = generateFileFromBase64(
-			task.attachmentImgPath,
-			'image/png',
-			'task-img'
+		//remove the encoding string in front of the encoded img
+		const base64 = task.attachmentImgPath?.slice(
+			task.attachmentImgPath.indexOf(',') + 1
 		);
 
+		const image = base64
+			? generateFileFromBase64(base64, 'image/png', 'task-img')
+			: null;
 		setInputValues((prev) => ({
 			...prev,
 			image,
@@ -113,7 +114,7 @@ export const useCreateTaskOperations = (): ViewModelReturnType<
 		setSteps(sortedSteps);
 
 		if (task.attachmentImgPath) {
-			setTaskImagePath(generateImgUrl(task.attachmentImgPath));
+			setTaskImagePath(task.attachmentImgPath);
 		} else {
 			setTaskImagePath(null);
 			setInputValues((prev) => ({ ...prev, image: null }));

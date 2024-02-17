@@ -1,24 +1,11 @@
 import {
-	Get,
-	Put,
-	Res,
-	Post,
-	Body,
-	Delete,
-	Controller,
-	UseInterceptors,
-	UnauthorizedException
-} from '@nestjs/common';
-import * as fs from 'fs';
-import { join } from 'path';
-import { v4 as uuid } from 'uuid';
-import { Response } from 'express';
-import {
 	EVENTS,
 	SocketGateway,
 	generateBoardRoomName,
 	generateWorkspaceRoomName
 } from 'src/socket/socket.gateway';
+import * as fs from 'fs';
+import { Response } from 'express';
 import { BaseUsersDto } from './dtos/base.dto';
 import { UsersService } from './users.service';
 import { FindUserDto } from './dtos/findUser.dto';
@@ -26,11 +13,8 @@ import { EditUserDto } from './dtos/editUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { extractJWTData } from 'src/jwt/extractJWTData';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { EditProfleImgDto } from './dtos/editProfleImg.dto';
-import { validateJWTToken } from 'src/jwt/validateJWTToken';
 import { RefreshTokensDto } from './dtos/refreshTokens.dto';
-import { Headers, UploadedFile } from '@nestjs/common/decorators';
+import { Get, Put, Res, Post, Body, Delete, Controller } from '@nestjs/common';
 
 @Controller('')
 export class UsersController {
@@ -148,50 +132,6 @@ export class UsersController {
 			return res.status(400).json({
 				errorMessage: err.message
 			});
-		}
-	}
-
-	@Post('/users/edit/profile-img')
-	@UseInterceptors(FileInterceptor('profileImg'))
-	async updateUserProfileImg(
-		@Res() res: Response,
-		@Headers() headers: any,
-		@UploadedFile() file: any
-	) {
-		try {
-			const token = headers.authorization.split(' ')[1];
-			if (!token || !validateJWTToken(token)) {
-				throw new UnauthorizedException('Unauthorized access!');
-			}
-
-			if (!file) {
-				throw new Error('New profile image is required!');
-			}
-
-			const uploadDir = process.env.PROFILE_IMGS_URL;
-
-			if (!fs.existsSync(uploadDir)) {
-				fs.mkdirSync(uploadDir, { recursive: true });
-			}
-
-			const fileName = `profile-img-${uuid()}`;
-			const filePath = join(uploadDir, fileName);
-
-			fs.writeFileSync(filePath, file.buffer);
-
-			const body: EditProfleImgDto = {
-				token,
-				profileImagePath: filePath
-			};
-
-			await this.usersService.updateProfileImg(body);
-			return res.status(200).json({
-				message: 'User image updated successfully!'
-			});
-		} catch (err: any) {
-			return res
-				.status(err.response?.statusCode || 400)
-				.json({ errorMessage: err.message });
 		}
 	}
 

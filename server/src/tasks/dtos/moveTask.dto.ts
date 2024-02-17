@@ -1,11 +1,11 @@
-import { Task } from '@prisma/client';
 import { BaseTasksDto } from './base.dto';
+import { Step, Task } from '@prisma/client';
 import { IsNumber, IsObject } from 'class-validator';
 import { IBoard } from 'src/boards/boards.interfaces';
 
 export class MoveTaskDto {
 	@IsObject()
-	taskData: Task;
+	taskData: Task & { Step: Step[] };
 
 	@IsObject()
 	boardData: IBoard;
@@ -19,7 +19,7 @@ export class MoveTaskDto {
 
 export class MoveTaskDtoRich extends BaseTasksDto {
 	@IsObject()
-	taskData: Task;
+	taskData: Task & { Step: Step[] };
 
 	@IsObject()
 	boardData: IBoard;

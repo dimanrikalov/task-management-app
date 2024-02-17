@@ -62,11 +62,7 @@ export const useEditProfileModal = () => {
 			.name as INPUT_FIELDS;
 
 		try {
-			if (inputField === INPUT_FIELDS.PROFILE_IMG) {
-				await requestProfileImgUpdate();
-			} else {
-				await requestCredentialUpdate(inputField);
-			}
+			await requestCredentialUpdate(inputField);
 			setProfileImgPath(null);
 			setInputValues((prev) => ({ ...prev, profileImg: null }));
 
@@ -87,6 +83,12 @@ export const useEditProfileModal = () => {
 	};
 
 	const requestCredentialUpdate = async (inputField: INPUT_FIELDS) => {
+		if (
+			inputField === INPUT_FIELDS.PROFILE_IMG &&
+			!inputValues[inputField]
+		) {
+			throw new Error('Image file is required!');
+		}
 		if (
 			inputField === INPUT_FIELDS.USERNAME &&
 			(inputValues[inputField] as string).length < 2
@@ -114,44 +116,34 @@ export const useEditProfileModal = () => {
 				'Password must conform to the rules:at least 4 characters long, at least 1 capital letter and 1 non-alphabetic symbol.'
 			);
 		}
-		console.log('heree');
-		await request({
-			accessToken,
-			method: METHODS.PUT,
-			endpoint: USER_ENDPOINTS.EDIT,
-			body: { [inputField]: inputValues[inputField] }
-		});
 
-		setData({ ...userData, [inputField]: inputValues[inputField] });
+		let base64: string;
+
+		if (inputField === INPUT_FIELDS.PROFILE_IMG) {
+			base64 = await convertImageToBase64(
+				inputValues[inputField] as File
+			);
+
+			await request({
+				accessToken,
+				method: METHODS.PUT,
+				endpoint: USER_ENDPOINTS.EDIT,
+				body: { [inputField]: base64 }
+			});
+
+			setData({ ...userData, profileImagePath: generateImgUrl(base64) });
+		} else {
+			await request({
+				accessToken,
+				method: METHODS.PUT,
+				endpoint: USER_ENDPOINTS.EDIT,
+				body: { [inputField]: inputValues[inputField] }
+			});
+
+			setData({ ...userData, [inputField]: inputValues[inputField] });
+		}
 
 		setInputValues((prev) => ({ ...prev, [inputField]: '' }));
-	};
-
-	const requestProfileImgUpdate = async () => {
-		if (
-			!inputValues.profileImg ||
-			!(inputValues.profileImg instanceof File)
-		) {
-			return;
-		}
-		const body = new FormData();
-		body.append('profileImg', inputValues.profileImg, 'profile-img');
-
-		await request({
-			body,
-			accessToken,
-			method: METHODS.POST,
-			endpoint: USER_ENDPOINTS.PROFILE_IMG_EDIT
-		});
-
-		const profileImagePath = await convertImageToBase64(
-			inputValues.profileImg
-		);
-
-		setData({
-			...userData,
-			profileImagePath: generateImgUrl(profileImagePath)
-		});
 	};
 
 	const deleteUser = async () => {
