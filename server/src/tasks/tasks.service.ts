@@ -6,7 +6,9 @@ import {
 	UnauthorizedException
 } from '@nestjs/common';
 import * as fs from 'fs';
+import { join } from 'path';
 import { promisify } from 'util';
+import { v4 as uuid } from 'uuid';
 import { MoveTaskDto } from './dtos/moveTask.dto';
 import { ModifyTaskDto } from './dtos/modifyTask.dto';
 import { CreateTaskDto } from './dtos/createTask.dto';
@@ -16,7 +18,6 @@ import { DeleteTasksDto } from './dtos/deleteTask.dto';
 import { extractJWTData } from 'src/jwt/extractJWTData';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CompleteTaskDto } from './dtos/completeTask.dto';
-import { UploadTaskImgDto } from './dtos/uploadTaskImg.dto';
 import { IWorkspace } from 'src/workspaces/workspace.interfaces';
 import { NotificationsService } from 'src/notifications/notifications.service';
 
@@ -261,26 +262,43 @@ export class TasksService {
 				break;
 		}
 
-		// Create task
-		const task = await this.prismaService.task.create({
-			data: {
-				startedAt,
-				completedAt,
-				title: body.title,
-				effort: body.effort,
-				position: tasksCount,
-				progress: progress || 0,
-				priority: body.priority,
-				assigneeId: body.assigneeId,
-				hoursSpent: body.hoursSpent,
-				columnId: body.columnData.id,
-				description: body.description,
-				minutesSpent: body.minutesSpent,
-				estimatedHours: body.estimatedHours,
-				estimatedMinutes: body.estimatedMinutes,
-				attachmentImgPath: body.attachmentImgPath
+		//prepare the data
+		const data: any = {
+			startedAt,
+			completedAt,
+			title: body.title,
+			effort: body.effort,
+			position: tasksCount,
+			progress: progress || 0,
+			priority: body.priority,
+			assigneeId: body.assigneeId,
+			hoursSpent: body.hoursSpent,
+			columnId: body.columnData.id,
+			description: body.description,
+			minutesSpent: body.minutesSpent,
+			estimatedHours: body.estimatedHours,
+			estimatedMinutes: body.estimatedMinutes
+		};
+
+		//image upload logic
+		if (body.attachmentImg) {
+			const uploadDir = process.env.TASK_IMGS_URL;
+
+			if (!fs.existsSync(uploadDir)) {
+				fs.mkdirSync(uploadDir, { recursive: true });
 			}
-		});
+
+			const fileName = `task-img-${uuid()}`;
+			const filePath = join(uploadDir, fileName);
+
+			//write to file
+			fs.writeFileSync(filePath, body.attachmentImg, 'base64');
+
+			data.attachmentImgPath = filePath;
+		}
+
+		// Create task
+		const task = await this.prismaService.task.create({ data });
 
 		// Create steps
 		await this.stepsService.createMany(body.steps, task.id);
@@ -295,24 +313,6 @@ export class TasksService {
 		}
 
 		return { ...task, steps: body.steps };
-	}
-
-	async uploadTaskImg(body: UploadTaskImgDto) {
-		// Check if the file exists before attempting to delete it
-		if (fs.existsSync(body.task.attachmentImgPath)) {
-			// Delete the existing file
-			await unlink(body.task.attachmentImgPath);
-		}
-
-		// Update the user's profile image path
-		await this.prismaService.task.update({
-			where: {
-				id: body.task.id
-			},
-			data: {
-				attachmentImgPath: body.taskImagePath
-			}
-		});
 	}
 
 	async delete(body: DeleteTasksDto) {
@@ -475,9 +475,33 @@ export class TasksService {
 		const startedAt = body.taskData.startedAt || new Date(Date.now());
 		const completedAt = progress === 100 ? new Date(Date.now()) : null;
 
-		//remove image if the task has one and add it with next request
-		if (body.taskData.attachmentImgPath) {
+		const data: any = {
+			...body.payload,
+			progress,
+			startedAt,
+			completedAt,
+			attachmentImgPath: null
+		};
+
+		delete data.attachmentImg;
+
+		//handle image upload
+		if (fs.existsSync(body.taskData.attachmentImgPath)) {
 			await unlink(body.taskData.attachmentImgPath);
+		}
+
+		if (body.payload.attachmentImg) {
+			const uploadDir = process.env.TASK_IMGS_URL;
+
+			if (!fs.existsSync(uploadDir)) {
+				fs.mkdirSync(uploadDir, { recursive: true });
+			}
+
+			const fileName = `task-img-${uuid()}`;
+			const filePath = join(uploadDir, fileName);
+
+			fs.writeFileSync(filePath, body.payload.attachmentImg, 'base64');
+			data.attachmentImgPath = filePath;
 		}
 
 		//update the task
@@ -485,13 +509,7 @@ export class TasksService {
 			where: {
 				id: body.taskData.id
 			},
-			data: {
-				...body.payload,
-				progress,
-				startedAt,
-				completedAt,
-				attachmentImgPath: null
-			}
+			data
 		});
 
 		const steps = await this.prismaService.step.findMany({
@@ -672,19 +690,29 @@ export class TasksService {
 				})
 			);
 
+			let progress = 100;
 			let startedAt = body.taskData.startedAt;
 			let completedAt = body.taskData.completedAt;
 
 			switch (destinationColumn.name) {
 				case 'To Do':
+					progress = 0;
 					startedAt = null;
 					completedAt = null;
 					break;
 				case 'Done':
+					progress = 100;
 					completedAt = new Date(Date.now());
 					startedAt = startedAt || new Date(Date.now());
 					break;
 				default:
+					progress =
+						(body.taskData.Step.reduce(
+							(acc, task) => (task.isComplete ? acc + 1 : acc),
+							0
+						) /
+							body.taskData.Step.length) *
+							100 || 0;
 					completedAt = null;
 					startedAt = startedAt || new Date(Date.now());
 					break;
@@ -696,11 +724,11 @@ export class TasksService {
 					id: body.taskData.id
 				},
 				data: {
+					progress,
 					startedAt,
 					completedAt,
 					columnId: body.destinationColumnId,
-					position: body.destinationPosition,
-					...(destinationColumn.name === 'To Do' && { progress: 0 })
+					position: body.destinationPosition
 				}
 			});
 
@@ -851,7 +879,6 @@ export class TasksService {
 				});
 			}
 		}
-		console.log('columns updated');
 	}
 
 	async sendNotification(userId: number, message: string) {

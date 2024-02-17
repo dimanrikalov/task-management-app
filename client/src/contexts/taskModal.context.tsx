@@ -66,13 +66,14 @@ export const TaskModalContextProvider: React.FC<{
 			boardUsers.find((user) =>
 				user.id === selectedTask.assigneeId
 			)?.username || '';
-		const image = selectedTask.attachmentImgPath
-			? generateFileFromBase64(
-				selectedTask.attachmentImgPath,
-				'image/png',
-				'task-img'
-			)
-			: null;
+
+
+		//remove the encoding string in front of the encoded img
+		const base64 = selectedTask.attachmentImgPath?.slice(
+			selectedTask.attachmentImgPath.indexOf(',') + 1
+		);
+
+		const image = base64 ? generateFileFromBase64(base64, 'image/png', 'task-img') : null;
 		setInputValues({
 			image,
 			username,

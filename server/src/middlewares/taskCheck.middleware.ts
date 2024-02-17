@@ -22,6 +22,9 @@ export class TaskCheckMiddleware implements NestMiddleware {
 			const task = await this.prismaService.task.findFirst({
 				where: {
 					id: req.body.taskId || Number(req.params.taskId)
+				},
+				include: {
+					Step: true
 				}
 			});
 			if (!task) {

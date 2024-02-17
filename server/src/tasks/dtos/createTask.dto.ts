@@ -32,7 +32,7 @@ export class CreateTaskDto extends BaseTasksDto {
 
 	@IsOptional()
 	@IsString()
-	attachmentImgPath?: string;
+	attachmentImg?: string;
 
 	@IsOptional()
 	@IsNumber()

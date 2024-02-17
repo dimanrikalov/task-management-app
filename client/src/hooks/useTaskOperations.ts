@@ -2,6 +2,7 @@ import {
 	IInputState,
 	useTaskModalContext
 } from '../contexts/taskModal.context';
+import { generateImgUrl } from '@/utils';
 import { IStep } from './useStepsOperations';
 import { useBoardContext } from '../contexts/board.context';
 import { useErrorContext } from '../contexts/error.context';
@@ -49,7 +50,7 @@ export const useTaskOperations = ({
 			}
 
 			//create the task
-			const body = {
+			const payload: any = {
 				steps,
 				assigneeId,
 				title: inputValues.title,
@@ -63,9 +64,16 @@ export const useTaskOperations = ({
 				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0
 			};
 
+			let base64: string;
+			//optionally add image
+			if (inputValues.image) {
+				base64 = await convertImageToBase64(inputValues.image);
+				payload.attachmentImg = base64;
+			}
+
 			const data = await request({
-				body,
 				accessToken,
+				body: payload,
 				method: METHODS.POST,
 				endpoint: TASK_ENDPOINTS.BASE
 			});
@@ -75,68 +83,25 @@ export const useTaskOperations = ({
 				throw new Error(data.errorMessage);
 			}
 
-			//set task image optionally
-			if (inputValues.image) {
-				const payload = new FormData();
-				payload.append('taskImg', inputValues.image, 'task-img');
+			setBoardData((prev) => {
+				if (!prev) return null;
+				const columnToUpdate = {
+					...prev.columns.find((col) => col.id === selectedColumnId)!
+				};
 
-				const imageUploadData = await request({
-					accessToken,
-					body: payload,
-					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(data.task.id)
+				const columns = [...prev.columns];
+				columnToUpdate.tasks.push({
+					...data.task,
+					...(base64 && { attachmentImgPath: generateImgUrl(base64) })
 				});
 
-				if (imageUploadData.errorMessage) {
-					throw new Error(imageUploadData.errorMessage);
-				}
+				columns.splice(columnToUpdate.position, 1, columnToUpdate);
 
-				// Convert the image to base64
-				const base64String = await convertImageToBase64(
-					inputValues.image
-				);
-
-				setBoardData((prev) => {
-					if (!prev) return null;
-					const columnToUpdate = {
-						...prev.columns.find(
-							(col) => col.id === selectedColumnId
-						)!
-					};
-
-					const columns = [...prev.columns];
-					columnToUpdate.tasks.push({
-						...data.task,
-						attachmentImgPath: base64String
-					});
-
-					columns.splice(columnToUpdate.position, 1, columnToUpdate);
-
-					return {
-						...prev,
-						columns
-					};
-				});
-			} else {
-				setBoardData((prev) => {
-					if (!prev) return null;
-					const columnToUpdate = {
-						...prev.columns.find(
-							(col) => col.id === selectedColumnId
-						)!
-					};
-
-					columnToUpdate.tasks.push(data.task);
-					const columns = [...prev.columns];
-
-					columns.splice(columnToUpdate.position, 1, columnToUpdate);
-
-					return {
-						...prev,
-						columns
-					};
-				});
-			}
+				return {
+					...prev,
+					columns
+				};
+			});
 			toggleIsTaskModalOpen();
 		} catch (err: any) {
 			console.log(err.message);
@@ -166,7 +131,7 @@ export const useTaskOperations = ({
 				);
 			}
 
-			const body = {
+			const payload: any = {
 				steps,
 				assigneeId,
 				title: inputValues.title,
@@ -179,74 +144,48 @@ export const useTaskOperations = ({
 				estimatedMinutes: Number(inputValues.estimatedMinutes) || 0
 			};
 
-			const res = await request({
+			let base64: string | null = null;
+			//optionally add image
+			if (inputValues.image) {
+				base64 = await convertImageToBase64(inputValues.image);
+				payload.attachmentImg = base64;
+			}
+
+			const data = await request({
 				accessToken,
 				method: METHODS.PUT,
-				body: { payload: body },
+				body: { payload },
 				endpoint: TASK_ENDPOINTS.EDIT(taskData.id)
 			});
 
-			if (res.errorMessage) {
-				throw new Error(res.errorMessage);
+			if (data.errorMessage) {
+				throw new Error(data.errorMessage);
 			}
 
-			//set task image optionally
-			if (inputValues.image) {
-				const payload = new FormData();
-				payload.append('taskImg', inputValues.image, 'task-img');
+			setBoardData((prev) => {
+				if (!prev) return null;
 
-				const imageUploadData = await request({
-					accessToken,
-					body: payload,
-					method: METHODS.PUT,
-					endpoint: TASK_ENDPOINTS.UPLOAD_IMG(taskData.id)
+				const columns = prev.columns.map((col) => {
+					if (col.tasks.some((task) => task.id === taskData.id)) {
+						const updatedTasks = col.tasks.map((task) =>
+							task.id === taskData.id
+								? {
+										...data.task,
+										...(base64 && {
+											attachmentImgPath:
+												generateImgUrl(base64)
+										})
+									}
+								: task
+						);
+						return { ...col, tasks: updatedTasks };
+					}
+					return col;
 				});
 
-				if (imageUploadData.errorMessage) {
-					throw new Error(imageUploadData.errorMessage);
-				}
+				return { ...prev, columns };
+			});
 
-				const base64String = await convertImageToBase64(
-					inputValues.image
-				);
-
-				setBoardData((prev) => {
-					if (!prev) return null;
-
-					const columns = prev.columns.map((col) => {
-						if (col.tasks.some((task) => task.id === taskData.id)) {
-							const updatedTasks = col.tasks.map((task) =>
-								task.id === taskData.id
-									? {
-											...res.task,
-											attachmentImgPath: base64String
-										}
-									: task
-							);
-							return { ...col, tasks: updatedTasks };
-						}
-						return col;
-					});
-
-					return { ...prev, columns };
-				});
-			} else {
-				setBoardData((prev) => {
-					if (!prev) return null;
-
-					const columns = prev.columns.map((col) => {
-						if (col.tasks.some((task) => task.id === taskData.id)) {
-							const updatedTasks = col.tasks.map((task) =>
-								task.id === taskData.id ? { ...res.task } : task
-							);
-							return { ...col, tasks: updatedTasks };
-						}
-						return col;
-					});
-
-					return { ...prev, columns };
-				});
-			}
 			toggleIsTaskModalOpen();
 		} catch (err: any) {
 			console.log(err.message);

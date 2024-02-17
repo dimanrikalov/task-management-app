@@ -122,7 +122,7 @@ export const TaskOperationsModal = () => {
 											styles.resetBtn,
 											styles.imgOperationBtn,
 											!state.inputValues.image &&
-												styles.disabled
+											styles.disabled
 										)}
 									/>
 								</button>
@@ -245,6 +245,7 @@ export const TaskOperationsModal = () => {
 								</h2>
 								<UsernameInput
 									isLoading={false}
+									taskModalMode={true}
 									matches={state.matches}
 									addUser={operations.selectAssignee}
 									inputValue={state.inputValues.username}
@@ -273,12 +274,12 @@ export const TaskOperationsModal = () => {
 											className={classNames(
 												styles.addStepBtn,
 												!state.inputValues.step &&
-													styles.disabled
+												styles.disabled
 											)}
 											onClick={
 												state.inputValues.step
 													? operations.addStep
-													: () => {}
+													: () => { }
 											}
 										/>
 									</div>
