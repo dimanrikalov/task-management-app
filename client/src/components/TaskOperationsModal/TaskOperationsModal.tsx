@@ -89,7 +89,11 @@ export const TaskOperationsModal = () => {
 								htmlFor={'image'}
 								className={styles.imgInput}
 							>
-								<div className={styles.imgContainer}>
+								<div className={classNames(
+									styles.imgContainer,
+									state.taskImagePath &&
+									styles.colorBorder)}
+								>
 									{state.taskImagePath ? (
 										<img
 											alt="task-img"

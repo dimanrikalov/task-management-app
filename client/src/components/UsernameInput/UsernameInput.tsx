@@ -46,6 +46,7 @@ export const UsernameInput = ({
 							<UserEntry
 								key={match.id}
 								showBtn={false}
+								isDropdown={true}
 								username={match.username}
 								addHandler={() => addUser(match)}
 								profileImgPath={match.profileImagePath}

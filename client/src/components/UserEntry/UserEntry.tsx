@@ -7,6 +7,7 @@ interface IUserEntryInterface {
 	username: string;
 	showBtn?: boolean;
 	addHandler?(): void;
+	isDropdown?: boolean;
 	removeHandler?(): void;
 	profileImgPath: string;
 }
@@ -17,7 +18,8 @@ export const UserEntry = ({
 	removeHandler,
 	profileImgPath,
 	showBtn = true,
-	tagMode = false
+	tagMode = false,
+	isDropdown = false,
 }: IUserEntryInterface) => {
 	return (
 		<div
@@ -25,7 +27,8 @@ export const UserEntry = ({
 			className={
 				classNames(styles.entry,
 					tagMode && styles.tagMode,
-					!showBtn && styles.center
+					!showBtn && styles.center,
+					isDropdown && styles.entryDropdown,
 				)}
 		>
 			<div className={styles.leftSide}>

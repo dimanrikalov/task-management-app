@@ -16,8 +16,9 @@
 
 .dropdown {
 	width: 100%;
-	overflow-y: auto;
-	max-height: 164px;
+	max-height: 144px;
+	overflow-y: scroll;
+	padding-right: 6px;
 	background-color: var(--white-secondary);
 }
 
