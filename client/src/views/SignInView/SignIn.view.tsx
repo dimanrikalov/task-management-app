@@ -50,7 +50,7 @@ export const SignInView = () => {
 						<IntroButton message={'Sign in'} />
 					</form>
 					<p className={styles.dontHaveAnAccount}>
-						Already have an account?{' '}
+						Don't have an account?{' '}
 						<span onClick={operations.goToSignUpView}>Sign up</span>
 					</p>
 				</div>
