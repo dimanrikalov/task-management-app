@@ -9,6 +9,12 @@
 	justify-content: space-between;
 }
 
+.entryDropdown:hover {
+	cursor: pointer;
+	color: var(--white-main);
+	background-color: var(--blue-main);
+}
+
 .tagMode:hover {
 	cursor: pointer;
 	color: var(--white-main);

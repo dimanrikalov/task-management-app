@@ -100,7 +100,11 @@ select:focus,
 	border-radius: 12px;
 	justify-content: center;
 	background-color: whitesmoke;
-	border: 2px solid var(--blue-main);
+	border: 2px solid var(--grey-main);
+}
+
+.colorBorder {
+	border-color: var(--blue-main);
 }
 
 .previewImage {
