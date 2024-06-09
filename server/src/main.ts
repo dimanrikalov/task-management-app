@@ -11,7 +11,6 @@ async function bootstrap() {
 		methods: ['GET, POST, PUT, DELETE']
 	});
 	app.use(bodyParser.json({ limit: '50mb' }));
-	app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 	app.useGlobalPipes(formatErrorPipe, new ValidationPipe());
 	await app.listen(3001);
 }

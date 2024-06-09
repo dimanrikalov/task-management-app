@@ -128,7 +128,7 @@ export const BoardView = () => {
 										/>
 									</EntryModificationButton>
 								)}
-							<EntryModificationButton onClick={() => { }}>
+							{/* <EntryModificationButton onClick={() => { }}>
 								<VscGraph
 									size={22}
 									className={classNames(
@@ -136,7 +136,7 @@ export const BoardView = () => {
 										styles.graphIcon
 									)}
 								/>
-							</EntryModificationButton>
+							</EntryModificationButton> */}
 							<EntryModificationButton
 								onClick={
 									operations.toggleIsDeleteBoardModalOpen
