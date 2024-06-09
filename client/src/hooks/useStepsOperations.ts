@@ -12,10 +12,10 @@ export interface IEditStep extends IStep {
 }
 
 export const useStepsOperations = () => {
-	const { selectedTask } = useBoardContext();
 	const [steps, setSteps] = useState<IStep[]>([]);
 	const [progress, setProgress] = useState<number>(0);
 	const { inputValues, setInputValues } = useTaskModalContext();
+	const { selectedTask, selectedColumnName } = useBoardContext();
 
 	useEffect(() => {
 		if (!selectedTask) return;
@@ -39,12 +39,15 @@ export const useStepsOperations = () => {
 		setProgress(Math.round((completedCount / steps.length) * 100) || 0);
 	}, [steps]);
 
+	//if task is in column done steps cannot be anything but complete
+	const isComplete = selectedColumnName === 'Done' ? true : false;
+
 	const addStep = () => {
 		if (!inputValues.step) return;
 		if (steps.some((step) => step.description === inputValues.step)) return;
 		setSteps((prev) => [
 			...prev,
-			{ description: inputValues.step, isComplete: false }
+			{ description: inputValues.step, isComplete }
 		]);
 		setInputValues((prev) => ({ ...prev, step: '' }));
 	};

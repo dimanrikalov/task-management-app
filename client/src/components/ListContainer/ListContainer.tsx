@@ -9,6 +9,7 @@ type TListMode = 'users' | 'steps';
 interface IListContainerProps {
 	title: string;
 	mode: TListMode;
+	lockStatus?: boolean;
 	noMarginBottom?: boolean;
 	disableDeletionFor: number[];
 	colleagues: IUser[] | IStep[];
@@ -23,6 +24,7 @@ export const ListContainer = ({
 	toggleStatus,
 	mode = 'users',
 	disableDeletionFor,
+	lockStatus = false,
 	noMarginBottom = false
 }: IListContainerProps) => {
 	return (
@@ -78,6 +80,7 @@ export const ListContainer = ({
 								(colleague) => {
 									return (
 										<StepEntry
+											isReadOnly={lockStatus}
 											key={colleague.description}
 											isCompleted={colleague.isComplete}
 											description={colleague.description}

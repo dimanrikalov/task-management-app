@@ -23,6 +23,7 @@ export const useColumnOperations = ({
 		setBoardData,
 		setSelectedTask,
 		setSelectedColumnId,
+		setSelectedColumnName,
 		toggleIsTaskModalOpen
 	} = useBoardContext();
 	const { showError } = useErrorContext();
@@ -162,11 +163,13 @@ export const useColumnOperations = ({
 		setSelectedTask(task);
 		toggleIsTaskModalOpen();
 		setSelectedColumnId(null);
+		setSelectedColumnName(title);
 	};
 
 	const onClick = () => {
 		setSelectedTask(null);
 		setSelectedColumnId(id);
+		setSelectedColumnName(title);
 		toggleIsTaskModalOpen();
 	};
 

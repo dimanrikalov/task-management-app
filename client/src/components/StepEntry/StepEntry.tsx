@@ -4,15 +4,17 @@ import styles from './stepEntry.module.css';
 interface IStepEntryProps {
 	onClick(): void;
 	description: string;
+	isReadOnly?: boolean;
 	isCompleted: boolean;
 	toggleStatus(): void;
 }
 
 export const StepEntry = ({
+	onClick,
 	description,
 	isCompleted,
-	onClick,
-	toggleStatus
+	toggleStatus,
+	isReadOnly = false,
 }: IStepEntryProps) => {
 	return (
 		<div className={styles.container}>
@@ -20,6 +22,7 @@ export const StepEntry = ({
 			<div className={styles.operations}>
 				<input
 					type="checkbox"
+					disabled={isReadOnly}
 					onClick={toggleStatus}
 					defaultChecked={isCompleted}
 				/>
