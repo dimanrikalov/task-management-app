@@ -62,7 +62,6 @@ export const SocketConnectionProvider: React.FC<{
 		setSocket(newSocket);
 
 		newSocket.on('connected', (data) => {
-			//why is it executing twice
 			console.log('Server says:', data.message);
 			console.log('User information:', data.user);
 		});

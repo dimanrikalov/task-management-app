@@ -160,22 +160,24 @@ export const WorkspaceView = () => {
 						/>
 					</div>
 				</div>
-				<div className={styles.boardsContainer}>
-					<button
-						className={styles.addButton}
-						onClick={operations.toggleIsCreateBoardModalOpen}
-					>
-						<HiDocumentAdd className={styles.icon} />
-					</button>
-					{state.filteredBoards.map((board) => (
-						<BoardCard
-							key={board.id}
-							boardName={board.name}
-							onClickHandler={() =>
-								operations.goToBoard(board.id)
-							}
-						/>
-					))}
+				<div className={styles.boardsContainerWrapper}>
+					<div className={styles.boardsContainer}>
+						<button
+							className={styles.addButton}
+							onClick={operations.toggleIsCreateBoardModalOpen}
+						>
+							<HiDocumentAdd className={styles.icon} />
+						</button>
+						{state.filteredBoards.map((board) => (
+							<BoardCard
+								key={board.id}
+								boardName={board.name}
+								onClickHandler={() =>
+									operations.goToBoard(board.id)
+								}
+							/>
+						))}
+					</div>
 				</div>
 			</div>
 		</>

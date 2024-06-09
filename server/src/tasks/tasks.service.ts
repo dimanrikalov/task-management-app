@@ -196,7 +196,7 @@ export class TasksService {
 				return step;
 			}
 		});
-		const progress = Math.round(
+		let progress = Math.round(
 			(completeSteps.length / body.steps.length) * 100
 		);
 
@@ -253,6 +253,7 @@ export class TasksService {
 				completedAt = null;
 				break;
 			case 'Done':
+				progress = 100;
 				startedAt = new Date(Date.now());
 				completedAt = new Date(Date.now());
 				break;
