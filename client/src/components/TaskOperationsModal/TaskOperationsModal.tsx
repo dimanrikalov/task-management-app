@@ -14,7 +14,7 @@ import { useCreateTaskOperations } from '../../hooks/useCreateTaskOperations';
 
 export const TaskOperationsModal = () => {
 	const { state, operations } = useCreateTaskOperations();
-	const { selectedTask, toggleIsTaskModalOpen } = useBoardContext();
+	const { selectedTask, selectedColumnName, toggleIsTaskModalOpen } = useBoardContext();
 
 	return (
 		<Modal>
@@ -296,6 +296,7 @@ export const TaskOperationsModal = () => {
 									colleagues={state.steps}
 									removeUser={operations.removeStep}
 									toggleStatus={operations.toggleStatus}
+									lockStatus={selectedColumnName === 'Done'}
 								/>
 							</div>
 							<h3 className={styles.progress}>
