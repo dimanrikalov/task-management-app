@@ -10,6 +10,7 @@ import styles from './homeList.module.css';
 import { useNavigate } from 'react-router-dom';
 import { HomeCard } from '../HomeCard/HomeCard';
 import { IntroInput } from '../IntroInput/IntroInput';
+import { useTranslate } from '../../hooks/useTranslate';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 
 type TEntries = IHomeWorkspaceEntry[] | IHomeBoardEntry[];
@@ -22,6 +23,15 @@ export interface IHomeListProps {
 	filterHandler(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
+const translationPaths = {
+	boards: 'dashboard.boards',
+	workspaces: 'dashboard.workspaces',
+	filter: {
+		boards: 'dashboard.filter.boards',
+		workspaces: 'dashboard.filter.workspaces',
+	},
+}
+
 export const HomeList = ({
 	type,
 	entries,
@@ -29,6 +39,7 @@ export const HomeList = ({
 	searchInputs,
 	filterHandler
 }: IHomeListProps) => {
+	const { t } = useTranslate();
 	const navigate = useNavigate();
 
 	const extractSubtitle = (entry: IHomeBoardEntry | IHomeWorkspaceEntry) => {
@@ -42,9 +53,7 @@ export const HomeList = ({
 	return (
 		<div className={styles.background}>
 			<div className={styles.filter}>
-				<h3>
-					{type === ENTRIES_TYPES.BOARDS ? 'Boards' : 'Workspaces'}
-				</h3>
+				<h3>{t(translationPaths[type])}</h3>
 				<div className={styles.filterInput}>
 					<IntroInput
 						type={'text'}
@@ -54,11 +63,7 @@ export const HomeList = ({
 								? 'searchBoards'
 								: 'searchWorkspaces'
 						}
-						placeholder={`Filter ${
-							type === ENTRIES_TYPES.BOARDS
-								? 'board'
-								: 'workspace'
-						}s`}
+						placeholder={t(translationPaths.filter[type])}
 						value={
 							type === ENTRIES_TYPES.BOARDS
 								? searchInputs.searchBoards

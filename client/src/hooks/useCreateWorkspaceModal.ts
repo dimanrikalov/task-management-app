@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ROUTES } from '../router';
 import { useNavigate } from 'react-router-dom';
+import { languages, useTranslate } from './useTranslate';
 import { useErrorContext } from '../contexts/error.context';
 import { useModalsContext } from '../contexts/modals.context';
 import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
@@ -9,13 +10,15 @@ import { IUserContextSecure, useUserContext } from '../contexts/user.context';
 
 export const useCreateWorkspaceModal = () => {
 	const navigate = useNavigate();
+	const { language } = useTranslate();
 	const { showError } = useErrorContext();
 	const { toggleModal } = useModalsContext();
 	const [inputValue, setInputValue] = useState('');
 	const { data: userData, accessToken } =
 		useUserContext() as IUserContextSecure;
+	const Me = language === languages.en ? 'Me' : 'Аз';
 	const [colleagues, setColleagues] = useState<IUser[]>([
-		{ ...userData, username: 'Me' }
+		{ ...userData, username: Me }
 	]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

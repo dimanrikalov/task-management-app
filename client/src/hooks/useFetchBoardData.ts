@@ -5,6 +5,7 @@ import {
 import { generateImgUrl } from '@/utils';
 import { useEffect, useState } from 'react';
 import { ITask } from '../components/Task/Task';
+import { languages, useTranslate } from './useTranslate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useErrorContext } from '../contexts/error.context';
 import { IDetailedWorkspace } from '../contexts/workspace.context';
@@ -32,6 +33,7 @@ export interface IBoardData {
 export const useFetchBoardData = () => {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
+	const { language } = useTranslate();
 	const { showError } = useErrorContext();
 	const { socket } = useSocketConnection();
 	const boardId = Number(pathname.split('/').pop());
@@ -130,6 +132,41 @@ export const useFetchBoardData = () => {
 		setIsLoading(false);
 	}, [boardData]);
 
+	//update the user when chaning the language
+	useEffect(() => {
+		if (!boardData) return;
+
+		const oldUsername = language === 'bg' ? 'Me' : 'Аз';
+		const username = language === 'bg' ? 'Аз' : 'Me';
+
+		const updatedBoardUsers = boardData.boardUsers.map((user) => {
+			if (user.username === oldUsername) {
+				return { ...user, username };
+			}
+
+			return user;
+		});
+
+		setBoardData((prev) => {
+			if (!prev) return null;
+
+			return {
+				...prev,
+				boardUsers: updatedBoardUsers
+			};
+		});
+
+		const updatedWorkspaceUsers = workspaceUsers.map((user) => {
+			if (user.username === oldUsername) {
+				return { ...user, username };
+			}
+
+			return user;
+		});
+
+		setWorkspaceUsers(updatedWorkspaceUsers);
+	}, [language]);
+
 	useEffect(() => {
 		if (!shouldRefetch || shouldBlockRefetch) return;
 		const fetchBoardData = async () => {
@@ -163,9 +200,9 @@ export const useFetchBoardData = () => {
 					add the currently logged user as 'Me' on top of the list
 					and directly give the profileImagePath as we have it loaded from the authGuard
 				*/
-
+				const Me = language === languages.en ? 'Me' : 'Аз';
 				workspaceUsers.unshift({
-					username: 'Me',
+					username: Me,
 					id: userData.id,
 					email: userData.email,
 					profileImagePath: userData.profileImagePath

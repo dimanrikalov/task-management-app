@@ -57,6 +57,7 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
 	const [refreshAfter, setRefreshAfter] = useState<number | null>(null);
 
 	useEffect(() => {
+		// check if user has refresh and access tokens
 		setIsLoadingData(true);
 
 		const refreshToken = getRefreshToken();
@@ -66,7 +67,7 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({
 			return;
 		}
 
-		// If user has a valid refresh token
+		// If user has a valid refresh token get accessToken
 		if (!accessToken || !isAccessTokenValid(accessToken)) {
 			refreshTokens();
 		}

@@ -48,13 +48,13 @@
 }
 
 .rightSide {
-	gap: 6px;
+	gap: 4px;
 	display: flex;
 	justify-content: space-between;
 }
 
 .completedSteps {
-	gap: 8px;
+	gap: 4px;
 	display: flex;
 	align-items: center;
 }

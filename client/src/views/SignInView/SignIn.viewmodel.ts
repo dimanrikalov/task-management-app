@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ROUTES } from '../../router';
 import { setRefreshToken } from '@/utils';
 import { useNavigate } from 'react-router-dom';
-import { useUserContext } from '@/contexts/user.context';
+import { useUserContext } from '../../contexts/user.context';
 import { useErrorContext } from '../../contexts/error.context';
 import { METHODS, USER_ENDPOINTS, request } from '../../utils/requester';
 import { ViewModelReturnType } from '../../interfaces/viewModel.interface';

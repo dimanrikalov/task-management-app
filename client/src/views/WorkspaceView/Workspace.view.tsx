@@ -6,8 +6,9 @@ import { RxCross2 } from 'react-icons/rx';
 import styles from './workspace.module.css';
 import { FaUsersCog } from 'react-icons/fa';
 import { HiDocumentAdd } from 'react-icons/hi';
-import { MdDeleteForever } from 'react-icons/md';
 import { Modal } from '../../components/Modal/Modal';
+import { useTranslate } from '../../hooks/useTranslate';
+import { MdDeleteForever, MdLanguage } from 'react-icons/md';
 import { BoardCard } from '../../components/BoardCard/BoardCard';
 import { IntroInput } from '../../components/IntroInput/IntroInput';
 import { BackButton } from '../../components/BackButton/BackButton';
@@ -17,7 +18,18 @@ import { DeleteConfirmation } from '../../components/DeleteConfirmation/DeleteCo
 import { EntryModificationForm } from '../../components/EntryModificationForm/EntryModificationForm';
 import { EntryModificationButton } from '../../components/Buttons/EntryModificationButton/EntryModificationButton';
 
+const basePath = 'workspace'
+
+const translationPaths = {
+	editColleagues: 'editColleagues',
+	EnterBoard: 'components.inputs.enterBoardName',
+	boards: `${basePath}.boards`,
+	enterBoardName: `${basePath}.enterBoardName`,
+	searchByBoardName: `${basePath}.searchByBoardName`
+}
+
 export const WorkspaceView = () => {
+	const { t, changeLanguage } = useTranslate();
 	const { state, operations } = useWorkspaceViewModel();
 
 	if (state.isLoading) {
@@ -45,7 +57,7 @@ export const WorkspaceView = () => {
 							/>
 							<AddColleagueInput
 								enableFlex={true}
-								title="Edit colleagues"
+								title={t(translationPaths.editColleagues)}
 								colleagues={state.workspaceData.workspaceUsers}
 								addColleagueHandler={
 									operations.addWorkspaceColleague
@@ -94,11 +106,9 @@ export const WorkspaceView = () => {
 							<EntryModificationForm
 								name="workspace-name-input"
 								value={state.workspaceNameInput}
-								placeholder="Enter workspace name"
 								onSubmit={operations.handleWorkspaceNameChange}
-								onChange={
-									operations.handleWorkspaceNameInputChange
-								}
+								placeholder={t(translationPaths.enterBoardName)}
+								onChange={operations.handleWorkspaceNameInputChange}
 							/>
 						) : state.workspaceData.name.toLowerCase().trim() !==
 							'personal workspace' ? (
@@ -114,6 +124,14 @@ export const WorkspaceView = () => {
 					</div>
 					<div className={styles.operationsContainer}>
 						<BackButton onClick={operations.backBtnHandler} />
+						<EntryModificationButton
+							onClick={changeLanguage}
+						>
+							<MdLanguage
+								size={24}
+								className={styles.icon}
+							/>
+						</EntryModificationButton>
 						{state.workspaceData.name.toLowerCase().trim() !==
 							'personal workspace' && (
 								<>
@@ -149,14 +167,14 @@ export const WorkspaceView = () => {
 					</div>
 				</div>
 				<div className={styles.titleContainer}>
-					<h1>Boards</h1>
+					<h1>{t(translationPaths.boards)}</h1>
 					<div>
 						<IntroInput
 							type="text"
 							name="board-name-input"
 							value={state.inputValue}
-							placeholder="Search by board name"
 							onChange={operations.inputChangeHandler}
+							placeholder={t(translationPaths.searchByBoardName)}
 						/>
 					</div>
 				</div>

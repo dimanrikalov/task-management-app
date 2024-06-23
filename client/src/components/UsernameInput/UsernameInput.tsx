@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from './usernameInput.module.css';
 import { UserEntry } from '../UserEntry/UserEntry';
 import { IntroInput } from '../IntroInput/IntroInput';
+import { useTranslate } from '../../hooks/useTranslate';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 
 interface IUsernameInputProps {
@@ -13,6 +14,9 @@ interface IUsernameInputProps {
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 
+const enterColleagueName = 'components.inputs.enterColleagueName'
+
+
 export const UsernameInput = ({
 	addUser,
 	matches,
@@ -21,6 +25,7 @@ export const UsernameInput = ({
 	inputValue,
 	taskModalMode = false,
 }: IUsernameInputProps) => {
+	const { t } = useTranslate();
 	const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
 	//delay the opening of the user dropdown a bit
@@ -37,7 +42,7 @@ export const UsernameInput = ({
 				name="username"
 				value={inputValue}
 				onChange={onChange}
-				placeholder="Enter colleague username"
+				placeholder={t(enterColleagueName)}
 			/>
 			{inputValue && !isLoading && matches.length > 0 && showDropdown && (
 				<div className={styles.dropdownWrapper}>

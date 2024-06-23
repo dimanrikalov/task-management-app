@@ -4,6 +4,7 @@ import styles from './task.module.css';
 import { FaCheck } from 'react-icons/fa';
 import { Draggable } from 'react-beautiful-dnd';
 import { IStep } from '../../hooks/useStepsOperations';
+import { useTranslate } from '../../hooks/useTranslate';
 
 enum PRIORITY {
 	'Low',
@@ -37,9 +38,20 @@ interface ITaskProps {
 	hasDragStarted: boolean;
 	assigneeImgPath: string;
 }
+const basePath = 'taskModal';
+const translationPaths = {
+	low: `${basePath}.low`,
+	high: `${basePath}.high`,
+	medium: `${basePath}.medium`,
+	priority: `${basePath}.priority`,
+}
 
 export const Task = React.memo(
 	({ task, index, onClick, hasDragStarted, assigneeImgPath }: ITaskProps) => {
+		const { t } = useTranslate();
+		const priorityKey = PRIORITY[task.priority - 1].toLowerCase() as keyof typeof translationPaths;
+		const priority = t(translationPaths[priorityKey]);
+
 		return (
 			<Draggable
 				index={index}
@@ -67,7 +79,7 @@ export const Task = React.memo(
 						)}
 						<h4 className={styles.title}>{task.title}</h4>
 						<div className={styles.footer}>
-							<h5>Priority: {PRIORITY[task.priority - 1]}</h5>
+							<h5>{t(translationPaths.priority)}: {priority}</h5>
 							<div className={styles.rightSide}>
 								<div className={styles.completedSteps}>
 									<FaCheck

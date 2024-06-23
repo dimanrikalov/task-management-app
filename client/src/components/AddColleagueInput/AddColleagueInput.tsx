@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { generateImgUrl } from '@/utils';
 import React, { useEffect, useState } from 'react';
 import styles from './addColleagueInput.module.css';
+import { useTranslate } from '../../hooks/useTranslate';
 import { useUserContext } from '../../contexts/user.context';
 import { UsernameInput } from '../UsernameInput/UsernameInput';
 import { useErrorContext } from '../../contexts/error.context';
@@ -29,6 +30,8 @@ interface IFetchUsersPayload {
 	notIn: number[];
 }
 
+const addColleaguesPath = 'addColleagues'
+
 export const AddColleagueInput = ({
 	title,
 	colleagues,
@@ -37,6 +40,7 @@ export const AddColleagueInput = ({
 	removeColleagueHandler,
 	disableDeletionFor = []
 }: IAddColleagueInputProps) => {
+	const { t } = useTranslate()
 	const { showError } = useErrorContext();
 	const { accessToken } = useUserContext();
 	const [inputValue, setInputValue] = useState('');
@@ -109,7 +113,7 @@ export const AddColleagueInput = ({
 			<div
 				className={classNames(styles.top, enableFlex && styles.topFlex)}
 			>
-				<h2>Add Colleagues</h2>
+				<h2>{t(addColleaguesPath)}</h2>
 				<UsernameInput
 					matches={matches}
 					addUser={addUser}

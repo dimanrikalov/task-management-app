@@ -2,15 +2,15 @@ import classNames from 'classnames';
 import { ROUTES } from '../../router';
 import styles from './board.module.css';
 import { RxCross2 } from 'react-icons/rx';
-import { VscGraph } from 'react-icons/vsc';
 import { FaUsersCog } from 'react-icons/fa';
 import { Navigate } from 'react-router-dom';
 import { FcAddColumn } from 'react-icons/fc';
-import { MdDeleteForever } from 'react-icons/md';
 import { Chat } from '../../components/Chat/Chat';
 import { Modal } from '../../components/Modal/Modal';
 import { useBoardViewModel } from './Board.viewmodel';
+import { useTranslate } from '../../hooks/useTranslate';
 import { Column } from '../../components/Column/Column';
+import { MdDeleteForever, MdLanguage } from 'react-icons/md';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { BackButton } from '../../components/BackButton/BackButton';
 import { TaskModalContextProvider } from '../../contexts/taskModal.context';
@@ -21,7 +21,12 @@ import { TaskOperationsModal } from '../../components/TaskOperationsModal/TaskOp
 import { EntryModificationForm } from '../../components/EntryModificationForm/EntryModificationForm';
 import { EntryModificationButton } from '../../components/Buttons/EntryModificationButton/EntryModificationButton';
 
+const enterBoardNamePath = 'board.enterName'
+const boardColleagues = 'board.boardColleagues'
+
 export const BoardView = () => {
+	const { t } = useTranslate();
+	const { changeLanguage } = useTranslate();
 	const { state, operations } = useBoardViewModel();
 
 	if (state.isLoading) {
@@ -48,7 +53,7 @@ export const BoardView = () => {
 						/>
 						<AddColleagueInput
 							enableFlex={true}
-							title="Board users"
+							title={`${t(boardColleagues)}:`}
 							colleagues={state.boardData.boardUsers}
 							addColleagueHandler={operations.addBoardColleague}
 							removeColleagueHandler={
@@ -95,7 +100,7 @@ export const BoardView = () => {
 									<EntryModificationForm
 										name="board-name-input"
 										value={state.boardNameInput}
-										placeholder="Enter board name"
+										placeholder={t(enterBoardNamePath)}
 										onSubmit={operations.handleBoardNameChange}
 										onChange={
 											operations.handleBoardNameInputChange
@@ -115,6 +120,16 @@ export const BoardView = () => {
 						</div>
 						<div className={styles.operationsContainer}>
 							<BackButton onClick={operations.goBack} />
+							<EntryModificationButton
+								onClick={
+									changeLanguage
+								}
+							>
+								<MdLanguage
+									size={24}
+									className={styles.icon}
+								/>
+							</EntryModificationButton>
 							{state.boardData.workspace.name !==
 								'Personal Workspace' && (
 									<EntryModificationButton
