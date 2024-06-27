@@ -56,7 +56,7 @@ export const Column = React.memo(
 		} = useColumnOperations({ id, title });
 		const { t } = useTranslate();
 
-		let translatedTitle;
+		let translatedTitle: string;
 		switch (title.toLowerCase()) {
 			case 'to do':
 				translatedTitle = t(translationPaths.toDo);
