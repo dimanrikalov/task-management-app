@@ -2,6 +2,7 @@ import { generateImgUrl } from '@/utils';
 import { useUserContext } from './user.context';
 import { useBoardContext } from './board.context';
 import { generateFileFromBase64 } from '../utils/convertImages';
+import { languages, useTranslate } from '../hooks/useTranslate';
 import { BOARD_ENDPOINTS, METHODS, request } from '@/utils/requester';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IUser } from '../components/AddColleagueInput/AddColleagueInput';
@@ -60,6 +61,8 @@ export const TaskModalContextProvider: React.FC<{
 	const [assigneeId, setAssigneeId] = useState<number | null>(null);
 	const [inputValues, setInputValues] = useState<IInputState>(initalState);
 
+	const { language } = useTranslate();
+
 	useEffect(() => {
 		if (!selectedTask) return;
 		const username =
@@ -109,21 +112,23 @@ export const TaskModalContextProvider: React.FC<{
 					throw new Error(data.errorMessage);
 				}
 
+				const Me = language === languages.en ? 'Me' : 'Аз';
+
 				const users = data.users.map((user) => ({
 					...user,
-					username: user.id === userData.id ? 'Me' : user.username,
+					username: user.id === userData.id ? Me : user.username,
 					profileImagePath: generateImgUrl(user.profileImagePath)
 				}));
 
 				const matchingUsers = users.filter((user) =>
-					user.username.toLowerCase()
-						.includes(inputValues.username.toLowerCase())
+					user.username.toLocaleLowerCase()
+						.includes(inputValues.username.toLocaleLowerCase())
 				);
 
 				const assignee = matchingUsers.find(
 					(user) =>
-						user.username.trim().toLowerCase() ===
-						inputValues.username.trim().toLowerCase()
+						user.username.trim().toLocaleLowerCase() ===
+						inputValues.username.trim().toLocaleLowerCase()
 				);
 
 				if (isFirstTime) {

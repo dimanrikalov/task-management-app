@@ -3,10 +3,24 @@ import { Modal } from '../Modal/Modal';
 import { RxCross2 } from 'react-icons/rx';
 import styles from './createBoardModal.module.css';
 import { IntroInput } from '../IntroInput/IntroInput';
+import { useTranslate } from '../../hooks/useTranslate';
 import { WorkspaceInput } from '../WorkspaceInput/WorkspaceInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { useCreateBoardModal } from '../../hooks/useCreateBoardModal';
 import { AddColleagueInput } from '../AddColleagueInput/AddColleagueInput';
+
+const basePath = 'createBoard';
+
+const translationPaths = {
+	title: `${basePath}.title`,
+	create: `${basePath}.create`,
+	message: `${basePath}.message`,
+	nameYourBoard: `${basePath}.nameYourBoard`,
+	boardUsersList: `${basePath}.boardUsersList`,
+	enterBoardName: `${basePath}.enterBoardName`,
+	chooseWorkspace: `${basePath}.chooseWorkspace`,
+	enterWorkspaceName: `${basePath}.enterWorkspaceName`,
+}
 
 export const CreateBoardModal = () => {
 	const {
@@ -22,6 +36,7 @@ export const CreateBoardModal = () => {
 		toggleIsCreateBoardModalOpen,
 		isWorkspaceNameInputDisabled
 	} = useCreateBoardModal();
+	const { t } = useTranslate()
 
 	return (
 		<Modal>
@@ -33,19 +48,12 @@ export const CreateBoardModal = () => {
 				<div className={styles.background}>
 					<div className={styles.leftSide}>
 						<div className={styles.introMessage}>
-							<h1>Let's create a board!</h1>
-							<p>
-								A <span className={styles.bold}>board</span> is
-								the secret to enhanced productivity and
-								organization. It offers visual clarity and
-								empowers you to stay on top of priorities and
-								efficiently distribute workload between
-								employees.
-							</p>
+							<h1>{t(translationPaths.title)}</h1>
+							<p>{t(translationPaths.message)}</p>
 						</div>
 
 						<div className={styles.inputContainer}>
-							<h2>Choose a workspace</h2>
+							<h2>{t(translationPaths.chooseWorkspace)}</h2>
 							<form className={styles.createForm}>
 								<WorkspaceInput
 									onChange={handleInputChange}
@@ -53,14 +61,13 @@ export const CreateBoardModal = () => {
 									chooseWorkspace={selectWorkspace}
 									accessibleWorkspaces={workspacesData}
 									disabled={isWorkspaceNameInputDisabled}
+									placeholder={t(translationPaths.enterWorkspaceName)}
 								/>
 							</form>
 						</div>
 
 						<div className={styles.inputContainer}>
-							<h2>
-								Name your <span>board</span>
-							</h2>
+							<h2>{t(translationPaths.nameYourBoard)}</h2>
 							<form
 								className={styles.createForm}
 								onSubmit={createBoard}
@@ -68,11 +75,11 @@ export const CreateBoardModal = () => {
 								<IntroInput
 									type="text"
 									name="boardName"
-									placeholder="Enter a board name"
+									placeholder={t(translationPaths.enterBoardName)}
 									value={inputValues.boardName}
 									onChange={handleInputChange}
 								/>
-								<IntroButton message="Create Board" />
+								<IntroButton message={t(translationPaths.create)} />
 							</form>
 						</div>
 					</div>
@@ -85,12 +92,12 @@ export const CreateBoardModal = () => {
 									selectedWorkspace.name
 										.toLowerCase()
 										.trim() === 'personal workspace') &&
-									styles.hidden
+								styles.hidden
 							)}
 						>
 							{
 								<AddColleagueInput
-									title={'Board users list'}
+									title={t(translationPaths.boardUsersList)}
 									addColleagueHandler={addBoardColleague}
 									removeColleagueHandler={
 										removeBoardColleague

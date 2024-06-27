@@ -2,9 +2,19 @@ import { Modal } from '../Modal/Modal';
 import { RxCross2 } from 'react-icons/rx';
 import { IntroInput } from '../IntroInput/IntroInput';
 import styles from './createWorkspaceModal.module.css';
+import { useTranslate } from '../../hooks/useTranslate';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { AddColleagueInput } from '../AddColleagueInput/AddColleagueInput';
 import { useCreateWorkspaceModal } from '../../hooks/useCreateWorkspaceModal';
+
+const translationPaths = {
+	title: 'createWorkspace.title',
+	create: 'createWorkspace.create',
+	message: 'createWorkspace.message',
+	nameWorkspace: 'createWorkspace.nameWorkspace',
+	usersWithAccess: 'createWorkspace.usersWithAccess',
+	enterWorkspaceName: 'components.inputs.enterWorkspaceName'
+}
 
 export const CreateWorkspaceModal = () => {
 	const {
@@ -17,6 +27,7 @@ export const CreateWorkspaceModal = () => {
 		removeFromColleaguesToAdd,
 		toggleIsCreateWorkspaceModalOpen
 	} = useCreateWorkspaceModal();
+	const { t } = useTranslate();
 
 	return (
 		<Modal>
@@ -28,19 +39,15 @@ export const CreateWorkspaceModal = () => {
 					/>
 					<div className={styles.leftSide}>
 						<div className={styles.introMessage}>
-							<h1>Let's create a workspace!</h1>
+							<h1>{t(translationPaths.title)}</h1>
 							<p>
-								Boost your productivity by making it easier for
-								everyone to access multiple{' '}
-								<span className={styles.bold}>boards </span>
-								in <span className={styles.bold}>one</span>{' '}
-								shared space.
+								{t(translationPaths.message)}
 							</p>
 						</div>
 
 						<div className={styles.inputContainer}>
 							<h2>
-								Name your <span>workspace</span>
+								{t(translationPaths.nameWorkspace)}
 							</h2>
 							<form
 								className={styles.createForm}
@@ -51,16 +58,16 @@ export const CreateWorkspaceModal = () => {
 									value={inputValue}
 									name="workspace-name"
 									onChange={handleInputChange}
-									placeholder="Enter a workspace name"
+									placeholder={t(translationPaths.enterWorkspaceName)}
 								/>
-								<IntroButton message="Create Workspace" />
+								<IntroButton message={t(translationPaths.create)} />
 							</form>
 						</div>
 					</div>
 					<div className={styles.rightSide}>
 						<AddColleagueInput
 							colleagues={colleagues}
-							title={'Workspace users list'}
+							title={t(translationPaths.usersWithAccess)}
 							disableDeletionFor={[userData.id]}
 							addColleagueHandler={addToColleaguesToAdd}
 							removeColleagueHandler={removeFromColleaguesToAdd}

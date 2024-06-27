@@ -9,6 +9,7 @@ import {
 	IHomeWorkspaceEntry
 } from '../../hooks/useFetchHomeLists';
 import { useEffect, useState } from 'react';
+import { languages, useTranslate } from '../../hooks/useTranslate';
 import { ViewModelReturnType } from '../../interfaces/viewModel.interface';
 
 export enum ENTRIES_TYPES {
@@ -64,8 +65,10 @@ export const useHomeViewModel = (): ViewModelReturnType<
 		setIsLoadingWorkspaces
 	} = useFetchHomeLists();
 
+	const { language } = useTranslate();
+	const dateFormat = language === languages.en ? 'en-US' : 'bg-BG';
 	const date = new Date()
-		.toLocaleDateString('en-US', options)
+		.toLocaleDateString(dateFormat, options)
 		.split(',')
 		.join(' ');
 	const { data: userData } = useUserContext() as IUserContextSecure;

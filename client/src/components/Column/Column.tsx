@@ -5,12 +5,14 @@ import { ITask, Task } from '../Task/Task';
 import { MdDeleteOutline } from 'react-icons/md';
 import { colors } from '../../hooks/useConfetti';
 import { IntroInput } from '../IntroInput/IntroInput';
+import { useTranslate } from '../../hooks/useTranslate';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { useColumnOperations } from '../../hooks/useColumnOperations';
 
+export const defaultColumnNames = ['to do', 'doing', 'done'];
 export interface IColumnProps {
 	id: number;
 	index: number;
@@ -19,6 +21,15 @@ export interface IColumnProps {
 	users: IUser[];
 	hasDragStarted: boolean;
 	shouldConfettiExplode: boolean;
+}
+
+const translationPaths = {
+	toDo: 'column.toDo',
+	doing: 'column.doing',
+	done: 'column.done',
+	confirm: 'column.confirm',
+	addTask: 'column.addTask',
+	enterColumnName: 'column.enterColumnName',
 }
 
 export const Column = React.memo(
@@ -43,6 +54,22 @@ export const Column = React.memo(
 			toggleSetShowDeleteBtn,
 			handleColumnNameChange
 		} = useColumnOperations({ id, title });
+		const { t } = useTranslate();
+
+		let translatedTitle;
+		switch (title.toLowerCase()) {
+			case 'to do':
+				translatedTitle = t(translationPaths.toDo);
+				break;
+			case 'doing':
+				translatedTitle = t(translationPaths.doing);
+				break;
+			case 'done':
+				translatedTitle = t(translationPaths.done);
+				break;
+			default:
+				translatedTitle = title;
+		}
 
 		return (
 			<>
@@ -73,7 +100,7 @@ export const Column = React.memo(
 										onClick={handleColumnDeletion}
 										onMouseOut={toggleSetShowDeleteBtn}
 									>
-										Confirm
+										{t(translationPaths.confirm)}
 									</button>
 								) : (
 									<form
@@ -86,7 +113,7 @@ export const Column = React.memo(
 											value={inputValue}
 											name="column-name-input"
 											onChange={handleInputChange}
-											placeholder="Enter column name"
+											placeholder={t(translationPaths.enterColumnName)}
 										/>
 										<button
 											className={styles.submitBtn}
@@ -112,7 +139,7 @@ export const Column = React.memo(
 									{...provided.dragHandleProps}
 									onDoubleClick={toggleIsInputModeOn}
 								>
-									{title}
+									{translatedTitle}
 								</h2>
 							)}
 							<Droppable
@@ -158,7 +185,8 @@ export const Column = React.memo(
 								<IntroButton
 									reverse={true}
 									onClick={onClick}
-									message={'Add task'}
+									// message={'Add task'}
+									message={t(translationPaths.addTask)}
 								/>
 							</div>
 						</div>

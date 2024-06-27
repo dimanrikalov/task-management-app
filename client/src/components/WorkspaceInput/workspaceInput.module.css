@@ -1,4 +1,9 @@
+.inputWrapper {
+	position: relative;
+}
+
 .dropdownWrapper {
+	top: 36px;
 	z-index: 1;
 	width: 286px;
 	padding: 6px;

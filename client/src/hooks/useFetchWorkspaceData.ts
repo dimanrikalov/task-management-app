@@ -4,6 +4,7 @@ import {
 } from '@/contexts/socketConnection.context';
 import { generateImgUrl } from '@/utils';
 import { useEffect, useState } from 'react';
+import { languages, useTranslate } from './useTranslate';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useErrorContext } from '../contexts/error.context';
 import { IDetailedWorkspace } from '../contexts/workspace.context';
@@ -13,6 +14,7 @@ import { IUserContextSecure, useUserContext } from '../contexts/user.context';
 export const useFetchWorkspaceData = () => {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
+	const { language } = useTranslate();
 	const { showError } = useErrorContext();
 	const { socket } = useSocketConnection();
 	const [workspaceData, setWorkspaceData] =
@@ -88,6 +90,27 @@ export const useFetchWorkspaceData = () => {
 	}, [workspaceData]);
 
 	useEffect(() => {
+		if (!workspaceData) return;
+
+		const oldUsername = language === 'bg' ? 'Me' : 'Аз';
+		const username = language === 'bg' ? 'Аз' : 'Me';
+
+		const workspaceUsers = workspaceData.workspaceUsers.map((user) => {
+			if (user.username === oldUsername) {
+				return { ...user, username };
+			}
+
+			return user;
+		});
+
+		setWorkspaceData((prev) => {
+			if (!prev) return null;
+
+			return { ...prev, workspaceUsers };
+		});
+	}, [language]);
+
+	useEffect(() => {
 		if (!shouldRefetch) return;
 
 		const fetchWorkspace = async () => {
@@ -122,8 +145,9 @@ export const useFetchWorkspaceData = () => {
 					and directly give the profileImagePath as we have it loaded from the authGuard
 				*/
 
+				const Me = language === languages.en ? 'Me' : 'Аз';
 				workspaceUsers.unshift({
-					username: 'Me',
+					username: Me,
 					id: userData.id,
 					email: userData.email,
 					profileImagePath: userData.profileImagePath

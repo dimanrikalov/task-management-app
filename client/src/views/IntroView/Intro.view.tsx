@@ -1,32 +1,50 @@
 import styles from './intro.module.css';
+import { MdLanguage } from "react-icons/md";
 import { useIntroViewModel } from './intro.viewmodel';
+import { useTranslate } from '../../hooks/useTranslate';
 import { IntroButton } from '../../components/Buttons/IntroButton/IntroButton';
 
+const translationPaths = {
+	taskify: 'taskify',
+	components: {
+		buttons: {
+			signUp: 'components.buttons.signUp',
+			signIn: 'components.buttons.signIn',
+		}
+	},
+	introView: {
+		or: 'introView.or',
+		subtitle: 'introView.subtitle',
+		description: 'introView.description',
+	}
+}
+
 export const IntroView = () => {
+	const { t, changeLanguage } = useTranslate();
 	const { operations } = useIntroViewModel();
 
 	return (
 		<div className={styles.background}>
+			<MdLanguage
+				onClick={changeLanguage}
+				className={styles.translationButton}
+			/>
 			<div className={styles.leftSide}>
-				<h1 className={styles.title}>Taskify</h1>
+				<h1 className={styles.title}>{t(translationPaths.taskify)}</h1>
 				<p className={styles.p1}>
-					Taskify lets you work <span>more</span> collaboratively and
-					get <span>more</span> done.
+					{t(translationPaths.introView.subtitle)}
 				</p>
 				<p className={styles.p2}>
-					Taskify's <span>workspaces</span>, <span>boards</span>,{' '}
-					<span>messages</span>, <span>columns</span> and{' '}
-					<span>tasks</span> enable you to organize and prioritize
-					your assignments in a clear, cohesive and rewarding way.
+					{t(translationPaths.introView.description)}
 				</p>
 				<div className={styles.buttonDiv}>
 					<IntroButton
-						message={'Sign in'}
+						message={t(translationPaths.components.buttons.signIn)}
 						onClick={operations.signInHandler}
 					/>
-					<p>or</p>
+					<p>{t(translationPaths.introView.or)}</p>
 					<IntroButton
-						message={'Sign up'}
+						message={t(translationPaths.components.buttons.signUp)}
 						onClick={operations.signUpHandler}
 					/>
 				</div>

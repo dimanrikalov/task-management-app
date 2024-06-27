@@ -5,8 +5,23 @@ import styles from './editProfile.module.css';
 import { FaCheck, FaXmark } from 'react-icons/fa6';
 import { IntroInput } from '../IntroInput/IntroInput';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
+import { languages, useTranslate } from '../../hooks/useTranslate';
 import { useEditProfileModal } from '../../hooks/useEditProfileOperations';
 import { DeleteConfirmation } from '../DeleteConfirmation/DeleteConfirmation';
+
+const basePath = 'editProfile';
+
+const translationPaths = {
+	image: `${basePath}.image`,
+	password: `${basePath}.password`,
+	newPassword: `${basePath}.newPassword`,
+	username: `${basePath}.username`,
+	newUsername: `${basePath}.newUsername`,
+	email: `${basePath}.email`,
+	newEmail: `${basePath}.newEmail`,
+	currentEmail: `${basePath}.currentEmail`,
+	deleteProfile: `${basePath}.deleteProfile`,
+}
 
 export const EditProfileModal = () => {
 	const {
@@ -22,6 +37,8 @@ export const EditProfileModal = () => {
 		toggleIsDeletionModalOpen,
 		toggleIsEditProfileModalOpen
 	} = useEditProfileModal();
+	const { t, language } = useTranslate();
+	const entityName = language === languages.bg ? 'своя профил' : 'your profile';
 
 	return (
 		<Modal>
@@ -33,8 +50,8 @@ export const EditProfileModal = () => {
 							onClick={toggleIsDeletionModalOpen}
 						/>
 						<DeleteConfirmation
-							entityName="your profile"
 							onConfirm={deleteUser}
+							entityName={entityName}
 							onCancel={toggleIsDeletionModalOpen}
 						/>
 					</div>
@@ -51,7 +68,7 @@ export const EditProfileModal = () => {
 					<div className={styles.header}></div>
 					<div className={styles.main}>
 						<div className={styles.leftSide}>
-							<h3>Edit Profile Image</h3>
+							<h3>{t(translationPaths.image)}</h3>
 							<label
 								className={styles.imgInput}
 								htmlFor={'imgInput'}
@@ -113,7 +130,7 @@ export const EditProfileModal = () => {
 							</form>
 
 							<div className={styles.formContainer}>
-								<h3>Edit password</h3>
+								<h3>{t(translationPaths.password)}</h3>
 								<form
 									name="password"
 									className={styles.form}
@@ -122,18 +139,18 @@ export const EditProfileModal = () => {
 									<IntroInput
 										name="password"
 										type="password"
-										placeholder="New password"
 										value={inputValues.password}
 										onChange={inputChangeHandler}
+										placeholder={t(translationPaths.newPassword)}
 									/>
-									<IntroButton message={'Change Password'} />
+									<IntroButton message={t(translationPaths.password)} />
 								</form>
 							</div>
 						</div>
 						<div className={styles.rightSide}>
 
 							<div className={styles.formContainer}>
-								<h3>Edit Username</h3>
+								<h3>{t(translationPaths.username)}</h3>
 								<form
 									name="username"
 									className={styles.form}
@@ -142,18 +159,18 @@ export const EditProfileModal = () => {
 									<IntroInput
 										type="text"
 										name="username"
-										placeholder="New username"
 										value={inputValues.username}
 										onChange={inputChangeHandler}
+										placeholder={t(translationPaths.newUsername)}
 									/>
-									<IntroButton message={'Change Username'} />
+									<IntroButton message={t(translationPaths.username)} />
 								</form>
 							</div>
 
 							<div className={styles.formContainer}>
-								<h3>Edit Email</h3>
+								<h3>{t(translationPaths.email)}</h3>
 								<p className={styles.currentEmail}>
-									Current email: {userData.email}
+									{t(translationPaths.currentEmail)}: {userData.email}
 								</p>
 								<form
 									name="email"
@@ -163,19 +180,19 @@ export const EditProfileModal = () => {
 									<IntroInput
 										type="email"
 										name="email"
-										placeholder="New Email"
 										value={inputValues.email}
 										onChange={inputChangeHandler}
+										placeholder={t(translationPaths.newEmail)}
 									/>
 									<IntroButton
-										message={'Change Email'}
+										message={t(translationPaths.email)}
 									/>
 								</form>
 							</div>
 
 							<IntroButton
-								message={'Delete Profile'}
 								onClick={toggleIsDeletionModalOpen}
+								message={t(translationPaths.deleteProfile)}
 							/>
 						</div>
 					</div>

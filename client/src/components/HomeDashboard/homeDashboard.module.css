@@ -29,7 +29,7 @@
 	grid-area: bottom-right-stats;
 }
 
-@media screen and (max-width: 1295px) {
+@media screen and (max-width: 1321px) {
 	.background {
 		grid-template-columns: repeat(1, 1fr);
 		grid-template-areas:

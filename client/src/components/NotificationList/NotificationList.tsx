@@ -1,5 +1,6 @@
-import { AiOutlineClear } from "react-icons/ai";
+import { AiOutlineClear } from 'react-icons/ai';
 import styles from './notificationList.module.css'
+import { useTranslate } from '../../hooks/useTranslate';
 import { LoadingOverlay } from '../LoadingOverlay/LoadingOverlay';
 import { NotificationListItem } from '../NotificationListItem/NotificationListItem';
 import { EntryModificationButton } from '../Buttons/EntryModificationButton/EntryModificationButton';
@@ -17,6 +18,8 @@ interface INotificationListProps {
     clearNotification(notificationId: number): Promise<void>;
 }
 
+const translationPath = 'dashboard.notifications';
+
 export const NotificationList = ({
     username,
     isLoading,
@@ -24,10 +27,11 @@ export const NotificationList = ({
     clearNotification,
     clearNotifications
 }: INotificationListProps) => {
+    const { t } = useTranslate();
     return (
         <div className={styles.notificationsContainer}>
             <div className={styles.header}>
-                <h3>Notifications</h3>
+                <h3>{t(translationPath)}</h3>
                 <EntryModificationButton
                     onClick={clearNotifications}>
                     <AiOutlineClear className={styles.icon} />

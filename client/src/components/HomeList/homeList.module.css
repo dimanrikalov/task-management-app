@@ -6,22 +6,20 @@
 }
 
 .filter {
-	gap: 32px;
-	margin-left: 8px;
+	gap: 9px;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
 }
 
 .filter h3 {
-	flex: 1;
-	line-height: 2;
+	flex-shrink: 0;
+	margin-right: 10px; /* Optional: add some space between the text and the input */
 }
 
 .filter .filterInput {
-	flex: 2;
+	flex-grow: 1;
+	object-fit: fill; /* Optional: this property is more relevant for replaced elements like <img> */
 }
-
 .list {
 	gap: 16px;
 	width: 100%;

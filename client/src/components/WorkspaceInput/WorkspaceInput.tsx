@@ -6,6 +6,7 @@ interface IWorkspaceInputProps {
 	value: string;
 	onLoad?(): any;
 	disabled?: boolean;
+	placeholder: string;
 	accessibleWorkspaces: IWorkspace[];
 	onChange(e: React.ChangeEvent<HTMLInputElement>): void;
 	chooseWorkspace(workspaceData: IWorkspace | null): void;
@@ -16,6 +17,7 @@ export const WorkspaceInput = ({
 	onLoad,
 	disabled,
 	onChange,
+	placeholder,
 	chooseWorkspace,
 	accessibleWorkspaces
 }: IWorkspaceInputProps) => {
@@ -28,7 +30,7 @@ export const WorkspaceInput = ({
 	);
 
 	return (
-		<div>
+		<div className={styles.inputWrapper}>
 			<IntroInput
 				type="text"
 				value={value}
@@ -36,7 +38,7 @@ export const WorkspaceInput = ({
 				onChange={onChange}
 				disabled={disabled}
 				name="workspaceName"
-				placeholder="Enter a workspace name"
+				placeholder={placeholder}
 			/>
 			{value !== '' &&
 				!valueIsValidWorkspaceName &&

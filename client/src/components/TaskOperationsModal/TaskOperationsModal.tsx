@@ -6,13 +6,49 @@ import { FaXmark } from 'react-icons/fa6';
 import { FcAddImage } from 'react-icons/fc';
 import styles from './taskOperationsModal.module.css';
 import { IntroInput } from '../IntroInput/IntroInput';
+import { useTranslate } from '../../hooks/useTranslate';
 import { UsernameInput } from '../UsernameInput/UsernameInput';
 import { useBoardContext } from '../../contexts/board.context';
 import { ListContainer } from '../ListContainer/ListContainer';
 import { IntroButton } from '../Buttons/IntroButton/IntroButton';
 import { useCreateTaskOperations } from '../../hooks/useCreateTaskOperations';
 
+const basePath = 'taskModal';
+
+const translationPaths = {
+	low: `${basePath}.low`,
+	high: `${basePath}.high`,
+	hours: `${basePath}.hours`,
+	medium: `${basePath}.medium`,
+	effort: `${basePath}.effort`,
+	minutes: `${basePath}.minutes`,
+	addTask: `${basePath}.addTask`,
+	editTask: `${basePath}.editTask`,
+	addSteps: `${basePath}.addSteps`,
+	letsEdit: `${basePath}.letsEdit`,
+	priority: `${basePath}.priority`,
+	editName: `${basePath}.editName`,
+	inputName: `${basePath}.inputName`,
+	stepInput: `${basePath}.stepInput`,
+	editSteps: `${basePath}.editSteps`,
+	timeSpent: `${basePath}.timeSpent`,
+	enterName: `${basePath}.enterName`,
+	letsCreate: `${basePath}.letsCreate`,
+	deleteTask: `${basePath}.deleteTask`,
+	editAssignee: `${basePath}.editAssignee`,
+	timeEstimation: `${basePath}.timeEstimation`,
+	chooseAssignee: `${basePath}.chooseAssignee`,
+	addDescription: `${basePath}.addDescription`,
+	confirmDeletion: `${basePath}.confirmDeletion`,
+	editDescription: `${basePath}.editDescription`,
+	descriptionEdit: `${basePath}.descriptionEdit`,
+	enterDescription: `${basePath}.enterDescription`,
+	overallCompletion: `${basePath}.overallCompletion`,
+	descriptionCreate: `${basePath}.descriptionCreate`,
+}
+
 export const TaskOperationsModal = () => {
+	const { t } = useTranslate();
 	const { state, operations } = useCreateTaskOperations();
 	const { selectedTask, selectedColumnName, toggleIsTaskModalOpen } = useBoardContext();
 
@@ -21,7 +57,13 @@ export const TaskOperationsModal = () => {
 			<div className={styles.backgroundWrapper}>
 				<div className={styles.background}>
 					<div className={styles.header}>
-						<h1>Let's {selectedTask ? 'edit' : 'create'} a Task</h1>
+						<h1>
+							{
+								selectedTask ?
+									t(translationPaths.letsEdit) :
+									t(translationPaths.letsCreate)
+							}
+						</h1>
 						<RxCross2
 							className={styles.closeBtn}
 							onClick={toggleIsTaskModalOpen}
@@ -30,56 +72,47 @@ export const TaskOperationsModal = () => {
 
 					<div className={styles.body}>
 						<div className={styles.left}>
-							{selectedTask ? (
-								<p>
-									It is only normal that a{' '}
-									<span className={styles.bold}>task</span>{' '}
-									changes its properties throughout the
-									lifecycle of a{' '}
-									<span className={styles.bold}>board</span>.
-									Fortunately with{' '}
-									<span className={styles.bold}>Taskify</span>
-									, no user should worry about modifying any
-									task detail.
-								</p>
-							) : (
-								<p>
-									A <span className={styles.bold}>task</span>{' '}
-									is the building block of a{' '}
-									<span className={styles.bold}>board</span>.
-									This is what an employee interacts with most
-									of the time.
-								</p>
-							)}
-
+							<p>
+								{
+									selectedTask ?
+										t(translationPaths.descriptionEdit)
+										:
+										t(translationPaths.descriptionCreate)
+								}
+							</p>
 							<div className={styles.stepOne}>
 								<h2>
-									{selectedTask
-										? 'Edit task name'
-										: 'Name your task'}
+									{
+										selectedTask ?
+											t(translationPaths.editName)
+											:
+											t(translationPaths.enterName)
+									}
 								</h2>
 								<IntroInput
 									name="title"
 									type="text"
-									placeholder="Enter task name"
 									value={state.inputValues.title}
 									onChange={operations.handleInputChange}
+									placeholder={t(translationPaths.inputName)}
 								/>
 							</div>
 
 							<div className={styles.stepTwo}>
 								<h2>
-									{selectedTask
-										? 'Edit description'
-										: 'Add description'}
+									{
+										selectedTask
+											? t(translationPaths.editDescription)
+											: t(translationPaths.addDescription)
+									}
 								</h2>
 								<textarea
 									rows={10}
 									name="description"
 									className={styles.textArea}
-									placeholder="Enter task description"
 									value={state.inputValues.description}
 									onChange={operations.handleInputChange}
+									placeholder={`${t(translationPaths.enterDescription)}...`}
 								/>
 							</div>
 						</div>
@@ -94,15 +127,16 @@ export const TaskOperationsModal = () => {
 									state.taskImagePath &&
 									styles.colorBorder)}
 								>
-									{state.taskImagePath ? (
-										<img
-											alt="task-img"
-											src={state.taskImagePath}
-											className={styles.previewImage}
-										/>
-									) : (
-										<FcAddImage size={92} />
-									)}
+									{
+										state.taskImagePath ? (
+											<img
+												alt="task-img"
+												src={state.taskImagePath}
+												className={styles.previewImage}
+											/>
+										) : (
+											<FcAddImage size={92} />
+										)}
 								</div>
 							</label>
 
@@ -132,20 +166,24 @@ export const TaskOperationsModal = () => {
 								</button>
 							</div>
 							<div className={styles.priority}>
-								<h3 className={styles.fieldTitle}>Priority:</h3>
+								<h3 className={styles.fieldTitle}>
+									{t(translationPaths.priority)}:
+								</h3>
 								<select
 									name="priority"
 									className={styles.select}
 									value={state.inputValues.priority}
 									onChange={operations.handleInputChange}
 								>
-									<option value={'1'}>Low</option>
-									<option value={'2'}>Medium</option>
-									<option value={'3'}>High</option>
+									<option value={'1'}>{t(translationPaths.low)}</option>
+									<option value={'2'}>{t(translationPaths.medium)}</option>
+									<option value={'3'}>{t(translationPaths.high)}</option>
 								</select>
 							</div>
 							<div className={styles.effort}>
-								<h3 className={styles.fieldTitle}>Effort:</h3>
+								<h3 className={styles.fieldTitle}>
+									{t(translationPaths.effort)}:
+								</h3>
 								<select
 									name="effort"
 									className={styles.select}
@@ -162,7 +200,7 @@ export const TaskOperationsModal = () => {
 
 							<div className={styles.timeEstimation}>
 								<h3 className={styles.fieldTitle}>
-									Time Estimation:
+									{t(translationPaths.timeEstimation)}:
 								</h3>
 								<div className={styles.rightSide}>
 									<div className={styles.inputDiv}>
@@ -179,7 +217,7 @@ export const TaskOperationsModal = () => {
 												state.inputValues.estimatedHours
 											}
 										/>
-										<p>h</p>
+										<p>{t(translationPaths.hours)}</p>
 									</div>
 									<div className={styles.inputDiv}>
 										<input
@@ -197,13 +235,13 @@ export const TaskOperationsModal = () => {
 													.estimatedMinutes
 											}
 										/>
-										<p>m</p>
+										<p>{t(translationPaths.minutes)}</p>
 									</div>
 								</div>
 							</div>
 							<div className={styles.timeEstimation}>
 								<h3 className={styles.fieldTitle}>
-									Time Spent:
+									{t(translationPaths.timeSpent)}
 								</h3>
 								<div className={styles.rightSide}>
 									<div className={styles.inputDiv}>
@@ -218,7 +256,7 @@ export const TaskOperationsModal = () => {
 												operations.handleInputChange
 											}
 										/>
-										<p>h</p>
+										<p>{t(translationPaths.hours)}</p>
 									</div>
 									<div className={styles.inputDiv}>
 										<input
@@ -235,7 +273,7 @@ export const TaskOperationsModal = () => {
 												operations.handleInputChange
 											}
 										/>
-										<p>m</p>
+										<p>{t(translationPaths.minutes)}</p>
 									</div>
 								</div>
 							</div>
@@ -243,9 +281,11 @@ export const TaskOperationsModal = () => {
 						<div className={styles.right}>
 							<div className={styles.assigneeInput}>
 								<h2>
-									{selectedTask
-										? 'Edit assignee '
-										: 'Choose assignee'}
+									{
+										selectedTask
+											? t(translationPaths.editAssignee)
+											: t(translationPaths.chooseAssignee)
+									}
 								</h2>
 								<UsernameInput
 									isLoading={false}
@@ -259,15 +299,17 @@ export const TaskOperationsModal = () => {
 							<div className={styles.stepContainer}>
 								<div className={styles.addSteps}>
 									<h2>
-										{selectedTask
-											? 'Edit steps'
-											: 'Add steps'}
+										{
+											selectedTask
+												? t(translationPaths.editSteps)
+												: t(translationPaths.addSteps)
+										}
 									</h2>
 									<div className={styles.stepInputDiv}>
 										<IntroInput
 											type="text"
 											name="step"
-											placeholder='ex: "Take a nap"'
+											placeholder={t(translationPaths.stepInput)}
 											value={state.inputValues.step}
 											onChange={
 												operations.handleInputChange
@@ -300,11 +342,13 @@ export const TaskOperationsModal = () => {
 								/>
 							</div>
 							<h3 className={styles.progress}>
-								Overall completion: {state.progress}%
+								{t(translationPaths.overallCompletion)}: {state.progress}%
 							</h3>
 							<IntroButton
 								message={
-									selectedTask ? 'Edit Task' : 'Add Task'
+									selectedTask
+										? t(translationPaths.editTask)
+										: t(translationPaths.addTask)
 								}
 								disabled={
 									!!!state.inputValues.title ||
@@ -326,7 +370,7 @@ export const TaskOperationsModal = () => {
 												operations.toggleConfirmationBtn
 											}
 										>
-											Confirm Deletion
+											{t(translationPaths.confirmDeletion)}
 										</button>
 									) : (
 										<button
@@ -335,7 +379,7 @@ export const TaskOperationsModal = () => {
 												operations.toggleConfirmationBtn
 											}
 										>
-											Delete Task
+											{t(translationPaths.deleteTask)}
 										</button>
 									)}
 								</>

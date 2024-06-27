@@ -11,6 +11,7 @@ import { useLocation } from 'react-router-dom';
 import { UserEntry } from '../UserEntry/UserEntry';
 import { useEffect, useRef, useState } from 'react';
 import { IntroInput } from '../IntroInput/IntroInput';
+import { useTranslate } from '../../hooks/useTranslate';
 import { IUser } from '../AddColleagueInput/AddColleagueInput';
 import { useErrorContext } from '../../contexts/error.context';
 import { TbLayoutSidebarLeftExpandFilled } from 'react-icons/tb';
@@ -33,11 +34,17 @@ interface IChatProps {
 	toggleIsChatOpen(): void;
 }
 
+const translationPaths = {
+	title: 'chat.title',
+	enterMsg: 'chat.enterMsg'
+}
+
 export const Chat = ({
 	isChatOpen,
 	boardUsers,
 	toggleIsChatOpen
 }: IChatProps) => {
+	const { t } = useTranslate();
 	const { showError } = useErrorContext();
 	const { socket } = useSocketConnection();
 	const { data: userData, accessToken } =
@@ -117,7 +124,7 @@ export const Chat = ({
 			const userFound = boardUsers.find
 				(boardUser =>
 					boardUser.username.
-						toLowerCase() === username.toLowerCase()
+						toLocaleLowerCase() === username.toLocaleLowerCase()
 				)
 
 			if (userFound) {
@@ -242,7 +249,7 @@ export const Chat = ({
 				</button>
 			</div>
 			<div className={styles.header}>
-				<h2>Board chat</h2>
+				<h2>{t(translationPaths.title)}</h2>
 			</div>
 			<div className={styles.chat}>
 				{isLoading ? (
@@ -302,7 +309,7 @@ export const Chat = ({
 					inputRef={inputRef}
 					name="message-input"
 					handleSelect={handleSelect}
-					placeholder="Write message..."
+					placeholder={`${t(translationPaths.enterMsg)}...`}
 					onChange={(e) => setInputValue(e.target.value)}
 				/>
 				<button

@@ -8,6 +8,7 @@ import { ROUTES } from '../router';
 import { generateImgUrl } from '@/utils';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { languages, useTranslate } from './useTranslate';
 import { useErrorContext } from '../contexts/error.context';
 import { useModalsContext } from '../contexts/modals.context';
 import { IDetailedWorkspace } from '../contexts/workspace.context';
@@ -37,6 +38,7 @@ export interface IDetailedBoard {
 
 export const useCreateBoardModal = () => {
 	const navigate = useNavigate();
+	const { language } = useTranslate();
 	const { showError } = useErrorContext();
 	const { toggleModal } = useModalsContext();
 	const { workspaceName } = useSelectedWorkspaceContext();
@@ -110,9 +112,9 @@ export const useCreateBoardModal = () => {
 					add the currently logged user as 'Me' on top of the list
 					and directly give the profileImagePath as we have it loaded from the authGuard
 				*/
-
+				const Me = language === languages.en ? 'Me' : 'Аз';
 				workspaceUsers.unshift({
-					username: 'Me',
+					username: Me,
 					id: userData.id,
 					email: userData.email,
 					profileImagePath: userData.profileImagePath
