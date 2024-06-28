@@ -34,7 +34,7 @@ export const BottomLeftStats = () => {
 				<HomeStat
 					isLoading={isLoading}
 					title={t(translationPaths.stats.boardsCount)}
-					value={userStats.stepsCompleted}
+					value={userStats.boardsCount}
 					icon={<HiOutlineDocument className={styles.icon} />}
 				/>
 			</div>

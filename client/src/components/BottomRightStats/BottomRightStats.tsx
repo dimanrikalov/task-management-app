@@ -38,7 +38,7 @@ export const BottomRightStats = () => {
 				<HomeStat
 					title={t(translationPaths.stats.stepsCompleted)}
 					isLoading={isLoading}
-					value={userStats.boardsCount}
+					value={userStats.stepsCompleted}
 					icon={<FaRegSquareCheck className={styles.icon} />}
 				/>
 			</div>
