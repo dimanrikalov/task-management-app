@@ -47,6 +47,11 @@ export default {
 			tasksCompleted: 'Извършени задачи',
 			timeSpent: 'Отделено време за задачи',
 			workspacesCount: 'Работни пространства'
+		},
+		lists: {
+			notifications: 'Нямате нови известия :)',
+			boards: 'Все още няма дъски за показване...',
+			workspaces:'Все още няма работни пространства за показване...' 
 		}
 	},
 	createWorkspace: {

@@ -46,6 +46,11 @@ export default {
 			timeSpent: 'Time Spent On Tasks',
 			stepsCompleted: 'Steps Complete',
 			tasksCompleted: 'Tasks Complete'
+		},
+		lists: {
+			notifications: 'You are up to date :)',
+			boards: 'No boards to show yet...',
+			workspaces: 'No workspaces to show yet...' 
 		}
 	},
 	createWorkspace: {
