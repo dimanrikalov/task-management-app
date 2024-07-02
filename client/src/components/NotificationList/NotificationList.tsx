@@ -54,7 +54,7 @@ export const NotificationList = ({
                                 )
                                 :
                                 <h3 className={styles.upToDate}>
-                                    You are up to date :)
+                                {t('dashboard.lists.notifications')}
                                 </h3>
                         )
                 }

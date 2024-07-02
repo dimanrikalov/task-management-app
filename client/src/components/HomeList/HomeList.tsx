@@ -91,7 +91,7 @@ export const HomeList = ({
 			) : (
 				<div className={styles.noEntriesContainer}>
 					<h3 className={styles.noEntriesMsg}>
-						{`No ${type} to show yet...`}
+						{t(`dashboard.lists.${type}`)}
 					</h3>
 				</div>
 			)}
