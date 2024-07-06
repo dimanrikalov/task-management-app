@@ -307,16 +307,16 @@ export class BoardsService {
 	}
 
 	async create(body: CreateBoardDto) {
-		if (
-			body.colleagues &&
-			body.colleagues.length > 0 &&
-			body.workspaceData.name.toLowerCase().trim() ===
-				'personal workspace'
-		) {
-			throw new ForbiddenException(
-				'You cannot add colleagues to boards belonging to your Personal Workspace!'
-			);
-		}
+		// if (
+		// 	body.colleagues &&
+		// 	body.colleagues.length > 0 &&
+		// 	body.workspaceData.name.toLowerCase().trim() ===
+		// 		'personal workspace'
+		// ) {
+		// 	throw new ForbiddenException(
+		// 		'You cannot add colleagues to boards belonging to your Personal Workspace!'
+		// 	);
+		// }
 
 		// Handle the case where no colleagues array is passed
 		body.colleagues = body.colleagues || [];
@@ -440,8 +440,9 @@ export class BoardsService {
 			usersToNotify.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has 
-					created and added you to board "${body.name}".`
+					message: `${body.userData.username} създаде дъска - "${body.name}" и ви добави към нея.`
+					// message: `${body.userData.username} has
+					// created and added you to board "${body.name}".`
 				});
 			})
 		);
@@ -470,8 +471,9 @@ export class BoardsService {
 			usersToNotify.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has renamed
-					 board "${body.boardData.name}" to "${body.newName}".`
+					message: `${body.userData.username} преименува дъската "${body.boardData.name}" на "${body.newName}".`
+					// message: `${body.userData.username} has renamed
+					//  board "${body.boardData.name}" to "${body.newName}".`
 				});
 			})
 		);
@@ -512,8 +514,9 @@ export class BoardsService {
 				.map(async (userId) => {
 					await this.notificationsService.addNotification({
 						userId,
-						message: `${body.userData.username} has deleted board 
-					"${body.boardData.name}" inside workspace "${body.workspaceData.name}".`
+						message: `${body.userData.username} изтри дъската "${body.boardData.name}" в работното пространство "${body.workspaceData.name}".`
+						// 	message: `${body.userData.username} has deleted board
+						// "${body.boardData.name}" inside workspace "${body.workspaceData.name}".`
 					});
 				})
 		);
@@ -563,14 +566,14 @@ export class BoardsService {
 
 	async addColleague(body: EditBoardColleagueDto) {
 		const colleagueId = Number(body.colleagueId);
-		if (
-			body.workspaceData.name.toLowerCase().trim() ===
-			'personal workspace'
-		) {
-			throw new ForbiddenException(
-				'You cannot add colleagues to personal boards!'
-			);
-		}
+		// if (
+		// 	body.workspaceData.name.toLowerCase().trim() ===
+		// 	'personal workspace'
+		// ) {
+		// 	throw new ForbiddenException(
+		// 		'You cannot add colleagues to personal boards!'
+		// 	);
+		// }
 
 		//check the user to be added (it must not be the user themself, a user with access to the workspace where the board is, or the owner)
 		if (colleagueId === 0) {
@@ -637,8 +640,9 @@ export class BoardsService {
 			boardUserIds.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has added
-					 ${colleague.username} to board "${body.boardData.name}".`
+					message: `${body.userData.username} добави ${colleague.username} към дъската "${body.boardData.name}".`
+					// message: `${body.userData.username} has added
+					//  ${colleague.username} to board "${body.boardData.name}".`
 				});
 			})
 		);
@@ -649,14 +653,14 @@ export class BoardsService {
 	async removeColleague(body: EditBoardColleagueDto) {
 		const colleagueId = Number(body.colleagueId);
 
-		if (
-			body.workspaceData.name.toLowerCase().trim() ===
-			'personal workspace'
-		) {
-			throw new ForbiddenException(
-				'You cannot remove colleagues from personal boards!'
-			);
-		}
+		// if (
+		// 	body.workspaceData.name.toLowerCase().trim() ===
+		// 	'personal workspace'
+		// ) {
+		// 	throw new ForbiddenException(
+		// 		'You cannot remove colleagues from personal boards!'
+		// 	);
+		// }
 
 		if (colleagueId === 0) {
 			throw new ForbiddenException('Invalid colleague ID!');
@@ -716,8 +720,9 @@ export class BoardsService {
 			boardUserIds.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has removed
-					 ${colleague.username} from board "${body.boardData.name}".`
+					message: `${body.userData.username} премахна ${colleague.username} от дъската "${body.boardData.name}".`
+					// message: `${body.userData.username} has removed
+					//  ${colleague.username} from board "${body.boardData.name}".`
 				});
 			})
 		);

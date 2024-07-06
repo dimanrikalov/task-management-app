@@ -197,11 +197,11 @@ export class WorkspacesService {
 
 	async create(body: CreateWorkspaceDto): Promise<IWorkspace> {
 		// A user can have only one Personal Workspace
-		if (body.name.toLowerCase().trim() === 'personal workspace') {
-			throw new ConflictException(
-				'There can only be one workspace with this name per user!'
-			);
-		}
+		// if (body.name.toLowerCase().trim() === 'personal workspace') {
+		// 	throw new ConflictException(
+		// 		'There can only be one workspace with this name per user!'
+		// 	);
+		// }
 
 		// Handle the case where no colleagues array is passed
 		body.colleagues = body.colleagues || [];
@@ -261,8 +261,9 @@ export class WorkspacesService {
 			usersToNotify.map(async (colleagueId) => {
 				await this.notificationsService.addNotification({
 					userId: colleagueId,
-					message: `${body.userData.username} 
-					has created and added you to workspace "${body.name}".`
+					message: `${body.userData.username} създаде и ви добави към работно пространство "${body.name}".`
+					// message: `${body.userData.username}
+					// has created and added you to workspace "${body.name}".`
 				});
 			})
 		);
@@ -271,17 +272,17 @@ export class WorkspacesService {
 	}
 
 	async rename(body: RenameWorkspaceDto) {
-		if (body.workspaceData.name === 'Personal Workspace') {
-			throw new ForbiddenException(
-				'You cannot rename your Personal Workspace!'
-			);
-		}
+		// if (body.workspaceData.name === 'Personal Workspace') {
+		// 	throw new ForbiddenException(
+		// 		'You cannot rename your Personal Workspace!'
+		// 	);
+		// }
 
-		if (body.newName === 'Personal Workspace') {
-			throw new ForbiddenException(
-				'There can only be one Personal Workspace per user!'
-			);
-		}
+		// if (body.newName === 'Personal Workspace') {
+		// 	throw new ForbiddenException(
+		// 		'There can only be one Personal Workspace per user!'
+		// 	);
+		// }
 
 		await this.prismaService.workspace.update({
 			where: {
@@ -302,8 +303,9 @@ export class WorkspacesService {
 			usersToNotify.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has renamed workspace 
-					"${body.workspaceData.name}" to "${body.newName}".`
+					message: `${body.userData.username} преименува работното пространство "${body.workspaceData.name}" на "${body.newName}".`
+					// message: `${body.userData.username} has renamed workspace
+					// "${body.workspaceData.name}" to "${body.newName}".`
 				});
 			})
 		);
@@ -316,14 +318,14 @@ export class WorkspacesService {
 		}
 
 		//check if the workspace exists and is not 'Personal Workspace'
-		if (
-			body.workspaceData.name.toLowerCase().trim() ===
-			'personal workspace'
-		) {
-			throw new ForbiddenException(
-				'You cannot delete your personal workspace!'
-			);
-		}
+		// if (
+		// 	body.workspaceData.name.toLowerCase().trim() ===
+		// 	'personal workspace'
+		// ) {
+		// 	throw new ForbiddenException(
+		// 		'You cannot delete your personal workspace!'
+		// 	);
+		// }
 
 		const usersToNotify = await this.getWorkspaceBoardUserIds(
 			body.workspaceData.id,
@@ -350,8 +352,9 @@ export class WorkspacesService {
 			usersToNotify.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has
-					 deleted workspace "${body.workspaceData.name}".`
+					message: `${body.userData.username} изтри работното пространство "${body.workspaceData.name}".`
+					// message: `${body.userData.username} has
+					//  deleted workspace "${body.workspaceData.name}".`
 				});
 			})
 		);
@@ -406,14 +409,14 @@ export class WorkspacesService {
 	}
 
 	async addColleague(body: EditWorkspaceColleagueDto) {
-		if (
-			body.workspaceData.name.toLowerCase().trim() ===
-			'personal workspace'
-		) {
-			throw new ForbiddenException(
-				'You cannot add / remove colleagues inside this workspace!'
-			);
-		}
+		// if (
+		// 	body.workspaceData.name.toLowerCase().trim() ===
+		// 	'personal workspace'
+		// ) {
+		// 	throw new ForbiddenException(
+		// 		'You cannot add / remove colleagues inside this workspace!'
+		// 	);
+		// }
 
 		// check if the added colleague is already added to the workspace or is the creator himself
 		const colleagueIsAlreadyAdded =
@@ -476,8 +479,9 @@ export class WorkspacesService {
 			workspaceUserIds.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has added ${colleague.username}
-					 to workspace "${body.workspaceData.name}".`
+					message: `${body.userData.username} добави ${colleague.username} към работното пространство "${body.workspaceData.name}".`,
+					// message: `${body.userData.username} has added ${colleague.username}
+					//  to workspace "${body.workspaceData.name}".`
 				});
 			})
 		);
@@ -486,14 +490,14 @@ export class WorkspacesService {
 	}
 
 	async removeColleague(body: EditWorkspaceColleagueDto) {
-		if (
-			body.workspaceData.name.toLowerCase().trim() ===
-			'personal workspace'
-		) {
-			throw new ForbiddenException(
-				'You cannot add / remove colleagues inside this workspace!'
-			);
-		}
+		// if (
+		// 	body.workspaceData.name.toLowerCase().trim() ===
+		// 	'personal workspace'
+		// ) {
+		// 	throw new ForbiddenException(
+		// 		'You cannot add / remove colleagues inside this workspace!'
+		// 	);
+		// }
 
 		// check if the colleague to remove is the workspace owner themself
 		const colleagueIsWorkspaceOwner =
@@ -526,8 +530,9 @@ export class WorkspacesService {
 			workspaceUserIds.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has removed ${colleague.username}
-					 from workspace "${body.workspaceData.name}" and from all its boards.`
+					message: `${body.userData.username} премахна ${colleague.username} от работното пространство "${body.workspaceData.name}".`
+					// message: `${body.userData.username} has removed ${colleague.username}
+					//  from workspace "${body.workspaceData.name}" and from all its boards.`
 				});
 			})
 		);

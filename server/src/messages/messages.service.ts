@@ -63,7 +63,8 @@ export class MessagesService {
 			body.taggedUsers.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has tagged you inside board "${body.boardData.name}".`
+					message: `${body.userData.username} те спомена в дъска - "${body.boardData.name}".`
+					// message: `${body.userData.username} has tagged you inside board "${body.boardData.name}".`
 				});
 			})
 		);

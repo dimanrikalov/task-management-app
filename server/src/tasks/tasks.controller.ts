@@ -100,8 +100,10 @@ export class TasksController {
 				// Create notification entry
 				await this.tasksService.sendNotification(
 					body.taskData.assigneeId,
-					`${body.userData.username} has moved task -
-					 "${body.taskData.title}" inside board "${body.boardData.name}".`
+					`${body.userData.username} премести задачата
+					 "${body.taskData.title}" в дъската "${body.boardData.name}".`
+					// `${body.userData.username} has moved task -
+					//  "${body.taskData.title}" inside board "${body.boardData.name}".`
 				);
 
 				// Inform the user socket that is affected

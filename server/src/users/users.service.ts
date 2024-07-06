@@ -301,12 +301,12 @@ export class UsersService {
 		});
 
 		// Create default 'Personal Workspace'
-		await this.prismaService.workspace.create({
-			data: {
-				name: 'Personal Workspace',
-				ownerId: user.id
-			}
-		});
+		// await this.prismaService.workspace.create({
+		// 	data: {
+		// 		name: 'Personal Workspace',
+		// 		ownerId: user.id
+		// 	}
+		// });
 	}
 
 	async signIn(res: Response, body: LoginUserDto): Promise<IGenerateTokens> {
@@ -507,8 +507,9 @@ export class UsersService {
 			affectedUserIds.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has deleted their
-					 profile and all of their workspaces and boards respectively.`
+					message: `${body.userData.username} изтри своя профил и притежаваните от тях работни пространства и дъски.`
+					// message: `${body.userData.username} has deleted their
+					//  profile and all of their workspaces and boards respectively.`
 				});
 			})
 		);

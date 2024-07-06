@@ -130,7 +130,19 @@ export const BoardView = () => {
 									className={styles.icon}
 								/>
 							</EntryModificationButton>
-							{state.boardData.workspace.name !==
+
+							<EntryModificationButton
+								onClick={
+									operations.toggleIsEditBoardUsersModalOpen
+								}
+							>
+								<FaUsersCog
+									className={styles.icon}
+									size={24}
+								/>
+							</EntryModificationButton>
+
+							{/* {state.boardData.workspace.name !==
 								'Personal Workspace' && (
 									<EntryModificationButton
 										onClick={
@@ -142,7 +154,7 @@ export const BoardView = () => {
 											size={24}
 										/>
 									</EntryModificationButton>
-								)}
+								)} */}
 							{/* <EntryModificationButton onClick={() => { }}>
 								<VscGraph
 									size={22}

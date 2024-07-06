@@ -36,7 +36,9 @@ interface IChatProps {
 
 const translationPaths = {
 	title: 'chat.title',
-	enterMsg: 'chat.enterMsg'
+	tagUser: 'chat.tagUser',
+	enterMsg: 'chat.enterMsg',
+	noUsersToTag: 'chat.noUsersToTag'
 }
 
 export const Chat = ({
@@ -274,7 +276,7 @@ export const Chat = ({
 							styles.showDropdown
 						)}
 					>
-						<h4>Tag user(s)</h4>
+						<h4>{t(translationPaths.tagUser)}</h4>
 						<div className={styles.dropdown}>
 							{
 								boardUsers.filter
@@ -298,7 +300,7 @@ export const Chat = ({
 											/>
 										))
 									:
-									<h4 className={styles.noMatches}>No unique users to tag...</h4>
+									<h4 className={styles.noMatches}>{t(translationPaths.noUsersToTag)}</h4>
 							}
 						</div>
 					</div>

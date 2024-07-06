@@ -307,8 +307,9 @@ export class TasksService {
 		if (body.userData.id !== body.assigneeId) {
 			await this.notificationsService.addNotification({
 				userId: body.assigneeId,
-				message: `${body.userData.username} has assigned you to task
-				 - "${body.title}" inside board "${body.boardData.name}".`
+				message: `${body.userData.username} ти възложи задача - "${body.title}" в дъската "${body.boardData.name}".`
+				// message: `${body.userData.username} has assigned you to task
+				//  - "${body.title}" inside board "${body.boardData.name}".`
 			});
 		}
 
@@ -358,8 +359,9 @@ export class TasksService {
 		) {
 			await this.notificationsService.addNotification({
 				userId: body.taskData.assigneeId,
-				message: `${body.userData.username} has deleted task "${body.taskData.title}"
-				 which was assigned to you inside board "${body.boardData.name}".`
+				message: `${body.userData.username} изтри задача "${body.taskData.title}", която бе възложена на теб в дъска - "${body.boardData.name}".`
+				// message: `${body.userData.username} has deleted task "${body.taskData.title}"
+				//  which was assigned to you inside board "${body.boardData.name}".`
 			});
 		}
 	}
@@ -548,8 +550,9 @@ export class TasksService {
 		if (isThereNewAssignee) {
 			if (isOldAssigneePartOfBoard) {
 				//notify the user that is no longer assigned to the task
-				const message = `Task "${body.taskData.title}" which was previously
-				assigned to you is now assigned to ${newAssignee.username}.`;
+				// const message = `Task "${body.taskData.title}" which was previously
+				// assigned to you is now assigned to ${newAssignee.username}.`;
+				const message = `Задача "${body.taskData.title}" която ти беше възложена, е вече възложена на ${newAssignee.username}.`;
 				await this.notificationsService.addNotification({
 					message,
 					userId: body.taskData.assigneeId
@@ -558,8 +561,9 @@ export class TasksService {
 			}
 
 			if (!isUserNewAssignee) {
-				const message = `Task "${body.taskData.title}" which was previously
-				assigned to ${oldAssignee.username} is now assigned to you.`;
+				// const message = `Task "${body.taskData.title}" which was previously
+				// assigned to ${oldAssignee.username} is now assigned to you.`;
+				const message = `Задача "${body.taskData.title}" която беше възложена на ${oldAssignee.username}, е вече възложена на теб.`;
 				//notify the user that is newly assigned to the task
 				await this.notificationsService.addNotification({
 					message,
@@ -569,8 +573,9 @@ export class TasksService {
 			}
 		} else {
 			if (!isTaskAssigneeModifyingTask && isOldAssigneePartOfBoard) {
-				const message = `Task "${body.taskData.title}" assigned
-				to you was modified by ${body.userData.username}.`;
+				// const message = `Task "${body.taskData.title}" assigned
+				// to you was modified by ${body.userData.username}.`;
+				const message = `Задача - "${body.taskData.title}" възложена на теб беше редактирана от ${body.userData.username}.`
 				await this.notificationsService.addNotification({
 					message,
 					userId: body.taskData.assigneeId
@@ -608,8 +613,9 @@ export class TasksService {
 		if (body.userData.id !== body.taskData.assigneeId) {
 			this.notificationsService.addNotification({
 				userId: body.taskData.assigneeId,
-				message: `${body.userData.username} has marked task
-				 "${body.taskData.title}" that was assigned to you as complete.`
+				message: `${body.userData.username} отбеляза възложена на теб задача "${body.taskData.title}" като завършена.`
+				// message: `${body.userData.username} has marked task
+				//  "${body.taskData.title}" that was assigned to you as complete.`
 			});
 		}
 	}

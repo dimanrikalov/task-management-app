@@ -88,12 +88,18 @@ export const CreateBoardModal = () => {
 						<div
 							className={classNames(
 								styles.rightSideContent,
-								(!selectedWorkspace ||
-									selectedWorkspace.name
-										.toLowerCase()
-										.trim() === 'personal workspace') &&
-								styles.hidden
+								!selectedWorkspace && styles.hidden
 							)}
+						// className={classNames(
+						// 	styles.rightSideContent,
+						// 	(!selectedWorkspace 
+						// 		||
+						// 		selectedWorkspace.name
+						// 			.toLowerCase()
+						// 			.trim() === 'personal workspace')
+						// 			 &&
+						// 	styles.hidden
+						// )}
 						>
 							{
 								<AddColleagueInput

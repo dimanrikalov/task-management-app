@@ -50,7 +50,7 @@ export default {
 		lists: {
 			notifications: 'You are up to date :)',
 			boards: 'No boards to show yet...',
-			workspaces: 'No workspaces to show yet...' 
+			workspaces: 'No workspaces to show yet...'
 		}
 	},
 	createWorkspace: {
@@ -74,7 +74,9 @@ export default {
 	},
 	chat: {
 		title: 'Board chat',
-		enterMsg: 'Enter a message'
+		enterMsg: 'Enter a message',
+		tagUser: 'Tag user(s)',
+		noUsersToTag: 'No unique users to tag...'
 	},
 	confirmationModal: {
 		areYouSure: 'Are you sure you want to delete',

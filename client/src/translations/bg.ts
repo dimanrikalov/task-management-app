@@ -51,7 +51,7 @@ export default {
 		lists: {
 			notifications: 'Нямате нови известия :)',
 			boards: 'Все още няма дъски за показване...',
-			workspaces:'Все още няма работни пространства за показване...' 
+			workspaces: 'Все още няма работни пространства за показване...'
 		}
 	},
 	createWorkspace: {
@@ -75,7 +75,9 @@ export default {
 	},
 	chat: {
 		title: 'Чат на дъската',
-		enterMsg: 'Въведи съобщение'
+		enterMsg: 'Въведи съобщение',
+		tagUser: 'Отбележи колега(и)',
+		noUsersToTag: 'Няма повече уникални потребители...'
 	},
 	confirmationModal: {
 		areYouSure: 'Сигурен ли си че искаш да изтриеш',

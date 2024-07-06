@@ -110,6 +110,23 @@ export const WorkspaceView = () => {
 								placeholder={t(translationPaths.enterBoardName)}
 								onChange={operations.handleWorkspaceNameInputChange}
 							/>
+						) :
+							<h2
+								className={styles.workspaceName}
+								onDoubleClick={operations.toggleIsInputModeOn}
+							>
+								{state.workspaceData.name}
+							</h2>
+
+						}
+						{/* {state.isInputModeOn ? (
+							<EntryModificationForm
+								name="workspace-name-input"
+								value={state.workspaceNameInput}
+								onSubmit={operations.handleWorkspaceNameChange}
+								placeholder={t(translationPaths.enterBoardName)}
+								onChange={operations.handleWorkspaceNameInputChange}
+							/>
 						) : state.workspaceData.name.toLowerCase().trim() !==
 							'personal workspace' ? (
 							<h2
@@ -120,7 +137,7 @@ export const WorkspaceView = () => {
 							</h2>
 						) : (
 							<h2>{state.workspaceData.name}</h2>
-						)}
+						)} */}
 					</div>
 					<div className={styles.operationsContainer}>
 						<BackButton onClick={operations.backBtnHandler} />
@@ -132,7 +149,38 @@ export const WorkspaceView = () => {
 								className={styles.icon}
 							/>
 						</EntryModificationButton>
-						{state.workspaceData.name.toLowerCase().trim() !==
+
+
+						<EntryModificationButton
+							onClick={() =>
+								operations.toggleModal(
+									MODAL_STATES_KEYS.EDIT_COLLEAGUES
+								)
+							}
+						>
+							<FaUsersCog
+								className={styles.icon}
+								size={24}
+							/>
+						</EntryModificationButton>
+						{
+							state.userData.id === state.workspaceData.workspaceOwner.id &&
+							<EntryModificationButton
+								onClick={() =>
+									operations.toggleModal(
+										MODAL_STATES_KEYS.DELETE_WORKSPACE
+									)
+								}
+							>
+								<MdDeleteForever
+									className={styles.icon}
+									size={26}
+								/>
+							</EntryModificationButton>
+						}
+
+
+						{/* {state.workspaceData.name.toLowerCase().trim() !==
 							'personal workspace' && (
 								<>
 									<EntryModificationButton
@@ -163,7 +211,7 @@ export const WorkspaceView = () => {
 										</EntryModificationButton>
 									}
 								</>
-							)}
+							)} */}
 					</div>
 				</div>
 				<div className={styles.titleContainer}>

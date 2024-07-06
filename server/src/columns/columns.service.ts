@@ -101,8 +101,9 @@ export class ColumnsService {
 			uniqueAffectedUsers.map(async (userId) => {
 				await this.notificationsService.addNotification({
 					userId,
-					message: `${body.userData.username} has deleted
-					 a column that contains a task assigned to you.`
+					message: `${body.userData.username} изтри колона която съдържа задача възложена на теб.`
+					// message: `${body.userData.username} has deleted
+					//  a column that contains a task assigned to you.`
 				});
 			})
 		);
