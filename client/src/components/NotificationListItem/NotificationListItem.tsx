@@ -20,7 +20,7 @@ export const NotificationListItem = ({
                 <FaXmark size={18} />
             </button>
             <p className={styles.message}>
-                {message.replace(username, 'you')}
+                {message.replace(username, 'теб')}
             </p>
         </div>
     )
