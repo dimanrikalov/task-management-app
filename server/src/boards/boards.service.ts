@@ -307,16 +307,16 @@ export class BoardsService {
 	}
 
 	async create(body: CreateBoardDto) {
-		// if (
-		// 	body.colleagues &&
-		// 	body.colleagues.length > 0 &&
-		// 	body.workspaceData.name.toLowerCase().trim() ===
-		// 		'personal workspace'
-		// ) {
-		// 	throw new ForbiddenException(
-		// 		'You cannot add colleagues to boards belonging to your Personal Workspace!'
-		// 	);
-		// }
+		if (
+			body.colleagues &&
+			body.colleagues.length > 0 &&
+			body.workspaceData.name.toLowerCase().trim() ===
+				'лично работно пространство'
+		) {
+			throw new ForbiddenException(
+				'You cannot add colleagues to boards belonging to your Personal Workspace!'
+			);
+		}
 
 		// Handle the case where no colleagues array is passed
 		body.colleagues = body.colleagues || [];
@@ -566,14 +566,14 @@ export class BoardsService {
 
 	async addColleague(body: EditBoardColleagueDto) {
 		const colleagueId = Number(body.colleagueId);
-		// if (
-		// 	body.workspaceData.name.toLowerCase().trim() ===
-		// 	'personal workspace'
-		// ) {
-		// 	throw new ForbiddenException(
-		// 		'You cannot add colleagues to personal boards!'
-		// 	);
-		// }
+		if (
+			body.workspaceData.name.toLowerCase().trim() ===
+			'лично работно пространство'
+		) {
+			throw new ForbiddenException(
+				'You cannot add colleagues to personal boards!'
+			);
+		}
 
 		//check the user to be added (it must not be the user themself, a user with access to the workspace where the board is, or the owner)
 		if (colleagueId === 0) {
@@ -653,14 +653,14 @@ export class BoardsService {
 	async removeColleague(body: EditBoardColleagueDto) {
 		const colleagueId = Number(body.colleagueId);
 
-		// if (
-		// 	body.workspaceData.name.toLowerCase().trim() ===
-		// 	'personal workspace'
-		// ) {
-		// 	throw new ForbiddenException(
-		// 		'You cannot remove colleagues from personal boards!'
-		// 	);
-		// }
+		if (
+			body.workspaceData.name.toLowerCase().trim() ===
+			'лично работно пространство'
+		) {
+			throw new ForbiddenException(
+				'You cannot remove colleagues from personal boards!'
+			);
+		}
 
 		if (colleagueId === 0) {
 			throw new ForbiddenException('Invalid colleague ID!');

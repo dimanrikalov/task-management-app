@@ -102,7 +102,7 @@ export const WorkspaceView = () => {
 			<div className={styles.background}>
 				<div className={styles.header}>
 					<div className={styles.left}>
-						{state.isInputModeOn ? (
+						{/* {state.isInputModeOn ? (
 							<EntryModificationForm
 								name="workspace-name-input"
 								value={state.workspaceNameInput}
@@ -118,8 +118,8 @@ export const WorkspaceView = () => {
 								{state.workspaceData.name}
 							</h2>
 
-						}
-						{/* {state.isInputModeOn ? (
+						} */}
+						{state.isInputModeOn ? (
 							<EntryModificationForm
 								name="workspace-name-input"
 								value={state.workspaceNameInput}
@@ -128,7 +128,7 @@ export const WorkspaceView = () => {
 								onChange={operations.handleWorkspaceNameInputChange}
 							/>
 						) : state.workspaceData.name.toLowerCase().trim() !==
-							'personal workspace' ? (
+							'лично работно пространство' ? (
 							<h2
 								className={styles.workspaceName}
 								onDoubleClick={operations.toggleIsInputModeOn}
@@ -137,7 +137,7 @@ export const WorkspaceView = () => {
 							</h2>
 						) : (
 							<h2>{state.workspaceData.name}</h2>
-						)} */}
+						)}
 					</div>
 					<div className={styles.operationsContainer}>
 						<BackButton onClick={operations.backBtnHandler} />
@@ -151,7 +151,7 @@ export const WorkspaceView = () => {
 						</EntryModificationButton>
 
 
-						<EntryModificationButton
+						{/* <EntryModificationButton
 							onClick={() =>
 								operations.toggleModal(
 									MODAL_STATES_KEYS.EDIT_COLLEAGUES
@@ -177,11 +177,11 @@ export const WorkspaceView = () => {
 									size={26}
 								/>
 							</EntryModificationButton>
-						}
+						} */}
 
 
-						{/* {state.workspaceData.name.toLowerCase().trim() !==
-							'personal workspace' && (
+						{state.workspaceData.name.toLowerCase().trim() !==
+							'лично работно пространство' && (
 								<>
 									<EntryModificationButton
 										onClick={() =>
@@ -211,7 +211,7 @@ export const WorkspaceView = () => {
 										</EntryModificationButton>
 									}
 								</>
-							)} */}
+							)}
 					</div>
 				</div>
 				<div className={styles.titleContainer}>

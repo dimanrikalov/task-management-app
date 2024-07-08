@@ -307,6 +307,13 @@ export class UsersService {
 		// 		ownerId: user.id
 		// 	}
 		// });
+
+		await this.prismaService.workspace.create({
+			data: {
+				name: 'Лично Работно Пространство',
+				ownerId: user.id
+			}
+		});
 	}
 
 	async signIn(res: Response, body: LoginUserDto): Promise<IGenerateTokens> {

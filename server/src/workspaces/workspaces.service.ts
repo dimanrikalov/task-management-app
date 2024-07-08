@@ -197,11 +197,11 @@ export class WorkspacesService {
 
 	async create(body: CreateWorkspaceDto): Promise<IWorkspace> {
 		// A user can have only one Personal Workspace
-		// if (body.name.toLowerCase().trim() === 'personal workspace') {
-		// 	throw new ConflictException(
-		// 		'There can only be one workspace with this name per user!'
-		// 	);
-		// }
+		if (body.name.toLowerCase().trim() === 'лично работно пространство') {
+			throw new ConflictException(
+				'There can only be one workspace with this name per user!'
+			);
+		}
 
 		// Handle the case where no colleagues array is passed
 		body.colleagues = body.colleagues || [];
@@ -272,17 +272,17 @@ export class WorkspacesService {
 	}
 
 	async rename(body: RenameWorkspaceDto) {
-		// if (body.workspaceData.name === 'Personal Workspace') {
-		// 	throw new ForbiddenException(
-		// 		'You cannot rename your Personal Workspace!'
-		// 	);
-		// }
+		if (body.workspaceData.name.toLowerCase().trim() === 'лично работно пространство') {
+			throw new ForbiddenException(
+				'You cannot rename your Personal Workspace!'
+			);
+		}
 
-		// if (body.newName === 'Personal Workspace') {
-		// 	throw new ForbiddenException(
-		// 		'There can only be one Personal Workspace per user!'
-		// 	);
-		// }
+		if (body.newName.toLowerCase().trim() === 'лично работно пространство') {
+			throw new ForbiddenException(
+				'There can only be one Personal Workspace per user!'
+			);
+		}
 
 		await this.prismaService.workspace.update({
 			where: {
@@ -318,14 +318,14 @@ export class WorkspacesService {
 		}
 
 		//check if the workspace exists and is not 'Personal Workspace'
-		// if (
-		// 	body.workspaceData.name.toLowerCase().trim() ===
-		// 	'personal workspace'
-		// ) {
-		// 	throw new ForbiddenException(
-		// 		'You cannot delete your personal workspace!'
-		// 	);
-		// }
+		if (
+			body.workspaceData.name.toLowerCase().trim() ===
+			'лично работно пространство'
+		) {
+			throw new ForbiddenException(
+				'You cannot delete your personal workspace!'
+			);
+		}
 
 		const usersToNotify = await this.getWorkspaceBoardUserIds(
 			body.workspaceData.id,
@@ -409,14 +409,14 @@ export class WorkspacesService {
 	}
 
 	async addColleague(body: EditWorkspaceColleagueDto) {
-		// if (
-		// 	body.workspaceData.name.toLowerCase().trim() ===
-		// 	'personal workspace'
-		// ) {
-		// 	throw new ForbiddenException(
-		// 		'You cannot add / remove colleagues inside this workspace!'
-		// 	);
-		// }
+		if (
+			body.workspaceData.name.toLowerCase().trim() ===
+			'лично работно пространство'
+		) {
+			throw new ForbiddenException(
+				'You cannot add / remove colleagues inside this workspace!'
+			);
+		}
 
 		// check if the added colleague is already added to the workspace or is the creator himself
 		const colleagueIsAlreadyAdded =
@@ -490,14 +490,14 @@ export class WorkspacesService {
 	}
 
 	async removeColleague(body: EditWorkspaceColleagueDto) {
-		// if (
-		// 	body.workspaceData.name.toLowerCase().trim() ===
-		// 	'personal workspace'
-		// ) {
-		// 	throw new ForbiddenException(
-		// 		'You cannot add / remove colleagues inside this workspace!'
-		// 	);
-		// }
+		if (
+			body.workspaceData.name.toLowerCase().trim() ===
+			'лично работно пространство'
+		) {
+			throw new ForbiddenException(
+				'You cannot add / remove colleagues inside this workspace!'
+			);
+		}
 
 		// check if the colleague to remove is the workspace owner themself
 		const colleagueIsWorkspaceOwner =
